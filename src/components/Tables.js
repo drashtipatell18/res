@@ -1096,8 +1096,8 @@ const Tables = () => {
 
 
       broadcaster: "pusher",
-      key: "7ae046560a0ed83ad8c7",
-      cluster: "mt1",
+      key: "ea4d04500b0421d6ee18",
+      cluster: "ap2",
       wsHost: window.location.hostname,
       wsPort: 6001,
       forceTLS: false,

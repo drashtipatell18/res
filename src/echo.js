@@ -5,9 +5,9 @@ window.Pusher = Pusher;
 
 const echo = new Echo({
     broadcaster: 'pusher',
-    key : "7ae046560a0ed83ad8c7",
+    key : "ea4d04500b0421d6ee18",
       // secret : "5dbd05cdfee574fb5ee9",
-      cluster : "mt1",
+      cluster : "ap2",
     encrypted: true,
 });
 
