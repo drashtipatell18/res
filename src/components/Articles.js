@@ -739,7 +739,7 @@ export default function Articles() {
           Authorization: `Bearer ${token}`
         }
       });
-
+      console.log("Article Response", response);
       if (response.data.success) {
         setUploadedFile(response.data.file);
         handleShow1AddSuc();

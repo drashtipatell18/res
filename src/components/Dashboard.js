@@ -2027,11 +2027,11 @@ const Dashboard = () => {
                           <img src={`${API}/images/${item.image}`} alt={item.name} style={{ borderRadius: "8px" }} />
                         </div>
                         <div className="j-order-data">
-                          <h4 className="sjfs-16">{item.name}</h4>
+                          <h4 className="sjfs-16 ak-dash-font">{item.name}</h4>
                           <p className="sjfs-12">Pedido {item.order_count}</p>
                         </div>
                       </div>
-                      <div className="j-order-price sjfs-16 me-2">
+                      <div className="j-order-price sjfs-16 me-2 ak-dash-font">
                         {parseFloat(item.amount) % 1 === 0 ? `${parseFloat(item.amount).toFixed(0)}$` : `${parseFloat(item.amount)}$`}
                       </div>
                     </div>

@@ -329,16 +329,24 @@ console.log("previous Path: " , location);
       return;
     }
 
+    console.log("Form Details", formDetails);
+
     const formData = new FormData();
     for (const key in formDetails) {
+      console.log("Key", key, key==="image");
       if (key === "image") {
         if (formDetails[key] instanceof File) {
           formData.append("image", formDetails[key]);
-        } else if (!formDetails[key] && !formDetails.existingImage) {
+          console.log("1");
+        }else if (!formDetails[key] && !formDetails.existingImage) {
+          console.log("3");
           formData.append("image", ""); // Send empty string if image is deleted
         }
         // If existingImage is present and image is not changed, don't append anything
-      } else {
+      } else if (key == "existingImage") {
+        console.log("2");
+          formData.append("image", formDetails.existingImage ||"");
+      }else   {
         // formData.append(key, formDetails[key]);
         // Send null for empty description, otherwise send the value (or empty string if undefined)
         // formData.append(key, formDetails[key] === null ? null : formDetails[key] || "");
@@ -348,6 +356,7 @@ console.log("previous Path: " , location);
         );
       }
     }
+    console.log("Form Data", formData);
     handleClose();
 
     setIsProcessing(true);

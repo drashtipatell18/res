@@ -665,11 +665,15 @@ export default function Home_Pedidos_paymet() {
     if (orderData?.status == 'delivered' || orderData?.status == "cancelled") {
       navigate(`/home/client/crear/${id}`, { replace: true })
     } else {
-      alert('No puedes crear un nuevo pedido si el pedido actual no ha sido entregado')
+      alert('No se puede generar una nota de crédito si el pedido actual no ha sido entregado.')
     }
   }
 
   const handlePayment = () => {
+
+    if(pamentDone){
+      return
+    }
 
     console.log(orderDetails, orderData);
 
@@ -1014,7 +1018,7 @@ export default function Home_Pedidos_paymet() {
                         {!orderData?.reason &&
                           <div className='mx-auto text-center mt-3'>
                             {!pamentDone || (orderData?.status.toLowerCase() !== 'finalized' && orderData?.status.toLowerCase() !== 'delivered') ?
-                              <div className='btn text-white j-btn-primary w-100' style={{ padding: "8px 12px", borderRadius: "8px" }} onClick={handlePayment}>Pagar ahora</div> :
+                              <button className='btn text-white j-btn-primary w-100' style={{ padding: "8px 12px", borderRadius: "8px" }} onClick={handlePayment} disabled={pamentDone}>{pamentDone ? 'Pagado' : 'Pagar ahora'}</button> :
                               ""
                             }
                           </div>

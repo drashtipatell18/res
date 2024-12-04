@@ -667,7 +667,7 @@ const Home_pedidos_payment_edit = ({ item }) => {
         if (orderData?.status == 'delivered' || orderData?.status == "cancelled") {
             navigate(`/home/client/crear/${id}`, { replace: true })
         } else {
-            alert('No puedes crear un nuevo pedido si el pedido actual no ha sido entregado')
+            alert('No se puede generar una nota de crédito si el pedido actual no ha sido entregado.')
         }
     }
 

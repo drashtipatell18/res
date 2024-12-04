@@ -507,6 +507,7 @@ const TablePago = () => {
   // ==== Get BOX Data =====
 
   const [boxId, setBoxId] = useState('')
+  const [selectedBoxId] = useState(sessionStorage.getItem('boxId'));
 
   const fetchBoxData = async () => {
     try {
@@ -571,7 +572,7 @@ const TablePago = () => {
       const response = await axios.post(`${apiUrl}/order/orderUpdateItem/${tableData[0].id}`, {
         tip: tipAmount ? tipAmount : 0,
         payment_type: selectedCheckboxes[0],
-        box_id: boxId?.id,
+        box_id: boxId ? boxId?.id : selectedBoxId,
         transaction_code: true,customer_name:payment.firstname || payment.business_name || ""
       },
         {
@@ -579,7 +580,7 @@ const TablePago = () => {
             Authorization: `Bearer ${token}`
           }
         })
-
+      console.log("Order Update", response);
       // console.log(response.data[1] == 200);
       if (response.data[1] == 200) {
         try {
@@ -594,7 +595,7 @@ const TablePago = () => {
           )
 
           // console.log(responsePayment.status == 200);
-          console.log(responsePayment);
+          console.log("Payment", responsePayment);
           if (responsePayment.data.success) {
             try {
               const resStatus = await axios.post(`${apiUrl}/table/updateStatus`, {
@@ -607,7 +608,7 @@ const TablePago = () => {
                 }
               })
               setIsProcessing(false);
-              // console.log(resStatus);
+              console.log("Table Status", resStatus);
               setTipAmount('');
               setFormErrors({});
               setPrice('');
@@ -620,17 +621,21 @@ const TablePago = () => {
               // localStorage.removeItem("tablePayment");
 
             } catch (error) {
+              setIsProcessing(false);
+              alert(error.message);
               console.log("Table Status not Upadte ," + error.message);
             }
           }
         } catch (error) {
           setIsProcessing(false);
+          alert(error.message);
           console.log("Payment not Done" + error.message);
 
         }
       }
     } catch (error) {
       setIsProcessing(false);
+      alert(error.message);
       console.log("Error to update the Order", error.message);
     }
   };
@@ -638,7 +643,7 @@ const TablePago = () => {
   const [show11, setShow11] = useState(false);
   const handleClose11 = () => {
     setShow11(false);
-    // navigate("/table"); // Navigate to the desired page after closing the modal
+    navigate("/table"); // Navigate to the desired page after closing the modal
   };
   const handleShow11 = () => setShow11(true);
   const handlePrint = () => {

@@ -271,6 +271,7 @@ export default function Articles() {
       setItems(item.flatMap((menu) => menu.items));
     }
   };
+
   const handleSearch = (event) => {
     const searchTerm = event.target.value.toLowerCase();
     setSearchTerm(searchTerm);
@@ -453,6 +454,11 @@ export default function Articles() {
       console.log(response.data, "update menu");
 
       // Update the menu state
+      setSelectedMenus([]);
+  
+        // Clear item IDs
+      setItemId([]);
+
       setMenu((prevMenu) =>
         prevMenu.map(
           (m) =>

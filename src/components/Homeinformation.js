@@ -618,7 +618,7 @@ export default function Homeinformation() {
     if (orderData?.[0].status == 'delivered' || orderData?.[0].status == 'cancelled') {
       navigate(`/home/client/crear/${id}`, { replace: true })
     } else {
-      alert('No puedes crear un nuevo pedido si el pedido actual no ha sido entregado')
+      alert('No se puede generar una nota de crédito si el pedido actual no ha sido entregado.')
     }
   }
 
@@ -1038,7 +1038,7 @@ export default function Homeinformation() {
                             < div className='d-flex text-decoration-none'>
                               {console.log("payment", pamentDone)}
                               {!pamentDone || (orderData?.[0].status.toLowerCase() !== 'finalized' && orderData?.[0].status.toLowerCase() !== 'delivered') ?
-                                <div className='btn btn-primary w-100 my-4 bj-delivery-text-3' style={{ backgroundColor: "#147BDE", borderRadius: "8px", padding: "10px 20px" }} onClick={handlePayment} >Cobrar ahora</div> :
+                                <button className='btn btn-primary w-100 my-4 bj-delivery-text-3' style={{ backgroundColor: "#147BDE", borderRadius: "8px", padding: "10px 20px" }} onClick={handlePayment} disabled={pamentDone}>{pamentDone ? 'Pagado' : 'Cobrar ahora'}</button> :
                                 ""
                               }
                             </div>

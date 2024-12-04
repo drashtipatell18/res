@@ -1409,7 +1409,7 @@ useEffect(() => {
                           <img src={`${API}/images/${item.image}`} alt={item.name} />
                         </div>
                         <div className="j-order-data">
-                          <h4 className="sjfs-16">{item.name}</h4>
+                          <h4 className="sjfs-16 ak-dash-font">{item.name}</h4>
                           <p className="sjfs-12">Padido {item.order_count}</p>
                         </div>
                       </div>

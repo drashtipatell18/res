@@ -962,6 +962,7 @@ const Tables = () => {
         handleShowEditFamDel();
         setShowDeleteConfirm(false);
         setItemToDelete(null);
+        setSelectedSectors([])
         if (response.data && response.data.notification) {
           //enqueueSnackbar (response.data.notification, { variant: 'success' });
         } else {

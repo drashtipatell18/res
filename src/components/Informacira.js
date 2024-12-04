@@ -358,7 +358,7 @@ const Informacira = () => {
           }
         }
       );
-      const filteredOrders = response.data.filter(order => order.box_id == bId);
+      const filteredOrders = response.data.filter(order => order.box_id == bId).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
       console.log(filteredOrders);
 
       setAllOrder(filteredOrders);
@@ -418,14 +418,11 @@ const Informacira = () => {
         }
       );
       console.log(response.data);
-
-      setData(
-        response.data.map((box) => ({
+      const data = response.data.map((box) => ({
           ...box,
           createdAt: new Date(box.created_at).toLocaleString() // Assuming the API returns a 'created_at' field
-        }))
-        // .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      );
+        })).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      setData(data)
       // setNotificationMessage(response.data.notification || response.data.alert);
       // //enqueueSnackbar (response.data.notification, { variant: 'success' });
       // // playNotificationSound();;

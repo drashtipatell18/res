@@ -436,6 +436,7 @@ const Counter_finalP = () => {
   // ==== Get BOX Data =====
 
   const [boxId, setBoxId] = useState('')
+  const [selectedBoxId] = useState(sessionStorage.getItem('boxId'));
 
   const fetchBoxData = async () => {
     try {
@@ -573,7 +574,7 @@ const Counter_finalP = () => {
         reason: "",
         person: "",
         tip: tipAmount,
-        box_id: boxId?.id != 'undefined' ? boxId?.id : '',
+        box_id: boxId ? boxId?.id : selectedBoxId,
         transaction_code: true,
       }
     };
@@ -647,6 +648,7 @@ const Counter_finalP = () => {
                 // }, 2000);
               })
               .catch((error) => {
+                alert(error?.response?.data?.message || error.message);
                 console.error(error);
                 setIsProcessing(false);
                 // setError('Hubo un error al intentar realizar el retorno');
@@ -665,16 +667,17 @@ const Counter_finalP = () => {
 
         } catch (error) {
           console.log(error, "payment Not Done");
-
+          alert(error?.response?.data?.message || error.message);
         }
         // handlePrint();
       }
     } catch (error) {
       console.error("Error creating order : ", error);
-
-      //enqueueSnackbar (error?.response?.data?.message, { variant: 'error' })
       setIsProcessing(false);
       setIsSubmitted(false);
+      alert(error?.response?.data?.message || error.message);
+      //enqueueSnackbar (error?.response?.data?.message, { variant: 'error' })
+      
     }
 
   };

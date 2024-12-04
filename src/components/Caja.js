@@ -104,6 +104,8 @@ const Caja = () => {
         }
     }, [apiUrl, token, role]);
 
+
+
     // Fetch all boxes
     const fetchAllBox = async () => {
         try {
@@ -231,6 +233,30 @@ const Caja = () => {
     const getLastBoxRecord = (boxId) => {
         const matchingBoxes = dataBox.filter(box => box.box_id === boxId);
         return matchingBoxes[matchingBoxes.length - 1]; // Get the last item
+    };
+
+    const [selectedBoxId, setSelectedBoxId] = useState(null);
+
+    useEffect(() => {
+        if (data.length > 0) {
+            // Find the first open box
+            const openBox = data.find(box => {
+                const lastBoxRecord = getLastBoxRecord(box.id);
+                return lastBoxRecord && lastBoxRecord.close_amount === null;
+            });
+            
+            // If there's an open box, select it
+            if (openBox) {
+                setSelectedBoxId(openBox.id);
+                sessionStorage.setItem('boxId', openBox.id);
+            }
+        }
+    }, [data]);
+
+    const handleBoxSelection = (boxId) => {
+         setSelectedBoxId(boxId);
+        sessionStorage.setItem('boxId', boxId);
+        console.log("Selected Box ID", boxId);
     };
 
     return (
@@ -386,7 +412,23 @@ const Caja = () => {
                                                         </button>
                                                         <p className="mb-2 pt-2 j-caja-text-1">Cajero : {getUserName(order.user_id)}</p>
                                                         <p className="mb-2 pt-2 j-caja-text-1">Monto de apertura</p>
-                                                        <input type="text" value={lastBoxRecord ? `$ ${Number(lastBoxRecord.open_amount).toFixed(0)}` : 'N/A'} className="sjdark_gary j-caja-input j-caja-input-text-5" readOnly />
+                                                        <div className="d-flex">
+                                                            <input 
+                                                                type="text" 
+                                                                value={lastBoxRecord ? `$ ${Number(lastBoxRecord.open_amount).toFixed(0)}` : 'N/A'} 
+                                                                className="sjdark_gary j-caja-input j-caja-input-text-5" 
+                                                                readOnly 
+                                                            />
+                                                            {role === 'admin' && (
+                                                                <button 
+                                                                    onClick={() => handleBoxSelection(order.id)}
+                                                                    className={`sj_lightsky j-caja-text-3 w-50 ms-2 ${selectedBoxId === order.id ? 'sj_lightsky' : 'j-bgcolor-caja'}`}
+                                                                    disabled={!isClosed}
+                                                                >
+                                                                {selectedBoxId === order.id ? 'Seleccionado' : 'Seleccionar'}
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                         <Link to={`/caja/informacira?${data[index].id}`}>
                                                             <button className="sjdarksky mt-2 j-caja-button j-caja-text-1">Ver detalles</button>
                                                         </Link>

@@ -392,7 +392,7 @@ const DeliveryPago = () => {
   // ==== Get BOX Data =====
 
   const [boxId, setBoxId] = useState('')
-
+  const [selectedBoxId] = useState(sessionStorage.getItem('boxId'));
   const fetchBoxData = async () => {
     try {
       const response = await axios.get(`${apiUrl}/get-boxs`, {
@@ -505,7 +505,7 @@ const DeliveryPago = () => {
         admin_id: 154,
         transaction_code: 1,
         order_details: orderDetails,
-        box_id: boxId?.id != 'undefined' ? boxId?.id : '',
+        box_id: boxId ? boxId?.id : selectedBoxId,
         customer_name: payment.firstname || payment.business_name
       }
 
@@ -590,6 +590,7 @@ const DeliveryPago = () => {
                   }
                 })
               } catch (error) {
+                alert(error?.response?.data?.message || error.message);
                 console.log("Table Status not Upadte ," + error.message);
               }
             }
@@ -601,6 +602,7 @@ const DeliveryPago = () => {
           }
         } catch (error) {
           setIsProcessing(false)
+          alert(error?.response?.data?.message || error.message);
           console.log("Payment not done." + error.message);
         }
       } else {
@@ -609,6 +611,7 @@ const DeliveryPago = () => {
       }
     } catch (error) {
       setIsProcessing(false)
+      alert(error?.response?.data?.message || error.message);
       console.error("Error creating order : ", error);
     }
     setIsProcessing(false)
