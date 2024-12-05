@@ -507,7 +507,7 @@ const TablePago = () => {
   // ==== Get BOX Data =====
 
   const [boxId, setBoxId] = useState('')
-  const [selectedBoxId] = useState(sessionStorage.getItem('boxId'));
+  const [selectedBoxId] = useState(localStorage.getItem('boxId'));
 
   const fetchBoxData = async () => {
     try {
@@ -568,13 +568,21 @@ const TablePago = () => {
     // console.log(boxId?.id);
     // console.log(tableData[0].id);
 
+    const data = {
+      tip: tipAmount ? tipAmount : 0,
+      payment_type: selectedCheckboxes[0],
+      box_id: boxId ? boxId?.id : selectedBoxId,
+      transaction_code: true,customer_name:payment.firstname || payment.business_name || ""
+    }
+
+    if(!data?.box_id && role == "admin" ){
+      setIsProcessing(false)
+      alert("Por favor, seleccione un caja para el pedido.");
+      return;
+    }
+
     try {
-      const response = await axios.post(`${apiUrl}/order/orderUpdateItem/${tableData[0].id}`, {
-        tip: tipAmount ? tipAmount : 0,
-        payment_type: selectedCheckboxes[0],
-        box_id: boxId ? boxId?.id : selectedBoxId,
-        transaction_code: true,customer_name:payment.firstname || payment.business_name || ""
-      },
+      const response = await axios.post(`${apiUrl}/order/orderUpdateItem/${tableData[0].id}`, data ,
         {
           headers: {
             Authorization: `Bearer ${token}`

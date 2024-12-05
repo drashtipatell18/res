@@ -519,6 +519,8 @@ img{
 
 .j-order-img {
   margin: 10px 0;
+  height: 70px;
+  width: 70px;
 }
 
 .j-order-img img {

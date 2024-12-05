@@ -22,6 +22,7 @@ const DeliveryPago = () => {
   const API = process.env.REACT_APP_IMAGE_URL;
   const userId = localStorage.getItem("userId");
   const admin_id = localStorage.getItem("admin_id");
+  const [role] = useState(localStorage.getItem("role"));
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems")) || []
@@ -392,7 +393,7 @@ const DeliveryPago = () => {
   // ==== Get BOX Data =====
 
   const [boxId, setBoxId] = useState('')
-  const [selectedBoxId] = useState(sessionStorage.getItem('boxId'));
+  const [selectedBoxId] = useState(localStorage.getItem('boxId'));
   const fetchBoxData = async () => {
     try {
       const response = await axios.get(`${apiUrl}/get-boxs`, {
@@ -537,7 +538,7 @@ const DeliveryPago = () => {
           person: "",
           tip: tipAmount,
           transaction_code: 1,
-          box_id: boxId?.id != 'undefined' ? boxId?.id : '',
+          box_id: boxId ? boxId?.id : selectedBoxId,
         },
         admin_id: admin_id,
       };
@@ -554,8 +555,14 @@ const DeliveryPago = () => {
     // console.log(paymentData);
 
     setIsProcessing(true)
-
+   
     try {
+      if((!orderData?.order_master?.box_id && !orderData?.box_id) && role == "admin" ){
+        setIsProcessing(false)
+        alert("Por favor, seleccione un caja para el pedido.");
+        return;
+      }
+  
       // console.log(orderData);
 
       const response = await axios.post(`${apiUrl}${url}`, orderData, {
@@ -1271,10 +1278,10 @@ const DeliveryPago = () => {
                             ${(finalTotal + taxAmount + tipAmount).toFixed(2)}
                           </span>
                         </div>
-                        <div className="btn w-100 j-btn-primary text-white">
+                        <div className="btn w-100 j-btn-primary text-white" onClick={handleSubmit}>
                           <div
                             className="text-white text-decoration-none btn-primary m-articles-text-2"
-                            onClick={handleSubmit}
+                            
                           >
                             Cobrar
                           </div>

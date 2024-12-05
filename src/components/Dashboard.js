@@ -2024,7 +2024,13 @@ const Dashboard = () => {
                       <div className="d-flex align-items-center">
                         <div className="j-order-no" style={{ width: "30px" }}>#{index + 1}</div>
                         <div className="j-order-img">
-                          <img src={`${API}/images/${item.image}`} alt={item.name} style={{ borderRadius: "8px" }} />
+                          {item.image ? (
+                            <img src={`${API}/images/${item.image}`} alt={item.name} style={{ borderRadius: "8px" }} />
+                          ) : ( 
+                            <div className="d-flex justify-content-center align-items-center rounded text-truncate overflow-hidden ps-2" style={{ borderRadius: "8px", width: "100%", height: "100%", backgroundColor: 'rgb(55 65 81 / 34%)', color: 'white', fontSize: "12px", fontWeight: "500", lineHeight: "21px", textJustify: "center", textAlign: "center" }}>
+                              <p className="mb-0 text-truncate w-100">{item.name}</p>
+                            </div>
+                          )}
                         </div>
                         <div className="j-order-data">
                           <h4 className="sjfs-16 ak-dash-font">{item.name}</h4>

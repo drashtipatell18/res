@@ -93,10 +93,6 @@ const Tables = () => {
     };
   }, [apiUrl, debouncedFetchData]);
 
-
-
-
-
   /* get sector */
 
   const getSector = async () => {
@@ -395,9 +391,7 @@ const Tables = () => {
 
     // Reset errors
     setCreateErrors({ name: "", noOfTables: "" });
-
     let hasErrors = false;
-
     if (!addsector.name.trim()) {
       setCreateErrors((prev) => ({
         ...prev,
@@ -1104,7 +1098,6 @@ const Tables = () => {
       forceTLS: false,
       disableStats: true,
       enabledTransports: ['ws', 'wss'], // Allow both unencrypted and encrypted WebSocket connections
-
     });
 
 

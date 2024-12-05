@@ -24,7 +24,7 @@ export default function SingleArticleProduct() {
   const apiUrl = process.env.REACT_APP_API_URL;
   const API = process.env.REACT_APP_IMAGE_URL;
   const [token] = useState(localStorage.getItem("token"));
-  const [role ]= useState(localStorage.getItem("role"));
+  const [role] = useState(localStorage.getItem("role"));
   const [admin_id] = useState(localStorage.getItem("admin_id"));
 
   const { id } = useParams();
@@ -54,7 +54,7 @@ export default function SingleArticleProduct() {
 
   const location = useLocation(); // Get the current location
   const previousPath = location.state?.from || "/articles"; // Default to /articles if no previous path
-console.log("previous Path: " , location);
+  console.log("previous Path: ", location);
 
 
   const handleClose = () => {
@@ -111,7 +111,7 @@ console.log("previous Path: " , location);
         }
       }
     },
-    [token, selectedDesdeMonth, selectedHastaMonth,role]
+    [token, selectedDesdeMonth, selectedHastaMonth, role]
   );
   useEffect(
     () => {
@@ -173,16 +173,16 @@ console.log("previous Path: " , location);
         productionData,
         userData
       ] = await Promise.all([
-        axios.get(`${apiUrl}/item/getSingle/${id}`,{
+        axios.get(`${apiUrl}/item/getSingle/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get(`${apiUrl}/family/getFamily`,{
+        axios.get(`${apiUrl}/family/getFamily`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get(`${apiUrl}/subfamily/getSubFamily`,{
+        axios.get(`${apiUrl}/subfamily/getSubFamily`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.post(`${apiUrl}/production-centers`,{admin_id:admin_id}, {
+        axios.post(`${apiUrl}/production-centers`, { admin_id: admin_id }, {
           headers: { Authorization: `Bearer ${token}` }
         }),
         axios.get(`${apiUrl}/get-users`, {
@@ -333,20 +333,20 @@ console.log("previous Path: " , location);
 
     const formData = new FormData();
     for (const key in formDetails) {
-      console.log("Key", key, key==="image");
+      console.log("Key", key, key === "image");
       if (key === "image") {
         if (formDetails[key] instanceof File) {
           formData.append("image", formDetails[key]);
           console.log("1");
-        }else if (!formDetails[key] && !formDetails.existingImage) {
+        } else if (!formDetails[key] && !formDetails.existingImage) {
           console.log("3");
           formData.append("image", ""); // Send empty string if image is deleted
         }
         // If existingImage is present and image is not changed, don't append anything
       } else if (key == "existingImage") {
         console.log("2");
-          formData.append("image", formDetails.existingImage ||"");
-      }else   {
+        formData.append("image", formDetails.existingImage || "");
+      } else {
         // formData.append(key, formDetails[key]);
         // Send null for empty description, otherwise send the value (or empty string if undefined)
         // formData.append(key, formDetails[key] === null ? null : formDetails[key] || "");
@@ -1055,7 +1055,7 @@ console.log("previous Path: " , location);
                             </div>
                             <div className="row">
                               <div className=" p-3 ">
-                                <h6>Product Images</h6>
+                                <h6>Imagen del producto</h6>
 
                                 {(formDetails.image ||
                                   formDetails.existingImage) && (
@@ -1087,22 +1087,57 @@ console.log("previous Path: " , location);
                                   )}
                                 {!formDetails.image &&
                                   !formDetails.existingImage && (
+                                    // <div
+                                    //   className="m_file-upload w-100"
+                                    //   onClick={handleDivClick}
+                                    // >
+                                    //   <input
+                                    //     type="file"
+                                    //     className="form-control m_input d-none"
+                                    //     accept="image/*"
+                                    //     name="image"
+                                    //     onChange={handelchangeImage}
+                                    //     ref={fileInputRef}
+                                    //   />
+                                    //   <p className="m_upload-text fw-light">
+                                    //     Click to upload image
+                                    //   </p>
+                                    // </div>
+
                                     <div
                                       className="m_file-upload w-100"
                                       onClick={handleDivClick}
                                     >
                                       <input
                                         type="file"
-                                        className="form-control m_input d-none"
-                                        accept="image/*"
-                                        name="image"
-                                        onChange={handelchangeImage}
                                         ref={fileInputRef}
+                                        onChange={handelchangeImage}
+                                        style={{ display: "none" }}
+                                        accept=".svg,.png,.jpg,.jpeg,.gif"
                                       />
-                                      <p className="m_upload-text fw-light">
-                                        Click to upload image
-                                      </p>
+
+                                      <div className="text-center">
+                                        <p>
+                                          <img
+                                            src={require("../Image/v111.png")}
+                                            alt=""
+                                          />
+                                        </p>
+                                        <p className="m_upload-text">
+                                          Haga clic para cargar o arrastre y suelte
+                                        </p>
+                                        <p className="m_supported-types">
+                                          SVG, PNG, JPG or GIF (MAX. 800x400px)
+                                        </p>
+                                      </div>
+
+                                      {errorMessages.image && (
+                                        <p className="text-danger errormessage">
+                                          {errorMessages.image}
+                                        </p>
+                                      )}
                                     </div>
+
                                   )}
                                 {errorMessages.image && (
                                   <p className="text-danger errormessage">
@@ -1184,7 +1219,7 @@ console.log("previous Path: " , location);
                       >
                         <Modal.Header closeButton className="border-0" />
                         <Modal.Body>
-                          <div className="text-center">
+                          <div className="text-center mb-5">
                             <img
                               src={require("../Image/check-circle.png")}
                               alt=""
@@ -1203,7 +1238,7 @@ console.log("previous Path: " , location);
                       >
                         <Modal.Header closeButton className="border-0" />
                         <Modal.Body>
-                          <div className="text-center">
+                          <div className="text-center mb-5">
                             <img
                               src={require("../Image/trash-check 1.png")}
                               alt=""
@@ -1552,7 +1587,7 @@ console.log("previous Path: " , location);
                     </div>
                   </Tab>
                   <Tab eventKey="profile" title="Historial" >
-                    
+
 
                     <div className="m-3 text-white m_bgblack p-4 rounded ">
                       <div className="d-flex  justify-content-between row">
@@ -1708,12 +1743,12 @@ console.log("previous Path: " , location);
                                       : "No pagado";
 
                                   return (
-                                    <tr key={order.id} className="m_borbot p-3"> 
-                                     
+                                    <tr key={order.id} className="m_borbot p-3">
+
                                       <td >
-                                      <Link to={`/home_Pedidos/paymet/${order.id}`}>
-                                        <div className="m_idbtn m12">{order.id}</div>
-                                      </Link>
+                                        <Link to={`/home_Pedidos/paymet/${order.id}`}>
+                                          <div className="m_idbtn m12">{order.id}</div>
+                                        </Link>
                                       </td>
                                       <td>{formatDate(order.created_at)}</td>
                                       <td>{formatTime(order.created_at)}</td>
@@ -1745,7 +1780,7 @@ console.log("previous Path: " , location);
                         </div>
                       </div>
                     </div>
-                    
+
                   </Tab>
                   <Tab eventKey="longer-tab" title="Estadísticas">
                     <div className="m-3 text-white m_bgblack p-4 rounded m14">

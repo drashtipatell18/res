@@ -138,6 +138,8 @@ const Caja = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
+            console.log(response);
+            
             setDataBox(response.data);
         } catch (error) {
             console.error('Error fetching boxes:', error);
@@ -232,6 +234,8 @@ const Caja = () => {
 
     const getLastBoxRecord = (boxId) => {
         const matchingBoxes = dataBox.filter(box => box.box_id === boxId);
+        console.log(matchingBoxes);
+        
         return matchingBoxes[matchingBoxes.length - 1]; // Get the last item
     };
 
@@ -248,14 +252,14 @@ const Caja = () => {
             // If there's an open box, select it
             if (openBox) {
                 setSelectedBoxId(openBox.id);
-                sessionStorage.setItem('boxId', openBox.id);
+                localStorage.setItem('boxId', openBox.id);
             }
         }
     }, [data]);
 
     const handleBoxSelection = (boxId) => {
          setSelectedBoxId(boxId);
-        sessionStorage.setItem('boxId', boxId);
+        localStorage.setItem('boxId', boxId);
         console.log("Selected Box ID", boxId);
     };
 

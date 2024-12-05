@@ -436,7 +436,7 @@ const Counter_finalP = () => {
   // ==== Get BOX Data =====
 
   const [boxId, setBoxId] = useState('')
-  const [selectedBoxId] = useState(sessionStorage.getItem('boxId'));
+  const [selectedBoxId] = useState(localStorage.getItem('boxId'));
 
   const fetchBoxData = async () => {
     try {
@@ -447,6 +447,7 @@ const Counter_finalP = () => {
       });
 
       const data = response.data;
+      console.log(data);
       setBoxId(data.find((v) => v.user_id == userId));
     } catch (error) {
       console.error(
@@ -582,6 +583,11 @@ const Counter_finalP = () => {
 
     setIsProcessing(true);
     try {
+      if(!orderData?.order_master?.box_id && role == "admin" ){
+        setIsProcessing(false)
+        alert("Por favor, seleccione un caja para el pedido.");
+        return;
+      }
       if (!orderId) {
 
         const response = await axios.post(`${apiUrl}/order/place_new`, orderData, {
