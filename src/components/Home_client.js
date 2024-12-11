@@ -171,9 +171,10 @@ function Home_client() {
       });
 
       // console.log(response.data.result);
+      const data = response.data.result.reverse()
 
       // Group users and collect their order_master_ids
-      const groupedUsers = groupUsersByDetails(response.data.result);
+      const groupedUsers = groupUsersByDetails(data);
 
       setOrderUser(groupedUsers);
     } catch (error) {

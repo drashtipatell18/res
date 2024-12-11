@@ -316,7 +316,8 @@ const Informacira = () => {
     // filteredOrders.filter()
 
  
-    const opentime = data[data.length - 1]?.open_time
+    // const opentime = data[data.length - 1]?.open_time
+    const opentime = data[0]?.open_time
     // const a = new Date(allpayments?.[0]?.created_at).toISOString().split('T')[0] + ' ' + new Date(allpayments?.[0]?.created_at).toISOString().split('T')[1].split('.')[0]
     // console.log("sahsds", a)
 
@@ -549,7 +550,8 @@ const Informacira = () => {
 
 
     if (data.length > 0) {
-      const check = data[data.length - 1].close_amount
+      const check = data[0].close_amount
+      // const check = data[data.length - 1].close_amount
       if (!check) {
         setErrorOpenPrice("La caja ya está abierta."); // Set error message
         return; // Exit the function
@@ -1069,7 +1071,8 @@ const Informacira = () => {
                   <div className="col-12 col-md-9">
                     <div className="d-flex flex-wrap justify-content-md-end gap-2 sjd-flex row-gap-2">
 
-                      {(data.length === 0 || data[data.length - 1]?.close_amount != null) && (
+                      {/* {(data.length === 0 || data[data.length - 1]?.close_amount != null) && ( */}
+                      {(data.length === 0 || data[0]?.close_amount != null) && (
                         <button
                           type="button"
                           onClick={handleShow16}
@@ -1543,7 +1546,8 @@ const Informacira = () => {
                         </Modal.Body>
                       </Modal>
 
-                      {data.length > 0 && data[data.length - 1]?.close_amount == null && (
+                      {/* {data.length > 0 && data[data.length - 1]?.close_amount == null && ( */}
+                      {data.length > 0 && data[0]?.close_amount == null && (
                         <button
                           className="sjredbtn px-2 j-tbl-font-3"
                           onClick={handleShow11}
