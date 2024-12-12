@@ -62,7 +62,7 @@ export default function Home_Pedidos_paymet() {
           },
         }
       );
-      console.log("Note added successfully:", response.data);
+      // console.log("Note added successfully:", response.data);
 
     } catch (error) {
       console.error(
@@ -86,7 +86,7 @@ export default function Home_Pedidos_paymet() {
       );
       getOrderStatus();
       // getOrder();
-      console.log("Order Cancle successfully:", response.data);
+      // console.log("Order Cancle successfully:", response.data);
 
     } catch (error) {
       console.error(
@@ -197,7 +197,7 @@ export default function Home_Pedidos_paymet() {
         },
       });
 
-      console.log(response.data.data);
+      // console.log(response.data.data);
 
 
       const credit = response.data.data?.some((v) => v.order_id == id);
@@ -218,7 +218,7 @@ export default function Home_Pedidos_paymet() {
   const [pamentDone, setPaymentDone] = useState(false)
 
   const getPaymentsData = async () => {
-    console.log(admin_id, admin_id);
+    // console.log(admin_id, admin_id);
 
     try {
       const response = await axios.get(`${apiUrl}/getsinglepayments/${id}`, {
@@ -226,7 +226,7 @@ export default function Home_Pedidos_paymet() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Payments Data:", response);
+      // console.log("Payments Data:", response);
       if (response.data.success) {
         // console.log("true");
         setPaymentDone(true);
@@ -328,7 +328,7 @@ export default function Home_Pedidos_paymet() {
   const getUser = async () => {
     setIsProcessing(true);
     try {
-      console.log(orderData.user_id);
+      // console.log(orderData.user_id);
 
       const response = await axios.get(`${apiUrl}/get-user/${orderData.user_id}`, {
         headers: {
@@ -509,7 +509,7 @@ export default function Home_Pedidos_paymet() {
         const newArray = [...prevArray];
         newArray.splice(itemIndex, 1);
         setSelectedItemsCount(prevCount => prevCount - 1);
-        console.log(`Removed item ${item.id}`);
+        // console.log(`Removed item ${item.id}`);
         return newArray;
       } else {
         // Item doesn't exist, so add it
@@ -518,7 +518,7 @@ export default function Home_Pedidos_paymet() {
           quantity: 1,
         };
         setSelectedItemsCount(prevCount => prevCount + 1);
-        console.log(`Added item ${item.id}`);
+        // console.log(`Added item ${item.id}`);
         return [...prevArray, newItem];
       }
     });
@@ -611,7 +611,7 @@ export default function Home_Pedidos_paymet() {
     getOrder();
     handleOrderDetails();
     // Here you can handle saving the note to your state or backend
-    console.log("Final Note:", finalNote);
+    // console.log("Final Note:", finalNote);
     // Optionally reset the input visibility
     setVisibleInputId(null);
   };
@@ -675,7 +675,7 @@ export default function Home_Pedidos_paymet() {
       return
     }
 
-    console.log(orderDetails, orderData);
+    // console.log(orderDetails, orderData);
 
     const currentOrder = {
       orderType: orderData?.order_type,

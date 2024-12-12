@@ -138,7 +138,7 @@ const Caja = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-            console.log(response);
+            // console.log(response);
             
             setDataBox(response.data);
         } catch (error) {
@@ -160,7 +160,7 @@ const Caja = () => {
             return;
         }
 
-        console.log(boxNameValue,cashierAssignedValue);
+        // console.log(boxNameValue,cashierAssignedValue);
         
 
         handleClose();
@@ -176,7 +176,7 @@ const Caja = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-            console.log(response.data.success);
+            // console.log(response.data.success);
             setIsProcessing(false);
             if(response.data.success){
                 setIsProcessing(false);
@@ -202,7 +202,7 @@ const Caja = () => {
             const response = await axios.get(`${apiUrl}/get-users`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            console.log(response.data)
+            // console.log(response.data)
             setUsers(response.data);
             const cashiers = response.data.filter(user => user.role_id === 2 && user.admin_id == userId);
             setCashier(cashiers);
@@ -226,15 +226,15 @@ const Caja = () => {
     };
 
     const getUserName = (userId) => {
-        console.log(userId)
+        // console.log(userId)
         const user = users.find(user => user.id === userId);
-        console.log(users)
+        // console.log(users)
         return user ? user.name : 'Unknown User';
     };
 
     const getLastBoxRecord = (boxId) => {
         const matchingBoxes = dataBox.filter(box => box.box_id === boxId);
-        console.log(matchingBoxes);
+        // console.log(matchingBoxes);
         
         return matchingBoxes[matchingBoxes.length - 1]; // Get the last item
     };
@@ -260,7 +260,7 @@ const Caja = () => {
     const handleBoxSelection = (boxId) => {
          setSelectedBoxId(boxId);
         localStorage.setItem('boxId', boxId);
-        console.log("Selected Box ID", boxId);
+        // console.log("Selected Box ID", boxId);
     };
 
     return (
@@ -398,7 +398,6 @@ const Caja = () => {
                             </div>
                             <div className="ssssj-card-media">
                                 <div className="row">
-                                    {console.log("data",data)}
                                     {data.length > 0 ? (
                                         data.filter(order => order.admin_id == admin_id).map((order, index) => {
                                             const lastBoxRecord = getLastBoxRecord(order.id);

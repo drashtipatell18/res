@@ -17,8 +17,8 @@ const useSocket = () => {
             disableStats: false,
             wsPort: 6001, // Ensure this port is correct
             // wssPort: 6001, // Ensure this port is correct
-            // encrypted: false,
-            // enabledTransports: ['ws', 'wss'],
+            encrypted: true,
+            enabledTransports: ['ws', 'wss'],
             auth: {
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token')

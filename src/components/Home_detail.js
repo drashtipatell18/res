@@ -25,7 +25,7 @@ function Home_detail() {
     // console.log(id);
 
     const { state } = useLocation();
-    console.log(state);
+    // console.log(state);
     const navigate = useNavigate()
 
 
@@ -85,7 +85,7 @@ function Home_detail() {
     const [reasonError, setResonError] = useState(null);
     const [credits, setCredits] = useState('');
 
-    console.log(user);
+    // console.log(user);
 
 
 
@@ -117,7 +117,7 @@ function Home_detail() {
             );
 
             setOrderAlldata(filteredOrders);
-            console.log(filteredOrders);
+            // console.log(filteredOrders);
 
         } catch (error) {
             console.error(
@@ -137,7 +137,7 @@ function Home_detail() {
                 },
             });
 
-            console.log(response.data.data);
+            // console.log(response.data.data);
 
 
             const filterecredit = response.data.data.filter((v) =>
@@ -145,7 +145,7 @@ function Home_detail() {
             );
 
             setCredits(filterecredit);
-            console.log(filterecredit);
+            // console.log(filterecredit);
 
         } catch (error) {
             console.error(
@@ -191,7 +191,7 @@ function Home_detail() {
                     },
                 }
             );
-            console.log("Note added successfully:", response.data);
+            // console.log("Note added successfully:", response.data);
             setIsProcessing(false);
 
         } catch (error) {
@@ -215,7 +215,7 @@ function Home_detail() {
                 }
             );
             //   getOrderStatus();
-            console.log("Order Cancle successfully:", response.data);
+            // console.log("Order Cancle successfully:", response.data);
             setIsProcessing(false);
 
         } catch (error) {
@@ -242,7 +242,7 @@ function Home_detail() {
 
     const handleCredit = (id, status) => {
         if (status === "delivered") {
-           console.log("Navigating to credit creation page");
+        //    console.log("Navigating to credit creation page");
            navigate(`/home/client/crear/${id}`, { replace: true, state: { user } });
        } else {
            alert(`No se puede generar una nota de crédito si el pedido actual no ha sido entregado`)
@@ -438,18 +438,18 @@ function Home_detail() {
                 },
             });
 
-            console.log(response);
+            // console.log(response);
             if (!(response.success == "false")) {
                 setDeleteProductId(null);
                 setIsProcessing(false);
                 setShowDeleteConfirmation(false);
                 handleShowEditFamfinal();
             }
-            console.log("Credit deleted successfully:", response.data);
+            // console.log("Credit deleted successfully:", response.data);
 
         }
         catch (error) {
-            console.log("Credit not deleted:", error);
+            // console.log("Credit not deleted:", error);
         }
         setIsProcessing(false);
     }

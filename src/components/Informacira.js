@@ -19,7 +19,7 @@ const Informacira = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const [token] = useState(localStorage.getItem("token"));
   const [role] = useState(localStorage.getItem("role"));
-  console.log(role)
+  // console.log(role)
   const location = useLocation();
   const queryString = location.search;
   // Remove the leading "?" from the query string and get the value
@@ -158,7 +158,7 @@ const Informacira = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = (box) => {
-    console.log(box)
+    // console.log(box)
     if (box.close_amount === null) {
       setSelectedBox(box);
       setShow19(true);
@@ -294,7 +294,7 @@ const Informacira = () => {
           //enqueueSnackbar (response.data.notification, { variant: 'success' });
           // playNotificationSound();;
         }
-        console.log("Box deleted successfully");
+        // console.log("Box deleted successfully");
         // navigate('/caja');
       } else {
         console.error('Failed to delete box');
@@ -327,10 +327,10 @@ const Informacira = () => {
     // });
     const finalpaymment = allpayments?.filter((v) => {
       const createdAt = new Date(v.created_at);
-      console.log(createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0]>opentime && createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0],opentime)
+      // console.log(createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0]>opentime && createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0],opentime)
       return createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0] > opentime;
     });
-    console.log("finalpaymment",finalpaymment)
+    // console.log("finalpaymment",finalpaymment)
     // Calculate the sum of amount minus return
     const totalAmount = finalpaymment.reduce((sum, payment) => {
       const amount = parseFloat(payment.amount) || 0;
@@ -338,7 +338,7 @@ const Informacira = () => {
       return sum + (amount - returnAmount);
     }, 0);
     
-    console.log("Total Amount:", totalAmount.toFixed(2)); // Display with 2 decimal places
+    // console.log("Total Amount:", totalAmount.toFixed(2)); 
     const init = parseFloat(data[data.length-1]?.open_amount)
 
     setFinalAmount((totalAmount + init).toFixed(2));
@@ -360,7 +360,7 @@ const Informacira = () => {
         }
       );
       const filteredOrders = response.data.filter(order => order.box_id == bId).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      console.log(filteredOrders);
+      // console.log(filteredOrders);
 
       setAllOrder(filteredOrders);
       // setOrders(response.data);
@@ -418,7 +418,7 @@ const Informacira = () => {
           }
         }
       );
-      console.log(response.data);
+      // console.log(response.data);
       const data = response.data.map((box) => ({
           ...box,
           createdAt: new Date(box.created_at).toLocaleString() // Assuming the API returns a 'created_at' field
@@ -427,7 +427,7 @@ const Informacira = () => {
       // setNotificationMessage(response.data.notification || response.data.alert);
       // //enqueueSnackbar (response.data.notification, { variant: 'success' });
       // // playNotificationSound();;
-      console.log("sdjjisdbdb", response.data)
+      // console.log("sdjjisdbdb", response.data)
 
     } catch (error) {
       console.error("Error fetching boxes:", error);
@@ -436,7 +436,7 @@ const Informacira = () => {
     setIsProcessing(false);
   };
 
-  console.log(data);
+  // console.log(data);
 
   const fetchAllBoxReport = async () => {
     setIsProcessing(true);
@@ -574,13 +574,13 @@ const Informacira = () => {
         }
       );
 
-      console.log(response);
+      // console.log(response);
 
 
       if (response.status === 200) {
         handleShow18(); // Show success modal
         fetchAllBox(); // Refresh box data
-        console.log("open box successfully")
+        // console.log("open box successfully")
         handleClose16();
         if (response.data && response.data.notification) {
           //enqueueSnackbar (response.data.notification, { variant: 'success' });
@@ -603,8 +603,8 @@ const Informacira = () => {
 
   const handleCloseBox = async () => {
     if (!bId) return; // Ensure a box is selected
-    console.log("close Price", closePrice)
-    console.log("cashier Price", pricesecond)
+    // console.log("close Price", closePrice)
+    // console.log("cashier Price", pricesecond)
     handleClose11();
     setIsProcessing(true);
     try {
@@ -622,12 +622,12 @@ const Informacira = () => {
           },
         }
       );
-      console.log(response);
+      // console.log(response);   
       if (response.status === 200) {
         handleShow12(); // Show success modal
         handleClose11();
         fetchAllBox(); // Refresh box data
-        console.log("Box closed successfully");
+        // console.log("Box closed successfully");
         if (response.data && response.data.notification) {
           //enqueueSnackbar (response.data.notification, { variant: 'success' });
           // playNotificationSound();;
@@ -695,7 +695,7 @@ const Informacira = () => {
         }
       );
 
-      console.log(responseB.data);
+      // console.log(responseB.data);
 
       const boxData = responseB.data.map((box) => {
         return {
@@ -1038,7 +1038,7 @@ const Informacira = () => {
   const handleorderRecipt = (data) =>{
 
     const payament = allpayments.some((v) => v.order_master_id == data.id)
-    console.log(payament);
+    // console.log(payament);
     if(payament){
       setShowModalOrder(true)
     }else{

@@ -85,7 +85,7 @@ const Home_Pedidos = () => {
                     },
                 }
             );
-            console.log(response.data);
+            // console.log(response.data);
             setUsers(response.data);
         } catch (error) {
             console.error(
@@ -166,7 +166,7 @@ const Home_Pedidos = () => {
                 let flages = 0;
                 let flageb = 0;
                 sectordata.map(s => s.tables.map((a) => {
-                    console.log("order", s);
+                    // console.log("order", s);
 
                     if (a.id === v.table_id) { // Changed '==' to '===' for strict equality
                         obj.sector = s.name;
@@ -311,7 +311,7 @@ const Home_Pedidos = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response);
+            // console.log(response);
             setIsProcessing(false);
             if (response.data.success) {
                 setPaymentData(response.data.data);
@@ -551,7 +551,7 @@ const Home_Pedidos = () => {
                                 </thead>
                                 <tbody className='text-white b_btnn '>
                                     {/* new========== */}
-                                    {console.log(currentItems)}
+                                    {/* {console.log(currentItems)} */}
                                     {currentItems.length > 0 ?
                                          currentItems.map((order) => (
                                              <tr key={order.id} className='b_row'>
@@ -560,7 +560,7 @@ const Home_Pedidos = () => {
                                                     <td className='b_idbtn bj-delivery-text-2 ms-3' style={{ borderRadius: "10px" }}>{order.id}</td>
                                                 </Link>
                                                 <td>{order.sector}</td>
-                                                {console.log(order.sector)}
+                                                {/* {console.log(order.sector)} */}
                                              
                                                 <td className='b_text_w  bj-delivery-text-2'>{order.table}</td>
                                                 <td className='b_text_w  bj-delivery-text-2'>{order.box}</td>

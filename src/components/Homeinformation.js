@@ -187,14 +187,14 @@ export default function Homeinformation() {
       getSector();
     }
     if (orderData?.[0]?.user_id) {
-      console.log(orderData?.user_id);
+      // console.log(orderData?.user_id);
       getUser();
     }
   }, [orderData, items, show1Prod]);
 
   useEffect(() => {
     if (user) {
-      console.log(user);
+      // console.log(user);
 
       setUserRole(user.name);
     }
@@ -214,7 +214,7 @@ export default function Homeinformation() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Payments Data:", response);
+      // console.log("Payments Data:", response);
       if (response.data.success) {
         // console.log("true");
         setPaymentDone(true);
@@ -317,7 +317,7 @@ export default function Homeinformation() {
     setIsProcessing(true);
 
     try {
-      console.log(orderData);
+      // console.log(orderData);
 
       const response = await axios.get(`${API_URL}/get-user/${orderData?.[0].user_id}`, {
         headers: {
@@ -346,7 +346,7 @@ export default function Homeinformation() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data);
+      // console.log(response.data);
       setRoles(response.data);
     } catch (error) {
       console.error(
@@ -500,7 +500,7 @@ export default function Homeinformation() {
         const newArray = [...prevArray];
         newArray.splice(itemIndex, 1);
         setSelectedItemsCount(prevCount => prevCount - 1);
-        console.log(`Removed item ${item.id}`);
+        // console.log(`Removed item ${item.id}`);
         return newArray;
       } else {
         // Item doesn't exist, so add it
@@ -509,7 +509,7 @@ export default function Homeinformation() {
           quantity: 1,
         };
         setSelectedItemsCount(prevCount => prevCount + 1);
-        console.log(`Added item ${item.id}`);
+        // console.log(`Added item ${item.id}`);
         return [...prevArray, newItem];
       }
     });
@@ -584,7 +584,7 @@ export default function Homeinformation() {
   }, [noteValues]);
 
   const handleNoteKeyDown = async (id) => {
-    console.log(id)
+    // console.log(id)
     const noteValues = noteInputRef.current ? noteInputRef.current.value : '';
     try {
       const response = await axios.post(
@@ -614,7 +614,7 @@ export default function Homeinformation() {
 
 
   const handleCredit = () => {
-    { console.log(orderData) }
+    // { console.log(orderData) }
     if (orderData?.[0].status == 'delivered' || orderData?.[0].status == 'cancelled') {
       navigate(`/home/client/crear/${id}`, { replace: true })
     } else {
@@ -656,7 +656,7 @@ export default function Homeinformation() {
       setShowCancelOrderButton(false);
     }
   };
-  console.log(orderData);
+  // console.log(orderData);
 
   const translateOrderType = (orderType) => {
     const translations = {
@@ -672,7 +672,7 @@ export default function Homeinformation() {
 
   const handlePayment = () => {
 
-    console.log(orderDetails, orderData[0]);
+    // console.log(orderDetails, orderData[0]);
 
     const currentOrder = {
       orderType: orderData[0]?.order_type,
@@ -718,7 +718,7 @@ export default function Homeinformation() {
         },
       });
 
-      console.log(response.data.data);
+      // console.log(response.data.data);
 
 
       const credit = response.data.data?.some((v) => v.order_id == id);
@@ -896,7 +896,7 @@ export default function Homeinformation() {
                     <div className='p-4 m_bgblack text-white mb-3'>
                       <p className='bj-delivery-text-65' style={{ marginBottom: "36px" }}>Listado</p>
                       <div className='a_deli_infolist p-4'>
-                        {console.log(orderDetails)}
+                        {/* {console.log(orderDetails)} */}
                         {
                           // product.map((item) => {
                           // console.log(item)
@@ -1018,7 +1018,7 @@ export default function Homeinformation() {
                           <div className=' a_mar_summary bj-delivery-text-650'>Costo total</div>
                           <div className='d-flex justify-content-between align-items-center my-1 mb-2'>
                             <div className='bj-delivery-text-150'>Productos</div>
-                            {console.log("orderDetails", orderDetails)}
+                            {/* {console.log("orderDetails", orderDetails)} */}
                             <div className='bj-delivery-text-151'>${orderDetails?.reduce((acc, v) => v.amount * v.quantity + acc, 0)}</div>
                           </div>
                           <div className='d-flex justify-content-between align-items-center my-1'>
@@ -1036,7 +1036,7 @@ export default function Homeinformation() {
                         <div className='mx-auto text-center mt-3'>
                           {!(orderData?.[0].status == "cancelled") &&
                             < div className='d-flex text-decoration-none'>
-                              {console.log("payment", pamentDone)}
+                              {/* {console.log("payment", pamentDone)} */}
                               {!pamentDone || (orderData?.[0].status.toLowerCase() !== 'finalized' && orderData?.[0].status.toLowerCase() !== 'delivered') ?
                                 <button className='btn btn-primary w-100 my-4 bj-delivery-text-3' style={{ backgroundColor: "#147BDE", borderRadius: "8px", padding: "10px 20px" }} onClick={handlePayment} disabled={pamentDone}>{pamentDone ? 'Pagado' : 'Cobrar ahora'}</button> :
                                 ""

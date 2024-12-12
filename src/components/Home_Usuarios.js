@@ -191,7 +191,7 @@ function Home_Usuarios() {
             });
             setFilterData(response.data);
             setOrderAlldata(response.data);
-            console.log(response.data);
+            // console.log(response.data);
 
         } catch (error) {
             console.error(
@@ -203,7 +203,7 @@ function Home_Usuarios() {
     }
 
     const handleType = (type) => {
-        console.log(type);
+        // console.log(type);
         if (type.toLowerCase() === "todo") {
             setFilterData(orderAlldata);
         } else {
@@ -214,13 +214,13 @@ function Home_Usuarios() {
     };
 
     const handleNextPage = () => {
-        console.log("asfas");
+        // console.log("asfas");
 
         setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(filterData.length / itemsPerPage)));
     };
 
     const handlePrevPage = () => {
-        console.log("qewq");
+        // console.log("qewq");
         setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
     };
 

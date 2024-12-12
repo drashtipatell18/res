@@ -1045,7 +1045,7 @@ const Tables = () => {
 
   useEffect(() => {
     const postCardClick = async (selectedTable) => {
-      console.log(selectedCards);
+      // console.log(selectedCards);
       try {
         const response = await axios.post(`${sUrl}/brodcastCardClicked`, {
           card_id: selectedTable,
@@ -1056,13 +1056,13 @@ const Tables = () => {
             'X-CSRF-TOKEN': csrfToken,
           }
         });
-        console.log(response);
+        // console.log(response);
         setCardSelect(response.data);
-        // Check if the card_id matches and set the table color
+      
         if (response.data.card_id === selectedCards) {
-          setTableColor("blue"); // Replace "desiredColor" with your color
+          setTableColor("blue"); 
         } else {
-          setTableColor(""); // Reset color if it doesn't match
+          setTableColor(""); 
         }
       } catch (error) {
         console.error("Error posting card click", error);
@@ -1097,7 +1097,7 @@ const Tables = () => {
       wsPort: 6001,
       forceTLS: false,
       disableStats: true,
-      enabledTransports: ['ws', 'wss'], // Allow both unencrypted and encrypted WebSocket connections
+      enabledTransports: ['ws', 'wss'], 
     });
 
 
