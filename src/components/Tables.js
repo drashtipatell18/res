@@ -1043,6 +1043,9 @@ const Tables = () => {
   const [cardSelect, setCardSelect] = useState([]);
   const [selectedCards, setSelectedCards] = useState('');
 
+
+  // console.log(selectedCards);
+
   useEffect(() => {
     const postCardClick = async (selectedTable) => {
       // console.log(selectedCards);
@@ -1059,11 +1062,11 @@ const Tables = () => {
         // console.log(response);
         setCardSelect(response.data);
       
-        if (response.data.card_id === selectedCards) {
-          setTableColor("blue"); 
-        } else {
-          setTableColor(""); 
-        }
+        // if (response.data.card_id === selectedCards) {
+        //   setTableColor("blue"); 
+        // } else {
+        //   setTableColor(""); 
+        // }
       } catch (error) {
         console.error("Error posting card click", error);
       }
@@ -1118,11 +1121,13 @@ const Tables = () => {
     //   }
     // });
     echo.channel('box-channel').listen('.CardClick', (event) => {
-      // console.log(event);
       if (event.selected) {
-        setSelectedCards(prev => [...prev ? prev : [], event.card_id]);
-
+        setSelectedCards(prev => {
+          const prevArray = prev || [];
+          return prevArray.includes(event.card_id) ? prevArray : [...prevArray, event.card_id];
+        });
       } else {
+        // Remove the card_id
         setSelectedCards(prev => prev?.filter(id => id !== event.card_id));
       }
     });

@@ -46,7 +46,6 @@ const Home_Pedidos = () => {
         getSector();
         getUser();
         fetchAllpayment();
-
     }, [])
 
     useEffect(() => {

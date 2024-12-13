@@ -162,7 +162,6 @@ const Caja = () => {
 
         // console.log(boxNameValue,cashierAssignedValue);
         
-
         handleClose();
         setIsProcessing(true);
 
@@ -239,10 +238,20 @@ const Caja = () => {
         return matchingBoxes[matchingBoxes.length - 1]; // Get the last item
     };
 
-    const [selectedBoxId, setSelectedBoxId] = useState(null);
+    const [selectedBoxId, setSelectedBoxId] = useState(parseInt(localStorage.getItem("boxId")) || 0);
+
+    // useEffect(()=>{
+    //     const boxid = localStorage.getItem("boxId");
+    //     console.log(boxid);
+    //     if(!selectedBoxId){
+    //         console.log("xbzdvbzdvb");
+    //         console.log(boxid);
+    //         handleBoxSelection(boxid);
+    //     }
+    // },[data])
 
     useEffect(() => {
-        if (data.length > 0) {
+        if (data.length > 0 && !selectedBoxId) {
             // Find the first open box
             const openBox = data.find(box => {
                 const lastBoxRecord = getLastBoxRecord(box.id);

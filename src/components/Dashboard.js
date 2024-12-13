@@ -824,6 +824,8 @@ const Dashboard = () => {
 
   // Use the transformed data in the chart
   const chartData = transformOrderDetails(totalRevenue?.order_details);
+  const chartDataWithDummy = chartData.length === 1 ? [...chartData, { ...chartData[0], date: new Date().toLocaleDateString('en-US') }] : chartData;
+
 
   // console.log(chartData);
 
@@ -1705,7 +1707,6 @@ const Dashboard = () => {
 
                       <p style={{ fontSize: "16px", fontWeight: "400", lineHeight: "24px", textAlign: "left" }}>Ingresos totales</p>
                     </div>
-
                     <div className="s_dashboard-right-head">
                       <div className="mb-2">
                         <select
@@ -1796,58 +1797,53 @@ const Dashboard = () => {
                 </div>
                 <div className="j-payment-body">
 
-                  <ResponsiveContainer width="100%" height={450}>
-                    <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="colorOrder" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="10%" stopColor="#1c64f2" stopOpacity={0.5} />
-                          <stop offset="90%" stopColor="#395692" stopOpacity={0.0} />
-                        </linearGradient>
-                        <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="10%" stopColor="#16bdca" stopOpacity={0.5} />
-                          <stop offset="90%" stopColor="#1c506a" stopOpacity={0.0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgb(55, 65, 82)" horizontal={true} vertical={false} />
-                      {/* {chartData[0]!=undefined && ( */}
+                
 
-                      <XAxis
-                        dataKey="date"
-                        axisLine={false}
-                        tickFormatter={(date) => {
-                          const d = new Date(date);
-                          // Check if revData is 'day' and return today's date
-                          return revData === 'day' ? `${String(new Date().getDate()).padStart(2, '0')}` : `${String(d.getDate()).padStart(2, '0')}`;
-                        }}
-                        // tick={{ fill: 'white' }}
-                        interval={0}
-                        padding={{ left: 25, right: 10 }}
-                        domain={['dataMin', 'dataMax']}
-                      />
-                      {/* )} */}
-                      <YAxis yAxisId="left" orientation="left" stroke="#1c64f2" hide />
-                      <YAxis yAxisId="right" orientation="right" stroke="#16bdca" hide />
-                      <Tooltip cursor={false} formatter={(value, name) => [value, name === 'total' ? 'Total' : 'Quantity']} />
-                      <Area
-                        // type="monotone"
-                        dataKey="total"
-                        stroke="#1c64f2"
-                        strokeWidth={3}
-                        fill="url(#colorOrder)"
-                        dot={false}
-                        yAxisId="left"
-                      />
-                      <Area
-                        // type="monotone"
-                        dataKey="quantity"
-                        stroke="#16bdca"
-                        strokeWidth={3}
-                        fill="url(#colorTotal)"
-                        dot={false}
-                        yAxisId="right"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
+<ResponsiveContainer width="100%" height={450}>
+  <AreaChart data={chartDataWithDummy} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+    <defs>
+      <linearGradient id="colorOrder" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="10%" stopColor="#1c64f2" stopOpacity={0.5} />
+        <stop offset="90%" stopColor="#395692" stopOpacity={0.0} />
+      </linearGradient>
+      <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="10%" stopColor="#16bdca" stopOpacity={0.5} />
+        <stop offset="90%" stopColor="#1c506a" stopOpacity={0.0} />
+      </linearGradient>
+    </defs>
+    <CartesianGrid strokeDasharray="3 3" stroke="rgb(55, 65, 82)" horizontal={true} vertical={false} />
+    <XAxis
+      dataKey="date"
+      axisLine={false}
+      tickFormatter={(date) => {
+        const d = new Date(date);
+        return revData === 'day' ? `${String(new Date().getDate()).padStart(2, '0')}` : `${String(d.getDate()).padStart(2, '0')}`;
+      }}
+      interval={0}
+      padding={{ left: 25, right: 10 }}
+      domain={['dataMin', 'dataMax']}
+    />
+    <YAxis yAxisId="left" orientation="left" stroke="#1c64f2" hide />
+    <YAxis yAxisId="right" orientation="right" stroke="#16bdca" hide />
+    <Tooltip cursor={false} formatter={(value, name) => [value, name === 'total' ? 'Total' : 'Quantity']} />
+    <Area
+      dataKey="total"
+      stroke="#1c64f2"
+      strokeWidth={3}
+      fill="url(#colorOrder)"
+      dot={false}
+      yAxisId="left"
+    />
+    <Area
+      dataKey="quantity"
+      stroke="#16bdca"
+      strokeWidth={3}
+      fill="url(#colorTotal)"
+      dot={false}
+      yAxisId="right"
+    />
+  </AreaChart>
+</ResponsiveContainer>
                 </div>
                 <div className="j-foot-text text-end" onClick={totalrevenueReport}>
                   <button className="sjfs-14">

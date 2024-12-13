@@ -627,6 +627,12 @@ const Informacira = () => {
         handleShow12(); // Show success modal
         handleClose11();
         fetchAllBox(); // Refresh box data
+        const bid = localStorage.getItem("boxId")
+        if(bid){
+          if(bid == bId){
+            localStorage.removeItem("boxId")
+          }
+        }
         // console.log("Box closed successfully");
         if (response.data && response.data.notification) {
           //enqueueSnackbar (response.data.notification, { variant: 'success' });
