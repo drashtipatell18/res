@@ -519,30 +519,30 @@ const TableCounter1 = () => {
     setSelectedSubCategory(subcategory);
   };
 
-  const [boxId, setBoxId] = useState('')
-  const [selectedBoxId] = useState(sessionStorage.getItem('boxId'));
-  console.log(selectedBoxId);
-  useEffect(() => {
-    fetchBoxData();
-  }, []);
+  // const [boxId, setBoxId] = useState('')
+  // const [selectedBoxId] = useState(sessionStorage.getItem('boxId'));
+  // console.log(selectedBoxId);
+  // useEffect(() => {
+  //   fetchBoxData();
+  // }, []);
 
-  const fetchBoxData = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/get-boxs`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  // const fetchBoxData = async () => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/get-boxs`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
 
-      const data = response.data;
-      setBoxId(data.find((v) => v.user_id == userId));
-    } catch (error) {
-      console.error(
-        "Error fetching box:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  }
+  //     const data = response.data;
+  //     setBoxId(data.find((v) => v.user_id == userId));
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching box:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // }
 
   //   place order
 
@@ -585,7 +585,6 @@ const TableCounter1 = () => {
       notes: item.note ? item.note.replace(/^Nota:\s*/i, "").trim() : "",
       admin_id: admin_id
     }));
-console.log(boxId,selectedBoxId);
 
     const orderData = {
       order_details: orderDetails,
@@ -602,7 +601,7 @@ console.log(boxId,selectedBoxId);
         person: person,
         reason: "",
         transaction_code: false,
-        box_id: boxId ? boxId?.id : selectedBoxId,
+        // box_id: boxId ? boxId?.id : selectedBoxId,
       }
     };
     console.log(orderData);

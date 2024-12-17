@@ -1278,7 +1278,7 @@ const Usuarios = () => {
                   <div className="d-flex justify-content-between mt-3 row">
                     <div className="col-6">
                       <label htmlFor="password" className="form-label text-white">
-                        Nueva Contraseña (opcional)
+                        Nueva Contraseña
                       </label>
                       <div className="icon-input">
                         <IoMdLock className="i" />

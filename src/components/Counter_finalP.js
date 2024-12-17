@@ -435,8 +435,8 @@ const Counter_finalP = () => {
 
   // ==== Get BOX Data =====
 
-  const [boxId, setBoxId] = useState('')
-  const [selectedBoxId] = useState(localStorage.getItem('boxId'));
+  const [boxId, setBoxId] = useState(0)
+  const [selectedBoxId] = useState(parseInt(localStorage.getItem('boxId')));
 
   const fetchBoxData = async () => {
     try {

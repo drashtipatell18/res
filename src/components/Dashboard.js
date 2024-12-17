@@ -45,6 +45,7 @@ import Loader from "./Loader";
 import useSocket from "../hooks/useSocket";
 import * as XLSX from "xlsx-js-style";
 import { useChat } from "../contexts/ChatContext";
+import { Modal, Spinner } from "react-bootstrap";
 // import ApexCharts from "apexcharts";
 // import ApexCharts from 'apexcharts';
 
@@ -52,6 +53,8 @@ const Dashboard = () => {
   const [selectedHastaMonth, setSelectedHastaMonth] = useState(
     new Date().getMonth() + 1
   );
+
+   const [isProcessing, setIsProcessing] = useState(false);
 
   // chart
 
@@ -371,7 +374,7 @@ const Dashboard = () => {
       }
 
 
-
+      setIsProcessing(true)
       const response = await axios.post(
         `${apiUrl}/getPaymentMethods`,
         { ...durationData, admin_id },
@@ -382,11 +385,13 @@ const Dashboard = () => {
           },
         }
       );
+      setIsProcessing(false)
       setPayMethodData(response.data.payment_methods);
       setLoading(false);
       setLoadingPayMethodData(false);
 
     } catch (error) {
+      setIsProcessing(false)
       console.error('Error fetching data:', error);
       // Handle error appropriately
     }
@@ -417,7 +422,7 @@ const Dashboard = () => {
       } else {
 
       }
-
+      setIsProcessing(true)
       const response = await axios.post(
         `${apiUrl}/getTotalRevenue`,
         { ...durationData, admin_id },
@@ -428,9 +433,11 @@ const Dashboard = () => {
           },
         }
       );
+      setIsProcessing(false)
       setTotalRevenue(response.data.total_revenue);
       setLoading(false);
     } catch (error) {
+      setIsProcessing(false)
       console.error('Error fetching data:', error);
       // Handle error appropriately
     }
@@ -438,6 +445,7 @@ const Dashboard = () => {
 
   // fetch Summary state
   const fetchSummry = async () => {
+    setIsProcessing(true)
     setLoadingSummary(true)
     try {
       const response = await axios.post(
@@ -449,8 +457,9 @@ const Dashboard = () => {
       );
       setSummaryState(response.data.statusSummary);
       setLoadingSummary(false);
-
+      setIsProcessing(false)
     } catch (error) {
+      setIsProcessing(false)
       console.error('Error fetching data:', error);
       // Handle error appropriately, e.g., setting an error state or displaying a message
     }
@@ -480,6 +489,8 @@ const Dashboard = () => {
 
       }
 
+      setIsProcessing(true)
+
       const response = await axios.post(
         `${apiUrl}/getPopularProducts`,
         { ...durationData, admin_id },
@@ -492,8 +503,9 @@ const Dashboard = () => {
       );
       setPopularData(response.data.popular_products);
       setLoading(false);
-
+      setIsProcessing(false)
     } catch (error) {
+      setIsProcessing(false)
       console.error('Error fetching data:', error);
       // Handle error appropriately
     }
@@ -553,9 +565,8 @@ const Dashboard = () => {
           duration: 'month',
           month: selectDeliveryMonth  // Current month (1-12)
         };
-      } else {
-
       }
+      setIsProcessing(true)
       const response = await axios.post(
         `${apiUrl}/getdelivery`,
         { ...durationData, admin_id },
@@ -565,8 +576,9 @@ const Dashboard = () => {
       );
       setDeliveryData(response.data.delivery_methods || {}); // Ensure deliveryData is an object
       // console.log("delivery", response.data.delivery_methods)
-
+      setIsProcessing(false)
     } catch (error) {
+      setIsProcessing(false)
       console.error('Error fetching data:', error);
       // Handle error appropriately, e.g., setting an error state or displaying a message
     }
@@ -574,6 +586,7 @@ const Dashboard = () => {
 
   // get cancle order
   const fetchCancelOrder = async () => {
+   
     try {
       let durationData = {};
 
@@ -593,6 +606,7 @@ const Dashboard = () => {
           month: seleceCancelMonth  // Current month (1-12)
         };
       }
+      setIsProcessing(true)
       const response = await axios.post(
         `${apiUrl}/cancelOrders`,
         { ...durationData, admin_id },
@@ -602,10 +616,11 @@ const Dashboard = () => {
       );
       setCancelOrder(response.data.cancelled_orders);
       setLoading(false);
-
+      setIsProcessing(false)
 
 
     } catch (error) {
+      setIsProcessing(false)
       console.error('Error fetching data:', error);
       // Handle error appropriately, e.g., setting an error state or displaying a message
     }
@@ -613,6 +628,7 @@ const Dashboard = () => {
 
   // get payment
   const fetchPayment = async () => {
+    setIsProcessing(true)
     try {
       const response = await axios.post(
         `${apiUrl}/get-payments`,
@@ -623,8 +639,10 @@ const Dashboard = () => {
       );
       setPayement(response.data.result);
       setLoading(false);
+      setIsProcessing(false)
 
     } catch (error) {
+      setIsProcessing(false)
       console.error('Error fetching data:', error);
       // Handle error appropriately, e.g., setting an error state or displaying a message
     }
@@ -822,14 +840,8 @@ const Dashboard = () => {
     return completeResults;
   };
 
-  // Use the transformed data in the chart
   const chartData = transformOrderDetails(totalRevenue?.order_details);
   const chartDataWithDummy = chartData.length === 1 ? [...chartData, { ...chartData[0], date: new Date().toLocaleDateString('en-US') }] : chartData;
-
-
-  // console.log(chartData);
-
-
 
 
   const paymentMethodsReport = async () => {
@@ -2566,6 +2578,20 @@ const Dashboard = () => {
             </div>
           </div>
         </section>
+
+         {/* processing */}
+         <Modal
+                show={isProcessing}
+                keyboard={false}
+                backdrop={true}
+                className="m_modal  m_user "
+            >
+                <Modal.Body className="text-center">
+                    <p></p>
+                    <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
+                    <p className="mt-2">Procesando solicitud...</p>
+                </Modal.Body>
+            </Modal>
 
       </div>
     </div>

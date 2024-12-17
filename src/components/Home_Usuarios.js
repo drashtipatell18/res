@@ -59,6 +59,8 @@ function Home_Usuarios() {
         new Date().getMonth() + 1
     );
 
+     const [payments, setPayments] = useState([]);
+
     useEffect(
         () => {
             if (selectedDesdeMonthReport > selectedHastaMonthReport) {
@@ -179,7 +181,25 @@ function Home_Usuarios() {
 
     useEffect(() => {
         getAllorder();
+        getAllPayments();
     }, []);
+
+     // get all payment
+  const getAllPayments = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/get-payments`, {admin_id} ,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      console.log(response.data.result);
+      
+      setPayments(response.data.result);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+    }
+  };
 
     const getAllorder = async () => {
         setIsProcessing(true)
@@ -189,6 +209,8 @@ function Home_Usuarios() {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            console.log(response.data);
+            
             setFilterData(response.data);
             setOrderAlldata(response.data);
             // console.log(response.data);
@@ -477,7 +499,9 @@ function Home_Usuarios() {
                                             </thead>
                                             <tbody className='text-white b_btnn '>
                                                 {getCurrentItems().length > 0 ?
-                                                    getCurrentItems().map((order) => (
+                                                    getCurrentItems().map((order) => {
+                                                        const paydata = payments?.find((v)=>v.order_master_id == order.id)
+                                                        return (
                                                         // console.log(order),
 
                                                         <tr key={order.id} className='b_row'>
@@ -486,8 +510,8 @@ function Home_Usuarios() {
                                                             </Link>
                                                             <td className='b_text_w'>{new Date(order?.created_at).toLocaleDateString('en-GB')}</td>
                                                             <td className='b_text_w'>{new Date(order?.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                                                            <td className='b_text_w'>{order.customer_name}</td>
-                                                            <td className='b_text_w'>${order.order_details.reduce((acc, v) => acc + parseInt(v.amount) * parseInt(v.quantity), 0) - parseFloat(order.discount).toFixed(2)}</td>
+                                                            <td className='b_text_w'>{order.customer_name ? order.customer_name : paydata?.firstname || paydata?.business_name}</td>
+                                                            <td className='b_text_w'>${paydata?.amount || order.order_details.reduce((acc, v) => acc + parseInt(v.amount) * parseInt(v.quantity), 0) - parseFloat(order.discount).toFixed(2)}</td>
                                                             {/* <td className='b_text_w'>{order.payment_type}</td> */}
                                                             <td className='b_text_w'>
                                                                 {
@@ -497,7 +521,7 @@ function Home_Usuarios() {
                                                                                 order.payment_type == 'transfer' ? 'Transferencia' : " "
                                                                 }
                                                             </td>
-                                                            <td className='b_text_w'>${order.order_details.reduce((acc, v) => acc + parseInt(v.amount) * parseInt(v.quantity), 0) - parseFloat(order.discount).toFixed(2)}</td>
+                                                            <td className='b_text_w'>{paydata?.return ? `$${paydata?.return}` : "-"}</td>
                                                             {/* <td className='b_btn1 bj-delivery-text-2 mb-3 ms-3 d-flex align-items-center justify-content-center'>{order.order_type}</td> */}
                                                             <td className={`bj-delivery-text-2  b_btn1 mb-3 ms-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
                                                             ${order.order_type.toLowerCase() === 'local' ? 'b_indigo' : order.order_type.toLowerCase() === 'order now' ? 'b_ora ' : order.order_type.toLowerCase() === 'delivery' ? 'b_blue' : order.order_type.toLowerCase() === 'uber' ? 'b_ora text-danger' : order.order_type.toLowerCase().includes("with") ? 'b_purple' : 'b_ora text-danger'}`}>
@@ -511,7 +535,7 @@ function Home_Usuarios() {
                                                                 <button className='b_edit b_delete' onClick={() => deleteProductModal(order.id)}><RiDeleteBin5Fill /></button>
                                                             </td>
                                                         </tr>
-                                                    ))
+                                                    )})
                                                     :
                                                     <tr>
                                                         <td colSpan="9" className="text-center"> {/* Added colSpan to span all columns */}

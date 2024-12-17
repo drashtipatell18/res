@@ -275,7 +275,7 @@ export default function SingleArticleProduct() {
     }
 
     if (!formDetails.code.trim()) {
-      errors.code = "El código es obligatorio";
+      errors.code = "El código es obligatorio"; 
     }
 
     if (!formDetails.production_center_id) {
@@ -756,16 +756,24 @@ export default function SingleArticleProduct() {
   // get all payment
   const getAllPayments = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/get-payments`, {
+      const response = await axios.post(`${apiUrl}/get-payments`, {admin_id} ,{
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+
+      console.log(response.data.result);
+      
       setPayments(response.data.result);
     } catch (error) {
       console.error("Error fetching payments:", error);
     }
   };
+
+  // console.log(datatab);
+  // console.log(payments);
+  
+  
   return (
     <div>
       <div className="m_bg_black">
@@ -1756,12 +1764,10 @@ export default function SingleArticleProduct() {
                                         {order.customer_name}
                                       </td>
 
-                                      <td
-                                        className={`m_btn1 m12 text-nowrap`}
-                                        style={{ width: "90px" }}
-                                      >
-                                        {paymentStatus}
-                                      </td>
+                                      <td>
+                                      <div className={`m_btn1 m12 text-nowrap`}
+                                        style={{ width: "90px" }}>{paymentStatus}</div>
+                                         </td>
                                     </tr>
                                   );
                                 })

@@ -393,7 +393,7 @@ const DeliveryPago = () => {
   // ==== Get BOX Data =====
 
   const [boxId, setBoxId] = useState('')
-  const [selectedBoxId] = useState(localStorage.getItem('boxId'));
+  const [selectedBoxId] = useState(parseInt(localStorage.getItem('boxId')));
   const fetchBoxData = async () => {
     try {
       const response = await axios.get(`${apiUrl}/get-boxs`, {

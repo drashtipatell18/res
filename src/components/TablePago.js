@@ -507,7 +507,7 @@ const TablePago = () => {
   // ==== Get BOX Data =====
 
   const [boxId, setBoxId] = useState('')
-  const [selectedBoxId] = useState(localStorage.getItem('boxId'));
+  const [selectedBoxId] = useState(parseInt(localStorage.getItem('boxId')));
 
   const fetchBoxData = async () => {
     try {
