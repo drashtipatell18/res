@@ -14,6 +14,7 @@ import { Button, Modal, Spinner } from "react-bootstrap";
 import axios from "axios";
 import useAudioManager from "./audioManager";
 import ElapsedTimeDisplay from "./ElapsedTimeDisplay";
+import { useOrderPrinting } from "../hooks/useOrderPrinting";
 //import { enqueueSnackbar  } from "notistack";
 
 const TableCounter1 = () => {
@@ -546,6 +547,11 @@ const TableCounter1 = () => {
 
   //   place order
 
+
+
+
+  // const { printOrder, printStatus, getprinter } = useOrderPrinting( productionCenters, obj1, cartItems)
+
   const handleCreateOrder = async () => {
     // Reset error states
     setCustomerNameError("");
@@ -604,7 +610,7 @@ const TableCounter1 = () => {
         // box_id: boxId ? boxId?.id : selectedBoxId,
       }
     };
-    console.log(orderData);
+    // console.log(orderData);
 
     setIsProcessing(true);
     try {
@@ -635,6 +641,18 @@ const TableCounter1 = () => {
               }
             }
           );
+          // =======nodeprint===========
+          // try {
+          //   //await  printOrder(cartItems,obj1,tId)
+          //   // console.log(printStatus);
+          // } catch (error) {
+          //   // console.error("Order printing failed", error);
+          // }
+          
+          
+
+          // =======nodeprint===========
+
           console.log("Table status updated successfully", resTable.data);
           localStorage.removeItem("cartItems");
           setCartItems([]);

@@ -665,7 +665,7 @@ export default function Articles() {
       errors.production_center_id = "El centro de producción es obligatorio";
     }
 
-    if (!formData.cost_price.trim() || isNaN(parseFloat(formData.cost_price)) || parseFloat(formData.cost_price) <= 0) {
+    if (!formData.cost_price.trim() || isNaN(parseFloat(formData.cost_price)) || parseFloat(formData.cost_price) < 0) {
       errors.cost_price = "El precio de costo debe ser un número mayor que 0";
     }
 

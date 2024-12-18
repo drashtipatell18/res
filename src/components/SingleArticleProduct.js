@@ -282,7 +282,7 @@ export default function SingleArticleProduct() {
       errors.production_center_id = "El centro de producción es obligatorio";
     }
 
-    if (!formDetails.cost_price.trim() || isNaN(parseFloat(formDetails.cost_price)) || parseFloat(formDetails.cost_price) <= 0) {
+    if (!formDetails.cost_price.trim() || isNaN(parseFloat(formDetails.cost_price)) || parseFloat(formDetails.cost_price) < 0) {
       errors.cost_price = "El precio de costo debe ser un número válido";
     }
 

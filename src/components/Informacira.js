@@ -309,42 +309,65 @@ const Informacira = () => {
     setIsProcessing(false);
   };
 
-  const [finalAmount, setFinalAmount] = useState()
+  const [finalAmount, setFinalAmount] = useState(0)
 
-  useEffect(() => {
+  useEffect(()=>{
+    finalamount();
+  },[bId,data])
 
-    // filteredOrders.filter()
+  const finalamount = async()=>{
+    try {
+      const response = await axios.post(`${apiUrl}/boxLogFinalAmount`,{
+        admin_id,
+        box_id:bId,
+      } ,{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }})
+        
+        if(response.data.total_amount > 0){
+          setFinalAmount((response.data.total_amount + parseFloat(data[0].open_amount)).toFixed(2) )
+        }else{
+          setFinalAmount(data[0]?.open_amount)
+        }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
+  // useEffect(() => {
+
+  //   // filteredOrders.filter()
 
  
-    // const opentime = data[data.length - 1]?.open_time
-    const opentime = data[0]?.open_time
-    // const a = new Date(allpayments?.[0]?.created_at).toISOString().split('T')[0] + ' ' + new Date(allpayments?.[0]?.created_at).toISOString().split('T')[1].split('.')[0]
-    // console.log("sahsds", a)
+  //   // const opentime = data[data.length - 1]?.open_time
+  //   const opentime = data[0]?.open_time
+  //   // const a = new Date(allpayments?.[0]?.created_at).toISOString().split('T')[0] + ' ' + new Date(allpayments?.[0]?.created_at).toISOString().split('T')[1].split('.')[0]
+  //   // console.log("sahsds", a)
 
-    // const finalpaymment = allpayments?.filter((v) => {
-    //   const createdAt = new Date(v.created_at);
-    //   return createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0] > opentime;
-    // });
-    const finalpaymment = allpayments?.filter((v) => {
-      const createdAt = new Date(v.created_at);
-      // console.log(createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0]>opentime && createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0],opentime)
-      return createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0] > opentime;
-    });
-    // console.log("finalpaymment",finalpaymment)
-    // Calculate the sum of amount minus return
-    const totalAmount = finalpaymment.reduce((sum, payment) => {
-      const amount = parseFloat(payment.amount) || 0;
-      const returnAmount = parseFloat(payment.return) || 0;
-      return sum + (amount - returnAmount);
-    }, 0);
+  //   // const finalpaymment = allpayments?.filter((v) => {
+  //   //   const createdAt = new Date(v.created_at);
+  //   //   return createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0] > opentime;
+  //   // });
+  //   const finalpaymment = allpayments?.filter((v) => {
+  //     const createdAt = new Date(v.created_at);
+  //     // console.log(createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0]>opentime && createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0],opentime)
+  //     return createdAt.toISOString().split('T')[0] + ' ' + createdAt.toISOString().split('T')[1].split('.')[0] > opentime;
+  //   });
+  //   // console.log("finalpaymment",finalpaymment)
+  //   // Calculate the sum of amount minus return
+  //   const totalAmount = finalpaymment.reduce((sum, payment) => {
+  //     const amount = parseFloat(payment.amount) || 0;
+  //     const returnAmount = parseFloat(payment.return) || 0;
+  //     return sum + (amount - returnAmount);
+  //   }, 0);
     
-    // console.log("Total Amount:", totalAmount.toFixed(2)); 
-    const init = parseFloat(data[data.length-1]?.open_amount)
+  //   // console.log("Total Amount:", totalAmount.toFixed(2)); 
+  //   const init = parseFloat(data[data.length-1]?.open_amount)
 
-    setFinalAmount((totalAmount + init).toFixed(2));
-
-
-  }, [allOrder, data])
+  //   setFinalAmount((totalAmount + init).toFixed(2));
+  // }, [allOrder, data])
 
   // const [orders, setOrders] = useState([]);
   const fetchAllOrder = async () => {
