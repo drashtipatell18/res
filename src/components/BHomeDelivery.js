@@ -253,6 +253,7 @@ const BHomeDelivery = () => {
           name={e.name}
           price={e.sale_price}
           code={e.code}
+          production_center_id={e.production_center_id}
           addItemToCart={addItemToCart}
         />
       </div>

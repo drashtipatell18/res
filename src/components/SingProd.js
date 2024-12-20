@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 
-export default function SingProd({ image, price, name, code, id }) {
+export default function SingProd({ image, price, name, code, id,production_center_id }) {
   const apiUrl = process.env.REACT_APP_API_URL;
   const API = process.env.REACT_APP_IMAGE_URL;
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -18,7 +18,7 @@ export default function SingProd({ image, price, name, code, id }) {
   const handleClick = async () => {
     console.log("asasd");
 
-    localStorage.setItem("cartItems", JSON.stringify([{ image, price, name, code, id, count: 1, isEditing: false, note: "" }]));
+    localStorage.setItem("cartItems", JSON.stringify([{ image, price, name, code, id, count: 1, isEditing: false, note: "", production_center_id }]));
     try {
 
       const response = await axios.post(`${apiUrl}/orders/last`, { admin_id }, {

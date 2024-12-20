@@ -323,12 +323,14 @@ const Counter = () => {
 
     return itemsToRender.map((e, index) => (
       <div className="col-4 g-3 mb-3" key={e.id}>
+      
         <OrderCart
           id={e.id}
           image={e.image}
           name={e.name}
           price={e.sale_price}
           code={e.code}
+          production_center_id={e.production_center_id}
           addItemToCart={addItemToCart}
         />
       </div>
@@ -370,6 +372,7 @@ const Counter = () => {
   );
 
   const addItemToCart = (item) => {
+    console.log("sds",item);
     const existingItemIndex = cartItems.findIndex(
       (cartItem) => cartItem.id === item.id
     );

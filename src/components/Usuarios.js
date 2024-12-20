@@ -8,7 +8,7 @@ import {
   FaEye,
   FaEyeSlash,
   FaFilter,
-  FaPlus
+  FaPlus,
 } from "react-icons/fa6";
 import { Button, Dropdown, Modal, Spinner } from "react-bootstrap";
 import { MdClose, MdEditSquare } from "react-icons/md";
@@ -30,9 +30,7 @@ const Usuarios = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showcomfirmPassword, setShowcomfirmPassword] = useState(false);
   const [editshowPassword, seteditShowPassword] = useState(false);
-  const [editshowcomfirmPassword, seteditShowcomfirmPassword] = useState(
-    false
-  );
+  const [editshowcomfirmPassword, seteditShowcomfirmPassword] = useState(false);
   const [formKey, setFormKey] = useState(0);
   const [password, setPassword] = useState("");
   const [comfirmpassword, setcomfirmPassword] = useState("");
@@ -50,7 +48,7 @@ const Usuarios = () => {
     1: "Admin",
     2: "Cajero",
     3: "Garzón",
-    4: "Cocina"
+    4: "Cocina",
   };
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -61,7 +59,6 @@ const Usuarios = () => {
     password: "",
     confirm_password: "",
     invite: true,
-
   });
   const [selectedUser, setSelectedUser] = useState(null);
   const [show, setShow] = useState(false);
@@ -72,23 +69,19 @@ const Usuarios = () => {
     email: useRef(null),
     password: useRef(null),
     confirm_password: useRef(null),
-    role_id: useRef(null)
+    role_id: useRef(null),
   };
 
-  useEffect(
-    () => {
-
-      if (role !== "admin") {
-        navigate("/dashboard");
-      } else if (token) {
-        setIsProcessing(true);
-        fetchUser();
-        fetchRole();
-        setIsProcessing(false);
-      }
-    },
-    [token]
-  );
+  useEffect(() => {
+    if (role !== "admin") {
+      navigate("/dashboard");
+    } else if (token) {
+      setIsProcessing(true);
+      fetchUser();
+      fetchRole();
+      setIsProcessing(false);
+    }
+  }, [token]);
 
   const handlePasswordChange = (e) => {
     const value = e.target.value;
@@ -137,7 +130,7 @@ const Usuarios = () => {
       email: user.email,
       password: "", // Set password to empty string
       confirm_password: "", // Set confirm_password to empty string
-      invite: true
+      invite: true,
     });
     setShowEditProduction(true);
   };
@@ -193,7 +186,7 @@ const Usuarios = () => {
     setSelectedFilters((prevFilters) => {
       const newFilters = {
         ...prevFilters,
-        [name]: checked
+        [name]: checked,
       };
       const anyFilterActive = Object.values(newFilters).some((value) => value);
       setIsFilterActive(anyFilterActive);
@@ -211,7 +204,7 @@ const Usuarios = () => {
     setSelectedFilters((prevFilters) => {
       const newFilters = {
         ...prevFilters,
-        [roleId]: false
+        [roleId]: false,
       };
       const anyFilterActive = Object.values(newFilters).some((value) => value);
       setIsFilterActive(anyFilterActive);
@@ -231,10 +224,7 @@ const Usuarios = () => {
   };
   const filteredUsers = users.filter((user) => {
     const userName = user.name.toLowerCase();
-    return (
-      userName.includes(searchTerm.toLowerCase()) &&
-      filterUser(user) 
-    );
+    return userName.includes(searchTerm.toLowerCase()) && filterUser(user);
   });
 
   const filteredItems = data.filter((item) => {
@@ -249,12 +239,9 @@ const Usuarios = () => {
     return activeFilters.includes(item.Role);
   });
   // pagination
-  useEffect(
-    () => {
-      setCurrentPage(1);
-    },
-    [selectedFilters, searchTerm]
-  );
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedFilters, searchTerm]);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
@@ -319,7 +306,7 @@ const Usuarios = () => {
 
     await axios
       .get(`${apiUrl}/get-users`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
         setUsers(response.data);
@@ -329,26 +316,21 @@ const Usuarios = () => {
         console.error("Error fetching users:", error);
       });
     // setIsProcessing(false);
-
   };
   const fetchRole = () => {
-
     axios
       .get(`${apiUrl}/roles`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
         setRoles(response.data);
-
       })
       .catch((error) => {
         console.error("Error fetching roles:", error);
       });
-
   };
 
   console.log(isProcessing);
-
 
   const getRoleName = (roleId) => {
     const role = roles.find((role) => role.id === roleId);
@@ -358,20 +340,20 @@ const Usuarios = () => {
   // Replace handleChange with this optimized version
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Update form data without triggering re-render
     formData[name] = value;
 
     // Validate only the changed field
     // const fieldError = validateField(name, value);
-    if(errors[name] || name == "role_id"){
-    setErrors(prev => ({
-      ...prev,
-      [name]: undefined,
-      role: name == "role_id" ? undefined : prev.role
-    }));
-  }
-}
+    if (errors[name] || name == "role_id") {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: undefined,
+        role: name == "role_id" ? undefined : prev.role,
+      }));
+    }
+  };
 
   // // Add field-level validation
   // const validateField = (fieldName, value) => {
@@ -380,7 +362,7 @@ const Usuarios = () => {
   //       if (!value.trim()) return "Se requiere el nombre";
   //       if (value.length < 5) return "El nombre debe tener entre 5 caracteres";
   //       return null;
-      
+
   //     case 'email':
   //       if (!value.trim()) return "correo electronico es requerido";
   //       if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
@@ -414,15 +396,14 @@ const Usuarios = () => {
     handleCloseEditProduction();
     setIsProcessing(true);
     try {
-
       const response = await axios.post(
         `${apiUrl}/update-user/${selectedUser.id}`,
         dataToUpdate,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
       setIsProcessing(false);
@@ -434,25 +415,20 @@ const Usuarios = () => {
         //enqueueSnackbar (response?.data?.notification, { variant: 'success' })
         // playNotificationSound();;
       }
-
-
     } catch (error) {
       console.error("Error updating user:", error);
       //enqueueSnackbar (error?.response?.data?.alert, { variant: 'error' })
       // playNotificationSound();;
     }
     setIsProcessing(false);
-
   };
 
-  const [showDuplicateEmailModal, setShowDuplicateEmailModal] = useState(
-    false
-  );
+  const [showDuplicateEmailModal, setShowDuplicateEmailModal] = useState(false);
   const handleCloseDuplicateEmailModal = () => {
     setShowDuplicateEmailModal(false);
     setFormData((prevState) => ({
       ...prevState,
-      email: ""
+      email: "",
     }));
   };
 
@@ -465,7 +441,7 @@ const Usuarios = () => {
       password: formRefs.password.current.value,
       confirm_password: formRefs.confirm_password.current.value,
       role_id: formRefs.role_id.current.value,
-      invite: true
+      invite: true,
     };
 
     // Validate all fields
@@ -473,10 +449,10 @@ const Usuarios = () => {
     const validationErrors = validateForm(currentFormData);
     setErrors(validationErrors);
     // console.log(errors);
-    
+
     if (Object.keys(validationErrors).length !== 0) {
       // console.log(errors);
-      return;   
+      return;
     }
     // handleClose();
     setIsProcessing(true);
@@ -491,7 +467,9 @@ const Usuarios = () => {
         // console.log(dataToUpdate);
         await updateUser(dataToUpdate);
       } else {
-        const emailExists = users.some((user) => user.email === currentFormData.email);
+        const emailExists = users.some(
+          (user) => user.email === currentFormData.email
+        );
         setIsProcessing(false);
 
         if (emailExists) {
@@ -502,21 +480,25 @@ const Usuarios = () => {
             setShowDuplicateEmailModal(false);
             setFormData((prevState) => ({
               ...prevState,
-              email: ""
+              email: "",
             }));
           }, 3000);
           return;
         }
         handleClose();
         // console.log(currentFormData);
-        
+
         // Create new user
-        const response = await axios.post(`${apiUrl}/create-user`, {...currentFormData,admin_id}, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+        const response = await axios.post(
+          `${apiUrl}/create-user`,
+          { ...currentFormData, admin_id },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
           }
-        });
+        );
         if (response.status === 200) {
           handleShowCreSubSuc();
           handleClose();
@@ -544,11 +526,15 @@ const Usuarios = () => {
     setIsProcessing(true);
 
     try {
-      const response = await axios.post(`${apiUrl}/user/update-status/${userId}`, {
-        status: 'Suspender'
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.post(
+        `${apiUrl}/user/update-status/${userId}`,
+        {
+          status: "Suspender",
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setIsProcessing(false);
       fetchUser();
     } catch (error) {
@@ -556,16 +542,19 @@ const Usuarios = () => {
     }
     setIsProcessing(false);
     handleShowEditProductionDel();
-
   };
   const handleActiveUser = async (userId) => {
     setIsProcessing(true);
     try {
-      const response = await axios.post(`${apiUrl}/user/update-status/${userId}`, {
-        status: 'Activa'
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.post(
+        `${apiUrl}/user/update-status/${userId}`,
+        {
+          status: "Activa",
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       fetchUser();
       setIsProcessing(false);
     } catch (error) {
@@ -589,8 +578,7 @@ const Usuarios = () => {
       email: "",
       password: "",
       confirm_password: "",
-      invite: true
-
+      invite: true,
     });
     setSelectedUser(null);
     setShow(true);
@@ -666,8 +654,7 @@ const Usuarios = () => {
                       style={{ fontSize: "12px" }}
                       className="btn btn-outline-primary b_togllle b_border_out b_ttt"
                     >
-                      <FaFilter /> &nbsp; {" "}
-                      <span className="b_ttt">Filtro</span>
+                      <FaFilter /> &nbsp; <span className="b_ttt">Filtro</span>
                     </Dropdown.Toggle>
                     <Dropdown.Menu className="m14 m_filter">
                       {roles.map((role) => (
@@ -675,7 +662,7 @@ const Usuarios = () => {
                           className="px-3 py-1 d-flex gap-2 align-items-center fw-500"
                           key={role.id}
                           style={{
-                            opacity: selectedFilters[role.id] ? 1 : 0.5
+                            opacity: selectedFilters[role.id] ? 1 : 0.5,
                           }}
                         >
                           <input
@@ -686,7 +673,8 @@ const Usuarios = () => {
                             onChange={handleCheckboxChange}
                           />
                           <span className="fw-500">
-                            {roleNamesInSpanish[role.id] || role.name} {/* Display name in Spanish */}
+                            {roleNamesInSpanish[role.id] || role.name}{" "}
+                            {/* Display name in Spanish */}
                           </span>
                         </div>
                       ))}
@@ -773,11 +761,15 @@ const Usuarios = () => {
                                     ))} */}
                                     {roles.map((role) => {
                                       console.log();
-                                      
-                                      if (role.name !== 'admin'  && role.name !== 'superadmin') {
+
+                                      if (
+                                        role.name !== "admin" &&
+                                        role.name !== "superadmin"
+                                      ) {
                                         return (
                                           <option key={role.id} value={role.id}>
-                                            {roleNamesInSpanish[role.id] || role.name}
+                                            {roleNamesInSpanish[role.id] ||
+                                              role.name}
                                           </option>
                                         );
                                       }
@@ -850,9 +842,7 @@ const Usuarios = () => {
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    setShowPassword(
-                                      (prevState) => !prevState
-                                    );
+                                    setShowPassword((prevState) => !prevState);
                                   }}
                                 >
                                   {showPassword ? (
@@ -881,11 +871,7 @@ const Usuarios = () => {
                                   <input
                                     ref={formRefs.confirm_password}
                                     type={
-                                      showcomfirmPassword ? (
-                                        "text"
-                                      ) : (
-                                        "password"
-                                      )
+                                      showcomfirmPassword ? "text" : "password"
                                     }
                                     className="form-control j-user-password"
                                     id="password"
@@ -931,7 +917,8 @@ const Usuarios = () => {
                         }}
                         variant="primary"
                       >
-                        <IoIosSend className="me-2" />Invitar
+                        <IoIosSend className="me-2" />
+                        Invitar
                       </Button>
                     </Modal.Footer>
                   </Modal>
@@ -979,8 +966,8 @@ const Usuarios = () => {
                         </svg>
                         <p className="mb-0 mt-2 h6">Email ya existe</p>
                         <p className="opacity-75">
-                          Este correo electrónico ya está registrado. Por
-                          favor, utilice otro correo electrónico.
+                          Este correo electrónico ya está registrado. Por favor,
+                          utilice otro correo electrónico.
                         </p>
                       </div>
                     </Modal.Body>
@@ -1056,7 +1043,7 @@ const Usuarios = () => {
                       className="bj-right-icon-size-2"
                       onClick={handlePrevPage}
                       style={{
-                        cursor: currentPage === 1 ? "not-allowed" : "pointer"
+                        cursor: currentPage === 1 ? "not-allowed" : "pointer",
                       }}
                     />
                   </div>
@@ -1068,7 +1055,7 @@ const Usuarios = () => {
                         cursor:
                           currentPage === totalPages
                             ? "not-allowed"
-                            : "pointer"
+                            : "pointer",
                       }}
                     />
                   </span>
@@ -1079,12 +1066,11 @@ const Usuarios = () => {
                     >
                       vista{" "}
                       <span className="text-white">
-                        {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredUsers.length)}
+                        {indexOfFirstItem + 1}-
+                        {Math.min(indexOfLastItem, filteredUsers.length)}
                       </span>{" "}
                       de{" "}
-                      <span className="text-white">
-                        {filteredUsers.length}
-                      </span>
+                      <span className="text-white">{filteredUsers.length}</span>
                     </p>
                   </div>
                 </div>
@@ -1103,9 +1089,9 @@ const Usuarios = () => {
                     </tr>
                   </thead>
                   <tbody className="text-white b_btnn ">
-                    {currentUsers.map(
-                      (user) =>
-                      (
+                    {currentUsers
+                      .filter((user) => user.role_id !== 1)
+                      .map((user) => (
                         <tr key={user.id} className="b_row">
                           <td className="b_text_w">{user.name}</td>
                           <td className="b_text_w">
@@ -1115,11 +1101,19 @@ const Usuarios = () => {
                           <td className="b_text_w">{user.email}</td>
                           <td>
                             {user.status === "Activa" ? (
-                              <button className="btn btn-success" onClick={() => handleShowEditFam(user.id)} style={{ minWidth: "120px" }}>
+                              <button
+                                className="btn btn-success"
+                                onClick={() => handleShowEditFam(user.id)}
+                                style={{ minWidth: "120px" }}
+                              >
                                 Activo
                               </button>
                             ) : (
-                              <button className="btn btn-danger" onClick={() => handleShowEditFam2(user.id)} style={{ minWidth: "120px" }} >
+                              <button
+                                className="btn btn-danger"
+                                onClick={() => handleShowEditFam2(user.id)}
+                                style={{ minWidth: "120px" }}
+                              >
                                 Suspender
                               </button>
                             )}
@@ -1133,8 +1127,7 @@ const Usuarios = () => {
                             </button>
                           </td>
                         </tr>
-                      )
-                    )}
+                      ))}
                   </tbody>
                 </table>
               ) : (
@@ -1157,7 +1150,7 @@ const Usuarios = () => {
                 <div className="text-center">
                   <img src={require("../Image/trash-check 1.png")} alt="" />
                   <p className="opacity-75 mt-2">
-                  Usuario Suspendido con éxito
+                    Usuario Suspendido con éxito
                   </p>
                 </div>
               </Modal.Body>
@@ -1170,7 +1163,10 @@ const Usuarios = () => {
               keyboard={false}
               className="m_modal m_user"
             >
-              <Modal.Header closeButton className="m_borbot b_border_bb mx-3 ps-0">
+              <Modal.Header
+                closeButton
+                className="m_borbot b_border_bb mx-3 ps-0"
+              >
                 <Modal.Title>Editar usuario</Modal.Title>
               </Modal.Header>
               <Modal.Body className="border-0 pb-0">
@@ -1223,11 +1219,13 @@ const Usuarios = () => {
                             onChange={handleChange}
                           >
                             {roles.map((role) => {
-                               if (role.name !== 'admin'  && role.name !== 'superadmin') {
+                              if (
+                                role.name !== "admin" &&
+                                role.name !== "superadmin"
+                              ) {
                                 return (
                                   <option key={role.id} value={role.id}>
-                                    {roleNamesInSpanish[role.id] ||
-                                      role.name}
+                                    {roleNamesInSpanish[role.id] || role.name}
                                   </option>
                                 );
                               }
@@ -1277,7 +1275,10 @@ const Usuarios = () => {
                   </div>
                   <div className="d-flex justify-content-between mt-3 row">
                     <div className="col-6">
-                      <label htmlFor="password" className="form-label text-white">
+                      <label
+                        htmlFor="password"
+                        className="form-label text-white"
+                      >
                         Nueva Contraseña
                       </label>
                       <div className="icon-input">
@@ -1294,18 +1295,29 @@ const Usuarios = () => {
                         />
                         <button
                           className="border-0 j-user-hide bg-transparent"
-                          onClick={() => seteditShowPassword((prevState) => !prevState)}
+                          onClick={() =>
+                            seteditShowPassword((prevState) => !prevState)
+                          }
                         >
-                          {editshowPassword ? <FaEye className="i" /> : <FaEyeSlash className="i" />}
+                          {editshowPassword ? (
+                            <FaEye className="i" />
+                          ) : (
+                            <FaEyeSlash className="i" />
+                          )}
                         </button>
                       </div>
                       {errors.password && (
-                        <div className="text-danger errormessage">{errors.password}</div>
+                        <div className="text-danger errormessage">
+                          {errors.password}
+                        </div>
                       )}
                     </div>
                     <div className="col-6">
                       <div className="mb-2 me-2">
-                        <label htmlFor="confirm_password" className="form-label text-white">
+                        <label
+                          htmlFor="confirm_password"
+                          className="form-label text-white"
+                        >
                           Confirmar Nueva Contraseña
                         </label>
                         <div className="icon-input">
@@ -1322,13 +1334,23 @@ const Usuarios = () => {
                           />
                           <button
                             className="border-0 j-user-hide bg-transparent"
-                            onClick={() => seteditShowcomfirmPassword((prevState) => !prevState)}
+                            onClick={() =>
+                              seteditShowcomfirmPassword(
+                                (prevState) => !prevState
+                              )
+                            }
                           >
-                            {editshowcomfirmPassword ? <FaEye className="i" /> : <FaEyeSlash className="i" />}
+                            {editshowcomfirmPassword ? (
+                              <FaEye className="i" />
+                            ) : (
+                              <FaEyeSlash className="i" />
+                            )}
                           </button>
                         </div>
                         {errors.confirm_password && (
-                          <div className="text-danger errormessage">{errors.confirm_password}</div>
+                          <div className="text-danger errormessage">
+                            {errors.confirm_password}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -1465,9 +1487,7 @@ const Usuarios = () => {
               <Modal.Body>
                 <div className="text-center">
                   <img src={require("../Image/checkbox1.png")} alt="" />
-                  <p className="opacity-75 mt-2">
-                    Usuario activo exitosamente
-                  </p>
+                  <p className="opacity-75 mt-2">Usuario activo exitosamente</p>
                 </div>
               </Modal.Body>
             </Modal>
@@ -1479,7 +1499,11 @@ const Usuarios = () => {
               className="m_modal  m_user "
             >
               <Modal.Body className="text-center">
-                <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
+                <Spinner
+                  animation="border"
+                  role="status"
+                  style={{ height: "85px", width: "85px", borderWidth: "6px" }}
+                />
                 <p className="mt-2">Procesando solicitud...</p>
               </Modal.Body>
             </Modal>

@@ -877,10 +877,10 @@ export default function ProductionCenter() {
     handleCloseEditProduction();
   };
 
-  const handleClick = async (id, image, name, price, code) => {
+  const handleClick = async (id, image, name, price, code,production_center_id) => {
     console.log("asasd");
 
-    localStorage.setItem("cartItems", JSON.stringify([{ image, price, name, code, id, count: 1, isEditing: false, note: "" }]));
+    localStorage.setItem("cartItems", JSON.stringify([{ image, price, name, code, id, count: 1, isEditing: false, note: "" , production_center_id}]));
     try {
 
       const response = await axios.post(`${apiUrl}/orders/last`, { admin_id }, {
@@ -1714,7 +1714,7 @@ export default function ProductionCenter() {
                                           <a
                                             className="text-white text-decoration-none"
                                             style={{ fontSize: "14px" }}
-                                            onClick={() => handleClick(ele.id, ele.image, ele.name, ele.sale_price, ele.code)}
+                                            onClick={() => handleClick(ele.id, ele.image, ele.name, ele.sale_price, ele.code,ele.production_center_id)}
                                           >
                                             <FaCartPlus />{" "}
                                             <span className="ms-1">Agregar al mostrador</span>

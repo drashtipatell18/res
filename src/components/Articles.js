@@ -1861,6 +1861,7 @@ export default function Articles() {
                                 name={ele.name}
                                 price={ele.sale_price}
                                 code={ele.code}
+                                production_center_id={ele.production_center_id}
                               />
                             </div>
                           ))
@@ -1880,12 +1881,15 @@ export default function Articles() {
                               className="col-md-4 col-xl-3 col-sm-6 col-12 g-3"
                               key={ele.id}
                             >
+                              {console.log(ele.production_center_id)}
+                              
                               <SingProd
                                 id={ele.id}
                                 image={ele.image}
                                 name={ele.name}
                                 price={ele.sale_price}
                                 code={ele.code}
+                                production_center_id={ele.production_center_id}
                               />
                             </div>
                           ))
@@ -1905,12 +1909,14 @@ export default function Articles() {
                         className="col-md-4 col-xl-3 col-sm-6 col-12 g-3"
                         key={ele.id}
                       >
+                        {console.log(ele.production_center_id)}
                         <SingProd
                           id={ele.id}
                           image={ele.image}
                           name={ele.name}
                           price={ele.sale_price}
                           code={ele.code}
+                          production_center_id={ele.production_center_id}
                         />
                       </div>
                     ))

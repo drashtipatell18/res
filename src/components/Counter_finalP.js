@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Recipt from "./Recipt";
 import { MdRoomService } from "react-icons/md";
 import axios from "axios";
+import { useOrderPrinting } from "../hooks/useOrderPrinting";
 
 const Counter_finalP = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -19,8 +20,6 @@ const Counter_finalP = () => {
   const admin_id = localStorage.getItem("admin_id");
   const navigate = useNavigate();
   const [orderId, setOrderId] = useState(sessionStorage.getItem("orderId"));
-
-
 
   console.log("orderId: ", orderId);
   const [cartItems, setCartItems] = useState(
@@ -535,13 +534,37 @@ const Counter_finalP = () => {
     }
   };
 
+  const [productionCenters, setProductionCenters] = useState();
+
+  useEffect(() => {
+    getProductionCenters();
+  }, [admin_id,token]);
+
+  const getProductionCenters = async () => {
+    setIsProcessing(true);
+    try {
+      const response = await axios.post(
+        `${apiUrl}/production-centers`,
+        { admin_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data.data);
+
+      setProductionCenters(response.data.data);
+    } catch (error) {
+      console.error("Error fetching production centers:", error);
+    }
+    setIsProcessing(false);
+  };
+
+    const { printOrder, printStatus } = useOrderPrinting(productionCenters, cartItems)
+
   // submit
   const handleSubmit = async () => {
-    // if (role !== "cashier") {
-    //   alert("Solo los cajeros pueden realizar pedidos.");
-    //   return;
-    // }
-
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       // Display errors to user
@@ -589,7 +612,6 @@ const Counter_finalP = () => {
         return;
       }
       if (!orderId) {
-
         const response = await axios.post(`${apiUrl}/order/place_new`, orderData, {
           headers: { Authorization: `Bearer ${token}` }
         })
@@ -622,6 +644,18 @@ const Counter_finalP = () => {
               }
             }
           )
+
+              //  // =======nodeprint===========
+              //  try {
+              //     await  printOrder(cartItems, '', paymentData)
+              //    console.log(printStatus);
+              //   } catch (error) {
+              //     console.error("Order printing failed", error);
+              //   }
+      
+              //   // =======nodeprint===========
+
+
 
 
           // console.log("payemnt suc", responsePayment.data);
@@ -660,6 +694,9 @@ const Counter_finalP = () => {
                 // setError('Hubo un error al intentar realizar el retorno');
               });
           }
+
+
+
           localStorage.removeItem("cartItems");
           localStorage.removeItem("currentOrder");
           localStorage.removeItem("payment");

@@ -3,12 +3,12 @@ import { FaCartPlus } from "react-icons/fa";
 import { IoMdInformationCircle } from "react-icons/io";
 import { Link, useLocation } from "react-router-dom";
 
-const OrderCart = ({ image, name, price, code, addItemToCart ,id }) => {
+const OrderCart = ({ image, name, price, code, addItemToCart ,id,production_center_id }) => {
   const API = process.env.REACT_APP_IMAGE_URL;
   const location = useLocation();
 
   const handleAddToCart = () => {
-    addItemToCart({ id,image, name, price, code });
+    addItemToCart({ id,image, name, price, code, production_center_id });
   };
 
   return (

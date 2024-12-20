@@ -13,6 +13,7 @@ import Recipt from "./Recipt";
 import { MdOutlineAccessTimeFilled, MdRoomService } from "react-icons/md";
 import axios from "axios";
 import { FaCalendarAlt } from "react-icons/fa";
+import { useOrderPrinting } from "../hooks/useOrderPrinting";
 //import { enqueueSnackbar  } from "notistack";
 
 const DeliveryPago = () => {
@@ -463,6 +464,38 @@ const DeliveryPago = () => {
     return errors;
   };
 
+  const [productionCenters, setProductionCenters] = useState();
+
+
+  
+
+  useEffect(() => {
+    getProductionCenters();
+  }, [admin_id,token]);
+
+  const getProductionCenters = async () => {
+    setIsProcessing(true);
+    try {
+      const response = await axios.post(
+        `${apiUrl}/production-centers`,
+        { admin_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data.data);
+
+      setProductionCenters(response.data.data);
+    } catch (error) {
+      console.error("Error fetching production centers:", error);
+    }
+    setIsProcessing(false);
+  };
+
+    const { printOrder, printStatus } = useOrderPrinting(productionCenters, cartItems)
+
 
   // submit
   const handleSubmit = async () => {
@@ -509,11 +542,8 @@ const DeliveryPago = () => {
         box_id: boxId ? boxId?.id : selectedBoxId,
         customer_name: payment.firstname || payment.business_name
       }
-
     } else {
-
       url = '/order/place_new'
-
       const orderDetails = cartItems.map((item) => ({
         item_id: item.id,
         quantity: item.count,
@@ -583,6 +613,8 @@ const DeliveryPago = () => {
           setIsProcessing(false)
           console.log(responsePayment);
 
+          
+
           if (responsePayment.data.success) {
 
             if (tableId) {
@@ -601,6 +633,19 @@ const DeliveryPago = () => {
                 console.log("Table Status not Upadte ," + error.message);
               }
             }
+
+            if(!(orderType.order == "old")){
+          //    // =======nodeprint===========
+          //     try {
+          //       await  printOrder(cartItems, '', paymentData);
+          //     console.log(printStatus);
+          //     } catch (error) {
+          //       console.error("Order printing failed", error);
+          //     }
+          // // =======nodeprint===========
+          }
+
+
             localStorage.removeItem("cartItems");
             localStorage.removeItem("currentOrder");
             localStorage.removeItem("payment");
