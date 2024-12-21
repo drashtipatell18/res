@@ -1,5 +1,4 @@
 import "./App.css";
-import Header from "./components/Header";
 import Dashboard from "./components/Dashboard";
 import Counter from "./components/Counter";
 import Mostrador from "./components/mostrador";
@@ -36,7 +35,6 @@ import Home_Detalles from "./components/Home_Detalles";
 import Kds from "./components/Kds";
 import Login from "./components/Login";
 import Usuarios from "./components/Usuarios";
-import Home_mes from "./components/Home_mes";
 import KdsRecibido from "./components/KdsRecibido";
 import KdsPreparado from "./components/KdsPreparado";
 import KdsFinalizado from "./components/KdsFinalizado";
@@ -48,28 +46,20 @@ import { EnlaceAdmin } from "./components/EnlaceAdmin";
 import DeliveryDots from "./components/DeliveryDots";
 import DeliveryPago from "./components/DeliveryPago";
 import Homeinfomation_payment_edit from "./components/Homeinfomation_payment_edit";
-import ChatComponent from "./com/ChatComponent";
 import Chat from "./components/Chat";
-import { MaterialDesignContent, SnackbarProvider } from "notistack";
-import styled from 'styled-components';
 import { NotificationProvider } from "./contexts/NotificationContext";
 import { ChatProvider } from "./contexts/ChatContext";
+
+import { Provider } from "react-redux";
+import { configureStore } from "./redux/store";
+
 function App() {
-  const StyledMaterialDesignContent = styled(MaterialDesignContent)(() => ({
-    '&.notistack-MuiContent-success': {
-      backgroundColor: '#0e9e6e',
-    },
-    '&.notistack-MuiContent-error': {
-      backgroundColor: '#f05151',
-    },
-  }));
+
+  const { store, persistor } = configureStore();
 
   return (
     <div>
-      <SnackbarProvider Components={{
-        success: StyledMaterialDesignContent,
-        error: StyledMaterialDesignContent,
-      }} autoHideDuration={2000}>
+     <Provider store={store}>
         <NotificationProvider>
           <ChatProvider>
             <Routes>
@@ -128,7 +118,7 @@ function App() {
             </Routes>
           </ChatProvider>
         </NotificationProvider>
-      </SnackbarProvider>
+      </Provider>
     </div>
   );
 }

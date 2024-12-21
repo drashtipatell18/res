@@ -7,6 +7,11 @@ import { MdClose } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import OrderRecipt from './OrderRecipt';
+import { useDispatch, useSelector } from 'react-redux';
+import { getboxs } from '../redux/slice/box.slice';
+import { getAllOrders, getAllPayments } from '../redux/slice/order.slice';
+import { getAllTableswithSector } from '../redux/slice/table.slice';
+import { getRols, getUser } from '../redux/slice/user.slice';
 
 const Home_Pedidos = () => {
 
@@ -23,13 +28,79 @@ const Home_Pedidos = () => {
     const [users, setUsers] = useState([]);
   const [allpayments, setAllpayments] = useState([]);
 
-    // const [selectedFilters, setSelectedFilters] = useState({
-    //     All: false,
-    //     Received: false,
-    //     Prepared: false,
-    //     Delivered: false,
-    //     finalized: false,
-    // });
+  const dispatch = useDispatch();
+  const {box} = useSelector(state => state.boxs);
+  const {user,roles} = useSelector(state => state.user);
+  const {orders,payments} = useSelector(state => state.orders);
+  const {tablewithSector} = useSelector(state => state.tables);
+
+  useEffect(()=>{
+    if(box?.length == 0){
+        dispatch(getboxs({admin_id}))
+    }
+  },[admin_id])
+
+    useEffect(()=>{
+        if(user?.length == 0){
+            dispatch(getUser())
+        }
+    },[admin_id])
+
+    useEffect(()=>{
+        if(roles?.length == 0){
+            dispatch(getRols())
+        }
+    },[admin_id])
+    
+    useEffect(()=>{
+        if(tablewithSector?.length == 0){
+            dispatch(getAllTableswithSector({admin_id}))
+        }
+    },[admin_id])
+
+    
+
+    useEffect(()=>{
+        if(orders?.length == 0){
+            dispatch(getAllOrders({admin_id}))
+        }
+    },[admin_id])
+
+    useEffect(()=>{
+        if(tablewithSector){
+            setSectordata(tablewithSector)
+        }
+    },[tablewithSector])
+
+    useEffect(()=>{
+        if(payments?.length == 0){
+            dispatch(getAllPayments({admin_id}))
+        }
+    },[admin_id])
+
+    useEffect(()=>{
+        if(box){
+            setboxes(box)
+        }
+    },[box])
+
+    useEffect(()=>{
+        if(user){
+            setUsers(user)
+        }
+    },[user])
+
+    useEffect(()=>{
+        if(orders){
+            setOrderAlldata(orders)
+        }
+    },[orders])
+
+    useEffect(()=>{
+        if(payments){
+            setAllpayments(payments)
+        }
+    },[payments])
 
     const [selectedFilters, setSelectedFilters] = useState({
         Todo: false,
@@ -39,14 +110,14 @@ const Home_Pedidos = () => {
         Finalizado: false,
     });
 
-
-    useEffect(() => {
-        getBox();
-        getAllorder();
-        getSector();
-        getUser();
-        fetchAllpayment();
-    }, [])
+// 
+    // useEffect(() => {
+        // getBox();
+        // getAllorder();
+        // getSector();
+        // getUser();
+        // fetchAllpayment();
+    // }, [])
 
     useEffect(() => {
         // setIsProcessing(true);
@@ -54,107 +125,110 @@ const Home_Pedidos = () => {
 
         // setIsProcessing(false);
     }, [orderAlldata, sectordata, boxes])
-    const fetchAllpayment = async () => {
-        setIsProcessing(true);
-        try {
-          const response = await axios.post(
-            `${apiUrl}/get-payments`, { admin_id: admin_id },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            }
-          );
-          setAllpayments(response.data.result);
+
+
+    // const fetchAllpayment = async () => {
+    //     setIsProcessing(true);
+    //     try {
+    //       const response = await axios.post(
+    //         `${apiUrl}/get-payments`, { admin_id: admin_id },
+    //         {
+    //           headers: {
+    //             Authorization: `Bearer ${token}`
+    //           }
+    //         }
+    //       );
+    //       setAllpayments(response.data.result);
     
-        } catch (error) {
-          console.error("Error fetching boxes:", error);
-        }
-        setIsProcessing(false);
-      }
+    //     } catch (error) {
+    //       console.error("Error fetching boxes:", error);
+    //     }
+    //     setIsProcessing(false);
+    //   }
 
-    const getUser = async () => {
-        // setIsProcessing(true);
+    // const getUser = async () => {
+    //     // setIsProcessing(true);
 
-        try {
-            const response = await axios.get(`${apiUrl}/get-users`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            // console.log(response.data);
-            setUsers(response.data);
-        } catch (error) {
-            console.error(
-                "Error fetching allOrder:",
-                error.response ? error.response.data : error.message
-            );
-        }
-        //   setIsProcessing(false);
+    //     try {
+    //         const response = await axios.get(`${apiUrl}/get-users`,
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //             }
+    //         );
+    //         // console.log(response.data);
+    //         setUsers(response.data);
+    //     } catch (error) {
+    //         console.error(
+    //             "Error fetching allOrder:",
+    //             error.response ? error.response.data : error.message
+    //         );
+    //     }
+    //     //   setIsProcessing(false);
 
-    }
-    const getAllorder = async () => {
-        setIsProcessing(true);
-        try {
-            const response = await axios.post(`${apiUrl}/order/getAll`, {admin_id: admin_id},
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setOrderAlldata(response.data);
-        } catch (error) {
-            console.error(
-                "Error fetching allOrder:",
-                error.response ? error.response.data : error.message
-            );
-        }
-        setIsProcessing(false);
-    }
+    // }
+    // const getAllorder = async () => {
+    //     setIsProcessing(true);
+    //     try {
+    //         const response = await axios.post(`${apiUrl}/order/getAll`, {admin_id: admin_id},
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //             }
+    //         );
+    //         setOrderAlldata(response.data);
+    //     } catch (error) {
+    //         console.error(
+    //             "Error fetching allOrder:",
+    //             error.response ? error.response.data : error.message
+    //         );
+    //     }
+    //     setIsProcessing(false);
+    // }
 
-    const getSector = async () => {
-        // setIsProcessing(true);
+    // const getSector = async () => {
+    //     // setIsProcessing(true);
 
-        try {
-            const response = await axios.post(`${apiUrl}/sector/getWithTable`,{admin_id: admin_id}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setSectordata(response.data.data);
-        } catch (error) {
-            console.error(
-                "Error fetching sector and Table Data:",
-                error.response ? error.response.data : error.message
-            );
-        }
-        //   setIsProcessing(false);
+    //     try {
+    //         const response = await axios.post(`${apiUrl}/sector/getWithTable`,{admin_id: admin_id}, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         });
+    //         setSectordata(response.data.data);
+    //     } catch (error) {
+    //         console.error(
+    //             "Error fetching sector and Table Data:",
+    //             error.response ? error.response.data : error.message
+    //         );
+    //     }
+    //     //   setIsProcessing(false);
 
-    }
-    const getBox = async () => {
-        // setIsProcessing(true);
+    // }
 
-        try {
-            const response = await axios.get(`${apiUrl}/get-boxs`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setboxes(response.data);
-        } catch (error) {
-            console.error(
-                "Error fetching allOrder:",
-                error.response ? error.response.data : error.message
-            );
-        }
-        //   setIsProcessing(false);
+    // const getBox = async () => {
+    //     // setIsProcessing(true);
 
-    }
+    //     try {
+    //         const response = await axios.get(`${apiUrl}/get-boxs`,
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //             }
+    //         );
+    //         setboxes(response.data);
+    //     } catch (error) {
+    //         console.error(
+    //             "Error fetching allOrder:",
+    //             error.response ? error.response.data : error.message
+    //         );
+    //     }
+    //     //   setIsProcessing(false);
+
+    // }
 
     const getallData = () => {
 
@@ -165,18 +239,16 @@ const Home_Pedidos = () => {
                 let flages = 0;
                 let flageb = 0;
                 sectordata.map(s => s.tables.map((a) => {
-                    // console.log("order", s);
 
-                    if (a.id === v.table_id) { // Changed '==' to '===' for strict equality
+                    if (a.id === v.table_id) { 
                         obj.sector = s.name;
                         obj.table = a.name;
-                        obj.table_status = a.status; // Ensure to capture the table status
+                        obj.table_status = a.status;
                         flages = 1;
 
                     }
                 }));
           
-                
                 users.map((b) => {
                     if (b.id == v.user_id) {
                         obj.box = b.name;

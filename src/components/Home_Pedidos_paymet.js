@@ -366,32 +366,6 @@ export default function Home_Pedidos_paymet() {
     setIsProcessing(false);
   };
 
-  // const getuserRole = () => {
-  //   if (user && roles.length > 0) {
-  //     const role = roles?.find((v) => v.id === user[0]?.role_id);
-  //     if (role) {
-  //       setUserRole(role.name);
-  //     }
-  //   }
-  // };
-
-  const handleOrderDetails = () => {
-    // Check if orderData is not null before accessing its properties
-    if (orderData) {
-      const details = orderData.order_details.map((orderItem) => {
-        const matchingItem = items.find((item) => item.id === orderItem.item_id);
-        return {
-          ...orderItem,
-          image: matchingItem ? matchingItem.image : orderItem.image,
-          description: matchingItem ? matchingItem.description : orderItem.description,
-        };
-      });
-      setOrderDetails(details);
-    } else {
-      console.error("orderData is null, cannot handle order details.");
-    }
-  };
-
   const getFamily = async () => {
     try {
       const response = await axios.get(`${apiUrl}/family/getFamily`, {
@@ -422,6 +396,23 @@ export default function Home_Pedidos_paymet() {
       );
     }
   }
+
+  const handleOrderDetails = () => {
+    // Check if orderData is not null before accessing its properties
+    if (orderData) {
+      const details = orderData.order_details.map((orderItem) => {
+        const matchingItem = items.find((item) => item.id === orderItem.item_id);
+        return {
+          ...orderItem,
+          image: matchingItem ? matchingItem.image : orderItem.image,
+          description: matchingItem ? matchingItem.description : orderItem.description,
+        };
+      });
+      setOrderDetails(details);
+    } else {
+      console.error("orderData is null, cannot handle order details.");
+    }
+  };
 
   // ----resons section -----
 
@@ -547,15 +538,12 @@ export default function Home_Pedidos_paymet() {
         }
       );
 
-
-
       if (!(response.success == "false")) {
         handleClose1Prod();
         handleShow1AddSuc();
 
         // setItemId([]);
         setSelectedItemsMenu([]);
-
       } else {
         console.error("Failed to add items to menu");
       }

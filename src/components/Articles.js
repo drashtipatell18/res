@@ -10,6 +10,8 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Spinner } from "react-bootstrap";
 import { RiDeleteBin6Fill } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllitems, getFamily, getProduction, getProductionData, getSubFamily } from "../redux/slice/Items.slice";
 
 export default function Articles() {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -22,6 +24,11 @@ export default function Articles() {
   const [selectedFamilyNames, setSelectedFamilyNames] = useState([]);
   const [selectedSubFamilies, setSelectedSubFamilies] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
+
+
+  const dispatch = useDispatch()
+  const {items,subFamily,family,production,productionData,loading} = useSelector((state) => state.items);
+
   // Add product
   const [show1, setShow1] = useState(false);
   const handleClose1 = () => {
@@ -163,20 +170,58 @@ export default function Articles() {
       if (!(role == "admin" || role == "cashier")) {
         navigate('/dashboard')
         console.log("Role type:", role)
-      } else {
+      } 
+      // else {
 
 
-        fetchFamilyData();
-        fetchSubFamilyData();
-        fetchAllItems();
+      //   fetchFamilyData();
+      //   fetchSubFamilyData();
+      //   fetchAllItems();
 
-        if (token) {
-          fetchProductionCenters();
-        }
-      }
+      //   if (token) {
+      //     fetchProductionCenters();
+      //   }
+      // }
     },
     [apiUrl, token, role]
   );
+
+  useEffect(()=>{
+      
+    if(items.length == 0){
+      dispatch(getAllitems());
+    }
+    if(subFamily.length == 0){
+      dispatch(getSubFamily());
+    }
+    if(family.length == 0){
+      dispatch(getFamily());
+    }
+    if(production.length == 0){
+      dispatch(getProduction({admin_id}));
+    }
+    if(productionData.length == 0){
+      dispatch(getProductionData());
+    }
+  }, []);
+
+  useEffect(()=>{
+    if(family){
+      setParentCheck(family);
+      setFamilies(family);
+    }
+    if(items){
+      setObj1(items);
+    }
+    if(subFamily){
+      setChildCheck(subFamily)
+    }
+    if(production){
+      setProductionSel(production)
+    }
+   
+  },[family,items,subFamily,production,productionData])
+
 
   // get family
 
@@ -359,8 +404,8 @@ export default function Articles() {
       )
       .then(function (response) {
         handleShowCreSuc();
-        fetchFamilyData(); // Ensure this is awaited
-        fetchSubFamilyData();
+        dispatch(getFamily());
+        dispatch(getSubFamily());
         setFamName("");
         setFamilyError("");
         //enqueueSnackbar (response.data?.notification, { variant: 'success' })
@@ -412,8 +457,8 @@ export default function Articles() {
       )
       .then(function (response) {
         handleShowCreSubSuc();
-        fetchFamilyData(); // Ensure this is awaited
-        fetchSubFamilyData();  // Refresh family data
+        dispatch(getFamily());
+        dispatch(getSubFamily());
         setIsProcessing(false);
         setSubFamName("");
         setSubSelectName("");
@@ -458,8 +503,7 @@ export default function Articles() {
       )
       .then(function (response) {
         handleShowEditFamSuc();
-        fetchFamilyData();
-        fetchSubFamilyData();
+        dispatch(getFamily());
         setFamilyError("");
         // fetchProductionCenters();
       })
@@ -506,7 +550,7 @@ export default function Articles() {
       )
       .then(function (response) {
         handleShowEditSubFamSuc();
-        fetchSubFamilyData();
+        dispatch(getSubFamily());
       })
       .catch(function (error) {
         console.error(
@@ -533,7 +577,7 @@ export default function Articles() {
       .then(function (response) {
         handleCloseEditFam(); // Close edit family modal after deletion
         handleShowEditFamDel(); // Show success modal for family deletion
-        fetchFamilyData();
+        dispatch(getFamily());
         handleCloseEditFamDel();
         // Optionally, update state or refresh data after deletion
       })
@@ -565,7 +609,7 @@ export default function Articles() {
       .then(function (response) {
         handleCloseEditSubFam(); // Close edit subfamily modal after deletion
         handleShowEditSubFamDel(); // Show success modal for subfamily deletion
-        fetchSubFamilyData(); // Fetch updated subfamily data
+        dispatch(getSubFamily());
         handleCloseEditSubFamDelfinal(); // Close final confirmation modal
       })
       .catch(function (error) {
@@ -743,7 +787,7 @@ export default function Articles() {
       if (response.data.success) {
         setUploadedFile(response.data.file);
         handleShow1AddSuc();
-        fetchAllItems();
+        dispatch(getAllitems());
 
         // Reset form
         formRef.current = {

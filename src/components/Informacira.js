@@ -13,6 +13,11 @@ import { RiCloseLargeFill } from "react-icons/ri";
 import * as XLSX from "xlsx-js-style";
 import CajaRecipe from "./CajaRecipe";
 import CajaOrderRecipe from "./CajaOrderRecipe";
+import { useDispatch, useSelector } from "react-redux";
+import { getboxs, getboxsLogs } from "../redux/slice/box.slice";
+import { getRols, getUser } from "../redux/slice/user.slice";
+import { getAllTableswithSector } from "../redux/slice/table.slice";
+import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
 //import { enqueueSnackbar  } from "notistack";
 
 const Informacira = () => {
@@ -32,7 +37,7 @@ const Informacira = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [pricesecond, setpricesecond] = useState("");
   const [error, setError] = useState("");
-  const [boxName, setBoxName] = useState('');
+  const [boxName, setBoxName] = useState("");
   const [openPrice, setOpenPrice] = useState("");
   const [errorOpenPrice, setErrorOpenPrice] = useState("");
   const [closePrice, setClosePrice] = useState("");
@@ -52,24 +57,20 @@ const Informacira = () => {
   const [boxnameError, setBoxnameError] = useState();
   const [boxcashError, setBoxcashError] = useState();
 
-  useEffect(
-    () => {
-      if (selectedDesdeMonth > selectedHastaMonth) {
-        setError("Hasta month must be greater than or equal to Desde month.");
-        setData([]);
-      }
-    },
-    [selectedDesdeMonth, selectedHastaMonth]
-  );
-  useEffect(
-    () => {
-      if (selectedDesdeMonthReport > selectedHastaMonthReport) {
-        setErrorReport("Hasta month must be greater than or equal to Desde month.");
-        setData([]);
-      }
-    },
-    [selectedDesdeMonthReport, selectedHastaMonthReport]
-  );
+  useEffect(() => {
+    if (selectedDesdeMonth > selectedHastaMonth) {
+      setError("Hasta month must be greater than or equal to Desde month.");
+      setData([]);
+    }
+  }, [selectedDesdeMonth, selectedHastaMonth]);
+  useEffect(() => {
+    if (selectedDesdeMonthReport > selectedHastaMonthReport) {
+      setErrorReport(
+        "Hasta month must be greater than or equal to Desde month."
+      );
+      setData([]);
+    }
+  }, [selectedDesdeMonthReport, selectedHastaMonthReport]);
 
   const handleprice = (event) => {
     let value = event.target.value;
@@ -78,7 +79,7 @@ const Informacira = () => {
     }
 
     setClosePrice(value);
-    setErrorClosePrice('')
+    setErrorClosePrice("");
   };
   const handlepricesecond = (event) => {
     let value = event.target.value;
@@ -86,7 +87,7 @@ const Informacira = () => {
       value = value.substring(1);
     }
     setpricesecond(value);
-    setErrorCashPrice('');
+    setErrorCashPrice("");
   };
 
   const [showModal12, setShowModal12] = useState(false);
@@ -102,7 +103,13 @@ const Informacira = () => {
 
   const [show11, setShow11] = useState(false);
 
-  const handleClose11 = () => { setShow11(false); setClosePrice(''); setErrorClosePrice(''); setErrorCashPrice(''); setpricesecond('') };
+  const handleClose11 = () => {
+    setShow11(false);
+    setClosePrice("");
+    setErrorClosePrice("");
+    setErrorCashPrice("");
+    setpricesecond("");
+  };
   const handleShow11 = () => setShow11(true);
 
   const [show15, setShow15] = useState(false);
@@ -112,7 +119,11 @@ const Informacira = () => {
 
   const [show16, setShow16] = useState(false);
 
-  const handleClose16 = () => { setShow16(false); setOpenPrice(''); setErrorOpenPrice('') };
+  const handleClose16 = () => {
+    setShow16(false);
+    setOpenPrice("");
+    setErrorOpenPrice("");
+  };
   const handleShow16 = () => setShow16(true);
 
   const [show17, setShow17] = useState(false);
@@ -162,7 +173,7 @@ const Informacira = () => {
     if (box.close_amount === null) {
       setSelectedBox(box);
       setShow19(true);
-      setShow(false)
+      setShow(false);
     } else {
       setSelectedBox(box);
       setShow17(true);
@@ -197,8 +208,8 @@ const Informacira = () => {
   const [selectedBox, setSelectedBox] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedBoxDetails, setSelectedBoxDetails] = useState(null);
-  const [editedBoxName, setEditedBoxName] = useState('');
-  const [editedCashierId, setEditedCashierId] = useState('');
+  const [editedBoxName, setEditedBoxName] = useState("");
+  const [editedCashierId, setEditedCashierId] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false); // State for delete confirmation modal
   const [showDelModal, setShowDelModal] = useState(false); // State for delete confirmation modal
   const [isProcessing, setIsProcessing] = useState(false);
@@ -208,13 +219,19 @@ const Informacira = () => {
   const boxNameRef = useRef(null);
   const cashierIdRef = useRef(null);
 
+  const dispatch = useDispatch();
+  const { box, boxLogs } = useSelector((state) => state.boxs);
+  const { user, roles } = useSelector((state) => state.user);
+  const { orders, payments } = useSelector((state) => state.orders);
+  const { tablewithSector } = useSelector((state) => state.tables);
+
   const handleEdit = (box) => {
     if (!box || !box[0]) return;
-    
+
     // Set initial values to refs instead of state
     boxNameRef.current = box[0].name;
     cashierIdRef.current = box[0].user_id?.toString() || "0";
-    
+
     setSelectedBox(box[0]);
     setShow(true);
   };
@@ -222,11 +239,11 @@ const Informacira = () => {
   const handleSaveChanges = async () => {
     // Validate inputs
     if (!boxNameRef.current) {
-      setBoxnameError('El nombre de la caja es requerido');
+      setBoxnameError("El nombre de la caja es requerido");
       return;
     }
     if (cashierIdRef.current === "0") {
-      setBoxcashError('Por favor seleccione un cajero');
+      setBoxcashError("Por favor seleccione un cajero");
       return;
     }
 
@@ -239,7 +256,7 @@ const Informacira = () => {
         {
           name: boxNameRef.current,
           user_id: cashierIdRef.current,
-          admin_id: admin_id
+          admin_id: admin_id,
         },
         {
           headers: {
@@ -251,21 +268,26 @@ const Informacira = () => {
       if (response.status === 200) {
         handleShowCreSuc();
         // Refresh the box data
-        setBoxName(prev => prev.map(box =>
-          box.id === selectedBox.id ? { 
-            ...box, 
-            name: boxNameRef.current, 
-            user_id: cashierIdRef.current 
-          } : box
-        ));
+        setBoxName((prev) =>
+          prev.map((box) =>
+            box.id === selectedBox.id
+              ? {
+                  ...box,
+                  name: boxNameRef.current,
+                  user_id: cashierIdRef.current,
+                }
+              : box
+          )
+        );
 
         fetchAllBox();
-        getBox();
-        setBoxcashError('');
-        setBoxnameError('');
+        dispatch(getboxs({ admin_id }));
+        // getBox();
+        setBoxcashError("");
+        setBoxnameError("");
       }
     } catch (error) {
-      console.error('Error updating box:', error);
+      console.error("Error updating box:", error);
     }
     setIsProcessing(false);
   };
@@ -275,20 +297,23 @@ const Informacira = () => {
     setShowDeleteModal(false); // Close the modal
     setIsProcessing(true);
     try {
-      const response = await axios.delete(`${apiUrl}/box/delete/${selectedBox.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.delete(
+        `${apiUrl}/box/delete/${selectedBox.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.status === 200) {
         // Deletion was successful
         fetchAllBox(); // Refresh the box data
-
+        dispatch(getboxs({ admin_id }));
         setShowDelModal(true);
         setTimeout(() => {
           setShowDelModal(false); // Hide success modal
-          navigate('/caja'); // Navigate to caja page
+          navigate("/caja"); // Navigate to caja page
         }, 2000);
         if (response.data && response.data.notification) {
           //enqueueSnackbar (response.data.notification, { variant: 'success' });
@@ -297,50 +322,57 @@ const Informacira = () => {
         // console.log("Box deleted successfully");
         // navigate('/caja');
       } else {
-        console.error('Failed to delete box');
+        console.error("Failed to delete box");
         //enqueueSnackbar (response.data?.alert, { variant: 'error' })
         // playNotificationSound();;
       }
     } catch (error) {
-      console.error('Error deleting box:', error);
+      console.error("Error deleting box:", error);
       //enqueueSnackbar (error?.response?.data?.alert, { variant: 'error' })
       // playNotificationSound();;
     }
     setIsProcessing(false);
   };
 
-  const [finalAmount, setFinalAmount] = useState(0)
+  const [finalAmount, setFinalAmount] = useState(0);
 
-  useEffect(()=>{
+  useEffect(() => {
     finalamount();
-  },[bId,data])
+  }, [bId, data]);
 
-  const finalamount = async()=>{
+  const finalamount = async () => {
     try {
-      const response = await axios.post(`${apiUrl}/boxLogFinalAmount`,{
-        admin_id,
-        box_id:bId,
-      } ,{
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }})
-        
-        if(response.data.total_amount > 0){
-          setFinalAmount((response.data.total_amount + parseFloat(data[0].open_amount)).toFixed(2) )
-        }else{
-          setFinalAmount(data[0]?.open_amount)
+      const response = await axios.post(
+        `${apiUrl}/boxLogFinalAmount`,
+        {
+          admin_id,
+          box_id: bId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
+      );
+
+      if (response.data.total_amount > 0) {
+        setFinalAmount(
+          (
+            response.data.total_amount + parseFloat(data[0].open_amount)
+          ).toFixed(2)
+        );
+      } else {
+        setFinalAmount(data[0]?.open_amount);
+      }
     } catch (error) {
       console.log(error);
-      
     }
-  }
+  };
 
   // useEffect(() => {
 
   //   // filteredOrders.filter()
 
- 
   //   // const opentime = data[data.length - 1]?.open_time
   //   const opentime = data[0]?.open_time
   //   // const a = new Date(allpayments?.[0]?.created_at).toISOString().split('T')[0] + ' ' + new Date(allpayments?.[0]?.created_at).toISOString().split('T')[1].split('.')[0]
@@ -362,201 +394,242 @@ const Informacira = () => {
   //     const returnAmount = parseFloat(payment.return) || 0;
   //     return sum + (amount - returnAmount);
   //   }, 0);
-    
-  //   // console.log("Total Amount:", totalAmount.toFixed(2)); 
+
+  //   // console.log("Total Amount:", totalAmount.toFixed(2));
   //   const init = parseFloat(data[data.length-1]?.open_amount)
 
   //   setFinalAmount((totalAmount + init).toFixed(2));
   // }, [allOrder, data])
 
   // const [orders, setOrders] = useState([]);
-  const fetchAllOrder = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(
-        `${apiUrl}/order/getAll`,
-        { admin_id: admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      const filteredOrders = response.data.filter(order => order.box_id == bId).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      // console.log(filteredOrders);
+  // const fetchAllOrder = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.post(
+  //       `${apiUrl}/order/getAll`,
+  //       { admin_id: admin_id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     const filteredOrders = response.data
+  //       .filter((order) => order.box_id == bId)
+  //       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  //     // console.log(filteredOrders);
 
-      setAllOrder(filteredOrders);
-      // setOrders(response.data);
-    } catch (error) {
-      console.error("Error fetching boxes:", error);
-    }
-    setIsProcessing(false);
-  };
-  const fetchAllpayment = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(
-        `${apiUrl}/get-payments`, { admin_id: admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      setAllpayments(response.data.result);
+  //     setAllOrder(filteredOrders);
+  //     // setOrders(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching boxes:", error);
+  //   }
+  //   setIsProcessing(false);
+  // };
+  // const fetchAllpayment = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.post(
+  //       `${apiUrl}/get-payments`,
+  //       { admin_id: admin_id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     setAllpayments(response.data.result);
+  //   } catch (error) {
+  //     console.error("Error fetching boxes:", error);
+  //   }
+  //   setIsProcessing(false);
+  // };
 
-    } catch (error) {
-      console.error("Error fetching boxes:", error);
-    }
-    setIsProcessing(false);
-  }
-
-  const fetchAllTable = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(
-        `${apiUrl}/sector/getWithTable`, { admin_id: admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      setAllTable(response.data.data);
-
-    } catch (error) {
-      console.error("Error fetching boxes:", error);
-    }
-    setIsProcessing(false);
-  };
+  // const fetchAllTable = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.post(
+  //       `${apiUrl}/sector/getWithTable`,
+  //       { admin_id: admin_id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     setAllTable(response.data.data);
+  //   } catch (error) {
+  //     console.error("Error fetching boxes:", error);
+  //   }
+  //   setIsProcessing(false);
+  // };
   const fetchAllBox = async () => {
     setIsProcessing(true);
     try {
       const response = await axios.get(
         `${apiUrl}/get-boxlogs-all/${bId}?from_month=${selectedDesdeMonth}&to_month=${selectedHastaMonth}`,
         {
-          // const response = await axios.get(`${API_URL}/getAllboxes`, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      // console.log(response.data);
-      const data = response.data.map((box) => ({
+      const data = response.data
+        .map((box) => ({
           ...box,
-          createdAt: new Date(box.created_at).toLocaleString() // Assuming the API returns a 'created_at' field
-        })).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      setData(data)
-      // setNotificationMessage(response.data.notification || response.data.alert);
-      // //enqueueSnackbar (response.data.notification, { variant: 'success' });
-      // // playNotificationSound();;
-      // console.log("sdjjisdbdb", response.data)
-
+          createdAt: new Date(box.created_at).toLocaleString(), // Assuming the API returns a 'created_at' field
+        }))
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setData(data);
     } catch (error) {
       console.error("Error fetching boxes:", error);
-      // //enqueueSnackbar (error?.response?.data?.alert || "Error fetching boxes", { variant: 'error' });
     }
     setIsProcessing(false);
   };
 
-  // console.log(data);
 
-  const fetchAllBoxReport = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(
-        `${apiUrl}/box/orderReport/${bId}?from_month=${selectedDesdeMonthReport}&to_month=${selectedHastaMonthReport}`,
-        {
-          // const response = await axios.get(`${API_URL}/getAllboxes`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      if (response.data && response.data.notification) {
-        //enqueueSnackbar (response.data.notification, { variant: 'success' });
-        // playNotificationSound();;
+  // const fetchAllBoxReport = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(
+  //       `${apiUrl}/box/orderReport/${bId}?from_month=${selectedDesdeMonthReport}&to_month=${selectedHastaMonthReport}`,
+  //       {
+
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     if (response.data && response.data.notification) {
+  //       //enqueueSnackbar (response.data.notification, { variant: 'success' });
+  //       // playNotificationSound();;
+  //     }
+  //     // playNotificationSound();;
+  //     // // playNotificationSound();;
+  //   } catch (error) {
+  //     console.error("Error fetching boxes:", error);
+  //     // //enqueueSnackbar (error?.response.data.alert, { variant: 'error' });
+  //     //enqueueSnackbar (error?.response.data.alert, { variant: 'error' })
+  //     // playNotificationSound();;
+  //     // // playNotificationSound();;
+  //   }
+  //   setIsProcessing(false);
+  // };
+  useEffect(() => {
+    if (!(role == "admin" || role == "cashier")) {
+      navigate("/dashboard");
+      // alert(role)
+    } else {
+      if (token) {
+        fetchAllBox();
+        // fetchUser();
+        // getBox();
+        // fetchAllBoxReport();
+        // fetchAllOrder();
+        // fetchAllTable();
+        // getUser();
+        // fetchAllpayment();
       }
-      // playNotificationSound();;
-      // // playNotificationSound();;
-    } catch (error) {
-      console.error("Error fetching boxes:", error);
-      // //enqueueSnackbar (error?.response.data.alert, { variant: 'error' });
-      //enqueueSnackbar (error?.response.data.alert, { variant: 'error' })
-      // playNotificationSound();;
-      // // playNotificationSound();;
     }
-    setIsProcessing(false);
-  };
-  useEffect(
-    () => {
-      if (!(role == "admin" || role == "cashier")) {
-        navigate('/dashboard')
-        // alert(role)
-      } else {
-        if (token) {
+  }, [
+    token,
+    selectedDesdeMonth,
+    selectedHastaMonth,
+    selectedDesdeMonthReport,
+    selectedHastaMonthReport,
+    role,
+  ]);
 
-          fetchAllBox();
-          fetchUser();
-          getBox();
-          fetchAllBoxReport();
-          fetchAllOrder();
-          fetchAllTable();
-          // getUser();
-          fetchAllpayment();
-        }
-      }
-    },
-    [token, selectedDesdeMonth, selectedHastaMonth, selectedDesdeMonthReport, selectedHastaMonthReport, role]
-  );
-
-  // get box
-  const getBox = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/get-boxs`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      const filteredItem = response.data.filter(item => item.id == bId);
-      setBoxName(filteredItem);
-      // setUsers(response.data);
-    } catch (error) {
-      console.error("Error fetching boxes:", error);
+  useEffect(() => {
+    if (box?.length == 0) {
+      dispatch(getboxs({ admin_id }));
     }
-    setIsProcessing(false);
-  };
-
-  //   get User
-  const getUser = async (id) => {
-    try {
-      const response = await axios.get(`${apiUrl}/get-user/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setUserName(response.data);
-    } catch (error) {
-      console.error("Error fetching boxes:", error);
+    if (user?.length == 0) {
+      dispatch(getUser());
     }
-  };
+    if (roles?.length == 0) {
+      dispatch(getRols());
+    }
+    if (tablewithSector?.length == 0) {
+      dispatch(getAllTableswithSector({ admin_id }));
+    }
+    if (orders?.length == 0) {
+      dispatch(getAllOrders({ admin_id }));
+    }
+    if (payments?.length == 0) {
+      dispatch(getAllPayments({ admin_id }));
+    }
+  }, [admin_id]);
 
-  // Fetch all users
-  const fetchUser = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/get-users`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setUsers(response.data);
-      const cashiers = response.data.filter(user => user.role_id === 2);
+  useEffect(() => {
+    if (tablewithSector) {
+      setAllTable(tablewithSector);
+    }
+    if (box && bId) {
+      setBoxName(box.filter((item) => item.id == bId));
+    }
+    if (user) {
+      setUsers(user);
+      const cashiers = user.filter((user) => user.role_id === 2);
       setCashier(cashiers);
-    } catch (error) {
-      console.error("Error fetching users:", error);
     }
-    setIsProcessing(false);
-  };
+    if (orders) {
+      const filteredOrders = orders.filter((order) => order.box_id == bId).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setAllOrder(filteredOrders);
+    }
+    if (payments) {
+      setAllpayments(payments);
+    }
+  }, [tablewithSector]);;
+
+
+  // // get box
+  // const getBox = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/get-boxs`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const filteredItem = response.data.filter((item) => item.id == bId);
+  //     setBoxName(filteredItem);
+  //     // setUsers(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching boxes:", error);
+  //   }
+  //   setIsProcessing(false);
+  // };
+
+  // //   get User
+  // const getUser = async (id) => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/get-user/${id}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     setUserName(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching boxes:", error);
+  //   }
+  // };
+
+  // // Fetch all users
+  // const fetchUser = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/get-users`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     setUsers(response.data);
+  //     const cashiers = response.data.filter((user) => user.role_id === 2);
+  //     setCashier(cashiers);
+  //   } catch (error) {
+  //     console.error("Error fetching users:", error);
+  //   }
+  //   setIsProcessing(false);
+  // };
 
   const handleShowDetails = (box) => {
     setSelectedBox(box);
@@ -571,9 +644,8 @@ const Informacira = () => {
   const handleOpenBox = async () => {
     if (!bId) return; // Ensure a box is selected
 
-
     if (data.length > 0) {
-      const check = data[0].close_amount
+      const check = data[0].close_amount;
       // const check = data[data.length - 1].close_amount
       if (!check) {
         setErrorOpenPrice("La caja ya está abierta."); // Set error message
@@ -587,8 +659,8 @@ const Informacira = () => {
         `${apiUrl}/box/statusChange`,
         {
           box_id: bId, // Pass the box ID
-          open_amount: openPrice,  // Pass the open amount
-          admin_id: admin_id
+          open_amount: openPrice, // Pass the open amount
+          admin_id: admin_id,
         },
         {
           headers: {
@@ -599,24 +671,24 @@ const Informacira = () => {
 
       // console.log(response);
 
-
       if (response.status === 200) {
         handleShow18(); // Show success modal
         fetchAllBox(); // Refresh box data
         // console.log("open box successfully")
         handleClose16();
+        dispatch(getboxsLogs({ admin_id }));
         if (response.data && response.data.notification) {
           //enqueueSnackbar (response.data.notification, { variant: 'success' });
           // playNotificationSound();;
         }
         // playNotificationSound();;
       } else {
-        console.error('Failed to open box');
+        console.error("Failed to open box");
         //enqueueSnackbar (response.data?.alert, { variant: 'error' })
         // playNotificationSound();;
       }
     } catch (error) {
-      console.error('Error opening box:', error);
+      console.error("Error opening box:", error);
       //enqueueSnackbar (error?.response?.data?.alert, { variant: 'error' })
       // playNotificationSound();;
     }
@@ -637,7 +709,7 @@ const Informacira = () => {
           box_id: bId, // Pass the box ID
           close_amount: finalAmount, // Pass the close amount
           cash_amount: pricesecond,
-          admin_id: admin_id
+          admin_id: admin_id,
         },
         {
           headers: {
@@ -645,15 +717,17 @@ const Informacira = () => {
           },
         }
       );
-      // console.log(response);   
+      // console.log(response);
       if (response.status === 200) {
         handleShow12(); // Show success modal
         handleClose11();
         fetchAllBox(); // Refresh box data
-        const bid = localStorage.getItem("boxId")
-        if(bid){
-          if(bid == bId){
-            localStorage.removeItem("boxId")
+        dispatch(getboxsLogs({ admin_id }));
+
+        const bid = localStorage.getItem("boxId");
+        if (bid) {
+          if (bid == bId) {
+            localStorage.removeItem("boxId");
           }
         }
         // console.log("Box closed successfully");
@@ -662,32 +736,27 @@ const Informacira = () => {
           // playNotificationSound();;
         }
         // playNotificationSound();;
-
       } else {
-        console.error('Failed to close box');
+        console.error("Failed to close box");
         //enqueueSnackbar (response.data?.alert, { variant: 'error' })
         // playNotificationSound();;
       }
     } catch (error) {
-      console.error('Error closing box:', error);
+      console.error("Error closing box:", error);
       //enqueueSnackbar (error?.response?.data?.alert, { variant: 'error' })
       // playNotificationSound();;
     }
     setIsProcessing(false);
   };
 
-
-  useEffect(
-    () => {
-      if (selectedDesdeMonthReport > selectedHastaMonthReport) {
-        setErrorReport("Hasta el mes debe ser mayor o igual que Desde el mes.");
-        setData([]);
-      } else {
-        setErrorReport("");
-      }
-    },
-    [selectedDesdeMonthReport, selectedHastaMonthReport]
-  );
+  useEffect(() => {
+    if (selectedDesdeMonthReport > selectedHastaMonthReport) {
+      setErrorReport("Hasta el mes debe ser mayor o igual que Desde el mes.");
+      setData([]);
+    } else {
+      setErrorReport("");
+    }
+  }, [selectedDesdeMonthReport, selectedHastaMonthReport]);
 
   const monthNames = [
     "Enero",
@@ -701,26 +770,27 @@ const Informacira = () => {
     "Septiembre",
     "Octubre",
     "Noviembre",
-    "Diciembre"
+    "Diciembre",
   ];
 
   const generateExcelReport = async () => {
     if (selectedDesdeMonthReport > selectedHastaMonthReport) {
-      setErrorReport("Hasta month must be greater than or equal to Desde month.");
+      setErrorReport(
+        "Hasta month must be greater than or equal to Desde month."
+      );
       setData([]);
       return;
     }
     setIsProcessing(true);
     try {
-
       // Fetch box report details from the API
       const responseB = await axios.get(
         `${apiUrl}/get-boxlogs-all/${bId}?from_month=${selectedDesdeMonthReport}&to_month=${selectedHastaMonthReport}`,
         {
           // const response = await axios.get(`${API_URL}/getAllboxes`, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -732,9 +802,9 @@ const Informacira = () => {
           Horario_de_cierre: box.close_time || "N/A", // Handle potential null values
           Monto_inicial: "$" + box.open_amount,
           Monto_final: "$" + box.close_amount || "N/A", // Handle potential null values
-          Estado: box.close_amount === null ? "Abierta" : "Cerrada"
+          Estado: box.close_amount === null ? "Abierta" : "Cerrada",
         };
-      })
+      });
 
       // console.log(boxData);
 
@@ -746,14 +816,19 @@ const Informacira = () => {
 
       // Add column names only if there is data
       if (boxData.length > 0) {
-        const columnNames = ["Horario de apertura", "Horario de cierre", " Monto inicial", "Monto final"];
-        XLSX.utils.sheet_add_aoa(ws, [columnNames], { origin: "A2" })
+        const columnNames = [
+          "Horario de apertura",
+          "Horario de cierre",
+          " Monto inicial",
+          "Monto final",
+        ];
+        XLSX.utils.sheet_add_aoa(ws, [columnNames], { origin: "A2" });
       }
 
       // Apply styles to the heading
       ws["A1"].s = {
         font: { name: "Aptos Narrow", bold: true, sz: 16 },
-        alignment: { horizontal: "center", vertical: "center" }
+        alignment: { horizontal: "center", vertical: "center" },
       };
 
       // Set row height for the heading
@@ -762,32 +837,42 @@ const Informacira = () => {
       ws["!rows"][1] = { hpt: 25 }; // Set height for column names
 
       // Auto-size columns
-      const colWidths = [{ wch: 30 }, { wch: 30 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
+      const colWidths = [
+        { wch: 30 },
+        { wch: 30 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+      ];
       ws["!cols"] = colWidths;
 
       // Add sorting functionality
-      ws['!autofilter'] = { ref: `A2:E${boxData.length}` }; // Enable autofilter for the range
+      ws["!autofilter"] = { ref: `A2:E${boxData.length}` }; // Enable autofilter for the range
 
       // Create a workbook
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Historial");
 
-
       // =======infomation=======
       const infomation = {
         Nombre_caja: boxName[0]?.name,
-        Fecha_creación: boxName[0]?.created_at ? new Date(boxName[0]?.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '',
-        Cuantas_aperturas: data.filter(item => item.open_amount !== null).length,
-        Cuantos_cierres: data.filter(item => item.close_amount !== null).length
+        Fecha_creación: boxName[0]?.created_at
+          ? new Date(boxName[0]?.created_at).toLocaleDateString("es-ES", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })
+          : "",
+        Cuantas_aperturas: data.filter((item) => item.open_amount !== null)
+          .length,
+        Cuantos_cierres: data.filter((item) => item.close_amount !== null)
+          .length,
       };
 
-      const formattedData = Object.entries(
-        infomation
-      ).map(([key, value]) => ({
+      const formattedData = Object.entries(infomation).map(([key, value]) => ({
         Campo: key,
-        Valor: value
+        Valor: value,
       }));
-
 
       // Create a worksheet
       const wsi = XLSX.utils.json_to_sheet(formattedData, { origin: "A2" });
@@ -800,7 +885,7 @@ const Informacira = () => {
       // Apply styles to the heading
       wsi["A1"].s = {
         font: { name: "Aptos Narrow", bold: true, sz: 16 },
-        alignment: { horizontal: "center", vertical: "center" }
+        alignment: { horizontal: "center", vertical: "center" },
       };
 
       // Set row height for the heading
@@ -814,17 +899,14 @@ const Informacira = () => {
       // Set row height for header
       wsi["!rows"] = [{ hpt: 25 }]; // Set height of first row to 25
 
-
       // Create a workbook
       XLSX.utils.book_append_sheet(wb, wsi, "Información");
 
       // =============== Movements =============
 
-
       const Movimientos = allOrder.map((user, index) => {
-
-        const matchedSector = allTable.find(sector =>
-          sector.tables.some(table => table.id === user.table_id)
+        const matchedSector = allTable.find((sector) =>
+          sector.tables.some((table) => table.id === user.table_id)
         );
 
         // Get the sector name if a match is found
@@ -833,17 +915,30 @@ const Informacira = () => {
           Pedido: user.id, // Corrected to format date and time
           Sector: sectorName, // Handle potential null values
           Mesa: user.table_id,
-          Fecha: new Date(user.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }), // Handle potential null values
+          Fecha: new Date(user.created_at).toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }), // Handle potential null values
           Código_transacción: user.codigo,
-          Estado: user.status === "received" ? "Recibido" :
-            user.status === "prepared" ? "Preparado" :
-              user.status === "delivered" ? "Entregado" :
-                user.status === "finalized" ? "Finalizado" :
-                  user.status === "withdraw" ? "Retirar" :
-                    user.status === "local" ? "Local" :
-                      user.status === "cancelled" ? "Cancelada" : "Unknown"
+          Estado:
+            user.status === "received"
+              ? "Recibido"
+              : user.status === "prepared"
+              ? "Preparado"
+              : user.status === "delivered"
+              ? "Entregado"
+              : user.status === "finalized"
+              ? "Finalizado"
+              : user.status === "withdraw"
+              ? "Retirar"
+              : user.status === "local"
+              ? "Local"
+              : user.status === "cancelled"
+              ? "Cancelada"
+              : "Unknown",
         };
-      })
+      });
 
       // console.log(boxData);
 
@@ -855,14 +950,21 @@ const Informacira = () => {
 
       // Add column names only if there is data
       if (Movimientos.length > 0) {
-        const columnNames = ["Pedido", "Sector", "Mesa", "Fecha", "Código transacción", "Estado"];
-        XLSX.utils.sheet_add_aoa(wsM, [columnNames], { origin: "A2" })
+        const columnNames = [
+          "Pedido",
+          "Sector",
+          "Mesa",
+          "Fecha",
+          "Código transacción",
+          "Estado",
+        ];
+        XLSX.utils.sheet_add_aoa(wsM, [columnNames], { origin: "A2" });
       }
 
       // Apply styles to the heading
       wsM["A1"].s = {
         font: { name: "Aptos Narrow", bold: true, sz: 16 },
-        alignment: { horizontal: "center", vertical: "center" }
+        alignment: { horizontal: "center", vertical: "center" },
       };
 
       // Set row height for the heading
@@ -871,11 +973,18 @@ const Informacira = () => {
       wsM["!rows"][1] = { hpt: 25 }; // Set height for column names
 
       // Auto-size columns
-      const colWidthsM = [{ wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
+      const colWidthsM = [
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+      ];
       wsM["!cols"] = colWidthsM;
 
       // Add sorting functionality
-      wsM['!autofilter'] = { ref: `A2:F${Movimientos.length}` }; // Enable autofilter for the range
+      wsM["!autofilter"] = { ref: `A2:F${Movimientos.length}` }; // Enable autofilter for the range
 
       // Create a workbook
 
@@ -891,7 +1000,6 @@ const Informacira = () => {
       setIsProcessing(false);
 
       handleShow12();
-
     } catch (error) {
       console.error("Error generating report:", error);
       setErrorReport(
@@ -899,7 +1007,7 @@ const Informacira = () => {
       );
     }
   };
-  // print recipe 
+  // print recipe
   // const handlePrint = () => {
   //   const printElement = document.getElementById('printable');
   //   const printWindow = window.open('', '_blank', 'height=600,width=700');
@@ -940,7 +1048,6 @@ const Informacira = () => {
         // Remove the iframe after printing (or if printing fails)
         setTimeout(() => {
           document.body.removeChild(iframe);
-
         }, 500);
       };
     } else {
@@ -948,10 +1055,8 @@ const Informacira = () => {
     }
   };
 
-
   const [results, setResults] = useState([]);
   // recipt sumation
-
 
   // const fetchOrderDiscounts = async () => {
   //   const discountPromises = data.map(async (item) => {
@@ -980,34 +1085,39 @@ const Informacira = () => {
   //   }
   // };
 
-
-
   const fetchOrderDiscounts = async () => {
     const discountPromises = data.map(async (item) => {
       let totalDiscount = 0;
       let totalTax = 0;
       const totalPaymentByType = {}; //
 
-      if (item.order_master_id) { // Check for order_master_id if payment_id is not present
+      if (item.order_master_id) {
+        // Check for order_master_id if payment_id is not present
         // const orderIds = item.order_master_id.split(','); // Split by comma
 
-        const orderIds = item.order_master_id.split(','); // Split by comma
-        const orderDiscounts = orderIds.map(id => {
+        const orderIds = item.order_master_id.split(","); // Split by comma
+        const orderDiscounts = orderIds.map((id) => {
           // console.log(id);
 
-          const order = allOrder.find(order => order.id == id); // Find order in allOrder
+          const order = allOrder.find((order) => order.id == id); // Find order in allOrder
           // console.log(id, order);
 
-          return { id, discount: order?.discount ? parseFloat(order?.discount) : 0 }; // Ensure discount is a number
+          return {
+            id,
+            discount: order?.discount ? parseFloat(order?.discount) : 0,
+          }; // Ensure discount is a number
         });
-        totalDiscount = orderDiscounts.reduce((sum, v) => sum + v.discount, 0) ? orderDiscounts.reduce((sum, v) => sum + v.discount, 0) : 0; // Sum all discounts
+        totalDiscount = orderDiscounts.reduce((sum, v) => sum + v.discount, 0)
+          ? orderDiscounts.reduce((sum, v) => sum + v.discount, 0)
+          : 0; // Sum all discounts
         // console.log(orderIds,orderDiscounts,totalDiscount);
-
       }
       if (item.payment_id) {
-        const paymentIds = item.payment_id.split(','); // Split by comma
-        const paymentDetails = paymentIds.map(id => {
-          const payment = allpayments.find(payment => payment.id == parseInt(id)); // Find payment in allpayments
+        const paymentIds = item.payment_id.split(","); // Split by comma
+        const paymentDetails = paymentIds.map((id) => {
+          const payment = allpayments.find(
+            (payment) => payment.id == parseInt(id)
+          ); // Find payment in allpayments
           if (payment) {
             const tax = parseFloat(payment.tax) || 0; // Ensure tax is a number
             totalTax += tax; // Sum the tax
@@ -1017,7 +1127,6 @@ const Informacira = () => {
             const paymentType = payment.type; // Store the payment type
             const paymentAmount = parseFloat(payment.amount); // Store the payment amount as a number
             // console.log(paymentType,paymentAmount);
-
 
             // Create or update the total for the payment type
             if (!totalPaymentByType[paymentType]) {
@@ -1031,7 +1140,12 @@ const Informacira = () => {
         return { id: item.id, totalTax, totalPaymentByType };
       }
 
-      return { id: item.id, totalDiscount: totalDiscount ? totalDiscount : 0, totalTax, totalPaymentByType };
+      return {
+        id: item.id,
+        totalDiscount: totalDiscount ? totalDiscount : 0,
+        totalTax,
+        totalPaymentByType,
+      };
     });
 
     try {
@@ -1045,14 +1159,18 @@ const Informacira = () => {
 
   // Call this function where appropriate, e.g., in a useEffect or event handler
 
-
-
   useEffect(() => {
     fetchOrderDiscounts();
   }, [data]);
   const getDiscountForBox = (boxId) => {
-    const discountData = results.find(result => result.id === boxId);
-    return discountData ? { discount: discountData.totalDiscount, tax: discountData.totalTax, type: discountData.totalPaymentByType } : { discount: 0, tax: 0 }; // Return discount and tax or 0 if not found
+    const discountData = results.find((result) => result.id === boxId);
+    return discountData
+      ? {
+          discount: discountData.totalDiscount,
+          tax: discountData.totalTax,
+          type: discountData.totalPaymentByType,
+        }
+      : { discount: 0, tax: 0 }; // Return discount and tax or 0 if not found
   };
   const [showpay, setShowpay] = useState(false);
 
@@ -1061,19 +1179,17 @@ const Informacira = () => {
     setTimeout(() => {
       setShowpay(false);
     }, 2000);
+  };
 
-  }
-
-  const handleorderRecipt = (data) =>{
-
-    const payament = allpayments.some((v) => v.order_master_id == data.id)
+  const handleorderRecipt = (data) => {
+    const payament = allpayments.some((v) => v.order_master_id == data.id);
     // console.log(payament);
-    if(payament){
-      setShowModalOrder(true)
-    }else{
-      handleClosepay()
+    if (payament) {
+      setShowModalOrder(true);
+    } else {
+      handleClosepay();
     }
-  }
+  };
 
   return (
     <section>
@@ -1084,13 +1200,13 @@ const Informacira = () => {
             <Sidenav />
           </div>
           <div className="flex-grow-1 sidebar">
-
             <div>
               <div className="py-3 px-4 sjbg_gay sj_border sjmargin">
                 {/* <button className="sj_btn"><img src={icon5} className="px-2" /> </button> */}
                 <Link to="/caja" className="sj_A">
                   <button className="bj-btn-outline-primary  j-tbl-btn-font-1 btn">
-                    <HiOutlineArrowLeft className="j-table-datos-icon" />Regresar
+                    <HiOutlineArrowLeft className="j-table-datos-icon" />
+                    Regresar
                   </button>
                 </Link>
                 <div className="row pt-4 text-white justify-content-between text-white sjd-flex">
@@ -1099,7 +1215,6 @@ const Informacira = () => {
                   </div>
                   <div className="col-12 col-md-9">
                     <div className="d-flex flex-wrap justify-content-md-end gap-2 sjd-flex row-gap-2">
-
                       {/* {(data.length === 0 || data[data.length - 1]?.close_amount != null) && ( */}
                       {(data.length === 0 || data[0]?.close_amount != null) && (
                         <button
@@ -1140,21 +1255,33 @@ const Informacira = () => {
                             value={`$ ${openPrice}`} // Add the dollar sign to the displayed value
                             onChange={(e) => {
                               // Remove the dollar sign and any non-numeric characters before updating the state
-                              const value = e.target.value.replace(/[^0-9.]/g, '');
+                              const value = e.target.value.replace(
+                                /[^0-9.]/g,
+                                ""
+                              );
                               setOpenPrice(value);
                               setErrorOpenPrice(""); // Clear error if input is empty
-
                             }}
                           />
-                          {errorOpenPrice && <div className="text-danger errormessage">{errorOpenPrice}</div>}
+                          {errorOpenPrice && (
+                            <div className="text-danger errormessage">
+                              {errorOpenPrice}
+                            </div>
+                          )}
                         </Modal.Body>
                         <Modal.Footer className="sjmodenone">
                           <Button
                             variant="primary"
                             className="btn j-btn-primary text-white j-caja-text-1"
                             onClick={() => {
-                              if (!openPrice || isNaN(openPrice) || parseFloat(openPrice) <= 0) {
-                                setErrorOpenPrice("Monto inicial debe ser un número positivo."); // Set error if validation fails
+                              if (
+                                !openPrice ||
+                                isNaN(openPrice) ||
+                                parseFloat(openPrice) <= 0
+                              ) {
+                                setErrorOpenPrice(
+                                  "Monto inicial debe ser un número positivo."
+                                ); // Set error if validation fails
                               } else {
                                 handleOpenBox(); // Call the new function here
                               }
@@ -1195,16 +1322,20 @@ const Informacira = () => {
                         keyboard={false}
                         className="m_modal jay-modal"
                       >
-                        <Modal.Header closeButton className="border-0" onClick={() => { setShowpay(false) }} />
+                        <Modal.Header
+                          closeButton
+                          className="border-0"
+                          onClick={() => {
+                            setShowpay(false);
+                          }}
+                        />
                         <Modal.Body>
                           <div className="text-center">
                             {/* <img
                               src={require("../Image/check-circle.png")}
                               alt=""
                             /> */}
-                            <p className="mb-0 mt-2 h6 j-tbl-pop-1">
-
-                            </p>
+                            <p className="mb-0 mt-2 h6 j-tbl-pop-1"></p>
                             <p className="opacity-75 j-tbl-pop-2">
                               Panding de pago para este pedid
                             </p>
@@ -1263,7 +1394,8 @@ const Informacira = () => {
                                 aria-label="Default select example"
                                 value={selectedDesdeMonthReport}
                                 onChange={(e) =>
-                                  setSelectedDesdeMonthReport(e.target.value)}
+                                  setSelectedDesdeMonthReport(e.target.value)
+                                }
                               >
                                 <option selected value="1">
                                   Enero
@@ -1291,7 +1423,8 @@ const Informacira = () => {
                                 aria-label="Default select example"
                                 value={selectedHastaMonthReport}
                                 onChange={(e) =>
-                                  setSelectedHastaMonthReport(e.target.value)}
+                                  setSelectedHastaMonthReport(e.target.value)
+                                }
                               >
                                 <option selected value="1">
                                   Enero
@@ -1341,9 +1474,8 @@ const Informacira = () => {
                             className="btn j-btn-primary text-white j-caja-text-1"
                             onClick={() => {
                               // handleShow12();
-                              // 
+                              //
                               generateExcelReport();
-
                             }}
                           >
                             Generar reporte
@@ -1381,7 +1513,6 @@ const Informacira = () => {
                         </div>
                       </button>
 
-
                       {/* edit */}
                       <Modal
                         show={show}
@@ -1415,13 +1546,16 @@ const Informacira = () => {
                               onChange={(e) => {
                                 boxNameRef.current = e.target.value;
                                 if (boxnameError) {
-                                  setBoxnameError('');
+                                  setBoxnameError("");
                                 }
                               }}
                             />
 
-                            {boxnameError && <div className="text-danger errormessage">{boxnameError}</div>}
-
+                            {boxnameError && (
+                              <div className="text-danger errormessage">
+                                {boxnameError}
+                              </div>
+                            )}
                           </div>
                           <div className="mb-3">
                             <label
@@ -1439,20 +1573,22 @@ const Informacira = () => {
                               onChange={(e) => {
                                 cashierIdRef.current = e.target.value;
                                 if (e.target.value !== "0") {
-                                  setBoxcashError('');
+                                  setBoxcashError("");
                                 }
-                              }
-                              }
+                              }}
                             >
-
                               <option value="0">Cajero asignado</option>
-                              {cashier.map(user => (
+                              {cashier.map((user) => (
                                 <option key={user.id} value={user.id}>
                                   {user.name}
                                 </option>
                               ))}
                             </select>
-                            {boxcashError && <div className="text-danger errormessage">{boxcashError}</div>}
+                            {boxcashError && (
+                              <div className="text-danger errormessage">
+                                {boxcashError}
+                              </div>
+                            )}
                           </div>
                         </Modal.Body>
                         <Modal.Footer className="sjmodenone justify-content-between pt-0">
@@ -1477,7 +1613,10 @@ const Informacira = () => {
                           <Button
                             variant="secondary"
                             className="btn sjredbtn b_btn_close j-caja-text-1"
-                            onClick={() => { setShowDeleteModal(true); handleClose() }} // Show delete confirmation modal
+                            onClick={() => {
+                              setShowDeleteModal(true);
+                              handleClose();
+                            }} // Show delete confirmation modal
                           >
                             Eliminar
                           </Button>
@@ -1494,7 +1633,6 @@ const Informacira = () => {
                       >
                         <Modal.Header closeButton className="border-0" />
 
-
                         <Modal.Body>
                           <div className="text-center">
                             <img
@@ -1508,10 +1646,18 @@ const Informacira = () => {
                           </div>
                         </Modal.Body>
                         <Modal.Footer className="border-0">
-                          <Button variant="danger" className="j-tbl-btn-font-1 b_btn_close" onClick={handleDelete}>
+                          <Button
+                            variant="danger"
+                            className="j-tbl-btn-font-1 b_btn_close"
+                            onClick={handleDelete}
+                          >
                             Sí, Eliminar
                           </Button>
-                          <Button variant="secondary" className="j-tbl-btn-font-1 " onClick={() => setShowDeleteModal(false)}>
+                          <Button
+                            variant="secondary"
+                            className="j-tbl-btn-font-1 "
+                            onClick={() => setShowDeleteModal(false)}
+                          >
                             Cancelar
                           </Button>
                         </Modal.Footer>
@@ -1570,7 +1716,15 @@ const Informacira = () => {
                       >
                         <Modal.Body className="text-center">
                           <p></p>
-                          <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
+                          <Spinner
+                            animation="border"
+                            role="status"
+                            style={{
+                              height: "85px",
+                              width: "85px",
+                              borderWidth: "6px",
+                            }}
+                          />
                           <p className="mt-2">Procesando solicitud...</p>
                         </Modal.Body>
                       </Modal>
@@ -1609,8 +1763,10 @@ const Informacira = () => {
                             caja{" "}
                           </p>
                           <div className="mb-3">
-
-                            <label htmlFor="final" className="j-caja-text-1 mb-2">
+                            <label
+                              htmlFor="final"
+                              className="j-caja-text-1 mb-2"
+                            >
                               Monto final
                             </label>
                             <input
@@ -1621,7 +1777,11 @@ const Informacira = () => {
                               onChange={handleprice}
                               disabled
                             />
-                            {errorClosePrice && <div className="text-danger errormessage">{errorClosePrice}</div>}
+                            {errorClosePrice && (
+                              <div className="text-danger errormessage">
+                                {errorClosePrice}
+                              </div>
+                            )}
                           </div>
 
                           <br />
@@ -1635,8 +1795,11 @@ const Informacira = () => {
                             value={`$${pricesecond}`}
                             onChange={handlepricesecond}
                           />
-                          {errorCashPrice && <div className="text-danger errormessage">{errorCashPrice}</div>}
-
+                          {errorCashPrice && (
+                            <div className="text-danger errormessage">
+                              {errorCashPrice}
+                            </div>
+                          )}
                         </Modal.Body>
                         <Modal.Footer className="sjmodenone">
                           <Button
@@ -1655,11 +1818,21 @@ const Informacira = () => {
                               //   setErrorClosePrice("El monto final debe ser mayor que el monto inicial."); // New error message
                               // } else if (!finalAmount || isNaN(finalAmount) || parseFloat(finalAmount) <= 0) {
                               //   setErrorClosePrice("Monto inicial debe ser un número positivo."); // Set error if validation fails
-                              // } else 
-                              if (!pricesecond || isNaN(pricesecond) || parseFloat(pricesecond) <= 0) {
-                                setErrorCashPrice("Monto efectivo debe ser un número positivo."); // Set error if validation fails
-                              } else if (parseFloat(pricesecond) > parseFloat(closePrice)) {
-                                setErrorCashPrice("Monto efectivo no puede ser mayor que el monto final."); // Set error if validation fails
+                              // } else
+                              if (
+                                !pricesecond ||
+                                isNaN(pricesecond) ||
+                                parseFloat(pricesecond) <= 0
+                              ) {
+                                setErrorCashPrice(
+                                  "Monto efectivo debe ser un número positivo."
+                                ); // Set error if validation fails
+                              } else if (
+                                parseFloat(pricesecond) > parseFloat(closePrice)
+                              ) {
+                                setErrorCashPrice(
+                                  "Monto efectivo no puede ser mayor que el monto final."
+                                ); // Set error if validation fails
                               } else {
                                 handleCloseBox(); // Call the new function here
                               }
@@ -1691,15 +1864,15 @@ const Informacira = () => {
                           </div>
                         </Modal.Body>
                       </Modal>
-
                     </div>
                   </div>
-
 
                   {isModalOpen && (
                     <div className="modal text-white">
                       <div className="modal-content">
-                        <span className="close" onClick={closeModal}>&times;</span>
+                        <span className="close" onClick={closeModal}>
+                          &times;
+                        </span>
                         <p>Modal Content Goes Here</p>
                       </div>
                     </div>
@@ -1721,9 +1894,7 @@ const Informacira = () => {
                 >
                   <div className="row d-flex justify-content-between px-4  py-3 text-white sjd-flex">
                     <div className="col-md-6">
-                      <p className="mb-1 j-caja-text-1">
-                      Cantidad de turnos
-                      </p>
+                      <p className="mb-1 j-caja-text-1">Cantidad de turnos</p>
                       <input
                         type="text"
                         value={data?.length}
@@ -1741,7 +1912,8 @@ const Informacira = () => {
                           aria-label="Default select example"
                           value={selectedDesdeMonth}
                           onChange={(e) =>
-                            setSelectedDesdeMonth(e.target.value)}
+                            setSelectedDesdeMonth(e.target.value)
+                          }
                         >
                           <option selected value="1">
                             Enero
@@ -1767,7 +1939,8 @@ const Informacira = () => {
                           aria-label="Default select example"
                           value={selectedHastaMonth}
                           onChange={(e) =>
-                            setSelectedHastaMonth(e.target.value)}
+                            setSelectedHastaMonth(e.target.value)
+                          }
                         >
                           <option selected value="1">
                             Enero
@@ -1804,7 +1977,13 @@ const Informacira = () => {
                       </div>
                     )}
                   </div>
-                  <div className="text-white py-3 b_table1 w-100" style={{ height: data.length === 0 ? "calc(-370px + 100vh)" : "auto" }}>
+                  <div
+                    className="text-white py-3 b_table1 w-100"
+                    style={{
+                      height:
+                        data.length === 0 ? "calc(-370px + 100vh)" : "auto",
+                    }}
+                  >
                     <table className="sj_table ">
                       <thead>
                         <tr className="sjtable_dark flex-nowrap">
@@ -1825,24 +2004,49 @@ const Informacira = () => {
                               key={box.id}
                               className="sjbordergray j-caja-text-2"
                             >
-                              <td className="p-3">{new Date(box.open_time).toLocaleDateString('en-GB')}<span className="ms-3">{new Date(box.open_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></td>
-                              <td className="ps-0">{box.close_time ? new Date(box.close_time).toLocaleDateString('en-GB') : ''}<span className="ms-3">{box.close_time ? new Date(box.close_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</span></td>
+                              <td className="p-3">
+                                {new Date(box.open_time).toLocaleDateString(
+                                  "en-GB"
+                                )}
+                                <span className="ms-3">
+                                  {new Date(box.open_time).toLocaleTimeString(
+                                    [],
+                                    { hour: "2-digit", minute: "2-digit" }
+                                  )}
+                                </span>
+                              </td>
+                              <td className="ps-0">
+                                {box.close_time
+                                  ? new Date(box.close_time).toLocaleDateString(
+                                      "en-GB"
+                                    )
+                                  : ""}
+                                <span className="ms-3">
+                                  {box.close_time
+                                    ? new Date(
+                                        box.close_time
+                                      ).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })
+                                    : "-"}
+                                </span>
+                              </td>
                               <td>{box.open_amount}</td>
 
                               <td>{box.close_amount || "N/A"}</td>
                               <td>
                                 <button
-                                  className={`j-tbl-font-3 ${box.close_amount ===
-                                    null
-                                    ? "sj_lightsky"
-                                    : "j-bgcolor-caja"}`}
+                                  className={`j-tbl-font-3 ${
+                                    box.close_amount === null
+                                      ? "sj_lightsky"
+                                      : "j-bgcolor-caja"
+                                  }`}
                                   onClick={() => handleShow(box)}
                                 >
-                                  {box.close_amount === null ? (
-                                    "Abierta"
-                                  ) : (
-                                    "Cerrada"
-                                  )}
+                                  {box.close_amount === null
+                                    ? "Abierta"
+                                    : "Cerrada"}
                                 </button>
                               </td>
                               <td>
@@ -1850,7 +2054,8 @@ const Informacira = () => {
                                   className="sjSky px-2 j-tbl-font-3"
                                   onClick={() => {
                                     const discount = getDiscountForBox(box.id); // Get the discount for the selected box
-                                    setSelectedBoxDetails({ box, discount }); handleShowDetails(box)
+                                    setSelectedBoxDetails({ box, discount });
+                                    handleShowDetails(box);
                                   }}
                                 >
                                   Ver detalles
@@ -1859,12 +2064,21 @@ const Informacira = () => {
                               <td>
                                 {box.close_amount ? (
                                   <>
-
-                                    <button className="bg-transparent border-0" onClick={() => {
-                                      const discount = getDiscountForBox(box.id); // Get the discount for the selected box
-                                      setSelectedBoxDetails({ box, discount }); // Pass both box and discount to the modal
-                                      setShowModal(true);
-                                    }}> {/* Update to show modal */}
+                                    <button
+                                      className="bg-transparent border-0"
+                                      onClick={() => {
+                                        const discount = getDiscountForBox(
+                                          box.id
+                                        ); // Get the discount for the selected box
+                                        setSelectedBoxDetails({
+                                          box,
+                                          discount,
+                                        }); // Pass both box and discount to the modal
+                                        setShowModal(true);
+                                      }}
+                                    >
+                                      {" "}
+                                      {/* Update to show modal */}
                                       <svg
                                         className="sj-button-xise"
                                         aria-hidden="true"
@@ -1881,9 +2095,7 @@ const Informacira = () => {
                                         />
                                       </svg>
                                     </button>
-
                                   </>
-
                                 ) : (
                                   <svg
                                     className="sjtablewhite"
@@ -1906,7 +2118,9 @@ const Informacira = () => {
                           ))
                         ) : (
                           <tr>
-                            <td colSpan="7" className="text-center">No hay datos disponibles</td>
+                            <td colSpan="7" className="text-center">
+                              No hay datos disponibles
+                            </td>
                           </tr>
                         )}
                       </tbody>
@@ -1936,10 +2150,7 @@ const Informacira = () => {
                             </div>
                             <div className="row pt-3">
                               <div className="col-12 col-md-6 mb-3 ps-0">
-                                <label
-                                  htmlFor="quien-abrio"
-                                  className="sjtext"
-                                >
+                                <label htmlFor="quien-abrio" className="sjtext">
                                   Quién abrió caja
                                 </label>
                                 <input
@@ -1947,15 +2158,15 @@ const Informacira = () => {
                                   id="quien-abrio"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={users?.find(user => user.id === selectedBox?.open_by)?.name || ""}
-
+                                  value={
+                                    users?.find(
+                                      (user) => user.id === selectedBox?.open_by
+                                    )?.name || ""
+                                  }
                                 />
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
-                                <label
-                                  htmlFor="quien-cerro"
-                                  className="sjtext"
-                                >
+                                <label htmlFor="quien-cerro" className="sjtext">
                                   Quién cerró caja
                                 </label>
                                 <input
@@ -1963,7 +2174,12 @@ const Informacira = () => {
                                   id="quien-cerro"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={users?.find(user => user.id === selectedBox?.close_by)?.name || ""}
+                                  value={
+                                    users?.find(
+                                      (user) =>
+                                        user.id === selectedBox?.close_by
+                                    )?.name || ""
+                                  }
                                 />
                               </div>
                             </div>
@@ -1980,7 +2196,9 @@ const Informacira = () => {
                                   id="fecha-apertura"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={new Date(selectedBox?.open_time).toLocaleDateString()}
+                                  value={new Date(
+                                    selectedBox?.open_time
+                                  ).toLocaleDateString()}
                                 />
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
@@ -1995,7 +2213,11 @@ const Informacira = () => {
                                   id="hora-apertura"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={new Date(selectedBox?.open_time).toLocaleTimeString() || ""}
+                                  value={
+                                    new Date(
+                                      selectedBox?.open_time
+                                    ).toLocaleTimeString() || ""
+                                  }
                                 />
                               </div>
                             </div>
@@ -2012,15 +2234,17 @@ const Informacira = () => {
                                   id="fecha-cierre"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={selectedBox?.close_time ? new Date(selectedBox.close_time).toLocaleDateString() : ""}
+                                  value={
+                                    selectedBox?.close_time
+                                      ? new Date(
+                                          selectedBox.close_time
+                                        ).toLocaleDateString()
+                                      : ""
+                                  }
                                 />
-
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
-                                <label
-                                  htmlFor="hora-cierre"
-                                  className="sjtext"
-                                >
+                                <label htmlFor="hora-cierre" className="sjtext">
                                   Hora cierre
                                 </label>
                                 <input
@@ -2028,7 +2252,13 @@ const Informacira = () => {
                                   id="hora-cierre"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={selectedBox?.close_time ? new Date(selectedBox.close_time).toLocaleTimeString() : ""}
+                                  value={
+                                    selectedBox?.close_time
+                                      ? new Date(
+                                          selectedBox.close_time
+                                        ).toLocaleTimeString()
+                                      : ""
+                                  }
                                 />
                               </div>
                             </div>
@@ -2049,10 +2279,7 @@ const Informacira = () => {
                                 />
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
-                                <label
-                                  htmlFor="monto final"
-                                  className="sjtext"
-                                >
+                                <label htmlFor="monto final" className="sjtext">
                                   Monto final
                                 </label>
                                 <input
@@ -2060,7 +2287,9 @@ const Informacira = () => {
                                   id="monto final"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="$"
-                                  value={`$${selectedBox?.close_amount || "0.00"}`}
+                                  value={`$${
+                                    selectedBox?.close_amount || "0.00"
+                                  }`}
                                 />
                               </div>
                             </div>
@@ -2074,8 +2303,15 @@ const Informacira = () => {
                                   id="ingreso"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="$"
-                                  value={`$${(selectedBox?.close_amount && selectedBox?.open_amount) ? (selectedBox.close_amount - selectedBox.open_amount).toFixed(2) : "0.00"}`}
-
+                                  value={`$${
+                                    selectedBox?.close_amount &&
+                                    selectedBox?.open_amount
+                                      ? (
+                                          selectedBox.close_amount -
+                                          selectedBox.open_amount
+                                        ).toFixed(2)
+                                      : "0.00"
+                                  }`}
                                 />
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
@@ -2087,15 +2323,12 @@ const Informacira = () => {
                                   id="efectivo"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-
                                 />
                               </div>
                             </div>
                             <div className="row">
                               <div className="col-12 px-0">
-                                <label htmlFor=" sjtext">
-                                  Irregularidades
-                                </label>
+                                <label htmlFor=" sjtext">Irregularidades</label>
                                 <input
                                   type="text"
                                   className="sj_modelinput mt-2"
@@ -2120,7 +2353,6 @@ const Informacira = () => {
                         >
                           <Modal.Title className="modal-title j-caja-pop-up-text-1">
                             Detalles de caja
-
                           </Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
@@ -2133,10 +2365,7 @@ const Informacira = () => {
                             </div>
                             <div className="row pt-3">
                               <div className="col-12 col-md-6 mb-3 ps-0">
-                                <label
-                                  htmlFor="quien-abrio"
-                                  className="sjtext"
-                                >
+                                <label htmlFor="quien-abrio" className="sjtext">
                                   Quién abrió caja
                                 </label>
                                 <input
@@ -2144,14 +2373,15 @@ const Informacira = () => {
                                   id="quien-abrio"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={users?.find(user => user.id === selectedBox?.open_by)?.name || ""}
+                                  value={
+                                    users?.find(
+                                      (user) => user.id === selectedBox?.open_by
+                                    )?.name || ""
+                                  }
                                 />
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
-                                <label
-                                  htmlFor="quien-cerro"
-                                  className="sjtext"
-                                >
+                                <label htmlFor="quien-cerro" className="sjtext">
                                   Quién cerró caja
                                 </label>
                                 <input
@@ -2159,7 +2389,12 @@ const Informacira = () => {
                                   id="quien-cerro"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={users?.find(user => user.id === selectedBox?.close_by)?.name || ""}
+                                  value={
+                                    users?.find(
+                                      (user) =>
+                                        user.id === selectedBox?.close_by
+                                    )?.name || ""
+                                  }
                                 />
                               </div>
                             </div>
@@ -2176,7 +2411,11 @@ const Informacira = () => {
                                   id="fecha-apertura"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={new Date(selectedBox?.open_time).toLocaleDateString() || ""}
+                                  value={
+                                    new Date(
+                                      selectedBox?.open_time
+                                    ).toLocaleDateString() || ""
+                                  }
                                 />
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
@@ -2191,7 +2430,11 @@ const Informacira = () => {
                                   id="hora-apertura"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={new Date(selectedBox?.open_time).toLocaleTimeString() || ""}
+                                  value={
+                                    new Date(
+                                      selectedBox?.open_time
+                                    ).toLocaleTimeString() || ""
+                                  }
                                 />
                               </div>
                             </div>
@@ -2208,14 +2451,17 @@ const Informacira = () => {
                                   id="fecha-cierre"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={selectedBox?.close_time ? new Date(selectedBox.close_time).toLocaleDateString() : ""}
+                                  value={
+                                    selectedBox?.close_time
+                                      ? new Date(
+                                          selectedBox.close_time
+                                        ).toLocaleDateString()
+                                      : ""
+                                  }
                                 />
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
-                                <label
-                                  htmlFor="hora-cierre"
-                                  className="sjtext"
-                                >
+                                <label htmlFor="hora-cierre" className="sjtext">
                                   Hora cierre
                                 </label>
                                 <input
@@ -2223,9 +2469,14 @@ const Informacira = () => {
                                   id="hora-cierre"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="-"
-                                  value={selectedBox?.close_time ? new Date(selectedBox.close_time).toLocaleTimeString() : ""}
+                                  value={
+                                    selectedBox?.close_time
+                                      ? new Date(
+                                          selectedBox.close_time
+                                        ).toLocaleTimeString()
+                                      : ""
+                                  }
                                 />
-
                               </div>
                             </div>
                             <div className="row pt-3">
@@ -2245,10 +2496,7 @@ const Informacira = () => {
                                 />
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
-                                <label
-                                  htmlFor="monto final"
-                                  className="sjtext"
-                                >
+                                <label htmlFor="monto final" className="sjtext">
                                   Monto final
                                 </label>
                                 <input
@@ -2256,7 +2504,9 @@ const Informacira = () => {
                                   id="monto final"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="$"
-                                  value={`$${selectedBox?.close_amount || "0.00"}`}
+                                  value={`$${
+                                    selectedBox?.close_amount || "0.00"
+                                  }`}
                                 />
                               </div>
                             </div>
@@ -2270,9 +2520,16 @@ const Informacira = () => {
                                   id="ingreso"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="$"
-                                  value={`$${(selectedBox?.close_amount && selectedBox?.open_amount) ? (selectedBox.close_amount - selectedBox.open_amount).toFixed(2) : "0.00"}`}
+                                  value={`$${
+                                    selectedBox?.close_amount &&
+                                    selectedBox?.open_amount
+                                      ? (
+                                          selectedBox.close_amount -
+                                          selectedBox.open_amount
+                                        ).toFixed(2)
+                                      : "0.00"
+                                  }`}
                                 />
-
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
                                 <label htmlFor="efectivo" className="sjtext">
@@ -2283,21 +2540,22 @@ const Informacira = () => {
                                   id="efectivo"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="$"
-                                  value={`$${(parseFloat(selectedBox?.cash_amount || 0)).toFixed(2)}`}
+                                  value={`$${parseFloat(
+                                    selectedBox?.cash_amount || 0
+                                  ).toFixed(2)}`}
                                 />
-
                               </div>
                             </div>
                             <div className="row">
                               <div className="col-12 ps-0 pe-0">
-                                <label htmlFor=" sjtext">
-                                  Irregularidades
-                                </label>
+                                <label htmlFor=" sjtext">Irregularidades</label>
                                 <input
                                   type="text"
                                   className="sj_modelinput mt-2 text-danger"
-                                  
-                                  value={`$${(parseFloat(selectedBox?.close_amount || 0) - parseFloat(selectedBox?.	cash_amount || 0)).toFixed(2)}`}
+                                  value={`$${(
+                                    parseFloat(selectedBox?.close_amount || 0) -
+                                    parseFloat(selectedBox?.cash_amount || 0)
+                                  ).toFixed(2)}`}
                                 />
                               </div>
                             </div>
@@ -2307,8 +2565,11 @@ const Informacira = () => {
                           <button
                             type="button"
                             className="btn sjbtnskylight"
-                            onClick={() => { setShowModal(true); handleClose17() }}
-                          // onClick={handleClose17}
+                            onClick={() => {
+                              setShowModal(true);
+                              handleClose17();
+                            }}
+                            // onClick={handleClose17}
                           >
                             Imprimir reporte
                           </button>
@@ -2316,18 +2577,32 @@ const Informacira = () => {
                       </Modal>
 
                       {/* recipe */}
-                      <Modal show={showModal} onHide={() => setShowModal(false)} className="m_modal s_model_newww"> {/* Add modal component */}
+                      <Modal
+                        show={showModal}
+                        onHide={() => setShowModal(false)}
+                        className="m_modal s_model_newww"
+                      >
+                        {" "}
+                        {/* Add modal component */}
                         <Modal.Header closeButton className="border-0" />
-
-
                         <Modal.Body>
                           {/* Add content for the modal here */}
                           {/* <p>Details about the print will go here.</p> */}
-                          <CajaRecipe box={boxName[0]} user={users} boxDetails={selectedBoxDetails} />
+                          <CajaRecipe
+                            box={boxName[0]}
+                            user={users}
+                            boxDetails={selectedBoxDetails}
+                          />
                         </Modal.Body>
                         <Modal.Footer className="border-0">
-
-                          <Button variant="primary" className=" btn sjbtnskylight border-0 text-white j-caja-text-1" onClick={() => { handlePrint(); setShowModal(false); }}>
+                          <Button
+                            variant="primary"
+                            className=" btn sjbtnskylight border-0 text-white j-caja-text-1"
+                            onClick={() => {
+                              handlePrint();
+                              setShowModal(false);
+                            }}
+                          >
                             <svg
                               className="me-1"
                               aria-hidden="true"
@@ -2347,7 +2622,6 @@ const Informacira = () => {
                           </Button>
                         </Modal.Footer>
                       </Modal>
-
                     </table>
                   </div>
                 </Tab>
@@ -2439,7 +2713,17 @@ const Informacira = () => {
                             className="form-control j-tbl-information-input"
                             id="exampleFormControlInput1"
                             placeholder="20/03/2024"
-                            value={boxName[0]?.created_at ? new Date(boxName[0]?.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}
+                            value={
+                              boxName[0]?.created_at
+                                ? new Date(
+                                    boxName[0]?.created_at
+                                  ).toLocaleDateString("es-ES", {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                  })
+                                : ""
+                            }
                             readOnly
                           />
                         </div>
@@ -2455,7 +2739,10 @@ const Informacira = () => {
                             className="form-control j-tbl-information-input"
                             id="exampleFormControlInput1"
                             placeholder="4"
-                            value={data.filter(item => item.open_amount !== null).length}
+                            value={
+                              data.filter((item) => item.open_amount !== null)
+                                .length
+                            }
                             readOnly
                           />
                         </div>
@@ -2471,7 +2758,10 @@ const Informacira = () => {
                             className="form-control j-tbl-information-input"
                             id="exampleFormControlInput1"
                             placeholder="1"
-                            value={data.filter(item => item.close_amount !== null).length}
+                            value={
+                              data.filter((item) => item.close_amount !== null)
+                                .length
+                            }
                             readOnly
                           />
                         </div>
@@ -2479,7 +2769,6 @@ const Informacira = () => {
                     </form>
                   </div>
                 </Tab>
-
 
                 <Tab
                   eventKey="longer-tab"
@@ -2503,12 +2792,16 @@ const Informacira = () => {
                       <tbody>
                         {allOrder.length > 0 ? (
                           allOrder.map((user, index) => {
-                            const matchedSector = allTable.find(sector =>
-                              sector.tables.some(table => table.id === user.table_id)
+                            const matchedSector = allTable.find((sector) =>
+                              sector.tables.some(
+                                (table) => table.id === user.table_id
+                              )
                             );
 
                             // Get the sector name if a match is found
-                            const sectorName = matchedSector ? matchedSector.name : "";
+                            const sectorName = matchedSector
+                              ? matchedSector.name
+                              : "";
 
                             return (
                               <tr key={index} className="sjbordergray">
@@ -2520,35 +2813,55 @@ const Informacira = () => {
                                   </Link>
                                 </td>
                                 <td className="j-caja-text-2 ">{sectorName}</td>
-                                <td className="j-caja-text-2 ">{user.table_id}</td>
-                                <td className="j-caja-text-2 ">{new Date(user.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
-                                <td className="j-caja-text-2 ">{user.transaction_code}</td>
+                                <td className="j-caja-text-2 ">
+                                  {user.table_id}
+                                </td>
+                                <td className="j-caja-text-2 ">
+                                  {new Date(user.created_at).toLocaleDateString(
+                                    "es-ES",
+                                    {
+                                      day: "2-digit",
+                                      month: "2-digit",
+                                      year: "numeric",
+                                    }
+                                  )}
+                                </td>
+                                <td className="j-caja-text-2 ">
+                                  {user.transaction_code}
+                                </td>
                                 <td>
-
                                   <button
-                                    className={`j-btn-caja-final j-tbl-font-3  ${user.status ===
-                                      "received"
-                                      ? "b_indigo"
-                                      : user.status === "prepared"
+                                    className={`j-btn-caja-final j-tbl-font-3  ${
+                                      user.status === "received"
+                                        ? "b_indigo"
+                                        : user.status === "prepared"
                                         ? "b_ora "
                                         : user.status === "delivered"
-                                          ? "b_blue"
-                                          : user.status === "finalized"
-                                            ? "b_green"
-                                            : user.status === "withdraw"
-                                              ? "b_indigo"
-                                              : user.status === "local"
-                                                ? "b_purple"
-                                                : "text-danger"}`}
+                                        ? "b_blue"
+                                        : user.status === "finalized"
+                                        ? "b_green"
+                                        : user.status === "withdraw"
+                                        ? "b_indigo"
+                                        : user.status === "local"
+                                        ? "b_purple"
+                                        : "text-danger"
+                                    }`}
                                   >
-
-                                    {user.status === "received" ? "Recibido" :
-                                      user.status === "prepared" ? "Preparado" :
-                                        user.status === "delivered" ? "Entregado" :
-                                          user.status === "finalized" ? "Finalizado" :
-                                            user.status === "withdraw" ? "Retirar" :
-                                              user.status === "local" ? "Local" :
-                                                user.status === "cancelled" ? "Cancelada" : "Unknown"}
+                                    {user.status === "received"
+                                      ? "Recibido"
+                                      : user.status === "prepared"
+                                      ? "Preparado"
+                                      : user.status === "delivered"
+                                      ? "Entregado"
+                                      : user.status === "finalized"
+                                      ? "Finalizado"
+                                      : user.status === "withdraw"
+                                      ? "Retirar"
+                                      : user.status === "local"
+                                      ? "Local"
+                                      : user.status === "cancelled"
+                                      ? "Cancelada"
+                                      : "Unknown"}
                                   </button>
                                 </td>
                                 <td>
@@ -2562,8 +2875,15 @@ const Informacira = () => {
                                 <td>
                                   {user.status === "delivered" ? (
                                     <>
-
-                                      <button className="bg-transparent border-0" onClick={() => { setSelectedOrder(user); handleorderRecipt(user) }}> {/* Update to show modal */}
+                                      <button
+                                        className="bg-transparent border-0"
+                                        onClick={() => {
+                                          setSelectedOrder(user);
+                                          handleorderRecipt(user);
+                                        }}
+                                      >
+                                        {" "}
+                                        {/* Update to show modal */}
                                         <svg
                                           className="sj-button-xise"
                                           aria-hidden="true"
@@ -2580,9 +2900,7 @@ const Informacira = () => {
                                           />
                                         </svg>
                                       </button>
-
                                     </>
-
                                   ) : (
                                     <svg
                                       className="sjtablewhite"
@@ -2605,24 +2923,35 @@ const Informacira = () => {
                             );
                           })
                         ) : (
-                          <tr >
-                            <td colSpan="8" className="text-center p-5">No se encontraron datos</td>
+                          <tr>
+                            <td colSpan="8" className="text-center p-5">
+                              No se encontraron datos
+                            </td>
                           </tr>
                         )}
                       </tbody>
                     </table>
                     {/* order recipe */}
-                    <Modal show={showModalOrder} onHide={() => setShowModalOrder(false)} className="m_modal s_model_newww"> {/* Add modal component */}
+                    <Modal
+                      show={showModalOrder}
+                      onHide={() => setShowModalOrder(false)}
+                      className="m_modal s_model_newww"
+                    >
+                      {" "}
+                      {/* Add modal component */}
                       <Modal.Header closeButton className="border-0" />
-
-
                       <Modal.Body>
-
                         <CajaOrderRecipe data={selectedOrder} />
                       </Modal.Body>
                       <Modal.Footer className="border-0">
-
-                        <Button variant="primary" className=" btn sjbtnskylight border-0 text-white j-caja-text-1" onClick={() => { handlePrint(); setShowModalOrder(false); }}>
+                        <Button
+                          variant="primary"
+                          className=" btn sjbtnskylight border-0 text-white j-caja-text-1"
+                          onClick={() => {
+                            handlePrint();
+                            setShowModalOrder(false);
+                          }}
+                        >
                           <svg
                             className="me-1"
                             aria-hidden="true"
@@ -2652,7 +2981,15 @@ const Informacira = () => {
                     >
                       <Modal.Body className="text-center">
                         <p></p>
-                        <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
+                        <Spinner
+                          animation="border"
+                          role="status"
+                          style={{
+                            height: "85px",
+                            width: "85px",
+                            borderWidth: "6px",
+                          }}
+                        />
                         <p className="mt-2">Procesando solicitud...</p>
                       </Modal.Body>
                     </Modal>
@@ -2660,9 +2997,6 @@ const Informacira = () => {
                 </Tab>
               </Tabs>
             </div>
-
-
-
           </div>
         </div>
       </div>

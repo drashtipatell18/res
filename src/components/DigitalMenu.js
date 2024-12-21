@@ -13,6 +13,8 @@ import { IoMdInformationCircle } from "react-icons/io";
 import axios from "axios";
 import Loader from "./Loader";
 import useAudioManager from "./audioManager";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllitems, getFamily, getMenu, getSubFamily } from "../redux/slice/Items.slice";
 //import { enqueueSnackbar  } from "notistack";
 
 export default function Articles() {
@@ -24,9 +26,9 @@ export default function Articles() {
   const [createMenuError, setCreateMenuError] = useState("");
   const [editMenuError, setEditMenuError] = useState("");
   const [menuName, setmenuName] = useState("");
-  const [menu, setMenu] = useState([]);
+  const [menuData, setMenu] = useState([]);
   const [item, setItem] = useState([]);
-  const [items, setItems] = useState([]);
+  const [itemsData, setItemsData] = useState([]);
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [selectedMenus, setSelectedMenus] = useState([]);
   const [parentCheck, setParentCheck] = useState([]);
@@ -40,8 +42,11 @@ export default function Articles() {
   const [selectedParentNames, setSelectedParentNames] = useState([]); // State to hold selected parent names
   const [selectedItemsMenu, setSelectedItemsMenu] = useState(new Set());
   const [previousFilteredItems, setPreviousFilteredItems] = useState([]);
-  const { playNotificationSound } = useAudioManager();
+  // const { playNotificationSound } = useAudioManager();
   const location = useLocation();
+
+  const dispatch = useDispatch()
+  const {items,subFamily,family,menu,loading} = useSelector((state) => state.items);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate()
@@ -120,11 +125,12 @@ export default function Articles() {
     setShow1AddMenuSuc(true);
     setTimeout(() => {
       setSelectedMenus([]);
+      setSelectedItemsCount(0)
       setItemId([]);
       setMenuId(null);
       // fetchMenuData(); 
-      fetchMenuItemData();
-      fetchAllItems();
+      // fetchMenuItemData();
+      // fetchAllItems();
       setShow1AddMenuSuc(false);
     }, 2000);
   };
@@ -188,13 +194,13 @@ export default function Articles() {
   //     setSelectedCategories([...selectedCategories, category]);
   //   }
   // };
-  const groupedItems = items.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {});
+  // const groupedItems = items.reduce((acc, item) => {
+  //   if (!acc[item.category]) {
+  //     acc[item.category] = [];
+  //   }
+  //   acc[item.category].push(item);
+  //   return acc;
+  // }, {});
 
   // ********************************************API*************************
   // Function to handle adding an item
@@ -266,9 +272,9 @@ export default function Articles() {
 
     if (updatedSelectedMenus.length > 0) {
       const updatedItems = updatedSelectedMenus.flatMap((menu) => menu.items);
-      setItems(updatedItems);
+      setItemsData(updatedItems);
     } else {
-      setItems(item.flatMap((menu) => menu.items));
+      setItemsData(item.flatMap((menu) => menu.items));
     }
   };
 
@@ -357,19 +363,58 @@ export default function Articles() {
   useEffect(() => {
     if (!(role == "admin" || role == "cashier" || role == "waitress")) {
       navigate('/dashboard')
-    } else {
-      if (token) {
+    } 
+    // else {
+    //   if (token) {
+    //     setSelectedMenus([]);
+    //     setItemId([]);
+    //     setMenuId(null);
+    //     fetchMenuData();
+    //     fetchMenuItemData();
+    //     fetchFamilyData();
+    //     fetchSubFamilyData();
+    //     fetchAllItems();
+    //   }
+    // }
+  }, [role, token,show1AddMenuSuc]);
+
+   useEffect(()=>{
         setSelectedMenus([]);
         setItemId([]);
         setMenuId(null);
-        fetchMenuData();
-        fetchMenuItemData();
-        fetchFamilyData();
-        fetchSubFamilyData();
-        fetchAllItems();
-      }
-    }
-  }, [role, token,show1AddMenuSuc]);
+        if(items.length == 0){
+          dispatch(getAllitems());
+        }
+        if(subFamily.length == 0){
+          dispatch(getSubFamily());
+        }
+        if(family.length == 0){
+          dispatch(getFamily());
+        }
+       if(menu.length == 0){
+        dispatch(getMenu({admin_id}));
+       }
+      }, []);
+    
+      useEffect(()=>{
+        if(family){
+          setParentCheck(family);
+        }
+        if(items){
+          setFilteredMenuItems(items)
+          setObj1(items)
+          setFilteredItemsMenu(items)
+        }
+        if(subFamily){
+          setChildCheck(subFamily)
+        }
+        if(menu){
+          setFilteredItems(menu)
+          setItem(menu)
+          setMenu(menu)
+        }
+       
+      },[family,items,subFamily,menu,show1AddMenuSuc])
 
   // create menu
   const handleCreateMenu = async () => {
@@ -403,7 +448,8 @@ export default function Articles() {
       );
       console.log(response.data, "create menu");
       handleShowCreSuc();
-      fetchMenuData();
+      dispatch(getMenu({admin_id}));
+      // fetchMenuData();
       if (response.data && response.data.notification) {
         //enqueueSnackbar (response.data.notification, { variant: 'success' });
         // playNotificationSound();;
@@ -455,6 +501,7 @@ export default function Articles() {
 
       // Update the menu state
       setSelectedMenus([]);
+      setSelectedItemsCount(0)
   
         // Clear item IDs
       setItemId([]);
@@ -484,15 +531,10 @@ export default function Articles() {
         )
       );
 
-       handleShowEditFamSuc();
-      if (response.data && response.data.notification) {
-        //enqueueSnackbar (response.data.notification, { variant: 'success' });
-        // playNotificationSound();;
-      } else {
-        //enqueueSnackbar (`El menú ${selectedMenu.name} ha sido actualizado con éxito`, { variant: 'success' });
-      // playNotificationSound();;
+      dispatch(getMenu({admin_id}));
 
-      }
+       handleShowEditFamSuc();
+     
     } catch (error) {
       console.error(
         "Error updating menu:",
@@ -626,6 +668,8 @@ export default function Articles() {
           console.log('Updated menu:', updatedMenu);
           return updatedMenu;
         });
+
+        dispatch(getMenu({admin_id}));
   
         // Update filteredItems state
         setFilteredItems(prevFilteredItems => {
@@ -649,12 +693,6 @@ export default function Articles() {
         // Clear item IDs
         setItemId([]);
   
-        if (response.data && response.data.notification) {
-          //enqueueSnackbar (response.data.notification, { variant: 'success' });
-        } else {
-          //enqueueSnackbar (`Elementos añadidos al menú con éxito`, { variant: 'success' });
-        }
-        // playNotificationSound();;
       } else {
         console.error("Failed to add items to menu");
       }
@@ -825,15 +863,10 @@ export default function Articles() {
       setFilteredItems(prevItems => prevItems.filter(m => m.id !== selectedMenu.id));
       setSelectedMenus(prevSelected => prevSelected.filter(m => m.id !== selectedMenu.id));
 
+      dispatch(getMenu({admin_id}));
+
       handleShowEditFamDel();
       setShowDeleteConfirmation(false);
-      if (response.data && response.data.notification) {
-        //enqueueSnackbar (response.data.notification, { variant: 'success' });
-        // playNotificationSound();;
-      } else {
-        //enqueueSnackbar (`El menú ${selectedMenu.name} ha sido eliminado con éxito`, { variant: 'success' });
-        // playNotificationSound();;
-      }
     } catch (error) {
       console.error(
         "Error deleting menu:",
@@ -854,16 +887,23 @@ export default function Articles() {
       setSelectedMenus([]);
       setItemId([]);
       setMenuId(null);
-      fetchMenuData(); 
-      fetchMenuItemData();
-      fetchAllItems();
+      setSelectedItemsCount(0);
+      // fetchMenuData(); 
+      // fetchMenuItemData();
+      // fetchAllItems();
+      // dispatch(getMenu({admin_id}));
+      // dispatch(getAllitems())
     }
   },[showRetirar])
 
   const handlesaveEdit = () => {
+      dispatch(getMenu({admin_id}));
+      dispatch(getAllitems())
     if(showRetirar){
       setSelectedMenus([]);
       setItemId([]);
+      setMenuId(null);
+      setSelectedItemsCount(0);
     }
     setShowRetirar(!showRetirar)
   }
@@ -982,7 +1022,7 @@ export default function Articles() {
                     </Modal.Body>
                   </Modal>
                   <div className="py-3 m_borbot mx-3  m14 j-table-position-sticky-sector">
-                    {menu.map((item, index) => (
+                    {menuData.map((item, index) => (
                       <div key={item.id}>
                         <div className="d-flex justify-content-between align-items-center flex-wrap mb-2">
                           <div className="d-flex align-items-center flex-grow-1">

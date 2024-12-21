@@ -11,6 +11,8 @@ import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6';
 import { Button, Modal, Spinner } from 'react-bootstrap';
 import axios from 'axios';
 import * as XLSX from "xlsx-js-style";
+import { getAllOrders, getAllPayments } from '../redux/slice/order.slice';
+import { useDispatch, useSelector } from 'react-redux';
 
 function Home_Usuarios() {
 
@@ -59,7 +61,10 @@ function Home_Usuarios() {
         new Date().getMonth() + 1
     );
 
-     const [payments, setPayments] = useState([]);
+    //  const [payments, setPayments] = useState([]);
+
+     
+    const {orders,payments} = useSelector(state => state.orders);
 
     useEffect(
         () => {
@@ -179,50 +184,67 @@ function Home_Usuarios() {
     };
 
 
+    const dispatch = useDispatch();
     useEffect(() => {
-        getAllorder();
-        getAllPayments();
-    }, []);
-
-     // get all payment
-  const getAllPayments = async () => {
-    try {
-      const response = await axios.post(`${API_URL}/get-payments`, {admin_id} ,{
-        headers: {
-          Authorization: `Bearer ${token}`
+        if(orders.length == 0){
+            dispatch(getAllOrders({admin_id}))
         }
-      });
+        if(payments.length == 0){
+            dispatch(getAllPayments({admin_id}))
+        }
+    }, [admin_id]);
 
-      console.log(response.data.result);
+    useEffect(()=>{
+        if(orders){
+            setOrderAlldata(orders)
+            setFilterData(orders)
+        }
+    },[orders])
+
+//     useEffect(() => {
+//         getAllorder();
+//         getAllPayments();
+//     }, []);
+
+//      // get all payment
+//   const getAllPayments = async () => {
+//     try {
+//       const response = await axios.post(`${API_URL}/get-payments`, {admin_id} ,{
+//         headers: {
+//           Authorization: `Bearer ${token}`
+//         }
+//       });
+
+//       console.log(response.data.result);
       
-      setPayments(response.data.result);
-    } catch (error) {
-      console.error("Error fetching payments:", error);
-    }
-  };
+//       setPayments(response.data.result);
+//     } catch (error) {
+//       console.error("Error fetching payments:", error);
+//     }
+//   };
 
-    const getAllorder = async () => {
-        setIsProcessing(true)
-        try {
-            const response = await axios.post(`${API_URL}/order/getAll`, { admin_id: admin_id }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            console.log(response.data);
+    // const getAllorder = async () => {
+    //     setIsProcessing(true)
+    //     try {
+    //         const response = await axios.post(`${API_URL}/order/getAll`, { admin_id: admin_id }, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         });
+    //         console.log(response.data);
             
-            setFilterData(response.data);
-            setOrderAlldata(response.data);
-            // console.log(response.data);
+    //         setFilterData(response.data);
+    //         setOrderAlldata(response.data);
+    //         // console.log(response.data);
 
-        } catch (error) {
-            console.error(
-                "Error fetching allOrder:",
-                error.response ? error.response.data : error.message
-            );
-        }
-        setIsProcessing(false);
-    }
+    //     } catch (error) {
+    //         console.error(
+    //             "Error fetching allOrder:",
+    //             error.response ? error.response.data : error.message
+    //         );
+    //     }
+    //     setIsProcessing(false);
+    // }
 
     const handleType = (type) => {
         // console.log(type);
@@ -327,7 +349,7 @@ function Home_Usuarios() {
         setShowEditFamDel(true)
         setTimeout(() => {
             setShowEditFamDel(false)
-            getAllorder();
+            dispatch(getAllOrders({admin_id}))
         }, 2000);
     };
 

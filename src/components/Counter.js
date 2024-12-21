@@ -16,6 +16,9 @@ import Loader from "./Loader";
 
 // import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllitems, getFamily, getSubFamily } from "../redux/slice/Items.slice";
+import { getLastOrder } from "../redux/slice/order.slice";
 const Counter = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const API = process.env.REACT_APP_IMAGE_URL;
@@ -29,14 +32,13 @@ const Counter = () => {
   const [childCheck, setChildCheck] = useState([]);
   const [obj1, setObj1] = useState([]);
   const [orderTypeError, setOrderTypeError] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentSubfamilies, setCurrentSubfamilies] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [countsoup, setCountsoup] = useState([]);
-  const [lastOrder, setLastOrder] = useState('');
+  // const [lastOrder, setLastOrder] = useState('');
   const [isEditing, setIsEditing] = useState([]);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [orderType, setOrderType] = useState("local");
@@ -48,40 +50,81 @@ const Counter = () => {
   // Add ref for note inputs
   const noteInputRefs = useRef({});
 
-  useEffect(() => {
+  const dispatch = useDispatch()
+  const {items,subFamily,family,loading} = useSelector((state) => state.items);
+  const {lastOrder} =  useSelector((state) => state.orders);
+  const [isProcessing, setIsProcessing] = useState(loading || false);
 
-    const fetchData = async () => {
-      setIsProcessing(true);
-      try {
-        await fetchFamilyData();
-        await fetchAllItems();
-        await fetchSubFamilyData();
-        await fetchLastOrder();
-
-        if (parentCheck.length > 0) {
-          const todoCategory = { id: "todo", name: "Todo" };
-          setParentCheck((prevCategories) => [
-            todoCategory,
-            ...prevCategories
-          ]);
-
-          setSelectedCategory(todoCategory);
-          setCurrentSubfamilies([]);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsProcessing(false);
-      }
-    };
-
+  useEffect(()=>{
     if (!(role == "admin" || role == "cashier")) {
       navigate('/dashboard')
-    } else {
-
-      fetchData();
+      return
+    } 
+    if(items.length == 0){
+      dispatch(getAllitems());
+    }
+    if(subFamily.length == 0){
+      dispatch(getSubFamily());
+    }
+    if(family.length == 0){
+      dispatch(getFamily());
+    }
+    if(lastOrder == ''){
+      dispatch(getLastOrder({admin_id}));
     }
   }, []);
+
+  useEffect(()=>{
+    if(family){
+      const todoCategory = { id: "todo", name: "Todo" };
+      setParentCheck([todoCategory, ...family]);
+      setSelectedCategory(todoCategory); 
+    }
+    if(items){
+      setObj1(items);
+    }
+    if(subFamily){
+      setChildCheck(subFamily)
+    }
+    if(lastOrder){
+      localStorage.setItem("lastOrder", JSON.stringify(lastOrder));
+    }  
+  },[family,items,subFamily,lastOrder])
+
+  // useEffect(() => {
+
+  //   const fetchData = async () => {
+  //     setIsProcessing(true);
+  //     try {
+  //       await fetchFamilyData();
+  //       await fetchAllItems();
+  //       await fetchSubFamilyData();
+  //       await fetchLastOrder();
+
+  //       if (parentCheck.length > 0) {
+  //         const todoCategory = { id: "todo", name: "Todo" };
+  //         setParentCheck((prevCategories) => [
+  //           todoCategory,
+  //           ...prevCategories
+  //         ]);
+
+  //         setSelectedCategory(todoCategory);
+  //         setCurrentSubfamilies([]);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     } finally {
+  //       setIsProcessing(false);
+  //     }
+  //   };
+
+  //   if (!(role == "admin" || role == "cashier")) {
+  //     navigate('/dashboard')
+  //   } else {
+
+  //     fetchData();
+  //   }
+  // }, []);
 
   // Initialize isEditing after cartItems has been set
   useEffect(
@@ -438,61 +481,61 @@ const Counter = () => {
   };
 
   // get family
-  const fetchFamilyData = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/family/getFamily`, { headers: { Authorization: `Bearer ${token}` } });
-      const todoCategory = { id: "todo", name: "Todo" };
-      setParentCheck([todoCategory, ...response.data]);
-      setSelectedCategory(todoCategory); // Set "Todo" as initial category
-    } catch (error) {
-      console.error(
-        "Error fetching roles:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
+  // const fetchFamilyData = async () => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/family/getFamily`, { headers: { Authorization: `Bearer ${token}` } });
+  //     const todoCategory = { id: "todo", name: "Todo" };
+  //     setParentCheck([todoCategory, ...response.data]);
+  //     setSelectedCategory(todoCategory); // Set "Todo" as initial category
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching roles:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
   // get product
-  const fetchAllItems = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/item/getAll`, { headers: { Authorization: `Bearer ${token}` } });
-      setObj1(response.data.items);
-    } catch (error) {
-      console.error(
-        "Error fetching items:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
+  // const fetchAllItems = async () => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/item/getAll`, { headers: { Authorization: `Bearer ${token}` } });
+  //     setObj1(response.data.items);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching items:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
 
   // get subfamily
-  const fetchSubFamilyData = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`, { headers: { Authorization: `Bearer ${token}` } });
-      setChildCheck(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching subfamilies:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
+  // const fetchSubFamilyData = async () => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`, { headers: { Authorization: `Bearer ${token}` } });
+  //     setChildCheck(response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching subfamilies:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
 
   // get last order of order master
 
-  const fetchLastOrder = async () => {
-    try {
-      const response = await axios.post(`${apiUrl}/orders/last`, { admin_id: admin_id }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setLastOrder(response.data.order.id + 1);
-      localStorage.setItem("lastOrder", JSON.stringify(response.data.order.id + 1));
-    } catch (error) {
-      console.error(
-        "Error fetching subfamilies:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
+  // const fetchLastOrder = async () => {
+  //   try {
+  //     const response = await axios.post(`${apiUrl}/orders/last`, { admin_id: admin_id }, {
+  //       headers: { Authorization: `Bearer ${token}` }
+  //     });
+  //     setLastOrder(response.data.order.id + 1);
+  //     localStorage.setItem("lastOrder", JSON.stringify(response.data.order.id + 1));
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching subfamilies:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
 
   // place new order
 
@@ -890,7 +933,7 @@ const Counter = () => {
               </Modal>
               {/* processing */}
               <Modal
-                show={isProcessing}
+                show={loading || isProcessing}
                 keyboard={false}
                 backdrop={true}
                 className="m_modal  m_user "

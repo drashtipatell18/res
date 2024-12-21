@@ -8,6 +8,10 @@ import Recipt from "./Recipt";
 import { MdRoomService } from "react-icons/md";
 import axios from "axios";
 import { useOrderPrinting } from "../hooks/useOrderPrinting";
+import { useDispatch, useSelector } from "react-redux";
+import { getboxs } from "../redux/slice/box.slice";
+import { getProduction } from "../redux/slice/Items.slice";
+import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
 
 const Counter_finalP = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -434,35 +438,23 @@ const Counter_finalP = () => {
 
   // ==== Get BOX Data =====
 
-  const [boxId, setBoxId] = useState(0)
+  // const [boxId, setBoxId] = useState(0)
+  const dispatch = useDispatch();
   const [selectedBoxId] = useState(parseInt(localStorage.getItem('boxId')));
+  const boxId = useSelector(state => state.boxs.box)?.find((v) => v.user_id == userId);
 
-  const fetchBoxData = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/get-boxs`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      const data = response.data;
-      console.log(data);
-      setBoxId(data.find((v) => v.user_id == userId));
-    } catch (error) {
-      console.error(
-        "Error fetching box:",
-        error.response ? error.response.data : error.message
-      );
+  useEffect(()=>{
+    if(boxId){
+        dispatch(getboxs({admin_id}))
     }
-  }
-
-
+  },[admin_id])
 
   // data
   useEffect(() => {
     const storedOrder = JSON.parse(localStorage.getItem("currentOrder")) || {};
     setOrderType(storedOrder);
-    fetchBoxData();
+    // fetchBoxData();
   }, []);
 
 
@@ -534,32 +526,21 @@ const Counter_finalP = () => {
     }
   };
 
+
+  const {production} = useSelector(state => state.items);
+
   const [productionCenters, setProductionCenters] = useState();
 
   useEffect(() => {
-    getProductionCenters();
-  }, [admin_id,token]);
+    dispatch(getProduction({admin_id}))
+    // getProductionCenters();
+  }, [admin_id]);
 
-  const getProductionCenters = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(
-        `${apiUrl}/production-centers`,
-        { admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(response.data.data);
-
-      setProductionCenters(response.data.data);
-    } catch (error) {
-      console.error("Error fetching production centers:", error);
+  useEffect(() => {
+    if (production.length > 0) {
+      setProductionCenters(production);
     }
-    setIsProcessing(false);
-  };
+  }, [production]);
 
     const { printOrder, printStatus } = useOrderPrinting(productionCenters, cartItems)
 
@@ -618,7 +599,7 @@ const Counter_finalP = () => {
         if (!response.data.success) {
           alert(response.data.message)
         }
-        console.log(response.data);
+        // console.log(response.data);
         order_master_id = response.data.kdsOrder.order_id;
         sessionStorage.setItem('orderId', order_master_id);
         setOrderId(order_master_id);
@@ -662,30 +643,18 @@ const Counter_finalP = () => {
 
           if (creditId) {
             setIsProcessing(true);
-            axios
-              .post(
-                `${apiUrl}/order/getCreditUpdate/${creditId}`,
-                {
+            axios.post(`${apiUrl}/order/getCreditUpdate/${creditId}`,{
                   status: "Completed",
                   destination: orderType.orderId
-                },
-                {
+                },{
                   headers: {
                     Authorization: `Bearer ${token}`,
                   },
                 }
-              )
-              .then((response) => {
+              ).then((response) => {
                 // console.log(response.data);
                 setIsProcessing(false);
-                // setShowcreditfinal(true);
-                // setTimeout(() => {
-                //   setShowcreditfinal(false);
-                //   navigate('/home/client/detail', {
-                //     replace: true,
-                //     state,
-                //   });
-                // }, 2000);
+                
               })
               .catch((error) => {
                 alert(error?.response?.data?.message || error.message);
@@ -696,7 +665,8 @@ const Counter_finalP = () => {
           }
 
 
-
+          dispatch(getAllOrders({ admin_id }));
+          dispatch(getAllPayments({ admin_id }));
           localStorage.removeItem("cartItems");
           localStorage.removeItem("currentOrder");
           localStorage.removeItem("payment");

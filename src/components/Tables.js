@@ -20,6 +20,10 @@ import Echo from "laravel-echo";
 import { io } from 'socket.io-client';
 import useAudioManager from "./audioManager";
 import ElapsedTimeDisplay from "./ElapsedTimeDisplay";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllSector, getAllTableswithSector } from "../redux/slice/table.slice";
+import { getAllitems } from "../redux/slice/Items.slice";
+import { getUser } from "../redux/slice/user.slice";
 //import { enqueueSnackbar  } from "notistack";
 
 const Tables = () => {
@@ -38,8 +42,48 @@ const Tables = () => {
   const [showDeleteOrderConfirm, setShowDeleteOrderConfirm] = useState(false);
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
   const [users, setUsers] = useState([]);
-  const { playNotificationSound } = useAudioManager();
   const [selectedTabNo,setSelectedTabNo] = useState('');
+
+
+  const dispatch = useDispatch()
+  const {tablewithSector,sector,tableState,singleTable,loading} = useSelector(state=>state.tables);
+   const {items} = useSelector((state) => state.items);
+   const {user} = useSelector((state) => state.user);
+  
+  useEffect(()=>{
+      if(tablewithSector.length == 0){
+        dispatch(getAllTableswithSector({admin_id}));
+      }
+      if(sector.length == 0){
+        dispatch(getAllSector({admin_id}));
+      }
+       if(items.length == 0){
+            dispatch(getAllitems());
+       }
+       if(user.length == 0){
+          dispatch(getUser())
+       }
+    }, []);
+
+    useEffect(()=>{
+      if(sector){
+        setCheckboxes(sector);
+        setsectors(sector);
+      }
+      if(tablewithSector){
+        setSecTab(tablewithSector);
+      }
+      if(items){
+        setObj1(items);
+      }
+      if(user){
+        setUsers(user);
+      }
+    },[sector,tablewithSector,items,user])
+
+
+  
+
 
   const [newTable, setNewTable] = useState({
     sectorName: "",
@@ -69,68 +113,68 @@ const Tables = () => {
     }
   }, [role])
 
-  // Debounce function for API calls
-  const debouncedFetchData = useRef(
-    debounce(async () => {
-      try {
-        await Promise.all([
-          getSector(),
-          getSectorTable(),
-          fetchAllItems(),
-          fetchUser(),
-        ]);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-      }
-    }, 500) // 500ms debounce
-  ).current;
+  // // Debounce function for API calls
+  // const debouncedFetchData = useRef(
+  //   debounce(async () => {
+  //     try {
+  //       await Promise.all([
+  //         getSector(),
+  //         getSectorTable(),
+  //         fetchAllItems(),
+  //         fetchUser(),
+  //       ]);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     } finally {
+  //     }
+  //   }, 500) // 500ms debounce
+  // ).current;
 
-  useEffect(() => {
-    debouncedFetchData();
-    return () => {
-      debouncedFetchData.cancel(); // Cleanup on unmount
-    };
-  }, [apiUrl, debouncedFetchData]);
+  // useEffect(() => {
+  //   debouncedFetchData();
+  //   return () => {
+  //     debouncedFetchData.cancel(); // Cleanup on unmount
+  //   };
+  // }, [apiUrl, debouncedFetchData]);
 
-  /* get sector */
+  // /* get sector */
 
-  const getSector = async () => {
-    setIsProcessing(true)
-    try {
-      const response = await axios.post(`${apiUrl}/sector/getAll`, { admin_id: admin_id });
-      if (response.data.success) {
-        setCheckboxes(response.data.sectors);
-        setsectors(response.data.sectors);
-      } else {
-        console.error("Response data is not an array:", response.data);
-      }
-    } catch (error) {
-      console.error(
-        "Error fetching sectors:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false)
-  };
-  // get product
-  const fetchAllItems = async () => {
-    setIsProcessing(true)
-    try {
-      const response = await axios.get(`${apiUrl}/item/getAll`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setObj1(response.data.items);
-    } catch (error) {
-      console.error(
-        "Error fetching items:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false)
-  };
+  // const getSector = async () => {
+  //   setIsProcessing(true)
+  //   try {
+  //     const response = await axios.post(`${apiUrl}/sector/getAll`, { admin_id: admin_id });
+  //     if (response.data.success) {
+  //       setCheckboxes(response.data.sectors);
+  //       setsectors(response.data.sectors);
+  //     } else {
+  //       console.error("Response data is not an array:", response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching sectors:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false)
+  // };
+  // // get product
+  // const fetchAllItems = async () => {
+  //   setIsProcessing(true)
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/item/getAll`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+  //     setObj1(response.data.items);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching items:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false)
+  // };
 
   /* get table data */
   const getTableData = async (id) => {
@@ -276,8 +320,8 @@ const Tables = () => {
 
       if (response.status === 200) {
         handleShowCreSuc2();
-        getSector();
-        getSectorTable();
+        dispatch(getAllSector({admin_id}));
+        dispatch(getAllTableswithSector(({admin_id})));
         setIsProcessing(false);
         setNewTable({ sectorName: "", noOfTables: "" });
         if (response.data && response.data.notification) {
@@ -338,8 +382,8 @@ const Tables = () => {
       );
       if (response.status === 200) {
         handleShowEditFamSuc();
-        getSector();
-        getSectorTable();
+        dispatch(getAllSector({admin_id}));
+        dispatch(getAllTableswithSector(({admin_id})));
         setIsProcessing(false);
         if (response.data && response.data.notification) {
           //enqueueSnackbar (response.data.notification, { variant: 'success' });
@@ -374,8 +418,8 @@ const Tables = () => {
       if (response.status === 200) {
         handleCloseEditFam();
         handleShowEditFamSuc();
-        getSector();
-        getSectorTable();
+        dispatch(getAllSector({admin_id}));
+        dispatch(getAllTableswithSector(({admin_id})));
       } else {
         throw new Error("Failed to update sector");
       }
@@ -422,8 +466,8 @@ const Tables = () => {
       });
       if (response.status === 200) {
         handleShowCreSuc();
-        getSector();
-        getSectorTable();
+        dispatch(getAllSector({admin_id}));
+        dispatch(getAllTableswithSector(({admin_id})));
         setIsProcessing(false)
         setAddsector({ name: "", noOfTables: "" }); // Reset form
         if (response.data && response.data.notification) {
@@ -455,8 +499,8 @@ const Tables = () => {
         setCheckboxes((prevCheckboxes) =>
           prevCheckboxes.filter((sector) => sector.id !== sectorId)
         );
-        getSector();
-        getSectorTable();
+        dispatch(getAllSector({admin_id}));
+        dispatch(getAllTableswithSector(({admin_id})));
       })
       .catch((error) => {
         console.error(
@@ -950,8 +994,8 @@ const Tables = () => {
         setCheckboxes((prevCheckboxes) =>
           prevCheckboxes.filter((sector) => sector.id !== itemToDelete)
         );
-        getSector();
-        getSectorTable();
+        dispatch(getAllSector({admin_id}));
+        dispatch(getAllTableswithSector(({admin_id})));
         getTableData(selectedTable)
         handleShowEditFamDel();
         setShowDeleteConfirm(false);
@@ -991,8 +1035,8 @@ const Tables = () => {
         setCheckboxes((prevCheckboxes) =>
           prevCheckboxes.filter((sector) => sector.id !== itemToDelete)
         );
-        getSector();
-        getSectorTable();
+        dispatch(getAllSector({admin_id}));
+        dispatch(getAllTableswithSector(({admin_id})));
         getTableData(selectedTable)
         handleShowEditFamDel();
         setShowDeleteOrderConfirm(false);

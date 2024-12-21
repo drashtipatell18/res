@@ -15,6 +15,8 @@ import { IoMdInformationCircle } from "react-icons/io";
 import img2 from "../Image/addmenu.jpg";
 import axios from "axios";
 import Loader from "./Loader";
+import { getAllitems, getFamily, getProduction, getProductionData, getSubFamily } from "../redux/slice/Items.slice";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function ProductionCenter() {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -28,7 +30,7 @@ export default function ProductionCenter() {
   const [printerCode, setPrinterCode] = useState("");
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [selectedMenus, setSelectedMenus] = useState([]);
-  const [items, setItems] = useState([]);
+  // const [items, setItems] = useState([]);
   const [item, setItem] = useState([]);
   const [obj1, setObj1] = useState([]);
   const [parentCheck, setParentCheck] = useState([]);
@@ -46,6 +48,9 @@ export default function ProductionCenter() {
     []
   );
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const dispatch = useDispatch()
+  const {items,subFamily,family,production,productionData,loading} = useSelector((state) => state.items);
 
   const location = useLocation();
 
@@ -317,135 +322,177 @@ export default function ProductionCenter() {
   // ****************************************API***************************************
   const [productionAllData, setProductionAllData] = useState([])
 
-  useEffect(
-    () => {
-      if (token) {
-        getProductionCenters();
-        fetchAllItems();
-        fetchFamilyData();
-        fetchSubFamilyData();
-        fetchMenuData();
-        fetchMenuItemData();
-      }
-    },
-    [token]
-  );
+  // useEffect(
+  //   () => {
+  //     if (token) {
+  //       getProductionCenters();
+  //       fetchAllItems();
+  //       fetchFamilyData();
+  //       fetchSubFamilyData();
+  //       fetchMenuData();
+  //       fetchMenuItemData();
+  //     }
+  //   },
+  //   [token]
+  // );
+
+  useEffect(()=>{
+        
+    if(items.length == 0){
+      dispatch(getAllitems());
+    }
+    if(subFamily.length == 0){
+      dispatch(getSubFamily());
+    }
+    if(family.length == 0){
+      dispatch(getFamily());
+    }
+    if(production.length == 0){
+      dispatch(getProduction({admin_id}));
+    }
+    // if(productionData.length == 0){
+      dispatch(getProductionData({admin_id}));
+    // }
+  }, []);
+
+  useEffect(()=>{
+    if(family){
+      setParentCheck(family);
+    }
+    if(items){
+      setObj1(items);
+      setFilteredItemsMenu(items);
+      // setItems(items)
+    }
+    if(subFamily){
+      setChildCheck(subFamily)
+    }
+    if(production){
+      setProductionCenters(production)
+    }
+    if(productionData){
+      setMenu(productionData)
+      setProductionAllData(productionData)
+    }
+   
+  },[family,items,subFamily,production,productionData])
 
 
-  // get menu
-  const fetchMenuData = async () => {
-    try {
-      const response = await axios.post(`${apiUrl}/item/getProducationdata`, { admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      setMenu(response.data.menus);
-    } catch (error) {
-      console.error(
-        "Error fetching roles:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
-  // get menu item
-  const fetchMenuItemData = async () => {
-    try {
-      const response = await axios.post(`${apiUrl}/item/getProducationdata`, { admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
 
-        });
-      // setItem(response.data);
-      setProductionAllData(response.data.menus);
-      console.log("=======", response.data.menus);
-    } catch (error) {
-      console.error(
-        "Error fetching roles:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
-  // get family
-  const fetchFamilyData = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/family/getFamily`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
-      setParentCheck(response.data);
-      setIsProcessing(false);
-    } catch (error) {
-      console.error(
-        "Error fetching roles:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  // // get menu
+  // const fetchMenuData = async () => {
+  //   try {
+  //     const response = await axios.post(`${apiUrl}/item/getProducationdata`, { admin_id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     setMenu(response.data.menus);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching roles:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
+  // // get menu item
+  // const fetchMenuItemData = async () => {
+  //   try {
+  //     const response = await axios.post(`${apiUrl}/item/getProducationdata`, { admin_id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
 
-  // get subfamily
-  const fetchSubFamilyData = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
-      setChildCheck(response.data);
-      setIsProcessing(false);
-    } catch (error) {
-      console.error(
-        "Error fetching roles:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  //       });
+  //     // setItem(response.data);
+  //     setProductionAllData(response.data.menus);
+  //     console.log("=======", response.data.menus);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching roles:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
+  // // get family
+  // const fetchFamilyData = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/family/getFamily`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       }
+  //     });
+  //     setParentCheck(response.data);
+  //     setIsProcessing(false);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching roles:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
 
-  // get production centers
-  const getProductionCenters = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(`${apiUrl}/production-centers`, { admin_id }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setProductionCenters(response.data.data);
-    } catch (error) {
-      console.error("Error fetching production centers:", error);
-    }
-    setIsProcessing(false);
-  };
+  // // get subfamily
+  // const fetchSubFamilyData = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       }
+  //     });
+  //     setChildCheck(response.data);
+  //     setIsProcessing(false);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching roles:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
 
-  // get product
-  const fetchAllItems = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/item/getAll`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
-      setObj1(response.data.items);
-      setIsProcessing(false);
-      setFilteredItemsMenu(response.data.items);
-      setItems(response.data.items);
-    } catch (error) {
-      console.error(
-        "Error fetching items:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  // // get production centers
+  // const getProductionCenters = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.post(`${apiUrl}/production-centers`, { admin_id }, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+  //     setProductionCenters(response.data.data);
+  //   } catch (error) {
+  //     console.error("Error fetching production centers:", error);
+  //   }
+  //   setIsProcessing(false);
+  // };
+
+  // // get product
+  // const fetchAllItems = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/item/getAll`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       }
+  //     });
+  //     setObj1(response.data.items);
+  //     setIsProcessing(false);
+  //     setFilteredItemsMenu(response.data.items);
+  //     setItems(response.data.items);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching items:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
 
   //   create production center
   const createProductionCenter = async () => {
@@ -469,8 +516,8 @@ export default function ProductionCenter() {
         console.log("Production center created:", response.data);
         handleShowCreSucProduction();
         setIsProcessing(false);
-        fetchMenuData()
-        getProductionCenters();
+        dispatch(getProductionData({admin_id}))
+        dispatch(getProduction({admin_id}))
         setProdName("");
         setPrinterCode("");
       } catch (error) {
@@ -581,10 +628,9 @@ export default function ProductionCenter() {
         }
       );
       console.log("Production center updated:", response.data);
-      fetchMenuData()
       setIsProcessing(false);
-      fetchMenuItemData();
-      getProductionCenters();
+      dispatch(getProductionData({admin_id}))
+      dispatch(getProduction({admin_id}))
       handleShowEditProductionSuc();
     } catch (error) {
       console.error("Error updating production center:", error);
@@ -647,10 +693,8 @@ export default function ProductionCenter() {
       setSelectedMenus(prev => prev.filter(menuId => menuId !== id));
 
       // Update the items list to remove items from the deleted production center
-      setItems(prev => prev.filter(item => item.production_center_id !== id));
-      fetchMenuData()
-      fetchMenuItemData();
-      getProductionCenters();
+      dispatch(getProductionData({admin_id}))
+      dispatch(getProduction({admin_id}))
       handleShowEditProductionDel();
     } catch (error) {
       console.error("Error deleting production center:", error);
@@ -660,12 +704,12 @@ export default function ProductionCenter() {
   };
 
 
-  useEffect(() => {
-    const filteredItems = selectedProductionCenters.length > 0
-      ? obj1.filter(item => selectedProductionCenters.some(center => center.id === item.production_center_id))
-      : obj1;
-    setItems(filteredItems);
-  }, [selectedProductionCenters, obj1]);
+  // useEffect(() => {
+  //   const filteredItems = selectedProductionCenters.length > 0
+  //     ? obj1.filter(item => selectedProductionCenters.some(center => center.id === item.production_center_id))
+  //     : obj1;
+  //   setItems(filteredItems);
+  // }, [selectedProductionCenters, obj1]);
 
 
 
@@ -688,16 +732,16 @@ export default function ProductionCenter() {
       }
     });
 
-    // Filter items based on selected production centers
-    setItems(prev => {
-      const updatedSelectedMenus = selectedMenus.includes(productionCenterId)
-        ? selectedMenus.filter(id => id !== productionCenterId)
-        : [...selectedMenus, productionCenterId];
+    // // Filter items based on selected production centers
+    // setItems(prev => {
+    //   const updatedSelectedMenus = selectedMenus.includes(productionCenterId)
+    //     ? selectedMenus.filter(id => id !== productionCenterId)
+    //     : [...selectedMenus, productionCenterId];
 
-      return updatedSelectedMenus.length > 0
-        ? obj1.filter(item => updatedSelectedMenus.includes(item.production_center_id))
-        : obj1;
-    });
+    //   return updatedSelectedMenus.length > 0
+    //     ? obj1.filter(item => updatedSelectedMenus.includes(item.production_center_id))
+    //     : obj1;
+    // });
 
 
     setItemstoUpdate(prev => {
@@ -748,8 +792,8 @@ export default function ProductionCenter() {
         handleClose1Prod();
 
         handleShow1AddSuc();
-        getProductionCenters();
-        fetchMenuItemData();
+        dispatch(getProductionData({admin_id}))
+        dispatch(getProduction({admin_id}))
         setFamilyFilter([])
 
         // Handle UI updates

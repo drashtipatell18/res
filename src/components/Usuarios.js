@@ -18,6 +18,8 @@ import axios from "axios";
 import Loader from "./Loader";
 import { useNavigate } from "react-router-dom";
 import useAudioManager from "./audioManager";
+import { useDispatch, useSelector } from "react-redux";
+import {getRols, getUser } from "../redux/slice/user.slice";
 //import { enqueueSnackbar  } from "notistack";
 
 const Usuarios = () => {
@@ -37,12 +39,18 @@ const Usuarios = () => {
   const [errors, setErrors] = useState({});
   const [editpassword, seteditPassword] = useState("");
   const [editcomfirmpassword, seteditcomfirmPassword] = useState("");
-  const [roles, setRoles] = useState([]);
+  // const [roles, setRoles] = useState([]);
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [userToDelete, setUserToDelete] = useState(null);
   const [userActive, setUserActive] = useState(null);
   const { playNotificationSound } = useAudioManager();
+
+  const dispatch = useDispatch();
+  const { user, roles } = useSelector((state) => state.user);
+
+  console.log(user, roles);
+  
 
   const roleNamesInSpanish = {
     1: "Admin",
@@ -75,13 +83,31 @@ const Usuarios = () => {
   useEffect(() => {
     if (role !== "admin") {
       navigate("/dashboard");
-    } else if (token) {
-      setIsProcessing(true);
-      fetchUser();
-      fetchRole();
-      setIsProcessing(false);
     }
+    // else if (token) {
+    //   setIsProcessing(true);
+    //   fetchUser();
+      // fetchRole();
+    //   setIsProcessing(false);
+    // }
   }, [token]);
+
+  useEffect(() => {
+    if (user.length == 0) {
+      dispatch(getUser());
+    }
+    if (roles?.length == 0) {
+      console.log("roles");
+      
+      dispatch(getRols());
+    }
+  }, [admin_id]);
+
+  useEffect(() => {
+    if (user) {
+      setUsers(user);
+    }
+  }, [user]);
 
   const handlePasswordChange = (e) => {
     const value = e.target.value;
@@ -301,41 +327,42 @@ const Usuarios = () => {
     return errors;
   };
 
-  const fetchUser = async () => {
-    // setIsProcessing(true);
+  // const fetchUser = async () => {
+  //   // setIsProcessing(true);
 
-    await axios
-      .get(`${apiUrl}/get-users`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        setUsers(response.data);
-        // setIsProcessing(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching users:", error);
-      });
-    // setIsProcessing(false);
-  };
-  const fetchRole = () => {
-    axios
-      .get(`${apiUrl}/roles`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        setRoles(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching roles:", error);
-      });
-  };
+  //   await axios
+  //     .get(`${apiUrl}/get-users`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     })
+  //     .then((response) => {
+  // setUsers(response.data);
+  //       // setIsProcessing(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching users:", error);
+  //     });
+  //   // setIsProcessing(false);
+  // };
+  // const fetchRole = () => {
+  //   axios
+  //     .get(`${apiUrl}/roles`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     })
+  //     .then((response) => {
+  //       console.log(response);
+  // // setRoles(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching roles:", error);
+  //     });
+  // };
 
-  console.log(isProcessing);
+  // console.log(isProcessing);
 
-  const getRoleName = (roleId) => {
-    const role = roles.find((role) => role.id === roleId);
-    return role ? role.name : "Unknown Role";
-  };
+  // const getRoleName = (roleId) => {
+  //   const role = roles.find((role) => role.id === roleId);
+  //   return role ? role.name : "Unknown Role";
+  // };
 
   // Replace handleChange with this optimized version
   const handleChange = (e) => {
@@ -408,7 +435,7 @@ const Usuarios = () => {
       );
       setIsProcessing(false);
 
-      await fetchUser();
+      await dispatch(getUser());
       handleCloseEditProduction();
       handleShowEditProductionSuc();
       if (response?.data?.notification) {
@@ -502,7 +529,8 @@ const Usuarios = () => {
         if (response.status === 200) {
           handleShowCreSubSuc();
           handleClose();
-          fetchUser();
+          dispatch(getUser());
+          // fetchUser();
           setIsProcessing(false);
           //enqueueSnackbar (response.data.notification, { variant: 'success' })
           // playNotificationSound();;
@@ -536,7 +564,7 @@ const Usuarios = () => {
         }
       );
       setIsProcessing(false);
-      fetchUser();
+      dispatch(getUser());
     } catch (error) {
       console.error("Error deleting user:", error);
     }
@@ -555,7 +583,7 @@ const Usuarios = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      fetchUser();
+      dispatch(getUser());
       setIsProcessing(false);
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -657,7 +685,7 @@ const Usuarios = () => {
                       <FaFilter /> &nbsp; <span className="b_ttt">Filtro</span>
                     </Dropdown.Toggle>
                     <Dropdown.Menu className="m14 m_filter">
-                      {roles.map((role) => (
+                      {roles?.map((role) => (
                         <div
                           className="px-3 py-1 d-flex gap-2 align-items-center fw-500"
                           key={role.id}
@@ -759,8 +787,8 @@ const Usuarios = () => {
                                           role.name}
                                       </option>
                                     ))} */}
-                                    {roles.map((role) => {
-                                      console.log();
+                                    {roles?.map((role) => {
+                                      console.log(role);
 
                                       if (
                                         role.name !== "admin" &&
@@ -1008,7 +1036,7 @@ const Usuarios = () => {
                   {isFilterActive && (
                     <span className="text-white m14">Filtro:</span>
                   )}
-                  {roles.map(
+                  {roles?.map(
                     (role) =>
                       selectedFilters[role.id] && (
                         <div
@@ -1218,7 +1246,7 @@ const Usuarios = () => {
                             defaultValue={formData.role_id}
                             onChange={handleChange}
                           >
-                            {roles.map((role) => {
+                            {roles?.map((role) => {
                               if (
                                 role.name !== "admin" &&
                                 role.name !== "superadmin"

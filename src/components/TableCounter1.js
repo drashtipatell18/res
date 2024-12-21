@@ -15,6 +15,11 @@ import axios from "axios";
 import useAudioManager from "./audioManager";
 import ElapsedTimeDisplay from "./ElapsedTimeDisplay";
 import { useOrderPrinting } from "../hooks/useOrderPrinting";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllitems, getFamily, getProduction, getProductionData, getSubFamily } from "../redux/slice/Items.slice";
+import { getRols, getUser } from "../redux/slice/user.slice";
+import { getAllOrders } from "../redux/slice/order.slice";
+import { getAllTableswithSector } from "../redux/slice/table.slice";
 //import { enqueueSnackbar  } from "notistack";
 
 const TableCounter1 = () => {
@@ -68,6 +73,12 @@ const TableCounter1 = () => {
   const [tableData, setTableData] = useState([]);
   const [productionCenters, setProductionCenters] = useState();
 
+
+  const dispatch = useDispatch()
+  const {items,subFamily,family,production,productionData,loading} = useSelector((state) => state.items);
+   const { user, roles } = useSelector((state) => state.user);
+
+
   // Add ref for note inputs
   const noteInputRefs = useRef({});
 
@@ -92,13 +103,17 @@ const TableCounter1 = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      setIsProcessing(false);
       if (response.data) {
         const no = response.data.tables.table_no;
         setTabNo(no);
       } else {
         console.error("Response data is not a non-empty array:", response.data);
       }
-    } catch {}
+    } catch(error) {
+      console.error("Error fetching table data:", error);
+      setIsProcessing(false);
+    }
   };
 
   /* get table data */
@@ -406,125 +421,175 @@ const TableCounter1 = () => {
 
   /* api */
 
-  useEffect(() => {
-    if (token) {
-      fetchFamilyData();
-      fetchSubFamilyData();
-      fetchAllItems();
-      fetchAllUser();
-      getProductionCenters();
-    }
-    // Set initial subcategories for "Drinks"
-    const relatedSubfamilies = childCheck.filter(
-      (subfamily) => subfamily.family_name === "Drinks"
-    );
-    setCurrentSubfamilies(relatedSubfamilies);
-  }, [apiUrl]);
+  // useEffect(() => {
+  //   if (token) {
+  //     fetchFamilyData();
+  //     fetchSubFamilyData();
+  //     fetchAllItems();
+  //     fetchAllUser();
+  //     getProductionCenters();
+  //   }
+  //   // Set initial subcategories for "Drinks"
+  //   const relatedSubfamilies = childCheck.filter(
+  //     (subfamily) => subfamily.family_name === "Drinks"
+  //   );
+  //   setCurrentSubfamilies(relatedSubfamilies);
+  // }, [apiUrl]);
+
+  useEffect(()=>{
+          
+      if(items.length == 0){
+        dispatch(getAllitems());
+      }
+      if(subFamily.length == 0){
+        dispatch(getSubFamily());
+      }
+      if(family.length == 0){
+        dispatch(getFamily());
+      }
+      if(production.length == 0){
+        dispatch(getProduction({admin_id}));
+      }
+      if (user.length == 0) {
+        dispatch(getUser());
+      }
+      if (roles?.length == 0) {
+        dispatch(getRols());
+      }
+    }, []);
+    
+      useEffect(() => {
+        if (user) {
+          setUsers(user);
+        }
+      }, [user]);
+  
+    useEffect(()=>{
+      if(family){
+        const todoCategory = { id: "todo", name: "Todo" };
+        setParentCheck([todoCategory, ...family]);
+        setSelectedCategory(todoCategory);
+      }
+      if(items){
+        setObj1(items);
+        // setFilteredItemsMenu(items);
+        // setItems(items)
+      }
+      if(subFamily){
+        setChildCheck(subFamily)
+      }
+      if(production){
+        setProductionCenters(production)
+      }
+     
+    },[family,items,subFamily,production])
+
 
   // get family
 
-  const getProductionCenters = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(
-        `${apiUrl}/production-centers`,
-        { admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(response.data.data);
+  // const getProductionCenters = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.post(
+  //       `${apiUrl}/production-centers`,
+  //       { admin_id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     console.log(response.data.data);
 
-      setProductionCenters(response.data.data);
-    } catch (error) {
-      console.error("Error fetching production centers:", error);
-    }
-    setIsProcessing(false);
-  };
+  //     setProductionCenters(response.data.data);
+  //   } catch (error) {
+  //     console.error("Error fetching production centers:", error);
+  //   }
+  //   setIsProcessing(false);
+  // };
 
-  const fetchFamilyData = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/family/getFamily`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const todoCategory = { id: "todo", name: "Todo" };
-      setParentCheck([todoCategory, ...response.data]);
-      setSelectedCategory(todoCategory);
-    } catch (error) {
-      console.error(
-        "Error fetching roles:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  // const fetchFamilyData = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/family/getFamily`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const todoCategory = { id: "todo", name: "Todo" };
+  //     setParentCheck([todoCategory, ...response.data]);
+  //     setSelectedCategory(todoCategory);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching roles:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
 
   // get subfamily
-  const fetchSubFamilyData = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setChildCheck(response.data);
+  // const fetchSubFamilyData = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     setChildCheck(response.data);
 
-      // Set initial subcategories for "Drinks"
-      const relatedSubfamilies = response.data.filter(
-        (subfamily) => subfamily.family_name === "Drinks"
-      );
-      setCurrentSubfamilies(relatedSubfamilies);
-    } catch (error) {
-      console.error(
-        "Error fetching subfamilies:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
-  const fetchAllUser = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  //     // Set initial subcategories for "Drinks"
+  //     const relatedSubfamilies = response.data.filter(
+  //       (subfamily) => subfamily.family_name === "Drinks"
+  //     );
+  //     setCurrentSubfamilies(relatedSubfamilies);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching subfamilies:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
 
-      setUsers(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching users:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  // const fetchAllUser = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/users`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     setUsers(response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching users:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
 
   // get product
-  const fetchAllItems = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/item/getAll`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setObj1(response.data.items);
-    } catch (error) {
-      console.error(
-        "Error fetching items:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  // const fetchAllItems = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/item/getAll`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     setObj1(response.data.items);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching items:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
   /*   const [ currentSubfamilies, setCurrentSubfamilies ] = useState([]); */
 
   const [checkedParents, setCheckedParents] = useState(
@@ -542,7 +607,7 @@ const TableCounter1 = () => {
     setSelectedSubCategory(subcategory);
   };
 
-  const [boxId, setBoxId] = useState("");
+  // const [boxId, setBoxId] = useState("");
   // const [selectedBoxId] = useState(sessionStorage.getItem('boxId'));
   // console.log(selectedBoxId);
   // useEffect(() => {
@@ -670,6 +735,9 @@ const TableCounter1 = () => {
           // }
 
           // // =======nodeprint===========
+
+          dispatch(getAllOrders({admin_id}));
+          dispatch(getAllTableswithSector({admin_id}));
 
           console.log("Table status updated successfully", resTable.data);
           localStorage.removeItem("cartItems");
@@ -1088,6 +1156,12 @@ const TableCounter1 = () => {
     }
   };
 
+
+  const handleupdateOrder = () => {
+    dispatch(getAllOrders({admin_id}));
+    navigate("/table");
+  }
+
   return (
     <section>
       <Header />
@@ -1490,7 +1564,11 @@ const TableCounter1 = () => {
                             </div>
                             <Link
                               className="btn w-100 j-btn-primary text-white j-tbl-btn-font-1 mb-3"
-                              to={"/table"}
+                              // to={"/table"}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleupdateOrder();
+                              }}
                             >
                               Enviar a Cocina
                             </Link>

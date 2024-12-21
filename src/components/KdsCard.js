@@ -2,13 +2,16 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { GoDotFill } from 'react-icons/go';
 import useAudioManager from './audioManager';
+import { useDispatch } from 'react-redux';
+import { getAllKds } from '../redux/slice/kds.slice';
 // import { //enqueueSnackbar  } from 'notistack';
 
 const KdsCard = ({ table, time, orderId, startTime, waiter, center, items, notes, finishedAt, hrtimestart, user, centerProduction, fetchOrder, status, productionCenter }) => {
     const apiUrl = process.env.REACT_APP_API_URL;
     const token = localStorage.getItem('token');
     const admin_id = localStorage.getItem('admin_id');
-  const { playNotificationSound } = useAudioManager();
+
+  const dispatch = useDispatch();
 
     const handleNextStatus = async () => {
         let newStatus;
@@ -33,9 +36,7 @@ const KdsCard = ({ table, time, orderId, startTime, waiter, center, items, notes
                     Authorization: `Bearer ${token}`
                 }
             });
-            //enqueueSnackbar (response?.data?.notification || "Estado actualizado", { variant: 'success' });
-            // playNotificationSound();;
-            fetchOrder();
+            dispatch(getAllKds({admin_id}))
         } catch (error) {
             console.error('Error updating status:', error);
         }

@@ -17,6 +17,12 @@ import axios from "axios";
 import Recipt from "./Recipt";
 import TableLastRecipt from "./TableLastRecipt";
 import ElapsedTimeDisplay from "./ElapsedTimeDisplay";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllitems, getProduction } from "../redux/slice/Items.slice";
+import { getUser } from "../redux/slice/user.slice";
+import { getboxs } from "../redux/slice/box.slice";
+import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
+import { getAllTableswithSector } from "../redux/slice/table.slice";
 
 const TablePago = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -45,6 +51,14 @@ const TablePago = () => {
   const [formErrors, setFormErrors] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
   const [tabNo,setTabNo]= useState('');
+
+  const [productionCenters, setProductionCenters] = useState();
+  const dispatch = useDispatch()
+  const {items,production,loading} = useSelector((state) => state.items);
+   const { user, roles } = useSelector((state) => state.user);
+
+
+
   /* get table data */
   useEffect(
     () => {
@@ -53,15 +67,38 @@ const TablePago = () => {
       } else {
         if (id) {
           getTableData(id);
-          fetchAllItems();
           getTable(id)
-          setIsProcessing(false);
-          fetchAllUser();
         }
       }
     },
     [id, role]
   );
+
+  useEffect(() => {
+    if(items.length === 0){
+      dispatch(getAllitems({admin_id}));
+    }
+    if(user.length === 0){
+      dispatch(getUser({admin_id}));
+    }
+    if(production.length === 0){
+      dispatch(getProduction({admin_id}))
+  }
+}, [admin_id]);
+
+
+  useEffect(() => {
+    if(items){
+      setObj1(items);
+    }
+    if(production){
+      setProductionCenters(production)
+    }
+    if (user) {
+      setUsers(user);
+    }
+  },[items, user,production]);
+  
   const getTable = async (id) => {
     setIsProcessing(true);
       try {
@@ -82,24 +119,6 @@ const TablePago = () => {
       }
   }
   
-  const fetchAllUser = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      setUsers(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching users:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  }
   const getTableData = async (id) => {
     setIsProcessing(true);
     try {
@@ -123,24 +142,9 @@ const TablePago = () => {
     }
     setIsProcessing(false);
   };
-  // get product
-  const fetchAllItems = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/item/getAll`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setObj1(response.data.items);
-    } catch (error) {
-      console.error(
-        "Error fetching items:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+
+
+
   const validateNumericInput = (value, allowDecimal = true) => {
     const regex = allowDecimal ? /^\d*\.?\d{0,2}$/ : /^\d*$/;
     return regex.test(value) ? value : "";
@@ -506,38 +510,15 @@ const TablePago = () => {
 
   // ==== Get BOX Data =====
 
-  const [boxId, setBoxId] = useState('')
-  const [selectedBoxId] = useState(parseInt(localStorage.getItem('boxId')));
+ const [selectedBoxId] = useState(parseInt(localStorage.getItem('boxId')));
+ const boxId = useSelector(state => state.boxs.box)?.find((v) => v.user_id == userId);
 
-  const fetchBoxData = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/get-boxs`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = response.data;
-      setBoxId(data.find((v) => v.user_id == userId));
-    } catch (error) {
-      console.error(
-        "Error fetching box:",
-        error.response ? error.response.data : error.message
-      );
+  useEffect(()=>{
+    if(boxId){
+        dispatch(getboxs({admin_id}))
     }
-  }
+  },[admin_id])
 
-  useEffect(() => {
-    fetchBoxData();
-    // console.log(tableData[0]?.id);
-    // console.log(selectedCheckboxes[0]);
-
-  }, [userId]);
-
-  // console.log(tableData[0]?.id);
-  // console.log(selectedCheckboxes[0]);
-
-  // console.log(boxId);
   const [paymentInfo, setPaymentInfo] = useState({});
 
 
@@ -591,6 +572,7 @@ const TablePago = () => {
       console.log("Order Update", response);
       // console.log(response.data[1] == 200);
       if (response.data[1] == 200) {
+        dispatch(getAllOrders({ admin_id }));
         try {
           const responsePayment = await axios.post(
             `${apiUrl}/payment/insert`,
@@ -601,10 +583,11 @@ const TablePago = () => {
               }
             }
           )
-
+          
           // console.log(responsePayment.status == 200);
           console.log("Payment", responsePayment);
           if (responsePayment.data.success) {
+            dispatch(getAllPayments({ admin_id }));
             try {
               const resStatus = await axios.post(`${apiUrl}/table/updateStatus`, {
                 table_id: tableData[0].table_id,
@@ -615,6 +598,8 @@ const TablePago = () => {
                   Authorization: `Bearer ${token}`
                 }
               })
+
+              dispatch(getAllTableswithSector({ admin_id }));
               setIsProcessing(false);
               console.log("Table Status", resStatus);
               setTipAmount('');

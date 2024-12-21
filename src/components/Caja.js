@@ -8,6 +8,9 @@ import axios from "axios";
 import Loader from "./Loader";
 //import { enqueueSnackbar  } from "notistack";
 import useAudioManager from "./audioManager";
+import { useDispatch, useSelector } from "react-redux";
+import { getboxs, getboxsLogs } from "../redux/slice/box.slice";
+import { getRols, getUser } from "../redux/slice/user.slice";
 
 const Caja = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -21,7 +24,6 @@ const Caja = () => {
     const [boxName, setBoxName] = useState("");
     const [cashierAssigned, setCashierAssigned] = useState("");
     const [data, setData] = useState([]);
-    const [roles, setRoles] = useState([]);
     const [formData, setFormData] = useState({});
     const [users, setUsers] = useState([]);
     const [cashier, setCashier] = useState([]);
@@ -31,7 +33,10 @@ const Caja = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const userId = localStorage.getItem('userId');
     const admin_id = localStorage.getItem('admin_id');
-    const { playNotificationSound } = useAudioManager();
+
+    const dispatch = useDispatch();
+    const {box,boxLogs} = useSelector(state => state.boxs);
+    const {user,roles} = useSelector(state => state.user);
 
     // Add refs for the inputs
     const boxNameRef = useRef(null);
@@ -92,59 +97,100 @@ const Caja = () => {
     useEffect(() => {
         if (!(role == "admin" || role == "cashier")) {
             navigate('/dashboard')
-        } else {
-            setIsProcessing(true);
-            if (token) {
-                fetchAllBox();
-                fetchBox();
-                fetchRole();
-                fetchUser();
-                setIsProcessing(false);
-            }
-        }
+        } 
+        // else {
+        //     setIsProcessing(true);
+        //     if (token) {
+        //         fetchAllBox();
+        //         fetchBox();
+        //         fetchRole();
+        //         fetchUser();
+        //         setIsProcessing(false);
+        //     }
+        // }
     }, [apiUrl, token, role]);
 
+    useEffect(()=>{
+        if(box.length == 0){
+            dispatch(getboxs({admin_id}))
+        }
+        if(boxLogs.length == 0){
+            dispatch(getboxsLogs({admin_id}))
+        }
+        if(user.length == 0){
+            dispatch(getUser())
+        }
+        if(roles?.length == 0){
+            dispatch(getRols())
+        }
+    },[admin_id])
 
-
-    // Fetch all boxes
-    const fetchAllBox = async () => {
-        try {
-            const response = await axios.get(`${apiUrl}/get-boxs`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            const userId = localStorage.getItem('userId'); // Get the userId from localStorage
-            const userRole = localStorage.getItem('role'); // Get the role from localStorage
-
-            if (userRole == 'cashier') { // Assuming role_id 2 is for cashier+
-
-
-                const cashierBoxes = response.data.filter(box => box.user_id == userId);
+    useEffect(()=>{
+        if(box){
+            if (role == 'cashier') { 
+                const cashierBoxes = box.filter(box => box.user_id == userId);
                 setData(cashierBoxes);
             } else {
-                setData(response.data); // Admin sees all boxes
+                setData(box)
             }
-        } catch (error) {
-            console.error('Error fetching boxes:', error);
         }
-    };
+    },[box])
 
-    // Fetch all box logs
-    const fetchBox = async () => {
-        try {
-            const response = await axios.get(`${apiUrl}/get-all-boxs-log`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            // console.log(response);
-            
-            setDataBox(response.data);
-        } catch (error) {
-            console.error('Error fetching boxes:', error);
+    useEffect(()=>{
+        if(boxLogs){
+            setDataBox(boxLogs)
         }
-    };
+    },[boxLogs])
+
+    useEffect(()=>{
+        if(user){
+            setUsers(user);
+            const cashiers = user.filter(user => user.role_id === 2 && user.admin_id == userId);
+            setCashier(cashiers);
+        }
+    },[user])
+
+
+
+    // // Fetch all boxes
+    // const fetchAllBox = async () => {
+    //     try {
+    //         const response = await axios.get(`${apiUrl}/get-boxs`, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`
+    //             }
+    //         });
+    //         const userId = localStorage.getItem('userId'); // Get the userId from localStorage
+    //         const userRole = localStorage.getItem('role'); // Get the role from localStorage
+
+    //         if (userRole == 'cashier') { // Assuming role_id 2 is for cashier+
+
+
+    //             const cashierBoxes = response.data.filter(box => box.user_id == userId);
+    //             setData(cashierBoxes);
+    //         } else {
+    //             setData(response.data); // Admin sees all boxes
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching boxes:', error);
+    //     }
+    // };
+
+    // // Fetch all box logs
+    // const fetchBox = async () => {
+    //     try {
+    //         const response = await axios.get(`${apiUrl}/get-all-boxs-log`, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`
+    //             }
+    //         });
+    //         // console.log(response);
+            
+    //         setDataBox(response.data);
+    //     } catch (error) {
+    //         console.error('Error fetching boxes:', error);
+    //     }
+    // };
 
 
     // Create a box
@@ -179,7 +225,7 @@ const Caja = () => {
             setIsProcessing(false);
             if(response.data.success){
                 setIsProcessing(false);
-                fetchAllBox();
+                dispatch(getboxs({admin_id}));
                 setIsProcessing(false);
                 handleShowCreSuc(); // Show success message
                 setBoxName(''); // Clear box name
@@ -195,34 +241,34 @@ const Caja = () => {
         }
     };
 
-    // Fetch all users
-    const fetchUser = async () => {
-        try {
-            const response = await axios.get(`${apiUrl}/get-users`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            // console.log(response.data)
-            setUsers(response.data);
-            const cashiers = response.data.filter(user => user.role_id === 2 && user.admin_id == userId);
-            setCashier(cashiers);
-            fetchAllBox(); // Call fetchAllBox after fetching users
-        } catch (error) {
-            console.error("Error fetching users:", error);
-        }
-    };
+    // // Fetch all users
+    // const fetchUser = async () => {
+    //     try {
+    //         const response = await axios.get(`${apiUrl}/get-users`, {
+    //             headers: { Authorization: `Bearer ${token}` }
+    //         });
+    //         // console.log(response.data)
+    //         setUsers(response.data);
+    //         const cashiers = response.data.filter(user => user.role_id === 2 && user.admin_id == userId);
+    //         setCashier(cashiers);
+    //         fetchAllBox(); // Call fetchAllBox after fetching users
+    //     } catch (error) {
+    //         console.error("Error fetching users:", error);
+    //     }
+    // };
 
-    // Fetch roles
-    const fetchRole = () => {
-        axios.get(`${apiUrl}/roles`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then((response) => {
-                setRoles(response.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching roles:", error);
-            });
-    };
+    // // Fetch roles
+    // const fetchRole = () => {
+    //     axios.get(`${apiUrl}/roles`, {
+    //         headers: { Authorization: `Bearer ${token}` }
+    //     })
+    //         .then((response) => {
+    //             setRoles(response.data);
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error fetching roles:", error);
+    //         });
+    // };
 
     const getUserName = (userId) => {
         // console.log(userId)
@@ -264,7 +310,7 @@ const Caja = () => {
                 localStorage.setItem('boxId', openBox.id);
             }
         }
-    }, [data]);
+    }, [data,dataBox]);
 
     const handleBoxSelection = (boxId) => {
          setSelectedBoxId(boxId);

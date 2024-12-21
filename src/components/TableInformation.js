@@ -10,6 +10,8 @@ import axios from "axios";
 import { RiCloseLargeFill } from "react-icons/ri";
 import * as XLSX from "xlsx-js-style";
 import { BsCheckLg } from "react-icons/bs";
+import { useDispatch } from "react-redux";
+import { getAllTableswithSector } from "../redux/slice/table.slice";
 
 const TableInformation = () => {
   const location = useLocation();
@@ -63,6 +65,7 @@ const TableInformation = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!(role == "admin" || role == "cashier" || role == "waitress")) {
@@ -602,6 +605,7 @@ const TableInformation = () => {
         setIsProcessing(false);
         handleShowEditFamSuc();
         gettableData();
+        dispatch(getAllTableswithSector(admin_id));
         // getSector();
         // getSectorTable(); 
       }
@@ -633,6 +637,7 @@ const TableInformation = () => {
         );
 
         if (response.status == 200) {
+          dispatch(getAllTableswithSector(admin_id));
           setIsProcessing(false);
           setShowDeleteConfirm(false);
           handleShowEditFamDel();

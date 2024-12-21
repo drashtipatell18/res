@@ -10,6 +10,9 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import axios from "axios";
 import Loader from "./Loader";
 import { Modal, Spinner } from "react-bootstrap";
+import { getAllPayments } from "../redux/slice/order.slice";
+import { getUser } from "../redux/slice/user.slice";
+import { useDispatch, useSelector } from "react-redux";
 
 function Home_client() {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -27,6 +30,26 @@ function Home_client() {
   const [error, setError] = useState("");
   const [orderUser, setOrderUser] = useState([]);
   const [filteredOrderUser, setFilteredOrderUser] = useState([]);
+
+  const dispatch = useDispatch();
+  const {payments} = useSelector(state => state.orders);
+  const {user} = useSelector(state => state.user);
+
+  console.log(payments);
+  console.log(user);
+  
+
+  useEffect(()=>{
+    if(payments?.length == 0){
+        dispatch(getAllPayments({admin_id}))
+    }
+  },[admin_id])
+
+  useEffect(()=>{
+    if(user?.length == 0){
+        dispatch(getUser())
+    }
+  },[admin_id])
 
   document.addEventListener("DOMContentLoaded", function () {
     const tabs = document.querySelectorAll("#pills-tab button");
@@ -107,18 +130,24 @@ function Home_client() {
     setSearchTerm(e.target.value);
   };
 
-  const fetchUser = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/get-users`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setUsers(response.data);
-    } catch (error) {
-      console.error("Error fetching users:", error);
+  useEffect(()=>{
+    if(user){
+        setUsers(user)
     }
-    setIsProcessing(false);
-  };
+  },[user])
+
+  // const fetchUser = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/get-users`, {
+  //       headers: { Authorization: `Bearer ${token}` }
+  //     });
+  //     setUsers(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching users:", error);
+  //   }
+  //   setIsProcessing(false);
+  // };
 
 
   // const fetchpaymentUser = async () =>{
@@ -163,25 +192,35 @@ function Home_client() {
 
   // console.log(orderUser);
 
-  const fetchPaymentUser = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(`${apiUrl}/get-payments`, { admin_id: admin_id }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      // console.log(response.data.result);
-      const data = response.data.result.reverse()
-
-      // Group users and collect their order_master_ids
+  useEffect(() => {
+    if (payments?.length > 0) {
+      console.log(payments);
+      const data = [...payments].reverse();
       const groupedUsers = groupUsersByDetails(data);
-
       setOrderUser(groupedUsers);
-    } catch (error) {
-      console.error("Error fetching users:", error);
     }
-    setIsProcessing(false);
-  }
+  }, [payments]);
+  
+
+  // const fetchPaymentUser = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.post(`${apiUrl}/get-payments`, { admin_id: admin_id }, {
+  //       headers: { Authorization: `Bearer ${token}` }
+  //     });
+
+  //     // console.log(response.data.result);
+  //     const data = response.data.result.reverse()
+
+  //     // Group users and collect their order_master_ids
+  //     const groupedUsers = groupUsersByDetails(data);
+
+  //     setOrderUser(groupedUsers);
+  //   } catch (error) {
+  //     console.error("Error fetching users:", error);
+  //   }
+  //   setIsProcessing(false);
+  // }
 
   const groupUsersByDetails = (users) => {
     setIsProcessing(true);
@@ -208,15 +247,15 @@ function Home_client() {
 
   // console.log(orderUser);
 
-  useEffect(
-    () => {
-      if (token) {
-        fetchUser();
-        fetchPaymentUser();
-      }
-    },
-    [token, selectedDesdeMonth, selectedHastaMonth]
-  );
+  // useEffect(
+  //   () => {
+  //     if (token) {
+  //       // fetchUser();
+  //       // fetchPaymentUser();
+  //     }
+  //   },
+  //   [token, selectedDesdeMonth, selectedHastaMonth]
+  // );
 
   const handleViewDetails = (user) => {
     navigate("/home/client/detail", { state: { user } });

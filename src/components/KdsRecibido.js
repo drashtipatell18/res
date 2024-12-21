@@ -7,6 +7,12 @@ import { FaXmark } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Modal, Spinner } from 'react-bootstrap';
+import { getAllitems, getProduction } from '../redux/slice/Items.slice';
+import { getUser } from '../redux/slice/user.slice';
+import { getAllKds } from '../redux/slice/kds.slice';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllTableswithSector } from '../redux/slice/table.slice';
+
 
 
 
@@ -15,7 +21,7 @@ const KdsRecibido = () => {
     const token = localStorage.getItem('token');
     const admin_id = localStorage.getItem('admin_id');
     const [allOrder, setAllOrder] = useState([]);
-    const [user, setUser] = useState([]);
+    // const [user, setUser] = useState([]);
     const [centerProduction, setCenterProduction] = useState([]);
     const [allItems, setAllItems] = useState([]);
     const [tableInfo, setTableInfo] = useState([]);
@@ -24,90 +30,134 @@ const KdsRecibido = () => {
 
 
     const [selectedCategory, setSelectedCategory] = useState('Todo');
-    useEffect(() => {
-        fetchOrder();
-        fetchUser();
-        fetchCenter();
-        fetchAllItems();
-        fetchTable();
-    }, []);
-    const fetchTable = async () => {
-        setIsProcessing(true);
-        try {
-            const response = await axios.post(`${apiUrl}/sector/getWithTable`, { admin_id }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            // console.log(response.data.data)
-            setTableInfo(response.data.data);
-        } catch (error) {
-            console.error("Error fetching users:", error);
-        }
-        setIsProcessing(false);
-    }
 
-    const fetchOrder = async () => {
-        setIsProcessing(true);
-        try {
-            const response = await axios.post(`${apiUrl}/order/getAllKds?received=yes`, { admin_id: admin_id }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const ordersObject = response.data; // The object you provided
-            const ordersArray = Object.values(ordersObject); // Convert object to array
+    const dispatch = useDispatch();
+    const kds = useSelector(state => state.kds.kds).filter((v)=>v.status == "received");
+    const {user} = useSelector(state => state.user);
+    const {items,production} = useSelector(state => state.items);
+    const {tablewithSector} = useSelector(state => state.tables);
 
-            setAllOrder(ordersArray); // Set the state with the array of orders
+    useEffect(()=>{
+        if(tablewithSector.length == 0){
+          dispatch(getAllTableswithSector({admin_id}));
+        }
+         if(items.length == 0){
+              dispatch(getAllitems());
+         }
+         if(user.length == 0){
+            dispatch(getUser())
+         }
+         if(kds.length == 0){
+            dispatch(getAllKds({admin_id}))
+         }
+         if(production.length == 0){
+            dispatch(getProduction({admin_id}))
+         }
+      }, [admin_id]);
+    
+      useEffect(()=>{
+    
+        if(tablewithSector){
+            setTableInfo(tablewithSector);
+        }
+        if(items){
+            setAllItems(items);
+        }
+        if(kds){
+        setAllOrder(kds);
+        }
+        if(production){
+            setCenterProduction(production);
+        }
+      },[tablewithSector,items,kds,production])
 
-        } catch (error) {
-            console.error("Error fetching orders:", error);
-        }
-        setIsProcessing(false);
-    }
-    const fetchUser = async () => {
-        setIsProcessing(true);
-        try {
-            const response = await axios.get(`${apiUrl}/get-users`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            setUser(response.data);
-        } catch (error) {
-            console.error("Error fetching users:", error);
-        }
-        setIsProcessing(false);
-    }
-    const fetchCenter = async () => {
-        setIsProcessing(true);
-        try {
-            const response = await axios.post(`${apiUrl}/production-centers`, { admin_id: admin_id }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            setCenterProduction(response.data.data);
-        } catch (error) {
-            console.error("Error fetching users:", error);
-        }
-        setIsProcessing(false);
-    }
-    const fetchAllItems = async () => {
-        setIsProcessing(true);
-        try {
-            const response = await axios.get(`${apiUrl}/item/getAll`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            setAllItems(response.data.items);
-            console.log("Fetched items as array:", response.data.items); // Log the array
-        } catch (error) {
-            console.error("Error fetching users:", error);
-        }
-        setIsProcessing(false);
-    }
+
+
+
+    // useEffect(() => {
+    //     fetchOrder();
+    //     fetchUser();
+    //     fetchCenter();
+    //     fetchAllItems();
+    //     fetchTable();
+    // }, []);
+    // const fetchTable = async () => {
+    //     setIsProcessing(true);
+    //     try {
+    //         const response = await axios.post(`${apiUrl}/sector/getWithTable`, { admin_id }, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`
+    //             }
+    //         });
+    //         // console.log(response.data.data)
+    //         setTableInfo(response.data.data);
+    //     } catch (error) {
+    //         console.error("Error fetching users:", error);
+    //     }
+    //     setIsProcessing(false);
+    // }
+
+    // const fetchOrder = async () => {
+    //     setIsProcessing(true);
+    //     try {
+    //         const response = await axios.post(`${apiUrl}/order/getAllKds?received=yes`, { admin_id: admin_id }, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         });
+    //         const ordersObject = response.data; // The object you provided
+    //         const ordersArray = Object.values(ordersObject); // Convert object to array
+
+    //         setAllOrder(ordersArray); // Set the state with the array of orders
+
+    //     } catch (error) {
+    //         console.error("Error fetching orders:", error);
+    //     }
+    //     setIsProcessing(false);
+    // }
+    // const fetchUser = async () => {
+    //     setIsProcessing(true);
+    //     try {
+    //         const response = await axios.get(`${apiUrl}/get-users`, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`
+    //             }
+    //         });
+    //         setUser(response.data);
+    //     } catch (error) {
+    //         console.error("Error fetching users:", error);
+    //     }
+    //     setIsProcessing(false);
+    // }
+    // const fetchCenter = async () => {
+    //     setIsProcessing(true);
+    //     try {
+    //         const response = await axios.post(`${apiUrl}/production-centers`, { admin_id: admin_id }, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`
+    //             }
+    //         });
+    //         setCenterProduction(response.data.data);
+    //     } catch (error) {
+    //         console.error("Error fetching users:", error);
+    //     }
+    //     setIsProcessing(false);
+    // }
+    // const fetchAllItems = async () => {
+    //     setIsProcessing(true);
+    //     try {
+    //         const response = await axios.get(`${apiUrl}/item/getAll`, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`
+    //             }
+    //         });
+    //         setAllItems(response.data.items);
+    //         console.log("Fetched items as array:", response.data.items); // Log the array
+    //     } catch (error) {
+    //         console.error("Error fetching users:", error);
+    //     }
+    //     setIsProcessing(false);
+    // }
     const filterOrdersByCategory = (orders, category) => {
         if (category === 'Todo') {
             return orders;
@@ -188,7 +238,6 @@ const KdsRecibido = () => {
                                                 finishedAt={section.finished_at}
                                                 user={user}
                                                 centerProduction={centerProduction}
-                                                fetchOrder={fetchOrder}
                                                 status={section.status}
                                                 items={section.order_details.filter(detail => {
                                                     if (selectedCategory === 'Todo') return true;
