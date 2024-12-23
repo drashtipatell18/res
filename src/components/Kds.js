@@ -28,10 +28,10 @@ const Kds = () => {
 
     
     const dispatch = useDispatch();
-    const {kds, loadingKds} = useSelector(state => state.kds);
-    const {user, loadingUser} = useSelector(state => state.user);
-    const {items,production, loadingItem} = useSelector(state => state.items);
-    const {tablewithSector, loadingTable} = useSelector(state => state.tables);
+    const {kds} = useSelector(state => state.kds);
+    const {user} = useSelector(state => state.user);
+    const {items,production} = useSelector(state => state.items);
+    const {tablewithSector} = useSelector(state => state.tables);
 
     useEffect(()=>{
         if(tablewithSector.length == 0){
@@ -67,6 +67,13 @@ const Kds = () => {
         }
       },[tablewithSector,items,kds,production])
     
+
+      console.log(tablewithSector);
+      console.log(kds);
+        console.log(items);
+        console.log(production);
+      
+      
     
     // useEffect(() => {
     //     fetchOrder();
@@ -177,14 +184,15 @@ const Kds = () => {
     // }
     const [selectedCategory, setSelectedCategory] = useState('Todo');
 
-
     const filterOrdersByCategory = (orders, category) => {
+        if (!Array.isArray(orders)) return [];
         if (category === 'Todo') {
+            console.log("Todo",orders)
             return orders;
         }
-        return orders.filter(order => {
-            return order.order_details.some(detail => {
-                const item = allItems.find(item => item.id === detail.item_id);
+        return orders?.filter(order => {
+            return order?.order_details.some(detail => {
+                const item = allItems?.find(item => item.id === detail.item_id);
                 if (item) {
                     const matchingCenter = centerProduction.find(center => center.id === item.production_center_id);
                     return matchingCenter && matchingCenter.name === category;
@@ -194,6 +202,10 @@ const Kds = () => {
         });
 
     };
+    useEffect(()=>{
+        filterOrdersByCategory(allOrder, selectedCategory);
+        console.log("filtered",filterOrdersByCategory(allOrder, selectedCategory),allOrder,selectedCategory)
+    },[orderType,allOrder])
     return (
         <>
             <Header />
@@ -212,7 +224,7 @@ const Kds = () => {
                                         Todo
                                     </a>
                                 </li>
-                                {centerProduction.map((category, index) => (
+                                {centerProduction?.map((category, index) => (
                                     <li
                                         className={`nav-item j-nav-item-size ${selectedCategory === category.name ? "active" : ""}`}
                                         key={index}
@@ -229,7 +241,7 @@ const Kds = () => {
 
                     <div className="j-kds-body">
                         <div className="row">
-                            {orderType.map((orderType, index) => (
+                            {orderType?.map((orderType, index) => (
                                 <div key={index} className="col-3 px-0">
                                     <div className={`j-kds-border-right w-100 j_kds_${orderType}`}>
                                         <Link to={`/kds/${orderType}`} className='text-decoration-none'>
@@ -240,11 +252,12 @@ const Kds = () => {
                                             </div>
                                         </Link>
                                     </div>
-
-                                    {filterOrdersByCategory(allOrder, selectedCategory)
-                                        .filter(section => section.status === orderTypeMapping[orderType])
+                                    {console.log('allOrder',allOrder,selectedCategory)}
+                                    { filterOrdersByCategory(allOrder, selectedCategory)
+                                        .filter(section => section?.status === orderTypeMapping[orderType])
                                         .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
                                         .map((section, sectionIndex) => {
+                                            console.log("filtered",section)
                                             // Find the table based on table_id
                                             const table = tableInfo.flatMap(sector => sector.tables).find(table => table.id === section.table_id);
                                             const tableName = table ? table.table_no : ''; // Default if not found
@@ -295,7 +308,7 @@ const Kds = () => {
 
                     {/* processing */}
                     <Modal
-                        show={isProcessing || loadingKds || loadingItem || loadingTable || loadingUser}
+                        show={isProcessing}
                         keyboard={false}
                         backdrop={true}
                         className="m_modal  m_user "
