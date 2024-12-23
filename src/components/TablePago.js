@@ -54,8 +54,8 @@ const TablePago = () => {
 
   const [productionCenters, setProductionCenters] = useState();
   const dispatch = useDispatch()
-  const {items,production,loading} = useSelector((state) => state.items);
-   const { user, roles } = useSelector((state) => state.user);
+  const {items,production, loadingItem} = useSelector((state) => state.items);
+   const { user ,loadingUser} = useSelector((state) => state.user);
 
 
 
@@ -866,7 +866,7 @@ const TablePago = () => {
                 </Modal>
                 {/* processing */}
                 <Modal
-                  show={isProcessing}
+                  show={isProcessing || loadingItem || loadingUser}
                   keyboard={false}
                   backdrop={true}
                   className="m_modal  m_user "

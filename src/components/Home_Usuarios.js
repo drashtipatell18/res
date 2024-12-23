@@ -64,7 +64,7 @@ function Home_Usuarios() {
     //  const [payments, setPayments] = useState([]);
 
      
-    const {orders,payments} = useSelector(state => state.orders);
+    const {orders,payments, loadingOrder} = useSelector(state => state.orders);
 
     useEffect(
         () => {
@@ -1007,7 +1007,7 @@ function Home_Usuarios() {
                             </Modal>
                             {/* processing */}
                             <Modal
-                                show={isProcessing}
+                                show={isProcessing || loadingOrder}
                                 keyboard={false}
                                 backdrop={true}
                                 className="m_modal  m_user "

@@ -29,10 +29,10 @@ const Home_Pedidos = () => {
   const [allpayments, setAllpayments] = useState([]);
 
   const dispatch = useDispatch();
-  const {box} = useSelector(state => state.boxs);
-  const {user,roles} = useSelector(state => state.user);
-  const {orders,payments} = useSelector(state => state.orders);
-  const {tablewithSector} = useSelector(state => state.tables);
+  const {box,loadingBox} = useSelector(state => state.boxs);
+  const {user,roles ,loadingUser} = useSelector(state => state.user);
+  const {orders,payments, loadingOrder} = useSelector(state => state.orders);
+  const {tablewithSector, loadingTable} = useSelector(state => state.tables);
 
   useEffect(()=>{
     if(box?.length == 0){
@@ -740,7 +740,7 @@ const Home_Pedidos = () => {
 
             {/* processing */}
             <Modal
-                show={isProcessing}
+                show={isProcessing || loadingOrder || loadingTable || loadingBox || loadingUser}
                 keyboard={false}
                 backdrop={true}
                 className="m_modal  m_user "

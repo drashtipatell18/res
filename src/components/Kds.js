@@ -28,10 +28,10 @@ const Kds = () => {
 
     
     const dispatch = useDispatch();
-    const {kds} = useSelector(state => state.kds);
-    const {user} = useSelector(state => state.user);
-    const {items,production} = useSelector(state => state.items);
-    const {tablewithSector} = useSelector(state => state.tables);
+    const {kds, loadingKds} = useSelector(state => state.kds);
+    const {user, loadingUser} = useSelector(state => state.user);
+    const {items,production, loadingItem} = useSelector(state => state.items);
+    const {tablewithSector, loadingTable} = useSelector(state => state.tables);
 
     useEffect(()=>{
         if(tablewithSector.length == 0){
@@ -295,7 +295,7 @@ const Kds = () => {
 
                     {/* processing */}
                     <Modal
-                        show={isProcessing}
+                        show={isProcessing || loadingKds || loadingItem || loadingTable || loadingUser}
                         keyboard={false}
                         backdrop={true}
                         className="m_modal  m_user "

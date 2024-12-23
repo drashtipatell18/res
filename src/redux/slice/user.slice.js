@@ -53,45 +53,45 @@ export const getUser = createAsyncThunk(
       user: [],
       roles:[],
       singleUser: [],
-      loading: false,
+      loadingUser: false,
     },
     reducers: {},
     extraReducers: (builder) => {
       builder
       // getAllusers
         .addCase(getUser.pending, (state) => {
-          state.loading = true;
+          state.loadingUser = true;
         })
         .addCase(getUser.fulfilled, (state, action) => {
-          state.loading = false;
+          state.loadingUser = false;
           state.user = action.payload;
         })
         .addCase(getUser.rejected, (state, action) => {
-          state.loading = false;
+          state.loadingUser = false;
         })
 
         // getAllRols
         .addCase(getRols.pending, (state) => {
-            state.loading = true;
+            state.loadingUser = true;
           })
           .addCase(getRols.fulfilled, (state, action) => {
-            state.loading = false;
+            state.loadingUser = false;
             state.roles = action.payload;
           })
           .addCase(getRols.rejected, (state, action) => {
-            state.loading = false;
+            state.loadingUser = false;
           })
 
           // getSingleuser
         .addCase(getSingleUser.pending, (state) => {
-            state.loading = true;
+            state.loadingUser = true;
           })
           .addCase(getSingleUser.fulfilled, (state, action) => {
-            state.loading = false;
+            state.loadingUser = false;
             state.singleUser = action.payload;
           })
           .addCase(getSingleUser.rejected, (state, action) => {
-            state.loading = false;
+            state.loadingUser = false;
           })
     }
   })

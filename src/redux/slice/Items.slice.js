@@ -108,93 +108,93 @@ const itemsSlice = createSlice({
       production : [],
       productionData : [],
       menu : [],
-      loading: false,
+      loadingItem: false,
     },
     reducers: {},
     extraReducers: (builder) => {
       builder
       // getAllitems
         .addCase(getAllitems.pending, (state) => {
-          state.loading = true;
+          state.loadingItem = true;
         })
         .addCase(getAllitems.fulfilled, (state, action) => {
-          state.loading = false;
+          state.loadingItem = false;
           state.items = action.payload;
         })
         .addCase(getAllitems.rejected, (state, action) => {
-          state.loading = false;
+          state.loadingItem = false;
         })
 
              // getAllDeleteditems
         .addCase(getAllDeleteditems.pending, (state) => {
-            state.loading = true;
+            state.loadingItem = true;
           })
           .addCase(getAllDeleteditems.fulfilled, (state, action) => {
-            state.loading = false;
+            state.loadingItem = false;
             state.deletedAllItems = action.payload;
           })
           .addCase(getAllDeleteditems.rejected, (state, action) => {
-            state.loading = false;
+            state.loadingItem = false;
           })
 
         // getAllsubcategory
         .addCase(getSubFamily.pending, (state) => {
-            state.loading = true;
+            state.loadingItem = true;
           })
           .addCase(getSubFamily.fulfilled, (state, action) => {
-            state.loading = false;
+            state.loadingItem = false;
             state.subFamily = action.payload;
           })
           .addCase(getSubFamily.rejected, (state, action) => {
-            state.loading = false;
+            state.loadingItem = false;
           })
 
            // getAllsubcategory
         .addCase(getFamily.pending, (state) => {
-            state.loading = true;
+            state.loadingItem = true;
           })
           .addCase(getFamily.fulfilled, (state, action) => {
-            state.loading = false;
+            state.loadingItem = false;
             state.family = action.payload;
           })
           .addCase(getFamily.rejected, (state, action) => {
-            state.loading = false;
+            state.loadingItem = false;
           })
 
           // getProduction
         .addCase(getProduction.pending, (state) => {
-            state.loading = true;
+            state.loadingItem = true;
           })
           .addCase(getProduction.fulfilled, (state, action) => {
-            state.loading = false;
+            state.loadingItem = false;
             state.production = action.payload;
           })
           .addCase(getProduction.rejected, (state, action) => {
-            state.loading = false;
+            state.loadingItem = false;
           })
 
           // getProductionData
         .addCase(getProductionData.pending, (state) => {
-            state.loading = true;
+            state.loadingItem = true;
           })
           .addCase(getProductionData.fulfilled, (state, action) => {
-            state.loading = false;
+            state.loadingItem = false;
             state.productionData = action.payload;
           })
           .addCase(getProductionData.rejected, (state, action) => {
-            state.loading = false;
+            state.loadingItem = false;
           })
 
            // getProductionData
         .addCase(getMenu.pending, (state) => {
-          state.loading = true;
+          state.loadingItem = true;
         })
         .addCase(getMenu.fulfilled, (state, action) => {
-          state.loading = false;
+          state.loadingItem = false;
           state.menu = action.payload;
         })
         .addCase(getMenu.rejected, (state, action) => {
-          state.loading = false;
+          state.loadingItem = false;
         })
 
           

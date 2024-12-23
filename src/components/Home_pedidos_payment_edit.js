@@ -19,6 +19,7 @@ import { BsCalculatorFill } from 'react-icons/bs';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 const Home_pedidos_payment_edit = ({ item }) => {
     // create family
@@ -46,6 +47,8 @@ const Home_pedidos_payment_edit = ({ item }) => {
             navigate(`/home_Pedidos/paymet/${id}`, { replace: true });
         }, 2000);
     };
+
+    const dispatch = useDispatch();
 
 
 

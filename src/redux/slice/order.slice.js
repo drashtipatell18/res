@@ -57,45 +57,45 @@ export const getAllOrders = createAsyncThunk(
       orders: [],
       lastOrder: '',
       payments: [],
-      loading: false,
+      loadingOrder: false,
     },
     reducers: {},
     extraReducers: (builder) => {
       builder
       // getAllOrders
         .addCase(getAllOrders.pending, (state) => {
-          state.loading = true;
+          state.loadingOrder = true;
         })
         .addCase(getAllOrders.fulfilled, (state, action) => {
-          state.loading = false;
+          state.loadingOrder = false;
           state.orders = action.payload;
         })
         .addCase(getAllOrders.rejected, (state, action) => {
-          state.loading = false;
+          state.loadingOrder = false;
         })
 
         // getAllPayments
         .addCase(getAllPayments.pending, (state) => {
-          state.loading = true;
+          state.loadingOrder = true;
         })
         .addCase(getAllPayments.fulfilled, (state, action) => {
-          state.loading = false;
+          state.loadingOrder = false;
           state.payments = action.payload;
         })
         .addCase(getAllPayments.rejected, (state, action) => {
-          state.loading = false;
+          state.loadingOrder = false;
         })
 
          // getAllPayments
          .addCase(getLastOrder.pending, (state) => {
-          state.loading = true;
+          state.loadingOrder = true;
         })
         .addCase(getLastOrder.fulfilled, (state, action) => {
-          state.loading = false;
+          state.loadingOrder = false;
           state.lastOrder = action.payload;
         })
         .addCase(getLastOrder.rejected, (state, action) => {
-          state.loading = false;
+          state.loadingOrder = false;
         })
     }
   })

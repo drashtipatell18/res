@@ -12,12 +12,17 @@ import Header from "./Header";
 import axios from "axios";
 import { Button, Modal, Spinner } from "react-bootstrap";
 import { RiDeleteBin6Fill } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllitems, getFamily, getSubFamily } from "../redux/slice/Items.slice";
+import { getLastOrder } from "../redux/slice/order.slice";
+import { getUser } from "../redux/slice/user.slice";
 
 const BHomeDelivery = () => {
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const API = process.env.REACT_APP_IMAGE_URL;
   const [token, setToken] = useState(localStorage.getItem("token"));
+    const [role] = useState(localStorage.getItem("role"));
   // const [ tId, setTId ] = useState(queryValue);
   const navigate = useNavigate();
   const admin_id = localStorage.getItem("admin_id");
@@ -27,68 +32,120 @@ const BHomeDelivery = () => {
   const [obj1, setObj1] = useState([]);
   const [orderTypeError, setOrderTypeError] = useState("");
 
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentSubfamilies, setCurrentSubfamilies] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [countsoup, setCountsoup] = useState([]);
-  const [lastOrder, setLastOrder] = useState([]);
+  // const [lastOrder, setLastOrder] = useState([]);
   const [isEditing, setIsEditing] = useState([]);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [orderType, setOrderType] = useState("");
   const [orType, setOrType] = useState([]);
   const [cname, setCName] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [orderTypeA, setOrderTypeA] = useState()
-  useEffect(() => {
+  // const [users, setUsers] = useState([]);
+  // const [orderTypeA, setOrderTypeA] = useState()
 
-    const fetchData = async () => {
+  const dispatch = useDispatch()
+  const {items,subFamily,family,loadingItem} = useSelector((state) => state.items);
+  // const {user} = useSelector((state) => state.user);
+  const {lastOrder,loadingOrder} =  useSelector((state) => state.orders);
 
-      try {
-        await fetchFamilyData();
-        await fetchAllItems();
-        await fetchSubFamilyData();
-        await fetchLastOrder();
-        await fetchAllUser();
 
-        if (parentCheck.length > 0) {
-          const todoCategory = { id: "todo", name: "Todo" };
-          setParentCheck((prevCategories) => [
-            todoCategory,
-            ...prevCategories
-          ]);
-
-          setSelectedCategory(todoCategory);
-          setCurrentSubfamilies([]);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+  useEffect(()=>{
+      if (!(role == "admin" || role == "cashier")) {
+        navigate('/dashboard')
+        return
+      } 
+      if(items.length == 0){
+        dispatch(getAllitems());
       }
-    };
+      if(subFamily.length == 0){
+        dispatch(getSubFamily());
+      }
+      if(family.length == 0){
+        dispatch(getFamily());
+      }
+      if(lastOrder == ''){
+        dispatch(getLastOrder({admin_id}));
+      }
+      // if (user?.length == 0) {
+      //       dispatch(getUser());
+      //     }
+    }, []);
+  
+    useEffect(()=>{
+      if(family){
+        const todoCategory = { id: "todo", name: "Todo" };
+        setParentCheck([todoCategory, ...family]);
+        setSelectedCategory(todoCategory); 
+        setCurrentSubfamilies([]);
+      }
+      if(items){
+        setObj1(items);
+      }
+      if(subFamily){
+        setChildCheck(subFamily)
+      }
+      if(lastOrder){
+        localStorage.setItem("lastOrder", JSON.stringify(lastOrder));
+      }  
+      // if(user){
+      //   setUsers(user);
+      // }
+    },[family,items,subFamily,lastOrder])
 
-    fetchData();
-  }, []);
 
-  const fetchAllUser = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+  // useEffect(() => {
 
-      setUsers(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching users:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  }
+  //   const fetchData = async () => {
+
+  //     try {
+  //       await fetchFamilyData();
+  //       await fetchAllItems();
+  //       await fetchSubFamilyData();
+  //       await fetchLastOrder();
+  //       await fetchAllUser();
+
+  //       if (parentCheck.length > 0) {
+  //         const todoCategory = { id: "todo", name: "Todo" };
+  //         setParentCheck((prevCategories) => [
+  //           todoCategory,
+  //           ...prevCategories
+  //         ]);
+
+  //         setSelectedCategory(todoCategory);
+  //         setCurrentSubfamilies([]);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
+  // const fetchAllUser = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/users`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+
+  //     setUsers(response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching users:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // }
 
   const [userId, setUserId] = useState('')
 
@@ -358,74 +415,74 @@ const BHomeDelivery = () => {
   };
 
   // get family
-  const fetchFamilyData = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/family/getFamily`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      const todoCategory = { id: "todo", name: "Todo" };
-      setParentCheck([todoCategory, ...response.data]);
-      setSelectedCategory(todoCategory); // Set "Todo" as initial category
-    } catch (error) {
-      console.error(
-        "Error fetching roles:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
+  // const fetchFamilyData = async () => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/family/getFamily`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+  //     const todoCategory = { id: "todo", name: "Todo" };
+  //     setParentCheck([todoCategory, ...response.data]);
+  //     setSelectedCategory(todoCategory); // Set "Todo" as initial category
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching roles:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
   // get product
-  const fetchAllItems = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/item/getAll`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setObj1(response.data.items);
-    } catch (error) {
-      console.error(
-        "Error fetching items:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  // const fetchAllItems = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/item/getAll`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+  //     setObj1(response.data.items);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching items:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
 
   // get subfamily
-  const fetchSubFamilyData = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setChildCheck(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching subfamilies:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
+  // const fetchSubFamilyData = async () => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+  //     setChildCheck(response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching subfamilies:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
 
   // get last order of order master
 
-  const fetchLastOrder = async () => {
-    try {
-      const response = await axios.post(`${apiUrl}/orders/last`, { admin_id: admin_id }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setLastOrder(response.data.order.id + 1);
-    } catch (error) {
-      console.error(
-        "Error fetching subfamilies:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
+  // const fetchLastOrder = async () => {
+  //   try {
+  //     const response = await axios.post(`${apiUrl}/orders/last`, { admin_id: admin_id }, {
+  //       headers: { Authorization: `Bearer ${token}` }
+  //     });
+  //     setLastOrder(response.data.order.id + 1);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching subfamilies:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
 
   // place new order
 
@@ -535,23 +592,23 @@ const BHomeDelivery = () => {
 
 
 
-  const handlename = (e) => {
-    const value = e.target.value
-    setCName(value)
-    if (value) {
-      setOrderTypeError("")
-    }
-  }
-  const getUserName = (id) => {
-    const user = users.find(user => user.id === id);
+  // const handlename = (e) => {
+  //   const value = e.target.value
+  //   setCName(value)
+  //   if (value) {
+  //     setOrderTypeError("")
+  //   }
+  // }
+  // const getUserName = (id) => {
+  //   const user = users.find(user => user.id === id);
 
-    if (user) {
-      return user.name;
-    } else {
-      console.error(`User with id ${id} not found`);
-      return 'Unknown User';
-    }
-  };
+  //   if (user) {
+  //     return user.name;
+  //   } else {
+  //     console.error(`User with id ${id} not found`);
+  //     return 'Unknown User';
+  //   }
+  // };
 
   // console.log(cname);
 
@@ -968,7 +1025,7 @@ const BHomeDelivery = () => {
         </div>
         {/* processing */}
         <Modal
-          show={isProcessing}
+          show={isProcessing || loadingOrder || loadingItem}
           keyboard={false}
           backdrop={true}
           className="m_modal  m_user "

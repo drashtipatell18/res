@@ -16,16 +16,14 @@ export default function SingProd({ image, price, name, code, id,production_cente
 
 
   const handleClick = async () => {
-    console.log("asasd");
+    // console.log("asasd");
 
     localStorage.setItem("cartItems", JSON.stringify([{ image, price, name, code, id, count: 1, isEditing: false, note: "", production_center_id }]));
     try {
-
       const response = await axios.post(`${apiUrl}/orders/last`, { admin_id }, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // console.log(response.data);
       if (response.status == 200) {
         localStorage.setItem("lastOrder", JSON.stringify(response.data.order.id + 1));
         navigate("/counter");

@@ -1,25 +1,29 @@
-import React, { useEffect, useRef, useState } from 'react'
-import Header from './Header'
-import Sidenav from './Sidenav'
-import { Badge, Button, Modal, Spinner } from 'react-bootstrap'
+import React, { useEffect, useRef, useState } from "react";
+import Header from "./Header";
+import Sidenav from "./Sidenav";
+import { Badge, Button, Modal, Spinner } from "react-bootstrap";
 import { FaArrowLeft, FaCalendarAlt } from "react-icons/fa";
 import { MdEditSquare } from "react-icons/md";
 import { CgCalendarDates } from "react-icons/cg";
 import { FiPlus } from "react-icons/fi";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
-import pic1 from "../img/Image.png"
-import pic2 from "../img/Image(1).jpg"
-import pic3 from "../img/Image (2).png"
-import { Tabs, Tab } from 'react-bootstrap';
-import { IoMdCloseCircle, IoMdInformationCircle } from 'react-icons/io';
+import pic1 from "../img/Image.png";
+import pic2 from "../img/Image(1).jpg";
+import pic3 from "../img/Image (2).png";
+import { Tabs, Tab } from "react-bootstrap";
+import { IoMdCloseCircle, IoMdInformationCircle } from "react-icons/io";
 import img2 from "../Image/addmenu.jpg";
-import { Link, useLocation, useParams } from 'react-router-dom';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { BsCalculatorFill } from 'react-icons/bs';
+import { Link, useLocation, useParams } from "react-router-dom";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { BsCalculatorFill } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllDeleteditems, getFamily, getSubFamily } from "../redux/slice/Items.slice";
+import { getRols, getUser } from "../redux/slice/user.slice";
+import { getAllTableswithSector } from "../redux/slice/table.slice";
+import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
 
 export default function Home_Pedidos_paymet() {
-
   const apiUrl = process.env.REACT_APP_API_URL; // Laravel API URL
   const API = process.env.REACT_APP_IMAGE_URL;
   const [token] = useState(localStorage.getItem("token"));
@@ -41,7 +45,6 @@ export default function Home_Pedidos_paymet() {
   const [errorReason, setReasonError] = useState(null);
   const noteInputRefs = useRef({});
   const handleShow12 = async () => {
-
     // ----resons----
     // ===change====
     // console.log(reason);
@@ -63,7 +66,6 @@ export default function Home_Pedidos_paymet() {
         }
       );
       // console.log("Note added successfully:", response.data);
-
     } catch (error) {
       console.error(
         "Error adding note:",
@@ -87,7 +89,6 @@ export default function Home_Pedidos_paymet() {
       getOrderStatus();
       // getOrder();
       // console.log("Order Cancle successfully:", response.data);
-
     } catch (error) {
       console.error(
         "Error adding note:",
@@ -98,10 +99,10 @@ export default function Home_Pedidos_paymet() {
     }
 
     // ---End-resons----
-
-    setShow12(true)
+    dispatch(getAllOrders({ admin_id }));
+    setShow12(true);
     setTimeout(() => {
-      setShow12(false)
+      setShow12(false);
       getOrder();
       // navigate(`/home_Pedidos/payment_edit/${id}`, { replace: true, state: "profile" });
     }, 2000);
@@ -114,13 +115,13 @@ export default function Home_Pedidos_paymet() {
   const [orderDetails, setOrderDetails] = useState([]);
   const [sector, setSector] = useState(null);
   const [table, setTable] = useState(null);
-  const [reason, setReason] = useState('');
-  const [orderStatus, setOrderStatus] = useState('');
+  const [reason, setReason] = useState("");
+  const [orderStatus, setOrderStatus] = useState("");
   const [user, setUser] = useState(null);
-  const [roles, setRoles] = useState([]);
-  const [userRole, setUserRole] = useState('');
+  // const [roles, setRoles] = useState([]);
+  const [userRole, setUserRole] = useState("");
   const [visibleInputId, setVisibleInputId] = useState(null);
-  const [noteValues, setNoteValues] = useState('');
+  const [noteValues, setNoteValues] = useState("");
 
   const [obj1, setObj1] = useState([]);
   const [parentCheck, setParentCheck] = useState([]);
@@ -130,11 +131,19 @@ export default function Home_Pedidos_paymet() {
   const [selectedItemsCount, setSelectedItemsCount] = useState(0);
   const [filteredItemsMenu, setFilteredItemsMenu] = useState(obj1);
 
+  const dispatch = useDispatch();
+  const { box , loadingBox} = useSelector((state) => state.boxs);
+  const {roles} = useSelector((state) => state.user);
+  const allusers = useSelector((state) => state.user.user);
+  const {payments, loadingOrder } = useSelector((state) => state.orders);
+  const { tablewithSector , loadingTable} = useSelector((state) => state.tables);
+  const {deletedAllItems,subFamily,family,loadingItem} = useSelector((state) => state.items);
+
+
   // const [filteredMenuItems, setFilteredMenuItems] = useState([]); // State to hold filtered items
   // const [searchTerm, setSearchTerm] = useState(""); // State to hold search term
   // const [menuId, setMenuId] = useState(null);
   // const [itemId, setItemId] = useState([]);
-
 
   // Add producttion
   const [show1Prod, setShow1Prod] = useState(false);
@@ -142,7 +151,7 @@ export default function Home_Pedidos_paymet() {
     setShow1Prod(false);
     setSelectedItemsMenu([]);
     setSelectedItemsCount(0);
-  }
+  };
   const handleShow1Prod = () => setShow1Prod(true);
   const [selectedItemsMenu, setSelectedItemsMenu] = useState([]);
 
@@ -150,20 +159,64 @@ export default function Home_Pedidos_paymet() {
   const [show1AddSuc, setShow1AddSuc] = useState(false);
   const handleClose1AddSuc = () => setShow1AddSuc(false);
   const handleShow1AddSuc = () => {
-    setShow1AddSuc(true)
+    setShow1AddSuc(true);
     setTimeout(() => {
-      setShow1AddSuc(false)
+      setShow1AddSuc(false);
     }, 2000);
   };
 
   useEffect(() => {
     getOrder();
-    getItems();
     getOrderStatus();
-    getRole();
-    getFamily();
-    getSubFamily();
-  }, [show12, show1Prod]);
+  }, [show12]);
+
+  useEffect(() => {
+    if (allusers?.length == 0) {
+      dispatch(getUser());
+    }
+    if (roles?.length == 0) {
+      dispatch(getRols());
+    }
+    if (payments?.length == 0) {
+      dispatch(getAllPayments({ admin_id }));
+    }
+    if (tablewithSector?.length == 0) {
+      dispatch(getAllTableswithSector({ admin_id }));
+    }
+
+    if(deletedAllItems?.length == 0){
+        dispatch(getAllDeleteditems());
+    }
+   if(subFamily.length == 0){
+       dispatch(getSubFamily());
+     }
+     if(family.length == 0){
+       dispatch(getFamily());
+     }
+  }, [admin_id]);
+
+  useEffect(() => {
+    if (payments) {
+      console.log(payments);
+      const payment = payments?.find((v) => v.order_id == id);
+      if(payment){
+      setPaymentDone(true);
+      }
+    }
+    if(family){
+      setParentCheck(family);
+    }
+    if(deletedAllItems){
+      console.log(deletedAllItems);
+      
+      setItems(deletedAllItems);
+      setObj1(deletedAllItems?.filter((v) => v.deleted_at == null));
+      setFilteredItemsMenu(deletedAllItems.filter((v) => v.deleted_at == null));
+    }
+    if(subFamily){
+      setChildCheck(subFamily)
+    }
+  }, [box]);
 
   useEffect(() => {
     if (orderData && items.length > 0) {
@@ -171,40 +224,40 @@ export default function Home_Pedidos_paymet() {
       getSector();
     }
     if (orderData?.user_id) {
-      getUser();
+      getUserdata();
     }
   }, [orderData, items, show1Prod]);
 
   useEffect(() => {
     if (user) {
-      setUserRole(user.name)
-      // getuserRole();
+      setUserRole(user.name);
     }
   }, [user]);
 
   useEffect(() => {
-    getPaymentsData();
-    fetchCredit()
+    fetchCredit();
   }, [admin_id, id]);
   const [creditNote, setCreditNote] = useState(false);
 
   const fetchCredit = async () => {
     setIsProcessing(true);
     try {
-      const response = await axios.post(`${apiUrl}/order/getCredit`, { admin_id: admin_id }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        `${apiUrl}/order/getCredit`,
+        { admin_id: admin_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       // console.log(response.data.data);
-
 
       const credit = response.data.data?.some((v) => v.order_id == id);
 
       setCreditNote(credit);
       // console.log(credit);
-
     } catch (error) {
       console.error(
         "Error fetching allOrder:",
@@ -212,41 +265,44 @@ export default function Home_Pedidos_paymet() {
       );
     }
     setIsProcessing(false);
-  }
+  };
 
+  const [pamentDone, setPaymentDone] = useState(false);
 
-  const [pamentDone, setPaymentDone] = useState(false)
+  // const getPaymentsData = async () => {
+  //   // console.log(admin_id, admin_id);
 
-  const getPaymentsData = async () => {
-    // console.log(admin_id, admin_id);
-
-    try {
-      const response = await axios.get(`${apiUrl}/getsinglepayments/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      // console.log("Payments Data:", response);
-      if (response.data.success) {
-        // console.log("true");
-        setPaymentDone(true);
-      }
-    } catch (error) {
-      console.error(
-        "Error fetching PaymentsData:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  }
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/getsinglepayments/${id}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     // console.log("Payments Data:", response);
+  //     if (response.data.success) {
+  //       // console.log("true");
+  //       setPaymentDone(true);
+  //     }
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching PaymentsData:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
 
   const getOrder = async () => {
     setIsProcessing(true);
     try {
-      const response = await axios.post(`${apiUrl}/order/getSingle/${id}`, { admin_id: admin_id }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        `${apiUrl}/order/getSingle/${id}`,
+        { admin_id: admin_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setOrderData(response.data[0]);
     } catch (error) {
       console.error(
@@ -257,54 +313,40 @@ export default function Home_Pedidos_paymet() {
     setIsProcessing(false);
   };
 
-  const getItems = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/item/getAllDeletedAt`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setItems(response.data.items);
-      setObj1(response.data.items.filter(v => v.deleted_at == null));
-      // setFilteredMenuItems(response.data.items);
-      setFilteredItemsMenu(response.data.items.filter(v => v.deleted_at == null));
-    } catch (error) {
-      console.error(
-        "Error fetching Items:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  // const getItems = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/item/getAllDeletedAt`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     setItems(response.data.items);
+  //     setObj1(response.data.items.filter((v) => v.deleted_at == null));
+  //     // setFilteredMenuItems(response.data.items);
+  //     setFilteredItemsMenu(
+  //       response.data.items.filter((v) => v.deleted_at == null)
+  //     );
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching Items:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
 
   const getSector = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(`${apiUrl}/sector/getWithTable`, { admin_id: admin_id }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      let sectors = response.data.data;
-
-      const sectorWithTable = sectors.find(v =>
-        v.tables.some(a => a.id == orderData.table_id)
+      const sectorWithTable = tablewithSector?.find((v) =>
+        v.tables.some((a) => a.id == orderData.table_id)
       );
-
-
 
       if (sectorWithTable) {
         setSector(sectorWithTable);
-        setTable(sectorWithTable.tables.find(a => a.id == orderData.table_id));
+        setTable(
+          sectorWithTable.tables.find((a) => a.id == orderData.table_id)
+        );
       }
-    } catch (error) {
-      console.error(
-        "Error fetching sector and Table Data:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
   };
 
   const getOrderStatus = async () => {
@@ -325,87 +367,77 @@ export default function Home_Pedidos_paymet() {
     setIsProcessing(false);
   };
 
-  const getUser = async () => {
-    setIsProcessing(true);
-    try {
-      // console.log(orderData.user_id);
-
-      const response = await axios.get(`${apiUrl}/get-user/${orderData.user_id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      // console.log(response.data[0]);
-
-      setUser(response.data[0]);
-    } catch (error) {
-      console.error(
-        "Error fetching user:",
-        error.response ? error.response.data : error.message
-      );
+  const getUserdata = () => {
+  const user = allusers?.find((v) => v.id == orderData.user_id);
+    if(user){
+      setUser(user);
+    }else{
       setUser(null); // Set user to null if there's an error
     }
-    setIsProcessing(false);
   };
 
-  const getRole = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${apiUrl}/roles`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setRoles(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching roles:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  // const getRole = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/roles`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     setRoles(response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching roles:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
 
-  const getFamily = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/family/getFamily`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setParentCheck(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching Family",
-        error.response ? error.response.data : error.message
-      );
-    }
-  }
-  const getSubFamily = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setChildCheck(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching SubFamily",
-        error.response ? error.response.data : error.message
-      );
-    }
-  }
+  // const getFamily = async () => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/family/getFamily`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     setParentCheck(response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching Family",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
+  // const getSubFamily = async () => {
+  //   try {
+  //     const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     setChildCheck(response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching SubFamily",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
 
   const handleOrderDetails = () => {
     // Check if orderData is not null before accessing its properties
     if (orderData) {
       const details = orderData.order_details.map((orderItem) => {
-        const matchingItem = items.find((item) => item.id === orderItem.item_id);
+        const matchingItem = items.find(
+          (item) => item.id === orderItem.item_id
+        );
         return {
           ...orderItem,
           image: matchingItem ? matchingItem.image : orderItem.image,
-          description: matchingItem ? matchingItem.description : orderItem.description,
+          description: matchingItem
+            ? matchingItem.description
+            : orderItem.description,
         };
       });
       setOrderDetails(details);
@@ -417,12 +449,12 @@ export default function Home_Pedidos_paymet() {
   // ----resons section -----
 
   const handlereasons = (event) => {
-    let notes = event?.target.value
-    setReason(notes)
+    let notes = event?.target.value;
+    setReason(notes);
     if (notes) {
-      setReasonError(null)
+      setReasonError(null);
     }
-  }
+  };
 
   // ----resons section  end-----
 
@@ -432,22 +464,26 @@ export default function Home_Pedidos_paymet() {
   const [checkedChildren, setCheckedChildren] = useState({});
 
   useEffect(() => {
-
     const initialParents = {};
     const initialChildren = {};
-    parentCheck.forEach(parent => initialParents[parent.id] = false);
-    childCheck.forEach(child => initialChildren[child.id] = false);
+    parentCheck.forEach((parent) => (initialParents[parent.id] = false));
+    childCheck.forEach((child) => (initialChildren[child.id] = false));
     setCheckedParents(initialParents);
     setCheckedChildren(initialChildren);
   }, [parentCheck, childCheck]);
 
   const handleParentChangeMenu = (parentId) => {
-    const newCheckedParents = { ...checkedParents, [parentId]: !checkedParents[parentId] };
+    const newCheckedParents = {
+      ...checkedParents,
+      [parentId]: !checkedParents[parentId],
+    };
     setCheckedParents(newCheckedParents);
 
     const newCheckedChildren = { ...checkedChildren };
-    childCheck.forEach(child => {
-      if (parentCheck.find(p => p.id === parentId)?.name === child.family_name) {
+    childCheck.forEach((child) => {
+      if (
+        parentCheck.find((p) => p.id === parentId)?.name === child.family_name
+      ) {
         newCheckedChildren[child.id] = newCheckedParents[parentId];
       }
     });
@@ -457,27 +493,44 @@ export default function Home_Pedidos_paymet() {
   };
 
   const handleChildChangeMenu = (childId, parentName) => {
-    const newCheckedChildren = { ...checkedChildren, [childId]: !checkedChildren[childId] };
+    const newCheckedChildren = {
+      ...checkedChildren,
+      [childId]: !checkedChildren[childId],
+    };
     setCheckedChildren(newCheckedChildren);
 
-    const parentId = parentCheck.find(p => p.name === parentName)?.id;
+    const parentId = parentCheck.find((p) => p.name === parentName)?.id;
     const allChildrenUnchecked = childCheck
-      .filter(child => child.family_name === parentName)
-      .every(child => !newCheckedChildren[child.id]);
+      .filter((child) => child.family_name === parentName)
+      .every((child) => !newCheckedChildren[child.id]);
 
-    const newCheckedParents = { ...checkedParents, [parentId]: !allChildrenUnchecked };
+    const newCheckedParents = {
+      ...checkedParents,
+      [parentId]: !allChildrenUnchecked,
+    };
     setCheckedParents(newCheckedParents);
 
     filterItems(newCheckedParents, newCheckedChildren, searchTermMenu);
   };
 
   const filterItems = (parents, children, searchTerm) => {
-    const filteredItems = obj1.filter(item => {
-      const matchesParent = Object.values(parents).some(checked => checked) ? parents[item.family_id] : true;
-      const matchesChild = Object.values(children).some(checked => checked) ? children[item.sub_family_id] : true;
-      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const filteredItems = obj1.filter((item) => {
+      const matchesParent = Object.values(parents).some((checked) => checked)
+        ? parents[item.family_id]
+        : true;
+      const matchesChild = Object.values(children).some((checked) => checked)
+        ? children[item.sub_family_id]
+        : true;
+      const matchesSearch = item.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
-      return ((matchesParent && matchesChild) || (!Object.values(parents).some(checked => checked) && !Object.values(children).some(checked => checked))) && matchesSearch;
+      return (
+        ((matchesParent && matchesChild) ||
+          (!Object.values(parents).some((checked) => checked) &&
+            !Object.values(children).some((checked) => checked))) &&
+        matchesSearch
+      );
     });
 
     setFilteredItemsMenu(filteredItems);
@@ -489,7 +542,6 @@ export default function Home_Pedidos_paymet() {
     filterItems(checkedParents, checkedChildren, term);
   };
 
-
   // // ==== select items section ====
   const handleAddItem = (item) => {
     setSelectedItemsMenu((prevArray) => {
@@ -499,7 +551,7 @@ export default function Home_Pedidos_paymet() {
         // Item exists, so remove it
         const newArray = [...prevArray];
         newArray.splice(itemIndex, 1);
-        setSelectedItemsCount(prevCount => prevCount - 1);
+        setSelectedItemsCount((prevCount) => prevCount - 1);
         // console.log(`Removed item ${item.id}`);
         return newArray;
       } else {
@@ -508,7 +560,7 @@ export default function Home_Pedidos_paymet() {
           item_id: item.id,
           quantity: 1,
         };
-        setSelectedItemsCount(prevCount => prevCount + 1);
+        setSelectedItemsCount((prevCount) => prevCount + 1);
         // console.log(`Added item ${item.id}`);
         return [...prevArray, newItem];
       }
@@ -519,29 +571,28 @@ export default function Home_Pedidos_paymet() {
 
   /*========= Add menu to Order =======*/
   const handleAddMenu = async () => {
-
     setIsProcessing(true);
     try {
       const response = await axios.post(
         `${apiUrl}/order/addItem`,
         {
-          "order_id": id,
-          "order_details": selectedItemsMenu,
-          "admin_id":admin_id
+          order_id: id,
+          order_details: selectedItemsMenu,
+          admin_id: admin_id,
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          maxBodyLength: Infinity
+          maxBodyLength: Infinity,
         }
       );
 
       if (!(response.success == "false")) {
         handleClose1Prod();
         handleShow1AddSuc();
-
+        getOrder();
         // setItemId([]);
         setSelectedItemsMenu([]);
       } else {
@@ -561,10 +612,9 @@ export default function Home_Pedidos_paymet() {
 
   /*========= Add menu to Order =======*/
 
-
   // ===============note ========
   const toggleInput = (id) => {
-    setVisibleInputId(prevId => prevId === id ? null : id);
+    setVisibleInputId((prevId) => (prevId === id ? null : id));
   };
 
   const handleNoteChange = (id, value) => {
@@ -588,7 +638,7 @@ export default function Home_Pedidos_paymet() {
       // console.log("Note added successfully:", response.data);
 
       // setSavedNote(noteValues);
-      setNoteValues('');
+      setNoteValues("");
       setVisibleInputId(null);
     } catch (error) {
       console.error(
@@ -606,33 +656,36 @@ export default function Home_Pedidos_paymet() {
 
   // New function to handle outside click
   const handleClickOutside = (event) => {
-    if (noteInputRefs.current[id] && !noteInputRefs.current[id].contains(event.target)) {
+    if (
+      noteInputRefs.current[id] &&
+      !noteInputRefs.current[id].contains(event.target)
+    ) {
       handleNoteKeyDown(id); // Submit the response
     }
   };
 
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, []);
 
   // =============end note==========
 
-  document.addEventListener('DOMContentLoaded', function () {
-    const tabs = document.querySelectorAll('#pills-tab button');
+  document.addEventListener("DOMContentLoaded", function () {
+    const tabs = document.querySelectorAll("#pills-tab button");
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', function () {
-        tabs.forEach(button => {
-          button.classList.remove('bg-primary', 'text-light');
-          button.classList.add('bg-light', 'text-dark');
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", function () {
+        tabs.forEach((button) => {
+          button.classList.remove("bg-primary", "text-light");
+          button.classList.add("bg-light", "text-dark");
         });
 
         // Add 'bg-primary' and 'text-light' to the clicked tab
-        tab.classList.remove('bg-light', 'text-dark');
-        tab.classList.add('bg-primary', 'text-light');
+        tab.classList.remove("bg-light", "text-dark");
+        tab.classList.add("bg-primary", "text-light");
       });
     });
   });
@@ -650,17 +703,18 @@ export default function Home_Pedidos_paymet() {
     }
   };
   const handleCredit = () => {
-    if (orderData?.status == 'delivered' || orderData?.status == "cancelled") {
-      navigate(`/home/client/crear/${id}`, { replace: true })
+    if (orderData?.status == "delivered" || orderData?.status == "cancelled") {
+      navigate(`/home/client/crear/${id}`, { replace: true });
     } else {
-      alert('No se puede generar una nota de crédito si el pedido actual no ha sido entregado.')
+      alert(
+        "No se puede generar una nota de crédito si el pedido actual no ha sido entregado."
+      );
     }
-  }
+  };
 
   const handlePayment = () => {
-
-    if(pamentDone){
-      return
+    if (pamentDone) {
+      return;
     }
 
     // console.log(orderDetails, orderData);
@@ -669,8 +723,8 @@ export default function Home_Pedidos_paymet() {
       orderType: orderData?.order_type,
       orderId: orderData?.id,
       name: orderData?.customer_name,
-      order: "old"
-    }
+      order: "old",
+    };
     let cartItems = [];
     orderDetails?.map((v) => {
       const obj = {
@@ -683,17 +737,16 @@ export default function Home_Pedidos_paymet() {
         count: v.quantity,
         note: v.notes ? v.notes : "",
         isEditing: false,
-        OdId: v.id
-      }
-      cartItems.push(obj)
-    })
+        OdId: v.id,
+      };
+      cartItems.push(obj);
+    });
     localStorage.setItem("tableId", JSON.stringify(orderData?.table_id));
     localStorage.setItem("currentOrder", JSON.stringify(currentOrder));
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
     navigate("/home/usa/bhomedelivery/datos");
-
-  }
+  };
   // =============== End ============
   return (
     <div>
@@ -703,36 +756,87 @@ export default function Home_Pedidos_paymet() {
           <Sidenav />
           <div className=" flex-grow-1 sidebar overflow-hidden">
             <div className="p-3 m_bgblack text-white  ">
-              <Link to="/home_Pedidos" className='d-flex text-decoration-none' >
-                <div className='btn btn-outline-primary text-nowrap py-2 d-flex mt-2 ms-3' style={{ borderRadius: "10px" }}> <FaArrowLeft className='me-2 mt-1' />Regresar</div>
+              <Link to="/home_Pedidos" className="d-flex text-decoration-none">
+                <div
+                  className="btn btn-outline-primary text-nowrap py-2 d-flex mt-2 ms-3"
+                  style={{ borderRadius: "10px" }}
+                >
+                  {" "}
+                  <FaArrowLeft className="me-2 mt-1" />
+                  Regresar
+                </div>
               </Link>
 
-              <div className='d-flex justify-content-between align-items-center flex-wrap'>
-                <div className='text-white ms-3 my-4' style={{ fontSize: "18px" }}>
+              <div className="d-flex justify-content-between align-items-center flex-wrap">
+                <div
+                  className="text-white ms-3 my-4"
+                  style={{ fontSize: "18px" }}
+                >
                   {/* Pedido : {order} */}
                   Pedido : {id}
                 </div>
 
-                <div className='d-flex flex-wrap me-4'>
-                  {showCancelOrderButton ? (
-                    !(orderData?.status == 'delivered' || orderData?.status == 'finalized' || orderData?.status == "cancelled") &&
-                    <div onClick={handleShow} className='btn btn-danger me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center' style={{ backgroundColor: "#F05252", borderRadius: '10px' }}> <IoMdCloseCircle className='me-2' />Anular pedido</div>
-                  ) : (
-                    !(orderData?.status == "cancelled" || pamentDone) && <>
-                      <Link className='text-decoration-none'
-                        to={`/home_Pedidos/payment_edit/${id}`}
-                      >
-                        <div className='btn btn-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center' style={{ backgroundColor: "#147BDE", borderRadius: '10px' }}> <MdEditSquare className='me-2' />Editar Pedido</div>
-                      </Link>
-                      <div className='btn btn-outline-primary b_mar_lef ms-2 py-2 text-nowrap d-flex align-item-center justify-content-center' style={{ borderRadius: "10px" }} onClick={handleShow1Prod}> <FiPlus className='me-2 mt-1' />Agregar Producto</div>
-                    </>
+                <div className="d-flex flex-wrap me-4">
+                  {showCancelOrderButton
+                    ? !(
+                        orderData?.status == "delivered" ||
+                        orderData?.status == "finalized" ||
+                        orderData?.status == "cancelled"
+                      ) && (
+                        <div
+                          onClick={handleShow}
+                          className="btn btn-danger me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center"
+                          style={{
+                            backgroundColor: "#F05252",
+                            borderRadius: "10px",
+                          }}
+                        >
+                          {" "}
+                          <IoMdCloseCircle className="me-2" />
+                          Anular pedido
+                        </div>
+                      )
+                    : !(orderData?.status == "cancelled" || pamentDone) && (
+                        <>
+                          <Link
+                            className="text-decoration-none"
+                            to={`/home_Pedidos/payment_edit/${id}`}
+                          >
+                            <div
+                              className="btn btn-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center"
+                              style={{
+                                backgroundColor: "#147BDE",
+                                borderRadius: "10px",
+                              }}
+                            >
+                              {" "}
+                              <MdEditSquare className="me-2" />
+                              Editar Pedido
+                            </div>
+                          </Link>
+                          <div
+                            className="btn btn-outline-primary b_mar_lef ms-2 py-2 text-nowrap d-flex align-item-center justify-content-center"
+                            style={{ borderRadius: "10px" }}
+                            onClick={handleShow1Prod}
+                          >
+                            {" "}
+                            <FiPlus className="me-2 mt-1" />
+                            Agregar Producto
+                          </div>
+                        </>
+                      )}
+
+                  {showCancelOrderButton && !creditNote && (
+                    <div
+                      onClick={handleCredit}
+                      className="btn bj-btn-outline-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center"
+                      style={{ borderRadius: "10px" }}
+                    >
+                      {" "}
+                      <BsCalculatorFill className="me-2" />
+                      Generar nota de crédito
+                    </div>
                   )}
-
-                  {showCancelOrderButton &&
-                    !creditNote &&
-                    (<div onClick={handleCredit} className='btn bj-btn-outline-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center' style={{ borderRadius: '10px' }}> <BsCalculatorFill className='me-2' />Generar nota de crédito</div>)
-                  }
-
                 </div>
 
                 {/* cancel order modal */}
@@ -741,12 +845,16 @@ export default function Home_Pedidos_paymet() {
                   show={show}
                   onHide={handleClose}
                   backdrop={true}
-
                   keyboard={false}
                   className="m_modal"
                 >
-                  <Modal.Header closeButton className="m_borbot b_border_bb mx-3 ps-0">
-                    <Modal.Title className="j-tbl-text-10">Anular pedido</Modal.Title>
+                  <Modal.Header
+                    closeButton
+                    className="m_borbot b_border_bb mx-3 ps-0"
+                  >
+                    <Modal.Title className="j-tbl-text-10">
+                      Anular pedido
+                    </Modal.Title>
                   </Modal.Header>
                   <Modal.Body className="border-0 pb-0 ">
                     <div className="mb-3">
@@ -779,7 +887,11 @@ export default function Home_Pedidos_paymet() {
                         onKeyUp={handlereasons}
                         required
                       />
-                      {errorReason && <div className="text-danger errormessage">{errorReason}</div>}
+                      {errorReason && (
+                        <div className="text-danger errormessage">
+                          {errorReason}
+                        </div>
+                      )}
                     </div>
                   </Modal.Body>
                   <Modal.Footer className="border-0 pt-0">
@@ -804,7 +916,6 @@ export default function Home_Pedidos_paymet() {
                     </Button>
                   </Modal.Footer>
                 </Modal>
-
               </div>
               {/* {showDeliveryButton && (
                 <div className='b_borderrr pb-4'>
@@ -813,45 +924,62 @@ export default function Home_Pedidos_paymet() {
               )} */}
             </div>
 
-
             <Tabs
               activeKey={activeTab}
               onSelect={handleTabSelect}
               id="fill-tab-example"
               className="mb-3 m_tabs m_bgblack px-2 border-0 p-3  "
-              fill>
+              fill
+            >
               <Tab
                 eventKey="home"
                 title="Pedidos"
                 className="m_in text-white aaaaa  rounded"
               >
-                <div className='row'>
-                  <div className='col-xl-7 ps-0 col-12 overflow-hidden '>
-                    <div className='p-4 m_bgblack text-white mb-3'>
-                      <p className='' style={{ fontSize: "18px", marginBottom: "36px" }}>Listado</p>
-                      <div className='a_deli_infolist p-4'>
+                <div className="row">
+                  <div className="col-xl-7 ps-0 col-12 overflow-hidden ">
+                    <div className="p-4 m_bgblack text-white mb-3">
+                      <p
+                        className=""
+                        style={{ fontSize: "18px", marginBottom: "36px" }}
+                      >
+                        Listado
+                      </p>
+                      <div className="a_deli_infolist p-4">
                         {
                           // product.map((item, index) => {
                           orderDetails?.map((v, index) => {
                             // console.log(item)
                             return (
                               <div>
-                                <div className=' py-3 '>
-                                  <div className='row'>
-                                    <div className=' col-sm-8 '>
-                                      <div className='d-flex '>
-                                        <img src={`${API}/images/${v.image}`} alt='pic' className='ms-4' height={70} width={80} />
-                                        <div className='ms-4 '>
-                                          <div className='text-nowrap'>{v.name}</div>
-                                          <div className='mt-3 a_mar_new '>{v.description}</div>
+                                <div className=" py-3 ">
+                                  <div className="row">
+                                    <div className=" col-sm-8 ">
+                                      <div className="d-flex ">
+                                        <img
+                                          src={`${API}/images/${v.image}`}
+                                          alt="pic"
+                                          className="ms-4"
+                                          height={70}
+                                          width={80}
+                                        />
+                                        <div className="ms-4 ">
+                                          <div className="text-nowrap">
+                                            {v.name}
+                                          </div>
+                                          <div className="mt-3 a_mar_new ">
+                                            {v.description}
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                    <div className='col-sm-2 a_text_price '>
-                                      <div className='pe-3 '>{v.quantity}</div>
+                                    <div className="col-sm-2 a_text_price ">
+                                      <div className="pe-3 ">{v.quantity}</div>
                                     </div>
-                                    <div className='col-sm-2 a_text_price'>
-                                      <div className='pe-5 fw-bold '>${v.amount}</div>
+                                    <div className="col-sm-2 a_text_price">
+                                      <div className="pe-5 fw-bold ">
+                                        ${v.amount}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -870,22 +998,51 @@ export default function Home_Pedidos_paymet() {
                                     </div>
                                   )}
                                 </div> */}
-                                <div style={{ marginBottom: "68px", cursor: "pointer" }}>
+                                <div
+                                  style={{
+                                    marginBottom: "68px",
+                                    cursor: "pointer",
+                                  }}
+                                >
                                   {v.notes === null ? (
                                     <div>
                                       {visibleInputId !== v.id ? (
-                                        <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => toggleInput(v.id)}>
-                                          <span className='j-nota-blue ms-4 text-decoration-underline'>+ Nota</span>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                          onClick={() => toggleInput(v.id)}
+                                        >
+                                          <span className="j-nota-blue ms-4 text-decoration-underline">
+                                            + Nota
+                                          </span>
                                         </div>
                                       ) : (
-                                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                                          <span className='j-nota-blue ms-4'>Nota:</span>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <span className="j-nota-blue ms-4">
+                                            Nota:
+                                          </span>
                                           <input
                                             type="text"
-                                            className='j-note-input'
-                                            ref={el => noteInputRefs.current[v.id] = el} // Assign ref to the input
-                                            onChange={(e) => handleNoteChange(v.id, e.target.value)} // Handle change
-                                            onBlur={() => handleNoteKeyDown(v.id)} // Handle blur
+                                            className="j-note-input"
+                                            ref={(el) =>
+                                              (noteInputRefs.current[v.id] = el)
+                                            } // Assign ref to the input
+                                            onChange={(e) =>
+                                              handleNoteChange(
+                                                v.id,
+                                                e.target.value
+                                              )
+                                            } // Handle change
+                                            onBlur={() =>
+                                              handleNoteKeyDown(v.id)
+                                            } // Handle blur
                                             onKeyDown={(e) => {
                                               if (e.key === "Enter") {
                                                 handleNoteKeyDown(v.id);
@@ -899,18 +1056,42 @@ export default function Home_Pedidos_paymet() {
                                   ) : (
                                     <div>
                                       {visibleInputId !== v.id ? (
-                                        <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => toggleInput(v.id)}>
-                                          <span className='j-nota-blue ms-4'>Nota: {v.notes}</span>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                          onClick={() => toggleInput(v.id)}
+                                        >
+                                          <span className="j-nota-blue ms-4">
+                                            Nota: {v.notes}
+                                          </span>
                                         </div>
                                       ) : (
-                                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                                          <span className='j-nota-blue ms-4'>Nota:</span>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <span className="j-nota-blue ms-4">
+                                            Nota:
+                                          </span>
                                           <input
                                             type="text"
-                                            className='j-note-input'
-                                            ref={el => noteInputRefs.current[v.id] = el} // Assign ref to the input
-                                            onChange={(e) => handleNoteChange(v.id, e.target.value)} // Handle change
-                                            onBlur={() => handleNoteKeyDown(v.id)} // Handle blur
+                                            className="j-note-input"
+                                            ref={(el) =>
+                                              (noteInputRefs.current[v.id] = el)
+                                            } // Assign ref to the input
+                                            onChange={(e) =>
+                                              handleNoteChange(
+                                                v.id,
+                                                e.target.value
+                                              )
+                                            } // Handle change
+                                            onBlur={() =>
+                                              handleNoteKeyDown(v.id)
+                                            } // Handle blur
                                             onKeyDown={(e) => {
                                               if (e.key === "Enter") {
                                                 handleNoteKeyDown(v.id);
@@ -940,141 +1121,382 @@ export default function Home_Pedidos_paymet() {
                                   )} */}
                                 </div>
                               </div>
-                            )
+                            );
                           })
                         }
                       </div>
                     </div>
                   </div>
-                  <div className='col-xl-5 px-0 col-12 overflow-hidden '>
-                    <div className='p-3 m_bgblack text-white '>
-                      <h5 className='mt-3 ms-2'>Resumen</h5>
-                      <div className='deli_infolist p-2'>
-                        <div className='d-flex justify-content-end align-items-center ' >
-                          <div className='d-flex justify-content-end align-items-center me-3 '>
-                            <div className='me-2 fs-4'><FaCalendarAlt className='bj-icon-size-change' /></div>
-                            <div className='pt-1 bj-delivery-text-3'>{new Date(orderData?.created_at).toLocaleDateString('en-GB')}</div>
+                  <div className="col-xl-5 px-0 col-12 overflow-hidden ">
+                    <div className="p-3 m_bgblack text-white ">
+                      <h5 className="mt-3 ms-2">Resumen</h5>
+                      <div className="deli_infolist p-2">
+                        <div className="d-flex justify-content-end align-items-center ">
+                          <div className="d-flex justify-content-end align-items-center me-3 ">
+                            <div className="me-2 fs-4">
+                              <FaCalendarAlt className="bj-icon-size-change" />
+                            </div>
+                            <div className="pt-1 bj-delivery-text-3">
+                              {new Date(
+                                orderData?.created_at
+                              ).toLocaleDateString("en-GB")}
+                            </div>
                           </div>
-                          <div className='d-flex justify-content-end align-items-center '>
-                            <div className='me-2 fs-4 '><MdOutlineAccessTimeFilled /></div>
-                            <div className='pt-2 a_time'>{new Date(orderData?.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                          <div className="d-flex justify-content-end align-items-center ">
+                            <div className="me-2 fs-4 ">
+                              <MdOutlineAccessTimeFilled />
+                            </div>
+                            <div className="pt-2 a_time">
+                              {new Date(
+                                orderData?.created_at
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </div>
                           </div>
                         </div>
-                        <div className='fw-bold fs-5'>
-                          Datos
-                        </div>
+                        <div className="fw-bold fs-5">Datos</div>
 
                         {/* <div className='btn a_btn_lightjamun my-3 bj-delivery-text-2 ' style={{ borderRadius: "10px" }}><span style={{ fontWeight: "600" }}>{orderData?.order_type}</span></div><br /> */}
-                        <div className={`bj-delivery-text-2  b_btn1 mb-2 mt-3 p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                              ${pamentDone && orderData?.status.toLowerCase() === 'delivered' ? 'b_blue ' : orderData?.status.toLowerCase() === 'received' ? 'b_indigo' : orderData?.status.toLowerCase() === 'prepared' ? 'b_ora ' : orderData?.status.toLowerCase() === 'delivered' ? 'b_blue' : orderData?.status.toLowerCase() === 'finalized' ? 'b_green' : orderData?.status.toLowerCase() === 'withdraw' ? 'b_indigo' : orderData?.status.toLowerCase() === 'local' ? 'b_purple' : orderData?.status.toLowerCase() === 'cancelled' ? 'b_orange' : 'b_ora text-danger'}`}>
-                          {pamentDone && orderData?.status.toLowerCase() === 'delivered' ? 'Pagado' : orderData?.status.toLowerCase() === 'received' ? 'Recibido' : orderData?.status.toLowerCase() === 'prepared' ? 'Preparado ' : orderData?.status.toLowerCase() === 'delivered' ? 'Entregado' : orderData?.status.toLowerCase() === 'finalized' ? 'Finalizado' : orderData?.status.toLowerCase() === 'withdraw' ? 'Retirar' : orderData?.status.toLowerCase() === 'local' ? 'Local' : orderData?.status.toLowerCase() === 'cancelled' ? 'Cancelar' : ' '}
+                        <div
+                          className={`bj-delivery-text-2  b_btn1 mb-2 mt-3 p-0 text-nowrap d-flex  align-items-center justify-content-center 
+                              ${
+                                pamentDone &&
+                                orderData?.status.toLowerCase() === "delivered"
+                                  ? "b_blue "
+                                  : orderData?.status.toLowerCase() ===
+                                    "received"
+                                  ? "b_indigo"
+                                  : orderData?.status.toLowerCase() ===
+                                    "prepared"
+                                  ? "b_ora "
+                                  : orderData?.status.toLowerCase() ===
+                                    "delivered"
+                                  ? "b_blue"
+                                  : orderData?.status.toLowerCase() ===
+                                    "finalized"
+                                  ? "b_green"
+                                  : orderData?.status.toLowerCase() ===
+                                    "withdraw"
+                                  ? "b_indigo"
+                                  : orderData?.status.toLowerCase() === "local"
+                                  ? "b_purple"
+                                  : orderData?.status.toLowerCase() ===
+                                    "cancelled"
+                                  ? "b_ora text-danger"
+                                  : "b_ora text-danger"
+                              }`}
+                        >
+                          {pamentDone &&
+                          orderData?.status.toLowerCase() === "delivered"
+                            ? "Pagado"
+                            : orderData?.status.toLowerCase() === "received"
+                            ? "Recibido"
+                            : orderData?.status.toLowerCase() === "prepared"
+                            ? "Preparado "
+                            : orderData?.status.toLowerCase() === "delivered"
+                            ? "Entregado"
+                            : orderData?.status.toLowerCase() === "finalized"
+                            ? "Finalizado"
+                            : orderData?.status.toLowerCase() === "withdraw"
+                            ? "Retirar"
+                            : orderData?.status.toLowerCase() === "local"
+                            ? "Local"
+                            : orderData?.status.toLowerCase() === "cancelled"
+                            ? "Cancelar"
+                            : " "}
                         </div>
 
-                        <div style={{ fontWeight: "600", borderRadius: "10px" }} className={`bj-delivery-text-2  b_btn1 mb-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                        ${orderData?.order_type.toLowerCase() === 'local' ? 'b_indigo' : orderData?.order_type.toLowerCase() === 'order now' ? 'b_ora ' : orderData?.order_type.toLowerCase() === 'delivery' ? 'b_blue' : orderData?.order_type.toLowerCase() === 'uber' ? 'b_ora text-danger' : orderData?.order_type.toLowerCase().includes("with") ? 'b_purple' : 'b_ora text-danger'}`}>
-                          {orderData?.order_type.toLowerCase() === 'local' ? 'Local' : orderData?.order_type.toLowerCase().includes("with") ? 'Retiro ' : orderData?.order_type.toLowerCase() === 'delivery' ? 'Entrega' : orderData?.order_type.toLowerCase() === 'uber' ? 'Uber' : orderData?.order_type}
+                        <div
+                          style={{ fontWeight: "600", borderRadius: "10px" }}
+                          className={`bj-delivery-text-2  b_btn1 mb-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
+                        ${
+                          orderData?.order_type.toLowerCase() === "local"
+                            ? "b_indigo"
+                            : orderData?.order_type.toLowerCase() ===
+                              "order now"
+                            ? "b_ora "
+                            : orderData?.order_type.toLowerCase() === "delivery"
+                            ? "b_blue"
+                            : orderData?.order_type.toLowerCase() === "uber"
+                            ? "b_ora text-danger"
+                            : orderData?.order_type
+                                .toLowerCase()
+                                .includes("with")
+                            ? "b_purple"
+                            : "b_ora text-danger"
+                        }`}
+                        >
+                          {orderData?.order_type.toLowerCase() === "local"
+                            ? "Local"
+                            : orderData?.order_type
+                                .toLowerCase()
+                                .includes("with")
+                            ? "Retiro "
+                            : orderData?.order_type.toLowerCase() === "delivery"
+                            ? "Entrega"
+                            : orderData?.order_type.toLowerCase() === "uber"
+                            ? "Uber"
+                            : orderData?.order_type}
                         </div>
 
-                        <div className='d-flex justify-content-end align-items-center mb-4 mt-3'>
-                          <div className='w-50'>
-                            <div className='mb-3'>Codigo pedido</div>
-                            <div className='w-75 a_bg_order py-2 border-0' style={{ borderRadius: "10px" }}><span className='ps-1'>{id}</span></div>
+                        <div className="d-flex justify-content-end align-items-center mb-4 mt-3">
+                          <div className="w-50">
+                            <div className="mb-3">Codigo pedido</div>
+                            <div
+                              className="w-75 a_bg_order py-2 border-0"
+                              style={{ borderRadius: "10px" }}
+                            >
+                              <span className="ps-1">{id}</span>
+                            </div>
                           </div>
-                          <div className='w-50'>
-                            <div className='mb-3'>Cantidad</div>
-                            <div className='w-75 a_bg_order py-2 border-0 ' style={{ borderRadius: "10px" }}><span className='ps-1'>{orderDetails.length}</span></div>
+                          <div className="w-50">
+                            <div className="mb-3">Cantidad</div>
+                            <div
+                              className="w-75 a_bg_order py-2 border-0 "
+                              style={{ borderRadius: "10px" }}
+                            >
+                              <span className="ps-1">
+                                {orderDetails.length}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                        <div className='p-4 a_deli_infolist  mt-3'>
-                          <div className=' a_mar_summary fs-5 fw-bold'>Costo total</div>
-                          <div className='d-flex justify-content-between align-items-center my-1 mb-2'>
+                        <div className="p-4 a_deli_infolist  mt-3">
+                          <div className=" a_mar_summary fs-5 fw-bold">
+                            Costo total
+                          </div>
+                          <div className="d-flex justify-content-between align-items-center my-1 mb-2">
                             <div>Productos</div>
-                            <div>$ {orderDetails.reduce((acc, v) => v.amount * v.quantity + acc, 0)}</div>
+                            <div>
+                              ${" "}
+                              {orderDetails.reduce(
+                                (acc, v) => v.amount * v.quantity + acc,
+                                0
+                              )}
+                            </div>
                           </div>
-                          <div className='d-flex justify-content-between align-items-center my-1'>
+                          <div className="d-flex justify-content-between align-items-center my-1">
                             <div>Descuentos</div>
                             <div>$ {parseInt(orderData?.discount)}</div>
                           </div>
                           <hr></hr>
                           <div>
-                            <div className='d-flex justify-content-between align-items-center my-1 fs-5 fw-bold'>
+                            <div className="d-flex justify-content-between align-items-center my-1 fs-5 fw-bold">
                               <div>Total</div>
-                              <div>$ {orderDetails.reduce((acc, v) => v.amount * v.quantity + acc, 0) - parseInt(orderData?.discount)}</div>
+                              <div>
+                                ${" "}
+                                {orderDetails.reduce(
+                                  (acc, v) => v.amount * v.quantity + acc,
+                                  0
+                                ) - parseInt(orderData?.discount)}
+                              </div>
                             </div>
                           </div>
                         </div>
-                        {!orderData?.reason &&
-                          <div className='mx-auto text-center mt-3'>
-                            {!pamentDone || (orderData?.status.toLowerCase() !== 'finalized' && orderData?.status.toLowerCase() !== 'delivered') ?
-                              <button className='btn text-white j-btn-primary w-100' style={{ padding: "8px 12px", borderRadius: "8px" }} onClick={handlePayment} disabled={pamentDone}>{pamentDone ? 'Pagado' : 'Pagar ahora'}</button> :
+                        {!orderData?.reason && (
+                          <div className="mx-auto text-center mt-3">
+                            {!pamentDone ||
+                            (orderData?.status.toLowerCase() !== "finalized" &&
+                              orderData?.status.toLowerCase() !==
+                                "delivered") ? (
+                              <button
+                                className="btn text-white j-btn-primary w-100"
+                                style={{
+                                  padding: "8px 12px",
+                                  borderRadius: "8px",
+                                }}
+                                onClick={handlePayment}
+                                disabled={pamentDone}
+                              >
+                                {pamentDone ? "Pagado" : "Pagar ahora"}
+                              </button>
+                            ) : (
                               ""
-                            }
+                            )}
                           </div>
-                        }
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
-
               </Tab>
 
-              <Tab eventKey="profile" title="Información del cliente" className='b_border ' style={{ marginTop: "2px" }}>
-                <div className='b-bg-color1'>
-                  {orderData?.reason &&
-                    <div className='text-white ms-4 pt-4' >
-                      <h5 className='bj-delivery-text-15'>Nota anulación</h5>
-                      <textarea type="text" className="form-control bg-gray border-0 mt-4 py-2" id="inputPassword2" placeholder={orderData?.reason != null ? orderData?.reason : "Estaba sin sal"} style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled></textarea>
+              <Tab
+                eventKey="profile"
+                title="Información del cliente"
+                className="b_border "
+                style={{ marginTop: "2px" }}
+              >
+                <div className="b-bg-color1">
+                  {orderData?.reason && (
+                    <div className="text-white ms-4 pt-4">
+                      <h5 className="bj-delivery-text-15">Nota anulación</h5>
+                      <textarea
+                        type="text"
+                        className="form-control bg-gray border-0 mt-4 py-2"
+                        id="inputPassword2"
+                        placeholder={
+                          orderData?.reason != null
+                            ? orderData?.reason
+                            : "Estaba sin sal"
+                        }
+                        style={{
+                          backgroundColor: "#242d38",
+                          borderRadius: "10px",
+                        }}
+                        disabled
+                      ></textarea>
                     </div>
-                  }
-                  <div className='text-white ms-4 pt-4' >
+                  )}
+                  <div className="text-white ms-4 pt-4">
                     <h5>Información pedido</h5>
                   </div>
 
-                  <div className='d-flex  flex-grow-1 gap-5 mx-4 m b_inputt b_id_input b_home_field  pt-3 '>
-                    <div className='w-100 b_search flex-grow-1  text-white mb-3'>
-                      <label htmlFor="inputPassword2" className="mb-2" style={{ fontSize: "14px" }}>Sector</label>
-                      <input type="text" className="form-control bg-gray border-0 mt-2 py-2" value={sector?.name} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled />
+                  <div className="d-flex  flex-grow-1 gap-5 mx-4 m b_inputt b_id_input b_home_field  pt-3 ">
+                    <div className="w-100 b_search flex-grow-1  text-white mb-3">
+                      <label
+                        htmlFor="inputPassword2"
+                        className="mb-2"
+                        style={{ fontSize: "14px" }}
+                      >
+                        Sector
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control bg-gray border-0 mt-2 py-2"
+                        value={sector?.name}
+                        id="inputPassword2"
+                        placeholder="-"
+                        style={{
+                          backgroundColor: "#242d38",
+                          borderRadius: "10px",
+                        }}
+                        disabled
+                      />
                     </div>
-                    <div className='w-100 flex-grow-1 b_search text-white mb-3'>
-                      <label htmlFor="inputPassword2" className="mb-2">Mesa</label>
-                      <input type="text" className="form-control bg-gray border-0 mt-2 py-2 " value={table?.name ? `${table.name} (${table.table_no})` : '-'} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled />
+                    <div className="w-100 flex-grow-1 b_search text-white mb-3">
+                      <label htmlFor="inputPassword2" className="mb-2">
+                        Mesa
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control bg-gray border-0 mt-2 py-2 "
+                        value={
+                          table?.name
+                            ? `${table.name} (${table.table_no})`
+                            : "-"
+                        }
+                        id="inputPassword2"
+                        placeholder="-"
+                        style={{
+                          backgroundColor: "#242d38",
+                          borderRadius: "10px",
+                        }}
+                        disabled
+                      />
                     </div>
                   </div>
-                  <div className='d-flex  flex-grow-1 gap-5 mx-4 m b_inputt b_id_input b_home_field  pt-3 '>
-                    <div className='w-100 b_search flex-grow-1  text-white mb-3'>
-                      <label htmlFor="inputPassword2" className="mb-2" style={{ fontSize: "14px" }}>Cliente</label>
-                      <input type="text" className="form-control bg-gray border-0 mt-2 py-2" value={orderData?.customer_name} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled />
+                  <div className="d-flex  flex-grow-1 gap-5 mx-4 m b_inputt b_id_input b_home_field  pt-3 ">
+                    <div className="w-100 b_search flex-grow-1  text-white mb-3">
+                      <label
+                        htmlFor="inputPassword2"
+                        className="mb-2"
+                        style={{ fontSize: "14px" }}
+                      >
+                        Cliente
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control bg-gray border-0 mt-2 py-2"
+                        value={orderData?.customer_name}
+                        id="inputPassword2"
+                        placeholder="-"
+                        style={{
+                          backgroundColor: "#242d38",
+                          borderRadius: "10px",
+                        }}
+                        disabled
+                      />
                     </div>
-                    <div className='w-100 flex-grow-1 b_search text-white mb-3'>
-                      <label htmlFor="inputPassword2" className="mb-2">Personas</label>
-                      <input type="text" className="form-control bg-gray border-0 mt-2 py-2 " value={orderData?.person} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled />
+                    <div className="w-100 flex-grow-1 b_search text-white mb-3">
+                      <label htmlFor="inputPassword2" className="mb-2">
+                        Personas
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control bg-gray border-0 mt-2 py-2 "
+                        value={orderData?.person}
+                        id="inputPassword2"
+                        placeholder="-"
+                        style={{
+                          backgroundColor: "#242d38",
+                          borderRadius: "10px",
+                        }}
+                        disabled
+                      />
                     </div>
                   </div>
 
-                  <div className='b_table1 mx-4 mt-2 w-100' >
-                    <div className='text-white mt-4'>
+                  <div className="b_table1 mx-4 mt-2 w-100">
+                    <div className="text-white mt-4">
                       <h5 style={{ fontSize: "16px" }}>Historial estados</h5>
                     </div>
-                    <table className='b_table '>
+                    <table className="b_table ">
                       <thead>
-                        <tr className='b_thcolor'>
+                        <tr className="b_thcolor">
                           <th>Fecha</th>
                           <th>Hora </th>
                           <th>Usuario</th>
                           <th>Estado</th>
-
                         </tr>
                       </thead>
-                      <tbody className='text-white b_btnn '>
+                      <tbody className="text-white b_btnn ">
                         {orderStatus.logs?.map((order) => (
-                          <tr key={id} className='b_row'>
-                            <td className=' mb-4'>{new Date(order?.created_at).toLocaleDateString()}</td>
-                            <td className='text-nowrap'>{new Date(order?.created_at).toLocaleTimeString()}</td>
+                          <tr key={id} className="b_row">
+                            <td className=" mb-4">
+                              {new Date(order?.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="text-nowrap">
+                              {new Date(order?.created_at).toLocaleTimeString()}
+                            </td>
                             <td>{userRole}</td>
                             {/* <td style={{ fontWeight: "500", padding: "8px 12px" }} className={`bj-delivery-text-2 mt-3  mb-3 b_text_w b_btn1 d-flex align-items-center justify-content-center mt-0 ${order.state == 'Anulado' ? 'b_redd' : order.state === 'Recibido' ? 'b_bluee' : order.state === 'Preparado' ? 'b_orr' : order.state === 'Entregado' ? 'b_neww' : order.state === 'Finalized' ? 'b_gree' : order.state === 'Preparado' ? 'b_orr' : 'text-denger'}`}>{order.state}</td> */}
-                            <td style={{ fontWeight: "500", padding: "8px 12px" }} className={`bj-delivery-text-2 mt-3  mb-3 b_text_w b_btn1 d-flex align-items-center justify-content-center mt-0 
-                               ${order.status.toLowerCase() === 'received' ? 'b_indigo' : order.status.toLowerCase() === 'prepared' ? 'b_ora ' : order.status.toLowerCase() === 'delivered' ? 'b_blue' : order.status.toLowerCase() === 'finalized' ? 'b_green' : order.status.toLowerCase() === 'withdraw' ? 'b_indigo' : order.status.toLowerCase() === 'local' ? 'b_purple' : 'b_ora text-danger'}`}>
-                              {order.status.toLowerCase() === 'received' ? 'Recibido' : order.status.toLowerCase() === 'prepared' ? 'Preparado ' : order.status.toLowerCase() === 'delivered' ? 'Entregado' : order.status.toLowerCase() === 'finalized' ? 'Finalizado' : order.status.toLowerCase() === 'withdraw' ? 'Retirar' : order.status.toLowerCase() === 'local' ? 'Local' : order.status.toLowerCase() === 'cancelled' ? 'Cancelar' : ' '}
+                            <td
+                              style={{ fontWeight: "500", padding: "8px 12px" }}
+                              className={`bj-delivery-text-2 mt-3  mb-3 b_text_w b_btn1 d-flex align-items-center justify-content-center mt-0 
+                               ${
+                                 order.status.toLowerCase() === "received"
+                                   ? "b_indigo"
+                                   : order.status.toLowerCase() === "prepared"
+                                   ? "b_ora "
+                                   : order.status.toLowerCase() === "delivered"
+                                   ? "b_blue"
+                                   : order.status.toLowerCase() === "finalized"
+                                   ? "b_green"
+                                   : order.status.toLowerCase() === "withdraw"
+                                   ? "b_indigo"
+                                   : order.status.toLowerCase() === "local"
+                                   ? "b_purple"
+                                   : "b_ora text-danger"
+                               }`}
+                            >
+                              {order.status.toLowerCase() === "received"
+                                ? "Recibido"
+                                : order.status.toLowerCase() === "prepared"
+                                ? "Preparado "
+                                : order.status.toLowerCase() === "delivered"
+                                ? "Entregado"
+                                : order.status.toLowerCase() === "finalized"
+                                ? "Finalizado"
+                                : order.status.toLowerCase() === "withdraw"
+                                ? "Retirar"
+                                : order.status.toLowerCase() === "local"
+                                ? "Local"
+                                : order.status.toLowerCase() === "cancelled"
+                                ? "Cancelar"
+                                : " "}
                             </td>
                           </tr>
                         ))}
@@ -1086,7 +1508,6 @@ export default function Home_Pedidos_paymet() {
             </Tabs>
           </div>
         </div>
-
 
         <Modal
           show={show1Prod}
@@ -1100,9 +1521,7 @@ export default function Home_Pedidos_paymet() {
             className="m_borbot "
             style={{ backgroundColor: "#111928" }}
           >
-            <Modal.Title className="m18">
-              Agregar artículos
-            </Modal.Title>
+            <Modal.Title className="m18">Agregar artículos</Modal.Title>
           </Modal.Header>
           <Modal.Body
             className="border-0 p-0 "
@@ -1131,17 +1550,24 @@ export default function Home_Pedidos_paymet() {
                               <input
                                 type="checkbox"
                                 checked={checkedParents[parentItem.id]}
-                                onChange={() => handleParentChangeMenu(parentItem.id)}
+                                onChange={() =>
+                                  handleParentChangeMenu(parentItem.id)
+                                }
                                 className="me-2 custom-checkbox"
                               />
-                              <span className="text-white">{parentItem.name}</span>
+                              <span className="text-white">
+                                {parentItem.name}
+                              </span>
                             </label>
                           </div>
                         </div>
                         {checkedParents[parentItem.id] && (
                           <div style={{ marginLeft: "20px" }}>
                             {childCheck
-                              .filter((childItem) => childItem.family_name === parentItem.name)
+                              .filter(
+                                (childItem) =>
+                                  childItem.family_name === parentItem.name
+                              )
                               .map((childItem) => (
                                 <div key={childItem.id}>
                                   <div className="d-flex align-content-center justify-content-between my-2 m14">
@@ -1149,9 +1575,16 @@ export default function Home_Pedidos_paymet() {
                                       <label className="text-white ">
                                         <input
                                           type="checkbox"
-                                          checked={checkedChildren[childItem.id]}
+                                          checked={
+                                            checkedChildren[childItem.id]
+                                          }
                                           className="mx-2"
-                                          onChange={() => handleChildChangeMenu(childItem.id, parentItem.name)}
+                                          onChange={() =>
+                                            handleChildChangeMenu(
+                                              childItem.id,
+                                              parentItem.name
+                                            )
+                                          }
                                         />
                                         {childItem.name}
                                       </label>
@@ -1220,7 +1653,10 @@ export default function Home_Pedidos_paymet() {
                 </div>
                 <div className="row p-2">
                   {filteredItemsMenu.map((ele, index) => {
-                    const isAdded = selectedItemsMenu.length > 0 ? selectedItemsMenu.some((v) => v.item_id == ele.id) : false;
+                    const isAdded =
+                      selectedItemsMenu.length > 0
+                        ? selectedItemsMenu.some((v) => v.item_id == ele.id)
+                        : false;
                     return (
                       <div
                         className="col-md-4 col-xl-3 col-sm-6 col-12 g-3"
@@ -1236,7 +1672,14 @@ export default function Home_Pedidos_paymet() {
                                 style={{ height: "162px", objectFit: "cover" }}
                               />
                             ) : (
-                              <div className="d-flex justify-content-center align-items-center rounded" style={{ height: "200px", backgroundColor: 'rgb(55 65 81 / 34%)', color: 'white' }}>
+                              <div
+                                className="d-flex justify-content-center align-items-center rounded"
+                                style={{
+                                  height: "200px",
+                                  backgroundColor: "rgb(55 65 81 / 34%)",
+                                  color: "white",
+                                }}
+                              >
                                 <p>{ele.name}</p>
                               </div>
                             )}
@@ -1246,16 +1689,22 @@ export default function Home_Pedidos_paymet() {
                               <p className="card-text opacity-50">
                                 Codigo: {ele.code}
                               </p>
-                              <div className="btn w-100 btn-primary text-white"
-                                style={{ backgroundColor: isAdded ? "#063f93" : "#0d6efd" }}
-                                onClick={() => handleAddItem(ele)}>
+                              <div
+                                className="btn w-100 btn-primary text-white"
+                                style={{
+                                  backgroundColor: isAdded
+                                    ? "#063f93"
+                                    : "#0d6efd",
+                                }}
+                                onClick={() => handleAddItem(ele)}
+                              >
                                 <a
                                   href="# "
                                   className="text-white text-decoration-none"
                                   style={{ fontSize: "14px" }}
                                 >
                                   <span className="ms-1">
-                                    {isAdded ? 'Agregado' : 'Agregar al menú'}
+                                    {isAdded ? "Agregado" : "Agregar al menú"}
                                   </span>
                                 </a>
                               </div>
@@ -1284,13 +1733,12 @@ export default function Home_Pedidos_paymet() {
                           </div>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </div>
             </div>
           </Modal.Body>
-
         </Modal>
 
         {/* add production success */}
@@ -1298,41 +1746,30 @@ export default function Home_Pedidos_paymet() {
           show={show1AddSuc}
           onHide={handleClose1AddSuc}
           backdrop={true}
-
           keyboard={false}
           className="m_modal"
         >
           <Modal.Header closeButton className="border-0" />
           <Modal.Body>
             <div className="text-center">
-              <img
-                src={require("../Image/check-circle.png")}
-                alt=""
-              />
+              <img src={require("../Image/check-circle.png")} alt="" />
               <p className="mb-0 mt-2 h6">Nuevos platillos</p>
-              <p className="opacity-75">
-                Han sido agregados exitosamente
-              </p>
+              <p className="opacity-75">Han sido agregados exitosamente</p>
             </div>
           </Modal.Body>
         </Modal>
-
 
         <Modal
           show={show12}
           onHide={handleClose12}
           backdrop={true}
-
           keyboard={false}
           className="m_modal"
         >
           <Modal.Header closeButton className="border-0" />
           <Modal.Body>
             <div className="text-center">
-              <img
-                src={require("../Image/check-circle.png")}
-                alt=""
-              />
+              <img src={require("../Image/check-circle.png")} alt="" />
               <p className="mb-0 mt-2 h6">Pedido anulado</p>
               <p className="opacity-75">
                 Su pedido ha sido anulado exitosamente
@@ -1342,18 +1779,22 @@ export default function Home_Pedidos_paymet() {
         </Modal>
         {/* processing */}
         <Modal
-          show={isProcessing}
+          show={isProcessing || loadingBox || loadingOrder || loadingTable}
           keyboard={false}
           backdrop={true}
           className="m_modal  m_user "
         >
           <Modal.Body className="text-center">
             <p></p>
-            <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
+            <Spinner
+              animation="border"
+              role="status"
+              style={{ height: "85px", width: "85px", borderWidth: "6px" }}
+            />
             <p className="mt-2">Procesando solicitud...</p>
           </Modal.Body>
         </Modal>
       </div>
-    </div >
+    </div>
   );
 }

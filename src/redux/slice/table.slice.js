@@ -74,57 +74,57 @@ const tableSlice = createSlice({
     sector: [],
     tableState: [],
     singleTable: [],
-    loading: false,
+    loadingTable: false,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       // getAllitems
       .addCase(getAllTableswithSector.pending, (state) => {
-        state.loading = true;
+        state.loadingTable = true;
       })
       .addCase(getAllTableswithSector.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loadingTable = false;
         state.tablewithSector = action.payload;
       })
       .addCase(getAllTableswithSector.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingTable = false;
       })
 
       // getAllSector
       .addCase(getAllSector.pending, (state) => {
-        state.loading = true;
+        state.loadingTable = true;
       })
       .addCase(getAllSector.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loadingTable = false;
         state.sector = action.payload;
       })
       .addCase(getAllSector.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingTable = false;
       })
 
       // getTableState
       .addCase(getTableState.pending, (state) => {
-        state.loading = true;
+        state.loadingTable = true;
       })
       .addCase(getTableState.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loadingTable = false;
         state.tableState = action.payload;
       })
       .addCase(getTableState.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingTable = false;
       })
 
       // getsingleTable
       .addCase(getSingleTable.pending, (state) => {
-        state.loading = true;
+        state.loadingTable = true;
       })
       .addCase(getSingleTable.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loadingTable = false;
         state.singleTable = action.payload;
       })
       .addCase(getSingleTable.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingTable = false;
       });
   },
 });

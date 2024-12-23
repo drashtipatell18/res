@@ -18,6 +18,11 @@ import { CgLayoutGrid } from "react-icons/cg";
 // import * as XLSX from "xlsx";
 import * as XLSX from "xlsx-js-style";
 import useAudioManager from "./audioManager";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllDeleteditems, getAllitems, getFamily, getProduction, getSubFamily } from "../redux/slice/Items.slice";
+import { getAllPayments } from "../redux/slice/order.slice";
+import { getAllTableswithSector } from "../redux/slice/table.slice";
+import { getRols } from "../redux/slice/user.slice";
 //import { enqueueSnackbar  } from "notistack";
 
 export default function SingleArticleProduct() {
@@ -40,21 +45,29 @@ export default function SingleArticleProduct() {
   const [selectedHastaMonth, setSelectedHastaMonth] = useState(
     new Date().getMonth() + 1
   );
-  const [payments, setPayments] = useState([]);
+  // const [payments, setPayments] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [datatab, setDatatab] = useState([]);
   const [cost, setCost] = useState(null);
-  const [user, setUser] = useState([]);
+  // const [user, setUser] = useState([]);
   const [error, setError] = useState("");
   const [mapVal, setMapVal] = useState([[]]);
   const [categories, setCategories] = useState([]);
   const fileInputRef = useRef(null);
   const [errorMessages, setErrorMessages] = useState({});
-  const { playNotificationSound } = useAudioManager();
 
   const location = useLocation(); // Get the current location
   const previousPath = location.state?.from || "/articles"; // Default to /articles if no previous path
   console.log("previous Path: ", location);
+
+  const dispatch = useDispatch();
+  const { box } = useSelector((state) => state.boxs);
+  // const {roles } = useSelector((state) => state.user);
+  // const user = useSelector((state) => state.user.user);
+  const {payments ,loadingOrder} = useSelector((state) => state.orders);
+  const { tablewithSector ,loadingTable} = useSelector((state) => state.tables);
+  const {deletedAllItems,subFamily,family,production,loadingItem} = useSelector((state) => state.items);
+
 
 
   const handleClose = () => {
@@ -85,6 +98,55 @@ export default function SingleArticleProduct() {
     }, 2000);
   };
 
+  useEffect(() => {
+      // if (allusers?.length == 0) {
+      //   dispatch(getUser());
+      // }
+      // if (roles?.length == 0) {
+      //   dispatch(getRols());
+      // }
+      if (payments?.length == 0) {
+        dispatch(getAllPayments({ admin_id }));
+      }
+      if (tablewithSector?.length == 0) {
+        dispatch(getAllTableswithSector({ admin_id }));
+      }
+  
+      if(deletedAllItems?.length == 0){
+          dispatch(getAllDeleteditems());
+      }
+     if(subFamily.length == 0){
+         dispatch(getSubFamily());
+       }
+       if(family.length == 0){
+         dispatch(getFamily());
+       }
+        if(production.length == 0){
+           dispatch(getProduction({admin_id}))
+           }
+    }, [admin_id]);
+  
+    useEffect(() => {
+      if (production.length > 0) {
+        setProductionSel(production);
+      }
+      if(family){
+        setParentCheck(family);
+      }
+      if(deletedAllItems){
+        const singleItem = deletedAllItems?.find((v) => v.id == id);
+        setFormDetails({
+          ...singleItem,
+          existingImage: singleItem?.image
+            ? `${API}/images/${singleItem?.image}`
+            : null
+        });
+      }
+      if(subFamily){
+        setChildCheck(subFamily)
+      }
+    }, [deletedAllItems]);
+
   // api
 
   useEffect(
@@ -105,8 +167,6 @@ export default function SingleArticleProduct() {
         setIsProcessing(true);
         if (token) {
           fetchData();
-          fetchInitialData();
-          getAllPayments();
           setIsProcessing(false);
         }
       }
@@ -137,7 +197,6 @@ export default function SingleArticleProduct() {
       setCost(response.data.length);
       // setCost(response.data[0].order_total || 0);
       // setCost(response.data.reduce((acc, curr) => acc + curr.order_total, 0));
-
       const newMapValue = {};
 
       response.data.forEach((order) => {
@@ -150,62 +209,63 @@ export default function SingleArticleProduct() {
       console.error("Error fetching data:", error);
     }
   };
-  function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  }
+
+  // function debounce(func, wait) {
+  //   let timeout;
+  //   return function executedFunction(...args) {
+  //     const later = () => {
+  //       clearTimeout(timeout);
+  //       func(...args);
+  //     };
+  //     clearTimeout(timeout);
+  //     timeout = setTimeout(later, wait);
+  //   };
+  // }
 
   // Usage
-  const debouncedFetchData = debounce(fetchData, 300);
-  const fetchInitialData = async () => {
-    try {
-      const [
-        singleItemResponse,
-        familyData,
-        subFamilyData,
-        productionData,
-        userData
-      ] = await Promise.all([
-        axios.get(`${apiUrl}/item/getSingle/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get(`${apiUrl}/family/getFamily`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get(`${apiUrl}/subfamily/getSubFamily`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.post(`${apiUrl}/production-centers`, { admin_id: admin_id }, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get(`${apiUrl}/get-users`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      ]);
+  // const debouncedFetchData = debounce(fetchData, 300);
+  // const fetchInitialData = async () => {
+  //   try {
+  //     const [
+  //       singleItemResponse,
+  //       familyData,
+  //       subFamilyData,
+  //       productionData,
+  //       userData
+  //     ] = await Promise.all([
+  //       axios.get(`${apiUrl}/item/getSingle/${id}`, {
+  //         headers: { Authorization: `Bearer ${token}` }
+  //       }),
+  //       axios.get(`${apiUrl}/family/getFamily`, {
+  //         headers: { Authorization: `Bearer ${token}` }
+  //       }),
+  //       axios.get(`${apiUrl}/subfamily/getSubFamily`, {
+  //         headers: { Authorization: `Bearer ${token}` }
+  //       }),
+  //       axios.post(`${apiUrl}/production-centers`, { admin_id: admin_id }, {
+  //         headers: { Authorization: `Bearer ${token}` }
+  //       }),
+  //       axios.get(`${apiUrl}/get-users`, {
+  //         headers: { Authorization: `Bearer ${token}` }
+  //       })
+  //     ]);
 
-      const singleItem = singleItemResponse.data.item[0];
-      console.log(singleItem)
-      setFormDetails({
-        ...singleItem,
-        existingImage: singleItem.image
-          ? `${API}/images/${singleItem.image}`
-          : null
-      });
-      setParentCheck(familyData.data);
-      setChildCheck(subFamilyData.data);
-      setProductionSel(productionData.data.data);
-      setUser(userData.data);
-    } catch (error) {
-      console.error("Error fetching initial data:", error);
-    }
-  };
+  //     const singleItem = singleItemResponse.data.item[0];
+  //     console.log(singleItem)
+  //     setFormDetails({
+  //       ...singleItem,
+  //       existingImage: singleItem.image
+  //         ? `${API}/images/${singleItem.image}`
+  //         : null
+  //     });
+  //     setParentCheck(familyData.data);
+  //     setChildCheck(subFamilyData.data);
+  //     setProductionSel(productionData.data.data);
+  //     setUser(userData.data);
+  //   } catch (error) {
+  //     console.error("Error fetching initial data:", error);
+  //   }
+  // };
 
   const getFamilyName = (id) => {
     const family = parentCheck.find((f) => f.id === id);
@@ -333,7 +393,6 @@ export default function SingleArticleProduct() {
 
     const formData = new FormData();
     for (const key in formDetails) {
-      console.log("Key", key, key === "image");
       if (key === "image") {
         if (formDetails[key] instanceof File) {
           formData.append("image", formDetails[key]);
@@ -377,7 +436,8 @@ export default function SingleArticleProduct() {
       //enqueueSnackbar (response.data?.notification, { variant: 'success' })
       // playNotificationSound();;
       handleShowEditFamSuc();
-      fetchInitialData(); // Consider passing the new ID if it has changed
+      dispatch((getAllitems()));
+      dispatch(getAllDeleteditems());
     } catch (error) {
       console.error("Error:", error.response ? error.response.data : error);
       // Display error to user
@@ -406,6 +466,8 @@ export default function SingleArticleProduct() {
       //enqueueSnackbar (response.data?.notification, { variant: 'success' })
       // playNotificationSound();; 
       setIsProcessing(false);
+      dispatch((getAllitems()));
+      dispatch(getAllDeleteditems());
 
       navigate("/articles");
     } catch (error) {
@@ -753,22 +815,22 @@ export default function SingleArticleProduct() {
     }
   };
 
-  // get all payment
-  const getAllPayments = async () => {
-    try {
-      const response = await axios.post(`${apiUrl}/get-payments`, {admin_id} ,{
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+  // // get all payment
+  // const getAllPayments = async () => {
+  //   try {
+  //     const response = await axios.post(`${apiUrl}/get-payments`, {admin_id} ,{
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
 
-      console.log(response.data.result);
+  //     console.log(response.data.result);
       
-      setPayments(response.data.result);
-    } catch (error) {
-      console.error("Error fetching payments:", error);
-    }
-  };
+  //     setPayments(response.data.result);
+  //   } catch (error) {
+  //     console.error("Error fetching payments:", error);
+  //   }
+  // };
 
   // console.log(datatab);
   // console.log(payments);
@@ -1392,7 +1454,7 @@ export default function SingleArticleProduct() {
                       </Modal>
                       {/* processing */}
                       <Modal
-                        show={isProcessing}
+                        show={isProcessing || loadingItem || loadingTable || loadingOrder}
                         keyboard={false}
                         backdrop={true}
                         className="m_modal  m_user "

@@ -46,7 +46,7 @@ export default function Articles() {
   const location = useLocation();
 
   const dispatch = useDispatch()
-  const {items,subFamily,family,menu,loading} = useSelector((state) => state.items);
+  const {items,subFamily,family,menu,loadingItem} = useSelector((state) => state.items);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate()
@@ -1642,7 +1642,7 @@ export default function Articles() {
                 </Modal>
                 {/* processing */}
                 <Modal
-                  show={isProcessing}
+                  show={isProcessing || loadingItem}
                   keyboard={false}
                   backdrop={true}
                   className="m_modal  m_user "

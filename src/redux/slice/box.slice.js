@@ -39,33 +39,33 @@ export const getboxs = createAsyncThunk(
     initialState: {
       box: [],
       boxLogs : [],
-      loading: false,
+      loadingBox: false,
     },
     reducers: {},
     extraReducers: (builder) => {
       builder
       // getAllitems
         .addCase(getboxs.pending, (state) => {
-          state.loading = true;
+          state.loadingBox = true;
         })
         .addCase(getboxs.fulfilled, (state, action) => {
-          state.loading = false;
+          state.loadingBox = false;
           state.box = action.payload;
         })
         .addCase(getboxs.rejected, (state, action) => {
-          state.loading = false;
+          state.loadingBox = false;
         })
 
         // getboxsLogs
         .addCase(getboxsLogs.pending, (state) => {
-            state.loading = true;
+            state.loadingBox = true;
           })
           .addCase(getboxsLogs.fulfilled, (state, action) => {
-            state.loading = false;
+            state.loadingBox = false;
             state.boxLogs = action.payload;
           })
           .addCase(getboxsLogs.rejected, (state, action) => {
-            state.loading = false;
+            state.loadingBox = false;
           })
     }
   })

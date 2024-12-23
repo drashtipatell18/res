@@ -35,8 +35,8 @@ const Caja = () => {
     const admin_id = localStorage.getItem('admin_id');
 
     const dispatch = useDispatch();
-    const {box,boxLogs} = useSelector(state => state.boxs);
-    const {user,roles} = useSelector(state => state.user);
+    const {box,boxLogs,loadingBox} = useSelector(state => state.boxs);
+    const {user,roles,loadingUser} = useSelector(state => state.user);
 
     // Add refs for the inputs
     const boxNameRef = useRef(null);
@@ -439,7 +439,7 @@ const Caja = () => {
                                     </Modal.Body>
                                 </Modal>
                                 <Modal
-                                    show={isProcessing}
+                                    show={isProcessing || loadingUser || loadingBox}
                                     keyboard={false}
                                     backdrop={true}
                                     className="m_modal  m_user "

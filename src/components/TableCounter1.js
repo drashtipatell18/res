@@ -75,7 +75,7 @@ const TableCounter1 = () => {
 
 
   const dispatch = useDispatch()
-  const {items,subFamily,family,production,productionData,loading} = useSelector((state) => state.items);
+  const {items,subFamily,family,production,loadingItem} = useSelector((state) => state.items);
    const { user, roles } = useSelector((state) => state.user);
 
 
@@ -1936,7 +1936,7 @@ const TableCounter1 = () => {
                 </Modal>
                 {/* processing */}
                 <Modal
-                  show={isProcessing}
+                  show={isProcessing || loadingItem}
                   keyboard={false}
                   backdrop={true}
                   className="m_modal  m_user "

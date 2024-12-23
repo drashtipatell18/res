@@ -51,10 +51,11 @@ const Counter = () => {
   const noteInputRefs = useRef({});
 
   const dispatch = useDispatch()
-  const {items,subFamily,family,loading} = useSelector((state) => state.items);
-  const {lastOrder} =  useSelector((state) => state.orders);
-  const [isProcessing, setIsProcessing] = useState(loading || false);
+  const {items,subFamily,family,loadingItem} = useSelector((state) => state.items);
+  const {lastOrder,loadingOrder} =  useSelector((state) => state.orders);
+  const [isProcessing, setIsProcessing] = useState(false);
 
+  
   useEffect(()=>{
     if (!(role == "admin" || role == "cashier")) {
       navigate('/dashboard')
@@ -933,7 +934,7 @@ const Counter = () => {
               </Modal>
               {/* processing */}
               <Modal
-                show={loading || isProcessing}
+                show={loadingOrder || loadingItem || isProcessing}
                 keyboard={false}
                 backdrop={true}
                 className="m_modal  m_user "

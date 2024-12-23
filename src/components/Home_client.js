@@ -32,8 +32,8 @@ function Home_client() {
   const [filteredOrderUser, setFilteredOrderUser] = useState([]);
 
   const dispatch = useDispatch();
-  const {payments} = useSelector(state => state.orders);
-  const {user} = useSelector(state => state.user);
+  const {payments, loadingOrder} = useSelector(state => state.orders);
+  const {user, loadingUser} = useSelector(state => state.user);
 
   console.log(payments);
   console.log(user);
@@ -477,7 +477,7 @@ function Home_client() {
 
           {/* processing */}
           <Modal
-            show={isProcessing}
+            show={isProcessing || loadingOrder || loadingUser}
             keyboard={false}
             backdrop={true}
             className="m_modal  m_user "

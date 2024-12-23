@@ -16,6 +16,11 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { RiDeleteBin5Fill } from 'react-icons/ri';
 import { BsCalculatorFill } from 'react-icons/bs';
+import { useDispatch, useSelector } from 'react-redux';
+import { getRols, getUser } from '../redux/slice/user.slice';
+import { getAllOrders, getAllPayments } from '../redux/slice/order.slice';
+import { getAllTableswithSector } from '../redux/slice/table.slice';
+import { getAllDeleteditems, getFamily, getSubFamily } from '../redux/slice/Items.slice';
 
 export default function Homeinformation() {
 
@@ -91,7 +96,7 @@ export default function Homeinformation() {
     }
 
     // ---End-resons----
-
+    dispatch(getAllOrders({ admin_id }));
     setShow12(true)
     setTimeout(() => {
       setShow12(false)
@@ -109,7 +114,7 @@ export default function Homeinformation() {
   const [reason, setReason] = useState('');
   const [orderStatus, setOrderStatus] = useState('');
   const [user, setUser] = useState(null);
-  const [roles, setRoles] = useState([]);
+  // const [roles, setRoles] = useState([]);
   const [userRole, setUserRole] = useState('');
 
   const [visibleInputId, setVisibleInputId] = useState(null);
@@ -123,6 +128,14 @@ export default function Homeinformation() {
   const [selectedItemsCount, setSelectedItemsCount] = useState(0);
   const [filteredItemsMenu, setFilteredItemsMenu] = useState(obj1);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const dispatch = useDispatch();
+  const { box , loadingBox} = useSelector((state) => state.boxs);
+  const {roles, loadingUser } = useSelector((state) => state.user);
+  const allusers = useSelector((state) => state.user.user);
+  const {payments , loadingOrder} = useSelector((state) => state.orders);
+  const { tablewithSector, loadingTable } = useSelector((state) => state.tables);
+  const {deletedAllItems,subFamily,family,loadingItem} = useSelector((state) => state.items);
 
   // const [filteredMenuItems, setFilteredMenuItems] = useState([]); // State to hold filtered items
   // const [searchTerm, setSearchTerm] = useState(""); // State to hold search term
@@ -174,58 +187,104 @@ export default function Homeinformation() {
 
   useEffect(() => {
     getOrder();
-    getItems();
+    // getItems();
     getOrderStatus();
-    getRole();
-    getFamily();
-    getSubFamily();
-  }, [show12, show1Prod, token]);
+    // getRole();
+    // getFamily();
+    // getSubFamily();
+  }, [show12]);
+
+  useEffect(() => {
+      if (allusers?.length == 0) {
+        dispatch(getUser());
+      }
+      if (roles?.length == 0) {
+        dispatch(getRols());
+      }
+      if (payments?.length == 0) {
+        dispatch(getAllPayments({ admin_id }));
+      }
+      if (tablewithSector?.length == 0) {
+        dispatch(getAllTableswithSector({ admin_id }));
+      }
+  
+      if(deletedAllItems?.length == 0){
+          dispatch(getAllDeleteditems());
+      }
+     if(subFamily.length == 0){
+         dispatch(getSubFamily());
+       }
+       if(family.length == 0){
+         dispatch(getFamily());
+       }
+    }, [admin_id]);
+  
+    useEffect(() => {
+      if (payments) {
+        console.log(payments);
+        const payment = payments?.find((v) => v.order_id == id);
+        if(payment){
+        setPaymentDone(true);
+        }
+      }
+      if(family){
+        setParentCheck(family);
+      }
+      if(deletedAllItems){
+        console.log(deletedAllItems);
+        
+        setItems(deletedAllItems);
+        setObj1(deletedAllItems?.filter((v) => v.deleted_at == null));
+        setFilteredItemsMenu(deletedAllItems.filter((v) => v.deleted_at == null));
+      }
+      if(subFamily){
+        setChildCheck(subFamily)
+      }
+    }, [box]);
+
 
   useEffect(() => {
     if (orderData && items.length > 0) {
       handleOrderDetails();
       getSector();
     }
-    if (orderData?.[0]?.user_id) {
-      // console.log(orderData?.user_id);
-      getUser();
+    if (orderData?.user_id) {
+      getUserdata();
     }
   }, [orderData, items, show1Prod]);
 
   useEffect(() => {
     if (user) {
-      // console.log(user);
-
       setUserRole(user.name);
     }
   }, [user]);
 
-  useEffect(() => {
-    getPaymentsData();
-  }, [admin_id, id]);
+  // useEffect(() => {
+  //   getPaymentsData();
+  // }, [admin_id, id]);
 
   const [pamentDone, setPaymentDone] = useState(false)
 
-  const getPaymentsData = async () => {
-    // console.log(admin_id,id); 
-    try {
-      const response = await axios.get(`${API_URL}/getsinglepayments/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      // console.log("Payments Data:", response);
-      if (response.data.success) {
-        // console.log("true");
-        setPaymentDone(true);
-      }
-    } catch (error) {
-      console.error(
-        "Error fetching PaymentsData:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  }
+  // const getPaymentsData = async () => {
+  //   // console.log(admin_id,id); 
+  //   try {
+  //     const response = await axios.get(`${API_URL}/getsinglepayments/${id}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     // console.log("Payments Data:", response);
+  //     if (response.data.success) {
+  //       // console.log("true");
+  //       setPaymentDone(true);
+  //     }
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching PaymentsData:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // }
 
   const getOrder = async () => {
     try {
@@ -234,7 +293,7 @@ export default function Homeinformation() {
           Authorization: `Bearer ${token}`,
         },
       });
-      setOrderData(response.data);
+      setOrderData(response.data[0]);
     } catch (error) {
       console.error(
         "Error fetching OrderData:",
@@ -243,55 +302,39 @@ export default function Homeinformation() {
     }
   };
 
-  const getItems = async () => {
-    // setIsProcessing(true);
-    try {
-      const response = await axios.get(`${API_URL}/item/getAllDeletedAt`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setItems(response.data.items);
-      setObj1(response.data.items.filter(v => v.deleted_at == null));
-      // setFilteredMenuItems(response.data.items);
-      setFilteredItemsMenu(response.data.items.filter(v => v.deleted_at == null));
-    } catch (error) {
-      console.error(
-        "Error fetching Items:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    // setIsProcessing(false);
-  };
+  // const getItems = async () => {
+  //   // setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${API_URL}/item/getAllDeletedAt`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+  //     setItems(response.data.items);
+  //     setObj1(response.data.items.filter(v => v.deleted_at == null));
+  //     // setFilteredMenuItems(response.data.items);
+  //     setFilteredItemsMenu(response.data.items.filter(v => v.deleted_at == null));
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching Items:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   // setIsProcessing(false);
+  // };
 
   const getSector = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(`${API_URL}/sector/getWithTable`, { admin_id: admin_id }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      let sectors = response.data.data;
+    const sectorWithTable = tablewithSector?.find((v) =>
+      v.tables.some((a) => a.id == orderData.table_id)
+    );
 
-      const sectorWithTable = sectors.find(v =>
-        v.tables.some(a => a.id == orderData?.[0]?.table_id)
-      );
-
-      // console.log(sectors);
-
-      if (sectorWithTable) {
-        setSector(sectorWithTable);
-        setTable(sectorWithTable.tables.find(a => a.id == orderData?.[0]?.table_id));
-      }
-    } catch (error) {
-      console.error(
-        "Error fetching sector and Table Data:",
-        error.response ? error.response.data : error.message
+    if (sectorWithTable) {
+      setSector(sectorWithTable);
+      setTable(
+        sectorWithTable.tables.find((a) => a.id == orderData.table_id)
       );
     }
-    setIsProcessing(false);
-  };
+};
 
   const getOrderStatus = async () => {
     setIsProcessing(true);
@@ -312,51 +355,35 @@ export default function Homeinformation() {
     setIsProcessing(false);
 
   };
+  const getUserdata = () => {
+    const user = allusers?.find((v) => v.id == orderData.user_id);
+      if(user){
+        setUser(user);
+      }else{
+        setUser(null); // Set user to null if there's an error
+      }
+    };
 
-  const getUser = async () => {
-    setIsProcessing(true);
+  // const getRole = async () => {
+  //   setIsProcessing(true);
 
-    try {
-      // console.log(orderData);
+  //   try {
+  //     const response = await axios.get(`${API_URL}/roles`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     // console.log(response.data);
+  //     setRoles(response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching roles:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
 
-      const response = await axios.get(`${API_URL}/get-user/${orderData?.[0].user_id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      // console.log(response.data[0]);
-      setUser(response.data[0]);
-    } catch (error) {
-      console.error(
-        "Error fetching user:",
-        error.response ? error.response.data : error.message
-      );
-      setUser(null); // Set user to null if there's an error
-    }
-    setIsProcessing(false);
-
-  };
-
-  const getRole = async () => {
-    setIsProcessing(true);
-
-    try {
-      const response = await axios.get(`${API_URL}/roles`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      // console.log(response.data);
-      setRoles(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching roles:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-
-  };
+  // };
 
   // const getuserRole = () => {
   //   if (user && roles.length > 0) {
@@ -368,7 +395,7 @@ export default function Homeinformation() {
   // };
 
   const handleOrderDetails = () => {
-    const details = orderData[0]?.order_details?.map((orderItem) => {
+    const details = orderData?.order_details?.map((orderItem) => {
       const matchingItem = items.find((item) => item.id === orderItem.item_id);
       return {
         ...orderItem,
@@ -379,40 +406,40 @@ export default function Homeinformation() {
     setOrderDetails(details);
   };
 
-  const getFamily = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${API_URL}/family/getFamily`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setParentCheck(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching Family",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  }
-  const getSubFamily = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.get(`${API_URL}/subfamily/getSubFamily`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setChildCheck(response.data);
-    } catch (error) {
-      console.error(
-        "Error fetching SubFamily",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  }
+  // const getFamily = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${API_URL}/family/getFamily`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+  //     setParentCheck(response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching Family",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // }
+  // const getSubFamily = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.get(`${API_URL}/subfamily/getSubFamily`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+  //     setChildCheck(response.data);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching SubFamily",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // }
 
   // ----resons section -----
 
@@ -544,7 +571,7 @@ export default function Homeinformation() {
       if (!(response.success == "false")) {
         handleClose1Prod();
         handleShow1AddSuc();
-
+        getOrder();
         // setItemId([]);
         setSelectedItemsMenu([]);
 
@@ -615,7 +642,7 @@ export default function Homeinformation() {
 
   const handleCredit = () => {
     // { console.log(orderData) }
-    if (orderData?.[0].status == 'delivered' || orderData?.[0].status == 'cancelled') {
+    if (orderData?.status == 'delivered' || orderData?.status == 'cancelled') {
       navigate(`/home/client/crear/${id}`, { replace: true })
     } else {
       alert('No se puede generar una nota de crédito si el pedido actual no ha sido entregado.')
@@ -672,18 +699,18 @@ export default function Homeinformation() {
 
   const handlePayment = () => {
 
-    // console.log(orderDetails, orderData[0]);
+    // console.log(orderDetails, orderData?);
 
     const currentOrder = {
-      orderType: orderData[0]?.order_type,
-      orderId: orderData[0]?.id,
-      name: orderData[0]?.customer_name,
+      orderType: orderData?.order_type,
+      orderId: orderData?.id,
+      name: orderData?.customer_name,
       order: "old"
     }
     let cartItems = [];
     orderDetails?.map((v) => {
       const obj = {
-        orderId: orderData[0]?.id,
+        orderId: orderData?.id,
         id: v.item_id,
         image: v.image,
         name: v.name,
@@ -696,7 +723,7 @@ export default function Homeinformation() {
       }
       cartItems.push(obj)
     })
-    localStorage.setItem("tableId", JSON.stringify(orderData[0]?.table_id));
+    localStorage.setItem("tableId", JSON.stringify(orderData?.table_id));
     localStorage.setItem("currentOrder", JSON.stringify(currentOrder));
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
@@ -753,10 +780,10 @@ export default function Homeinformation() {
 
                 <div className='d-flex flex-wrap me-4'>
                   {showCancelOrderButton ? (
-                    !(orderData?.[0].status == 'delivered' || orderData?.[0].status == 'finalized' || orderData?.[0].status == "cancelled") &&
+                    !(orderData?.status == 'delivered' || orderData?.status == 'finalized' || orderData?.status == "cancelled") &&
                     <div onClick={handleShow} className='btn btn-danger me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center' style={{ backgroundColor: "#F05252", borderRadius: '10px' }}> <IoMdCloseCircle className='me-2' />Anular pedido</div>
                   ) : (
-                    !(orderData?.[0].status == "cancelled" || pamentDone) && <>
+                    !(orderData?.status == "cancelled" || pamentDone) && <>
                       <Link className='text-decoration-none' to={`/home/usa/information/payment_edit/${id}`}>
                         <div className='btn btn-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center' style={{ backgroundColor: "#147BDE", borderRadius: '10px' }}> <MdEditSquare className='me-2' />Editar Pedido</div>
                       </Link>
@@ -779,8 +806,8 @@ export default function Homeinformation() {
 
 
                   <div style={{ fontWeight: "600", borderRadius: "10px" }} className={`bj-delivery-text-2  b_btn1 mb-3 ms-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                        ${orderData?.[0]?.order_type?.toLowerCase() === 'local' ? 'b_indigo' : orderData?.[0]?.order_type?.toLowerCase() === 'order now' ? 'b_ora ' : orderData?.[0]?.order_type?.toLowerCase() === 'delivery' ? 'b_blue' : orderData?.[0]?.order_type?.toLowerCase() === 'uber' ? 'b_ora text-danger' : orderData?.[0]?.order_type?.toLowerCase().includes("with") ? 'b_purple' : 'b_ora text-danger'}`}>
-                    {orderData?.[0]?.order_type?.toLowerCase() === 'local' ? 'Local' : orderData?.[0]?.order_type?.toLowerCase().includes("with") ? 'Retiro ' : orderData?.[0]?.order_type?.toLowerCase() === 'delivery' ? 'Entrega' : orderData?.[0]?.order_type?.toLowerCase() === 'uber' ? 'Uber' : orderData?.[0]?.order_type}
+                        ${orderData?.order_type?.toLowerCase() === 'local' ? 'b_indigo' : orderData?.order_type?.toLowerCase() === 'order now' ? 'b_ora ' : orderData?.order_type?.toLowerCase() === 'delivery' ? 'b_blue' : orderData?.order_type?.toLowerCase() === 'uber' ? 'b_ora text-danger' : orderData?.order_type?.toLowerCase().includes("with") ? 'b_purple' : 'b_ora text-danger'}`}>
+                    {orderData?.order_type?.toLowerCase() === 'local' ? 'Local' : orderData?.order_type?.toLowerCase().includes("with") ? 'Retiro ' : orderData?.order_type?.toLowerCase() === 'delivery' ? 'Entrega' : orderData?.order_type?.toLowerCase() === 'uber' ? 'Uber' : orderData?.order_type}
                   </div>
                 </div>
 
@@ -986,19 +1013,19 @@ export default function Homeinformation() {
                         <div className='d-flex justify-content-end align-items-center ' >
                           <div className='d-flex justify-content-end align-items-center me-3 '>
                             <div className='me-2 fs-4'><FaCalendarAlt className='bj-icon-size-change' /></div>
-                            <div className='pt-1 bj-delivery-text-3'>{new Date(orderData?.[0].created_at).toLocaleDateString('en-GB')}</div>
+                            <div className='pt-1 bj-delivery-text-3'>{new Date(orderData?.created_at).toLocaleDateString('en-GB')}</div>
                           </div>
                           <div className='d-flex justify-content-end align-items-center '>
                             <div className='me-2 fs-4 '><MdOutlineAccessTimeFilled /></div>
-                            <div className='pt-1 a_time bj-delivery-text-3'>{new Date(orderData?.[0].created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                            <div className='pt-1 a_time bj-delivery-text-3'>{new Date(orderData?.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                           </div>
                         </div>
                         <div className='bj-delivery-text-15'>
                           Datos
                         </div>
                         <div className={`bj-delivery-text-2  b_btn1 mb-3 p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                                            ${pamentDone && orderData?.[0]?.status.toLowerCase() === 'delivered' ? 'b_blue ' : orderData?.[0]?.status?.toLowerCase() === 'received' ? 'b_indigo' : orderData?.[0]?.status?.toLowerCase() === 'prepared' ? 'b_ora ' : orderData?.[0]?.status?.toLowerCase() === 'delivered' ? 'b_blue' : orderData?.[0]?.status?.toLowerCase() === 'finalized' ? 'b_green' : orderData?.[0]?.status?.toLowerCase() === 'withdraw' ? 'b_indigo' : orderData?.[0]?.status?.toLowerCase() === 'local' ? 'b_purple' : 'b_ora text-danger'}`}>
-                          {pamentDone && orderData?.[0]?.status.toLowerCase() === 'delivered' ? 'Pagado ' : orderData?.[0]?.status?.toLowerCase() === 'received' ? 'Recibido' : orderData?.[0]?.status?.toLowerCase() === 'prepared' ? 'Preparado ' : orderData?.[0]?.status?.toLowerCase() === 'delivered' ? 'Entregado' : orderData?.[0]?.status?.toLowerCase() === 'finalized' ? 'Finalizado' : orderData?.[0]?.status?.toLowerCase() === 'withdraw' ? 'Retirar' : orderData?.[0]?.status?.toLowerCase() === 'local' ? 'Local' : orderData?.[0]?.status?.toLowerCase() === 'cancelled' ? 'Cancelar' : ' '}
+                                            ${pamentDone && orderData?.status.toLowerCase() === 'delivered' ? 'b_blue ' : orderData?.status?.toLowerCase() === 'received' ? 'b_indigo' : orderData?.status?.toLowerCase() === 'prepared' ? 'b_ora ' : orderData?.status?.toLowerCase() === 'delivered' ? 'b_blue' : orderData?.status?.toLowerCase() === 'finalized' ? 'b_green' : orderData?.status?.toLowerCase() === 'withdraw' ? 'b_indigo' : orderData?.status?.toLowerCase() === 'local' ? 'b_purple' : 'b_ora text-danger'}`}>
+                          {pamentDone && orderData?.status.toLowerCase() === 'delivered' ? 'Pagado ' : orderData?.status?.toLowerCase() === 'received' ? 'Recibido' : orderData?.status?.toLowerCase() === 'prepared' ? 'Preparado ' : orderData?.status?.toLowerCase() === 'delivered' ? 'Entregado' : orderData?.status?.toLowerCase() === 'finalized' ? 'Finalizado' : orderData?.status?.toLowerCase() === 'withdraw' ? 'Retirar' : orderData?.status?.toLowerCase() === 'local' ? 'Local' : orderData?.status?.toLowerCase() === 'cancelled' ? 'Cancelar' : ' '}
                         </div>
                         {/* <div style={{ fontWeight: "600", borderRadius: "10px" }} className={`bj-delivery-text-2  b_btn1 mb-3   p-0 text-nowrap d-flex  align-items-center justify-content-center 
                         ${orderData?.order_type.toLowerCase() === 'local' ? 'b_indigo' : orderData?.order_type.toLowerCase() === 'order now' ? 'b_ora ' : orderData?.order_type.toLowerCase() === 'delivery' ? 'b_blue' : orderData?.order_type.toLowerCase() === 'uber' ? 'b_ora text-danger' : orderData?.order_type.toLowerCase().includes("with") ? 'b_purple' : 'b_ora text-danger'}`}>
@@ -1023,21 +1050,21 @@ export default function Homeinformation() {
                           </div>
                           <div className='d-flex justify-content-between align-items-center my-1'>
                             <div className='bj-delivery-text-150'>Descuentos</div>
-                            <div className='bj-delivery-text-151'>${parseInt(orderData?.[0]?.discount)}</div>
+                            <div className='bj-delivery-text-151'>${parseInt(orderData?.discount)}</div>
                           </div>
                           <hr></hr>
                           <div>
                             <div className='d-flex justify-content-between align-items-center my-1'>
                               <div className='bj-delivery-text-153'>Total</div>
-                              <div className='bj-delivery-text-153'>${orderDetails?.reduce((acc, v) => v.amount * v.quantity + acc, 0) - parseInt(orderData?.[0]?.discount)}</div>
+                              <div className='bj-delivery-text-153'>${orderDetails?.reduce((acc, v) => v.amount * v.quantity + acc, 0) - parseInt(orderData?.discount)}</div>
                             </div>
                           </div>
                         </div>
                         <div className='mx-auto text-center mt-3'>
-                          {!(orderData?.[0].status == "cancelled") &&
+                          {!(orderData?.status == "cancelled") &&
                             < div className='d-flex text-decoration-none'>
                               {/* {console.log("payment", pamentDone)} */}
-                              {!pamentDone || (orderData?.[0].status.toLowerCase() !== 'finalized' && orderData?.[0].status.toLowerCase() !== 'delivered') ?
+                              {!pamentDone || (orderData?.status.toLowerCase() !== 'finalized' && orderData?.status.toLowerCase() !== 'delivered') ?
                                 <button className='btn btn-primary w-100 my-4 bj-delivery-text-3' style={{ backgroundColor: "#147BDE", borderRadius: "8px", padding: "10px 20px" }} onClick={handlePayment} disabled={pamentDone}>{pamentDone ? 'Pagado' : 'Cobrar ahora'}</button> :
                                 ""
                               }
@@ -1056,22 +1083,22 @@ export default function Homeinformation() {
                   <div className='text-white ms-4 pt-4' >
                     <h5 >Información del pedido</h5>
                   </div>
-                  {orderData?.[0]?.reason &&
+                  {orderData?.reason &&
                     <div className='text-white ms-4 pt-4' >
                       <h5 className='bj-delivery-text-15'>Nota anulación</h5>
-                      <textarea type="text" className="form-control bg-gray border-0 mt-4 py-2" id="inputPassword2" placeholder={orderData?.[0]?.reason != null ? orderData?.[0]?.reason : "Estaba sin sal"} style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled></textarea>
+                      <textarea type="text" className="form-control bg-gray border-0 mt-4 py-2" id="inputPassword2" placeholder={orderData?.reason != null ? orderData?.reason : "Estaba sin sal"} style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled></textarea>
                     </div>
                   }
 
                   <div className='d-flex  flex-grow-1 gap-5 mx-4 m b_inputt b_id_input b_home_field  pt-3 '>
                     <div className='w-100 b_search flex-grow-1  text-white'>
                       <label htmlFor="inputPassword2" className="mb-2 bj-delivery-text-3">Cliente</label>
-                      <input type="text" className="form-control bg-gray border-0 mt-2 py-3" value={orderData?.[0]?.customer_name} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled />
+                      <input type="text" className="form-control bg-gray border-0 mt-2 py-3" value={orderData?.customer_name} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled />
                     </div>
                     <div className='w-100 flex-grow-1 b_search text-white'>
                       <label htmlFor="inputPassword2" className="mb-2 bj-delivery-text-3">Plataforma</label>
-                      <input type="text" className="form-control bg-gray border-0 mt-2 py-3 " value={translateOrderType(orderData?.[0]?.order_type)} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled />
-                      {/* <input type="text" className="form-control bg-gray border-0 mt-2 py-3 " value={orderData?.[0]?.order_type} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled/> */}
+                      <input type="text" className="form-control bg-gray border-0 mt-2 py-3 " value={translateOrderType(orderData?.order_type)} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled />
+                      {/* <input type="text" className="form-control bg-gray border-0 mt-2 py-3 " value={orderData?.order_type} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled/> */}
                     </div>
                   </div>
 
@@ -1345,7 +1372,7 @@ export default function Homeinformation() {
 
         {/* processing */}
         <Modal
-          show={isProcessing}
+          show={isProcessing || loadingItem || loadingTable || loadingOrder || loadingUser}
           keyboard={false}
           backdrop={true}
           className="m_modal  m_user "

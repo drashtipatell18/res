@@ -25,21 +25,21 @@ export const getAllKds = createAsyncThunk(
     initialState: {
       kds: [],
       // kdsLogs : [],
-      loading: false,
+      loadingKds: false,
     },
     reducers: {},
     extraReducers: (builder) => {
       builder
       // getAllitems
         .addCase(getAllKds.pending, (state) => {
-          state.loading = true;
+          state.loadingKds = true;
         })
         .addCase(getAllKds.fulfilled, (state, action) => {
-          state.loading = false;
+          state.loadingKds = false;
           state.kds = action.payload;
         })
         .addCase(getAllKds.rejected, (state, action) => {
-          state.loading = false;
+          state.loadingKds = false;
         })
     }
   })

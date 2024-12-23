@@ -50,7 +50,7 @@ export default function ProductionCenter() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const dispatch = useDispatch()
-  const {items,subFamily,family,production,productionData,loading} = useSelector((state) => state.items);
+  const {items,subFamily,family,production,productionData,loadingItem} = useSelector((state) => state.items);
 
   const location = useLocation();
 
@@ -1660,7 +1660,7 @@ export default function ProductionCenter() {
 
                     {/* processing */}
                     <Modal
-                      show={isProcessing}
+                      show={isProcessing || loadingItem}
                       keyboard={false}
                       backdrop={true}
                       className="m_modal  m_user "

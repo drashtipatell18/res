@@ -220,10 +220,10 @@ const Informacira = () => {
   const cashierIdRef = useRef(null);
 
   const dispatch = useDispatch();
-  const { box, boxLogs } = useSelector((state) => state.boxs);
-  const { user, roles } = useSelector((state) => state.user);
-  const { orders, payments } = useSelector((state) => state.orders);
-  const { tablewithSector } = useSelector((state) => state.tables);
+  const { box, boxLogs,loadingBox } = useSelector((state) => state.boxs);
+  const { user, roles ,loadingUser} = useSelector((state) => state.user);
+  const { orders, payments,loadingOrder } = useSelector((state) => state.orders);
+  const { tablewithSector,loadingTable } = useSelector((state) => state.tables);
 
   const handleEdit = (box) => {
     if (!box || !box[0]) return;
@@ -1707,28 +1707,6 @@ const Informacira = () => {
                         </Modal.Body>
                       </Modal>
 
-                      {/* processing */}
-                      <Modal
-                        show={isProcessing}
-                        keyboard={false}
-                        backdrop={true}
-                        className="m_modal  m_user "
-                      >
-                        <Modal.Body className="text-center">
-                          <p></p>
-                          <Spinner
-                            animation="border"
-                            role="status"
-                            style={{
-                              height: "85px",
-                              width: "85px",
-                              borderWidth: "6px",
-                            }}
-                          />
-                          <p className="mt-2">Procesando solicitud...</p>
-                        </Modal.Body>
-                      </Modal>
-
                       {/* {data.length > 0 && data[data.length - 1]?.close_amount == null && ( */}
                       {data.length > 0 && data[0]?.close_amount == null && (
                         <button
@@ -2974,7 +2952,7 @@ const Informacira = () => {
 
                     {/* Proccesing */}
                     <Modal
-                      show={isProcessing}
+                      show={isProcessing || loadingBox || loadingTable || loadingOrder || loadingUser}
                       keyboard={false}
                       backdrop={true}
                       className="m_modal  m_user "

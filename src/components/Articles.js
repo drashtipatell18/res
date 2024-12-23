@@ -27,7 +27,7 @@ export default function Articles() {
 
 
   const dispatch = useDispatch()
-  const {items,subFamily,family,production,productionData,loading} = useSelector((state) => state.items);
+  const {items,subFamily,family,production,productionData,loadingItem} = useSelector((state) => state.items);
 
   // Add product
   const [show1, setShow1] = useState(false);
@@ -1872,7 +1872,7 @@ export default function Articles() {
 
                     {/* processing */}
                     <Modal
-                      show={isProcessing}
+                      show={isProcessing || loadingItem}
                       keyboard={false}
                       backdrop={true}
                       className="m_modal  m_user "
@@ -1953,7 +1953,7 @@ export default function Articles() {
                         className="col-md-4 col-xl-3 col-sm-6 col-12 g-3"
                         key={ele.id}
                       >
-                        {console.log(ele.production_center_id)}
+                        {/* {console.log(ele.production_center_id)} */}
                         <SingProd
                           id={ele.id}
                           image={ele.image}

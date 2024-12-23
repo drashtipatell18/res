@@ -527,15 +527,15 @@ const Counter_finalP = () => {
   };
 
 
-  const {production} = useSelector(state => state.items);
+  const {production, loadingItem} = useSelector(state => state.items);
 
   const [productionCenters, setProductionCenters] = useState();
 
-  useEffect(() => {
-    dispatch(getProduction({admin_id}))
-    // getProductionCenters();
-  }, [admin_id]);
-
+   useEffect(() => {
+      if(production.length == 0){
+      dispatch(getProduction({admin_id}))
+      }
+    }, [admin_id]);
   useEffect(() => {
     if (production.length > 0) {
       setProductionCenters(production);
@@ -1407,7 +1407,7 @@ const Counter_finalP = () => {
                         </Modal>
                         {/* processing */}
                         <Modal
-                          show={isProcessing}
+                          show={isProcessing || loadingItem}
                           keyboard={false}
                           backdrop={true}
                           className="m_modal  m_user "

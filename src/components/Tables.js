@@ -46,9 +46,9 @@ const Tables = () => {
 
 
   const dispatch = useDispatch()
-  const {tablewithSector,sector,tableState,singleTable,loading} = useSelector(state=>state.tables);
-   const {items} = useSelector((state) => state.items);
-   const {user} = useSelector((state) => state.user);
+  const {tablewithSector,sector, loadingTable} = useSelector(state=>state.tables);
+   const {items, loadingItem} = useSelector((state) => state.items);
+   const {user, loadingUser} = useSelector((state) => state.user);
   
   useEffect(()=>{
       if(tablewithSector.length == 0){
@@ -1165,6 +1165,7 @@ const Tables = () => {
     //   }
     // });
     echo.channel('box-channel').listen('.CardClick', (event) => {
+      console.log("BoxClicked event received:", event);
       if (event.selected) {
         setSelectedCards(prev => {
           const prevArray = prev || [];
@@ -2416,7 +2417,7 @@ const Tables = () => {
       </div>
       {/* processing */}
       <Modal
-        show={isProcessing}
+        show={isProcessing || loadingUser || loadingItem || loadingTable}
         keyboard={false}
         backdrop={true}
         className="m_modal  m_user "

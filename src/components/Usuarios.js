@@ -44,10 +44,9 @@ const Usuarios = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [userToDelete, setUserToDelete] = useState(null);
   const [userActive, setUserActive] = useState(null);
-  const { playNotificationSound } = useAudioManager();
 
   const dispatch = useDispatch();
-  const { user, roles } = useSelector((state) => state.user);
+  const { user, roles, loadingUser} = useSelector((state) => state.user);
 
   console.log(user, roles);
   
@@ -1521,7 +1520,7 @@ const Usuarios = () => {
             </Modal>
             {/* processing */}
             <Modal
-              show={isProcessing}
+              show={isProcessing || loadingUser}
               keyboard={false}
               backdrop={true}
               className="m_modal  m_user "
