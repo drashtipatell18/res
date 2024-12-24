@@ -1431,7 +1431,7 @@ const Usuarios = () => {
                   />
                   <p className="mb-0 mt-2 h6">
                     {" "}
-                    ¿Quieres suspender a esta Usuario?
+                    ¿Quieres suspender a Este Usuario?
                   </p>
                 </div>
               </Modal.Body>
@@ -1475,7 +1475,7 @@ const Usuarios = () => {
                   />
                   <p className="mb-0 mt-2 h6">
                     {" "}
-                    ¿Quieres activar a esta Usuario?
+                    ¿Quieres activar a Este Usuario?
                   </p>
                 </div>
               </Modal.Body>

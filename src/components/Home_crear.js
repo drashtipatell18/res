@@ -725,9 +725,9 @@ export default function Home_crear({ item }) {
                 <Sidenav />
                 <div className="flex-grow-1 sidebar overflow-hidden">
                     <div className="p-3 m_bgblack text-white">
-                        <Link to={`/home/client`} className='d-flex text-decoration-none' >
-                            <div className='btn bj-btn-outline-primary text-nowrap py-2 d-flex mt-2 ms-3' style={{ borderRadius: "10px", }}> <FaArrowLeft className='me-2 mt-1' />Regresar</div>
-                        </Link>
+                        <div className='d-flex text-decoration-none' >
+                            <Link to={`/home/client`} className='btn bj-btn-outline-primary text-nowrap py-2 d-flex mt-2 ms-3' style={{ borderRadius: "10px", }}> <FaArrowLeft className='me-2 mt-1' />Regresar</Link>
+                        </div>
                         <div className="mt-3 ms-3">
                             <h5 style={{ fontSize: "18px" }}>Crear nota de credito</h5>
                         </div>

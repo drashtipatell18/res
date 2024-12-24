@@ -660,6 +660,7 @@ const TableDatos = () => {
       return 'Unknown User';
     }
   };
+
   return (
     <div>
       <Header />
@@ -670,13 +671,13 @@ const TableDatos = () => {
           </div>
           <div className="flex-grow-1 sidebar j-position-sticky text-white">
             <div className="j-counter-header">
-              <Link to={`/table`}>
-                <div className="j-table-datos-btn">
+              <div className="j-table-datos-btn" >
+                <Link to={`/table`} >
                   <button className="bj-btn-outline-primary j-tbl-btn-font-1 btn">
                     <HiOutlineArrowLeft className="j-table-datos-icon" />Regresar
                   </button>
-                </div>
-              </Link>
+                </Link>
+              </div>
               <h2 className="text-white j-table-font-1 mb-0">Mesa {tabNo}</h2>
               <div className="j-menu-bg-color">
                 <div className="j-table-cart-2 d-flex justify-content-between ">

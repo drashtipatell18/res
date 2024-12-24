@@ -12,8 +12,8 @@ export const getAllKds = createAsyncThunk(
     async (admin_id, { rejectWithValue }) => {
       try {
         const response = await axiosInstance.post(`/order/getAllKds?received=yes&prepared=yes&delivered=yes&finalized=yes`,admin_id);
-  
-        return response.data; // Assuming the API returns an array of users
+        
+        return Object.values(response.data); // Assuming the API returns an array of users
       } catch (error) {
         return handleErrors(error, null, rejectWithValue);
       }

@@ -1813,20 +1813,20 @@ export default function SingleArticleProduct() {
                                       : "No pagado";
 
                                   return (
-                                    <tr key={order.id} className="m_borbot p-3">
+                                    <tr key={order.id} className="m_borbot">
 
-                                      <td >
+                                      <td className="p-0 ps-3">
                                         <Link to={`/home_Pedidos/paymet/${order.id}`}>
                                           <div className="m_idbtn m12">{order.id}</div>
                                         </Link>
                                       </td>
-                                      <td>{formatDate(order.created_at)}</td>
-                                      <td>{formatTime(order.created_at)}</td>
-                                      <td className="text-nowrap">
+                                      <td className="p-0">{formatDate(order.created_at)}</td>
+                                      <td className="p-0">{formatTime(order.created_at)}</td>
+                                      <td className="text-nowrap p-0">
                                         {order.customer_name}
                                       </td>
 
-                                      <td>
+                                      <td className="p-0">
                                       <div className={`m_btn1 m12 text-nowrap`}
                                         style={{ width: "90px" }}>{paymentStatus}</div>
                                          </td>

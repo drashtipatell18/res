@@ -195,8 +195,8 @@ function Home_detail_no2() {
                 <Sidenav />
                 <div className='flex-grow-1 sidebar overflow-y-scroll'>
                     <div style={{ backgroundColor: "#1F2A37" }} className='pb-3'>
-                        <div className='d-flex text-decoration-none ' onClick={handleNavigate} >
-                            <div className='btn btn-outline-primary text-nowrap py-2 d-flex mt-4 ms-3' style={{ borderRadius: "10px" }}>
+                        <div className='d-flex text-decoration-none '  >
+                            <div className='btn btn-outline-primary text-nowrap py-2 d-flex mt-4 ms-3' style={{ borderRadius: "10px" }} onClick={handleNavigate}>
                                 <FaArrowLeft className='me-2 mt-1' />Regresar
                             </div>
                         </div>

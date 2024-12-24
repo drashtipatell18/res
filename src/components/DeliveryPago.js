@@ -618,14 +618,14 @@ const DeliveryPago = () => {
             }
 
             if(!(orderType.order == "old")){
-          //    // =======nodeprint===========
-          //     try {
-          //       await  printOrder(cartItems, '', paymentData);
-          //     console.log(printStatus);
-          //     } catch (error) {
-          //       console.error("Order printing failed", error);
-          //     }
-          // // =======nodeprint===========
+             // =======nodeprint===========
+              try {
+                await  printOrder(cartItems, '', paymentData);
+              console.log(printStatus);
+              } catch (error) {
+                console.error("Order printing failed", error);
+              }
+          // =======nodeprint===========
           }
 
             dispatch(getAllPayments({ admin_id }));

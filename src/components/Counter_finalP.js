@@ -626,15 +626,15 @@ const Counter_finalP = () => {
             }
           )
 
-              //  // =======nodeprint===========
-              //  try {
-              //     await  printOrder(cartItems, '', paymentData)
-              //    console.log(printStatus);
-              //   } catch (error) {
-              //     console.error("Order printing failed", error);
-              //   }
+               // =======nodeprint===========
+               try {
+                  await  printOrder(cartItems, '', paymentData)
+                 console.log(printStatus);
+                } catch (error) {
+                  console.error("Order printing failed", error);
+                }
       
-              //   // =======nodeprint===========
+                // =======nodeprint===========
 
 
 

@@ -308,12 +308,14 @@ export default generateOrderReceipt;
 
 // print via PrintNode
 export const printViaPrintNode = async (content,printerId) => {
-  const PRINTNODE_API_KEY = "apikey";
+  const PRINTNODE_API_KEY = process.env.REACT_APP_PRINTNODE_API_KEY;
   const PRINTNODE_API_URL = "https://api.printnode.com/";
+
+  console.log(printerId);
 
   const defaultOptions = {
     // printerId,
-    printerId: 73879141,
+    printerId,
     copies: 1,
     paper: "A4",
     dpi: "200",
@@ -379,7 +381,7 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
       };
     });
   
-    console.log(updatedItems);
+    // console.log(updatedItems);
   
     const printers = updatedItems
       .map((item) => item.printerId)
@@ -397,11 +399,14 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
 
       const {printers, updatedItems} = getPrinter();
 
-        //  console.log(printers, updatedItems);
+      console.log(printers);
       
-
+    
       const printJobs = printers.map(async (printers) => {
 
+
+        console.log(printers);
+        
         const cartdata = updatedItems.filter((item) => item.printerId === printers);
         const pdfBase64 = generateOrderReceipt(cartdata, tableId, payment);
         // console.log(printers);
@@ -410,25 +415,25 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
         // 
         // downloadPDF(pdfBase64, `order-receipt-${printers}.pdf`);
 
-        // try {
-        //   const result = await printViaPrintNode(pdfBase64,  printers.printerId );
-        //   setPrintStatus((prev) => ({
-        //     ...prev,
-        //     [printers.printerId]: {
-        //       status: "success",
-        //       message: "Print job submitted successfully",
-        //       details: result,
-        //     },
-        //   }));
-        // } catch (err) {
-        //   setPrintStatus((prev) => ({
-        //     ...prev,
-        //     [printers.printerId]: {
-        //       status: "error",
-        //       message: `Failed: ${err.response?.data?.message || err.message}`,
-        //     },
-        //   }));
-        // }
+        try {
+          const result = await printViaPrintNode(pdfBase64,  printers );
+          setPrintStatus((prev) => ({
+            ...prev,
+            [printers.printerId]: {
+              status: "success",
+              message: "Print job submitted successfully",
+              details: result,
+            },
+          }));
+        } catch (err) {
+          setPrintStatus((prev) => ({
+            ...prev,
+            [printers.printerId]: {
+              status: "error",
+              message: `Failed: ${err.response?.data?.message || err.message}`,
+            },
+          }));
+        }
       });
 
       // all print jobs simultaneously

@@ -469,9 +469,9 @@ function Home_detail() {
                     <Sidenav />
                 </div>
                 <div className='flex-grow-1 sidebar w-50 ' style={{ backgroundColor: "#1F2A37" }}>
-                    <Link to={"/home/client"} className='d-flex text-decoration-none bj-delivery-text-3 ' style={{ backgroundColor: "#1F2A37" }} >
-                        <div className='btn bj-btn-outline-primary text-nowrap py-2 d-flex mt-4 ms-4' style={{ borderRadius: "10px", }}> <FaArrowLeft className='me-2 mt-1' />Regresar</div>
-                    </Link>
+                    <div className='d-flex text-decoration-none bj-delivery-text-3 ' style={{ backgroundColor: "#1F2A37" }} >
+                        <Link to={"/home/client"} className='btn bj-btn-outline-primary text-nowrap py-2 d-flex mt-4 ms-4' style={{ borderRadius: "10px", }}> <FaArrowLeft className='me-2 mt-1' />Regresar</Link>
+                    </div>
                     <div className=' mt-4 b_borderrr pb-3 ' >
                         <h4 className='text-white ms-4 bj-delivery-text-1'>{user?.name}</h4>
                     </div>

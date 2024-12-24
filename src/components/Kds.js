@@ -25,13 +25,11 @@ const Kds = () => {
     const [allItems, setAllItems] = useState([]);
     const [isProcessing, setIsProcessing] = useState(false);
 
-
-    
     const dispatch = useDispatch();
-    const {kds} = useSelector(state => state.kds);
-    const {user} = useSelector(state => state.user);
-    const {items,production} = useSelector(state => state.items);
-    const {tablewithSector} = useSelector(state => state.tables);
+    const {kds,loadingKds} = useSelector(state => state.kds);
+    const {user, loadingUser} = useSelector(state => state.user);
+    const {items,production, loadingItem} = useSelector(state => state.items);
+    const {tablewithSector, loadingTable} = useSelector(state => state.tables);
 
     useEffect(()=>{
         if(tablewithSector.length == 0){
@@ -67,14 +65,6 @@ const Kds = () => {
         }
       },[tablewithSector,items,kds,production])
     
-
-      console.log(tablewithSector);
-      console.log(kds);
-        console.log(items);
-        console.log(production);
-      
-      
-    
     // useEffect(() => {
     //     fetchOrder();
     //     fetchUser();
@@ -104,12 +94,12 @@ const Kds = () => {
     //     setIsProcessing(false);
     // }
 
-    const [categories, setCategories] = useState([
-        'Todo',
-        'Cocina',
-        'Barra',
-        'Postres'
-    ]);
+    // const [categories, setCategories] = useState([
+    //     'Todo',
+    //     'Cocina',
+    //     'Barra',
+    //     'Postres'
+    // ]);
     const orderType = [
         'Recibido',
         'Preparado',
@@ -182,17 +172,40 @@ const Kds = () => {
     //     }
     //     setIsProcessing(false);
     // }
+    // const [selectedCategory, setSelectedCategory] = useState('Todo');
+
+    // const filterOrdersByCategory = (orders, category) => {
+    //     if (!Array.isArray(orders)) return [];
+    //     if (category === 'Todo') {
+    //         console.log("Todo",orders)
+    //         return orders;
+    //     }
+    //     return orders?.filter(order => {
+    //         return order?.order_details.some(detail => {
+    //             const item = allItems?.find(item => item.id === detail.item_id);
+    //             if (item) {
+    //                 const matchingCenter = centerProduction.find(center => center.id === item.production_center_id);
+    //                 return matchingCenter && matchingCenter.name === category;
+    //             }
+    //             return false;
+    //         });
+    //     });
+
+    // };
+    // useEffect(()=>{
+    //     filterOrdersByCategory(allOrder, selectedCategory);
+    //     console.log("filtered",filterOrdersByCategory(allOrder, selectedCategory),allOrder,selectedCategory)
+    // },[orderType,allOrder])
+
     const [selectedCategory, setSelectedCategory] = useState('Todo');
 
     const filterOrdersByCategory = (orders, category) => {
-        if (!Array.isArray(orders)) return [];
         if (category === 'Todo') {
-            console.log("Todo",orders)
             return orders;
         }
-        return orders?.filter(order => {
-            return order?.order_details.some(detail => {
-                const item = allItems?.find(item => item.id === detail.item_id);
+        return orders.filter(order => {
+            return order.order_details.some(detail => {
+                const item = allItems.find(item => item.id === detail.item_id);
                 if (item) {
                     const matchingCenter = centerProduction.find(center => center.id === item.production_center_id);
                     return matchingCenter && matchingCenter.name === category;
@@ -202,10 +215,7 @@ const Kds = () => {
         });
 
     };
-    useEffect(()=>{
-        filterOrdersByCategory(allOrder, selectedCategory);
-        console.log("filtered",filterOrdersByCategory(allOrder, selectedCategory),allOrder,selectedCategory)
-    },[orderType,allOrder])
+
     return (
         <>
             <Header />
@@ -308,7 +318,7 @@ const Kds = () => {
 
                     {/* processing */}
                     <Modal
-                        show={isProcessing}
+                        show={isProcessing || loadingTable || loadingItem || loadingUser || loadingKds}
                         keyboard={false}
                         backdrop={true}
                         className="m_modal  m_user "

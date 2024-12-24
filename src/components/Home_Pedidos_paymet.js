@@ -198,9 +198,9 @@ export default function Home_Pedidos_paymet() {
   useEffect(() => {
     if (payments) {
       console.log(payments);
-      const payment = payments?.find((v) => v.order_id == id);
+      const payment = payments?.find((v) => v.order_master_id == id);
       if(payment){
-      setPaymentDone(true);
+        setPaymentDone(true);
       }
     }
     if(family){
@@ -756,16 +756,16 @@ export default function Home_Pedidos_paymet() {
           <Sidenav />
           <div className=" flex-grow-1 sidebar overflow-hidden">
             <div className="p-3 m_bgblack text-white  ">
-              <Link to="/home_Pedidos" className="d-flex text-decoration-none">
-                <div
+              <div className="d-flex text-decoration-none">
+                <Link to="/home_Pedidos"
                   className="btn btn-outline-primary text-nowrap py-2 d-flex mt-2 ms-3"
                   style={{ borderRadius: "10px" }}
                 >
                   {" "}
                   <FaArrowLeft className="me-2 mt-1" />
                   Regresar
-                </div>
-              </Link>
+                </Link>
+              </div>
 
               <div className="d-flex justify-content-between align-items-center flex-wrap">
                 <div

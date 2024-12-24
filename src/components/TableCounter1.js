@@ -726,15 +726,15 @@ const TableCounter1 = () => {
               },
             }
           );
-          // // =======nodeprint===========
-          // try {
-          //   await  printOrder(cartItems,tId)
-          //  console.log(printStatus);
-          // } catch (error) {
-          //   console.error("Order printing failed", error);
-          // }
+          // =======nodeprint===========
+          try {
+            await  printOrder(cartItems,tId)
+           console.log(printStatus);
+          } catch (error) {
+            console.error("Order printing failed", error);
+          }
 
-          // // =======nodeprint===========
+          // =======nodeprint===========
 
           dispatch(getAllOrders({admin_id}));
           dispatch(getAllTableswithSector({admin_id}));
