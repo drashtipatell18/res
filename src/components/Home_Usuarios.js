@@ -523,6 +523,9 @@ function Home_Usuarios() {
                                                 {getCurrentItems().length > 0 ?
                                                     getCurrentItems().map((order) => {
                                                         const paydata = payments?.find((v)=>v.order_master_id == order.id)
+                                                        const amount = order.order_details.reduce((acc, v) => acc + parseInt(v.amount) * parseInt(v.quantity), 0)- parseFloat(order.discount).toFixed(2)
+                                                        const IVA = amount * 0.19
+                                                        const total = parseFloat(amount + IVA).toFixed(2)
                                                         return (
                                                         // console.log(order),
 
@@ -533,7 +536,7 @@ function Home_Usuarios() {
                                                             <td className='b_text_w'>{new Date(order?.created_at).toLocaleDateString('en-GB')}</td>
                                                             <td className='b_text_w'>{new Date(order?.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                                                             <td className='b_text_w'>{order.customer_name ? order.customer_name : paydata?.firstname || paydata?.business_name}</td>
-                                                            <td className='b_text_w'>${paydata?.amount || order.order_details.reduce((acc, v) => acc + parseInt(v.amount) * parseInt(v.quantity), 0) - parseFloat(order.discount).toFixed(2)}</td>
+                                                            <td className='b_text_w'>${paydata?.amount || total}</td>
                                                             {/* <td className='b_text_w'>{order.payment_type}</td> */}
                                                             <td className='b_text_w'>
                                                                 {

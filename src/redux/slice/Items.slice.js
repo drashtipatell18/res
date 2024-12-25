@@ -26,7 +26,7 @@ export const getAllitems = createAsyncThunk(
       try {
         const response = await axiosInstance.get(`/item/getAllDeletedAt`);
   
-        return response.data.items; // Assuming the API returns an array of users
+        return response.data.items; 
       } catch (error) {
         return handleErrors(error, null, rejectWithValue);
       }

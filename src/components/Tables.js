@@ -1575,9 +1575,9 @@ const Tables = () => {
                         handleData={() => {
                           getTableData(ele.id);
                         }}
-                        handleGet={() => {
-                          // getPaymentData(ele.order_id);
-                        }}
+                        // handleGet={() => {
+                        //   // getPaymentData(ele.order_id);
+                        // }}
                         getUserName={getUserName}
                         setSelectedTable={setSelectedTable}
                         setTableStatus={setTableStatus}

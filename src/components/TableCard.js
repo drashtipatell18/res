@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor,selectedCards, getUserName, status, setTableStatus, onShowAvailableModal, handleData, handleGet, onShowOcupadoModal, isModalOpen, isOffcanvasOpen }) => {
+const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor,selectedCards, getUserName, status, setTableStatus, onShowAvailableModal, handleData, onShowOcupadoModal, isModalOpen, isOffcanvasOpen }) => {
   const [isSelected, setSelected] = useState(false);
   const tableRef = useRef(null);
 
@@ -63,8 +63,10 @@ const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor
         }
       }
     }
-    handleData(id);
-    handleGet(oId);
+    if(status === "busy") {
+      handleData(id);
+    }
+    // handleGet(oId);
   };
 
   // Listen for storage changes to update selection

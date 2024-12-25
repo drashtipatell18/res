@@ -1,29 +1,32 @@
-import React, { useEffect, useState, useRef } from 'react'
-import Header from './Header'
-import Sidenav from './Sidenav'
-import { Badge, Button, Modal, Spinner } from 'react-bootstrap'
+import React, { useEffect, useState, useRef } from "react";
+import Header from "./Header";
+import Sidenav from "./Sidenav";
+import { Badge, Button, Modal, Spinner } from "react-bootstrap";
 import { FaArrowLeft, FaCalendarAlt } from "react-icons/fa";
 import { MdEditSquare } from "react-icons/md";
 import { CgCalendarDates } from "react-icons/cg";
 import { FiPlus } from "react-icons/fi";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
-import pic1 from "../img/Image.png"
-import pic2 from "../img/Image(1).jpg"
-import pic3 from "../img/Image (2).png"
-import { Tabs, Tab } from 'react-bootstrap';
-import { IoMdCloseCircle, IoMdInformationCircle } from 'react-icons/io';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
-import { RiDeleteBin5Fill } from 'react-icons/ri';
-import { BsCalculatorFill } from 'react-icons/bs';
-import { useDispatch, useSelector } from 'react-redux';
-import { getRols, getUser } from '../redux/slice/user.slice';
-import { getAllOrders, getAllPayments } from '../redux/slice/order.slice';
-import { getAllTableswithSector } from '../redux/slice/table.slice';
-import { getAllDeleteditems, getFamily, getSubFamily } from '../redux/slice/Items.slice';
+import pic1 from "../img/Image.png";
+import pic2 from "../img/Image(1).jpg";
+import pic3 from "../img/Image (2).png";
+import { Tabs, Tab } from "react-bootstrap";
+import { IoMdCloseCircle, IoMdInformationCircle } from "react-icons/io";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { RiDeleteBin5Fill } from "react-icons/ri";
+import { BsCalculatorFill } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { getRols, getUser } from "../redux/slice/user.slice";
+import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
+import { getAllTableswithSector } from "../redux/slice/table.slice";
+import {
+  getAllDeleteditems,
+  getFamily,
+  getSubFamily,
+} from "../redux/slice/Items.slice";
 
 export default function Homeinformation() {
-
   // const API_URL = "https://shreekrishnaastrology.com/api"; // Laravel API URL
   // const API = "https://shreekrishnaastrology.com/public";
   // const [token, setToken] = useState(
@@ -47,12 +50,11 @@ export default function Homeinformation() {
   const handleClose12 = () => setShow12(false);
   const [errorReason, setReasonError] = useState(null);
   const handleShow12 = async () => {
-
     // ----resons----
     // ===change====
     // console.log(reason);
     if (!reason) {
-      setReasonError("Ingrese el motivo de validez")
+      setReasonError("Ingrese el motivo de validez");
       return;
     }
     handleClose();
@@ -67,7 +69,6 @@ export default function Homeinformation() {
         }
       );
       // console.log("Note added successfully:", response.data);
-
     } catch (error) {
       console.error(
         "Error adding note:",
@@ -87,7 +88,6 @@ export default function Homeinformation() {
       );
       getOrderStatus();
       // console.log("Order Cancle successfully:", response.data);
-
     } catch (error) {
       console.error(
         "Error adding note:",
@@ -97,9 +97,9 @@ export default function Homeinformation() {
 
     // ---End-resons----
     dispatch(getAllOrders({ admin_id }));
-    setShow12(true)
+    setShow12(true);
     setTimeout(() => {
-      setShow12(false)
+      setShow12(false);
       // navigate(`/home_Pedidos/payment_edit/${id}`, { replace: true, state: "profile" });
     }, 2000);
   };
@@ -111,14 +111,14 @@ export default function Homeinformation() {
   const [orderDetails, setOrderDetails] = useState([]);
   const [sector, setSector] = useState(null);
   const [table, setTable] = useState(null);
-  const [reason, setReason] = useState('');
-  const [orderStatus, setOrderStatus] = useState('');
+  const [reason, setReason] = useState("");
+  const [orderStatus, setOrderStatus] = useState("");
   const [user, setUser] = useState(null);
   // const [roles, setRoles] = useState([]);
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState("");
 
   const [visibleInputId, setVisibleInputId] = useState(null);
-  const [noteValues, setNoteValues] = useState('');
+  const [noteValues, setNoteValues] = useState("");
 
   const [obj1, setObj1] = useState([]);
   const [parentCheck, setParentCheck] = useState([]);
@@ -130,18 +130,19 @@ export default function Homeinformation() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const dispatch = useDispatch();
-  const { box , loadingBox} = useSelector((state) => state.boxs);
-  const {roles, loadingUser } = useSelector((state) => state.user);
+  const { box, loadingBox } = useSelector((state) => state.boxs);
+  const { roles, loadingUser } = useSelector((state) => state.user);
   const allusers = useSelector((state) => state.user.user);
-  const {payments , loadingOrder} = useSelector((state) => state.orders);
-  const { tablewithSector, loadingTable } = useSelector((state) => state.tables);
-  const {deletedAllItems,subFamily,family,loadingItem} = useSelector((state) => state.items);
+  const { payments, loadingOrder } = useSelector((state) => state.orders);
+  const { tablewithSector, loadingTable } = useSelector(
+    (state) => state.tables
+  );
+  const { deletedAllItems, subFamily, family, loadingItem } = useSelector((state) => state.items);
 
   // const [filteredMenuItems, setFilteredMenuItems] = useState([]); // State to hold filtered items
   // const [searchTerm, setSearchTerm] = useState(""); // State to hold search term
   // const [menuId, setMenuId] = useState(null);
   // const [itemId, setItemId] = useState([]);
-
 
   // Add producttion
   const [show1Prod, setShow1Prod] = useState(false);
@@ -149,7 +150,7 @@ export default function Homeinformation() {
     setShow1Prod(false);
     setSelectedItemsMenu([]);
     setSelectedItemsCount(0);
-  }
+  };
   const handleShow1Prod = () => setShow1Prod(true);
   const [selectedItemsMenu, setSelectedItemsMenu] = useState([]);
 
@@ -157,9 +158,9 @@ export default function Homeinformation() {
   const [show1AddSuc, setShow1AddSuc] = useState(false);
   const handleClose1AddSuc = () => setShow1AddSuc(false);
   const handleShow1AddSuc = () => {
-    setShow1AddSuc(true)
+    setShow1AddSuc(true);
     setTimeout(() => {
-      setShow1AddSuc(false)
+      setShow1AddSuc(false);
     }, 2000);
   };
 
@@ -167,21 +168,24 @@ export default function Homeinformation() {
 
   // Function to handle submission
   const handleNoteSubmit = async (id) => {
-    const noteValues = noteInputRef.current ? noteInputRef.current.value : '';
+    const noteValues = noteInputRef.current ? noteInputRef.current.value : "";
     // Your existing submission logic here
     // ...
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (noteInputRef.current && !noteInputRef.current.contains(event.target)) {
+      if (
+        noteInputRef.current &&
+        !noteInputRef.current.contains(event.target)
+      ) {
         handleNoteSubmit(); // Call the submit function when clicking outside
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -195,53 +199,52 @@ export default function Homeinformation() {
   }, [show12]);
 
   useEffect(() => {
-      if (allusers?.length == 0) {
-        dispatch(getUser());
-      }
-      if (roles?.length == 0) {
-        dispatch(getRols());
-      }
-      if (payments?.length == 0) {
-        dispatch(getAllPayments({ admin_id }));
-      }
-      if (tablewithSector?.length == 0) {
-        dispatch(getAllTableswithSector({ admin_id }));
-      }
-  
-      if(deletedAllItems?.length == 0){
-          dispatch(getAllDeleteditems());
-      }
-     if(subFamily.length == 0){
-         dispatch(getSubFamily());
-       }
-       if(family.length == 0){
-         dispatch(getFamily());
-       }
-    }, [admin_id]);
-  
-    useEffect(() => {
-      if (payments) {
-        console.log(payments);
-        const payment = payments?.find((v) => v.order_master_id == id);
-        if(payment){
-        setPaymentDone(true);
-        }
-      }
-      if(family){
-        setParentCheck(family);
-      }
-      if(deletedAllItems){
-        console.log(deletedAllItems);
-        
-        setItems(deletedAllItems);
-        setObj1(deletedAllItems?.filter((v) => v.deleted_at == null));
-        setFilteredItemsMenu(deletedAllItems.filter((v) => v.deleted_at == null));
-      }
-      if(subFamily){
-        setChildCheck(subFamily)
-      }
-    }, [box]);
+    if (allusers?.length == 0) {
+      dispatch(getUser());
+    }
+    if (roles?.length == 0) {
+      dispatch(getRols());
+    }
+    if (payments?.length == 0) {
+      dispatch(getAllPayments({ admin_id }));
+    }
+    if (tablewithSector?.length == 0) {
+      dispatch(getAllTableswithSector({ admin_id }));
+    }
 
+    if (deletedAllItems?.length == 0) {
+      dispatch(getAllDeleteditems());
+    }
+    if (subFamily?.length == 0) {
+      dispatch(getSubFamily());
+    }
+    if (family?.length == 0) {
+      dispatch(getFamily());
+    }
+  }, [admin_id]);
+
+  useEffect(() => {
+    if (payments) {
+      // console.log(payments);
+      const payment = payments?.find((v) => v.order_master_id == id);
+      if (payment) {
+        setPaymentDone(true);
+      }
+    }
+    if (family) {
+      setParentCheck(family);
+    }
+    if (deletedAllItems) {
+      // console.log(deletedAllItems);
+
+      setItems(deletedAllItems);
+      setObj1(deletedAllItems?.filter((v) => v.deleted_at == null));
+      setFilteredItemsMenu(deletedAllItems.filter((v) => v.deleted_at == null));
+    }
+    if (subFamily) {
+      setChildCheck(subFamily);
+    }
+  }, [box]);
 
   useEffect(() => {
     if (orderData && items.length > 0) {
@@ -251,7 +254,7 @@ export default function Homeinformation() {
     if (orderData?.user_id) {
       getUserdata();
     }
-  }, [orderData, items, show1Prod]);
+  }, [orderData, items, show1Prod, deletedAllItems]);
 
   useEffect(() => {
     if (user) {
@@ -263,10 +266,10 @@ export default function Homeinformation() {
   //   getPaymentsData();
   // }, [admin_id, id]);
 
-  const [pamentDone, setPaymentDone] = useState(false)
+  const [pamentDone, setPaymentDone] = useState(false);
 
   // const getPaymentsData = async () => {
-  //   // console.log(admin_id,id); 
+  //   // console.log(admin_id,id);
   //   try {
   //     const response = await axios.get(`${API_URL}/getsinglepayments/${id}`, {
   //       headers: {
@@ -288,12 +291,28 @@ export default function Homeinformation() {
 
   const getOrder = async () => {
     try {
-      const response = await axios.post(`${API_URL}/order/getSingle/${id}`, { admin_id: admin_id }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        `${API_URL}/order/getSingle/${id}`,
+        { admin_id: admin_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setOrderData(response.data[0]);
+      if (response.data[0] && tablewithSector) {
+        const sectorWithTable = tablewithSector?.find((v) =>
+          v.tables.some((a) => a.id == response.data[0].table_id)
+        );
+
+        if (sectorWithTable) {
+          setSector(sectorWithTable);
+          setTable(
+            sectorWithTable.tables.find((a) => a.id == orderData.table_id)
+          );
+        }
+      }
     } catch (error) {
       console.error(
         "Error fetching OrderData:",
@@ -330,11 +349,9 @@ export default function Homeinformation() {
 
     if (sectorWithTable) {
       setSector(sectorWithTable);
-      setTable(
-        sectorWithTable.tables.find((a) => a.id == orderData.table_id)
-      );
+      setTable(sectorWithTable.tables.find((a) => a.id == orderData.table_id));
     }
-};
+  };
 
   const getOrderStatus = async () => {
     setIsProcessing(true);
@@ -353,16 +370,15 @@ export default function Homeinformation() {
       );
     }
     setIsProcessing(false);
-
   };
   const getUserdata = () => {
     const user = allusers?.find((v) => v.id == orderData.user_id);
-      if(user){
-        setUser(user);
-      }else{
-        setUser(null); // Set user to null if there's an error
-      }
-    };
+    if (user) {
+      setUser(user);
+    } else {
+      setUser(null); // Set user to null if there's an error
+    }
+  };
 
   // const getRole = async () => {
   //   setIsProcessing(true);
@@ -395,12 +411,16 @@ export default function Homeinformation() {
   // };
 
   const handleOrderDetails = () => {
+    if (!orderData || !items) return;
+
     const details = orderData?.order_details?.map((orderItem) => {
       const matchingItem = items.find((item) => item.id === orderItem.item_id);
       return {
         ...orderItem,
         image: matchingItem ? matchingItem.image : orderItem.image,
-        description: matchingItem ? matchingItem.description : orderItem.description,
+        description: matchingItem
+          ? matchingItem.description
+          : orderItem.description,
       };
     });
     setOrderDetails(details);
@@ -444,12 +464,12 @@ export default function Homeinformation() {
   // ----resons section -----
 
   const handlereasons = (event) => {
-    let notes = event?.target.value
-    setReason(notes)
+    let notes = event?.target.value;
+    setReason(notes);
     if (notes) {
-      setReasonError(null)
+      setReasonError(null);
     }
-  }
+  };
 
   // ----resons section  end-----
 
@@ -459,22 +479,26 @@ export default function Homeinformation() {
   const [checkedChildren, setCheckedChildren] = useState({});
 
   useEffect(() => {
-
     const initialParents = {};
     const initialChildren = {};
-    parentCheck.forEach(parent => initialParents[parent.id] = false);
-    childCheck.forEach(child => initialChildren[child.id] = false);
+    parentCheck.forEach((parent) => (initialParents[parent.id] = false));
+    childCheck.forEach((child) => (initialChildren[child.id] = false));
     setCheckedParents(initialParents);
     setCheckedChildren(initialChildren);
   }, [parentCheck, childCheck]);
 
   const handleParentChangeMenu = (parentId) => {
-    const newCheckedParents = { ...checkedParents, [parentId]: !checkedParents[parentId] };
+    const newCheckedParents = {
+      ...checkedParents,
+      [parentId]: !checkedParents[parentId],
+    };
     setCheckedParents(newCheckedParents);
 
     const newCheckedChildren = { ...checkedChildren };
-    childCheck.forEach(child => {
-      if (parentCheck.find(p => p.id === parentId)?.name === child.family_name) {
+    childCheck.forEach((child) => {
+      if (
+        parentCheck.find((p) => p.id === parentId)?.name === child.family_name
+      ) {
         newCheckedChildren[child.id] = newCheckedParents[parentId];
       }
     });
@@ -484,27 +508,44 @@ export default function Homeinformation() {
   };
 
   const handleChildChangeMenu = (childId, parentName) => {
-    const newCheckedChildren = { ...checkedChildren, [childId]: !checkedChildren[childId] };
+    const newCheckedChildren = {
+      ...checkedChildren,
+      [childId]: !checkedChildren[childId],
+    };
     setCheckedChildren(newCheckedChildren);
 
-    const parentId = parentCheck.find(p => p.name === parentName)?.id;
+    const parentId = parentCheck.find((p) => p.name === parentName)?.id;
     const allChildrenUnchecked = childCheck
-      .filter(child => child.family_name === parentName)
-      .every(child => !newCheckedChildren[child.id]);
+      .filter((child) => child.family_name === parentName)
+      .every((child) => !newCheckedChildren[child.id]);
 
-    const newCheckedParents = { ...checkedParents, [parentId]: !allChildrenUnchecked };
+    const newCheckedParents = {
+      ...checkedParents,
+      [parentId]: !allChildrenUnchecked,
+    };
     setCheckedParents(newCheckedParents);
 
     filterItems(newCheckedParents, newCheckedChildren, searchTermMenu);
   };
 
   const filterItems = (parents, children, searchTerm) => {
-    const filteredItems = obj1.filter(item => {
-      const matchesParent = Object.values(parents).some(checked => checked) ? parents[item.family_id] : true;
-      const matchesChild = Object.values(children).some(checked => checked) ? children[item.sub_family_id] : true;
-      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const filteredItems = obj1.filter((item) => {
+      const matchesParent = Object.values(parents).some((checked) => checked)
+        ? parents[item.family_id]
+        : true;
+      const matchesChild = Object.values(children).some((checked) => checked)
+        ? children[item.sub_family_id]
+        : true;
+      const matchesSearch = item.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
-      return ((matchesParent && matchesChild) || (!Object.values(parents).some(checked => checked) && !Object.values(children).some(checked => checked))) && matchesSearch;
+      return (
+        ((matchesParent && matchesChild) ||
+          (!Object.values(parents).some((checked) => checked) &&
+            !Object.values(children).some((checked) => checked))) &&
+        matchesSearch
+      );
     });
 
     setFilteredItemsMenu(filteredItems);
@@ -516,7 +557,6 @@ export default function Homeinformation() {
     filterItems(checkedParents, checkedChildren, term);
   };
 
-
   // // ==== select items section ====
   const handleAddItem = (item) => {
     setSelectedItemsMenu((prevArray) => {
@@ -526,7 +566,7 @@ export default function Homeinformation() {
         // Item exists, so remove it
         const newArray = [...prevArray];
         newArray.splice(itemIndex, 1);
-        setSelectedItemsCount(prevCount => prevCount - 1);
+        setSelectedItemsCount((prevCount) => prevCount - 1);
         // console.log(`Removed item ${item.id}`);
         return newArray;
       } else {
@@ -535,7 +575,7 @@ export default function Homeinformation() {
           item_id: item.id,
           quantity: 1,
         };
-        setSelectedItemsCount(prevCount => prevCount + 1);
+        setSelectedItemsCount((prevCount) => prevCount + 1);
         // console.log(`Added item ${item.id}`);
         return [...prevArray, newItem];
       }
@@ -552,21 +592,21 @@ export default function Homeinformation() {
       const response = await axios.post(
         `${API_URL}/order/addItem`,
         {
-          "order_id": id,
-          "order_details": selectedItemsMenu,
-          "admin_id":admin_id
+          order_id: id,
+          order_details: selectedItemsMenu,
+          admin_id: admin_id,
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          maxBodyLength: Infinity
+          maxBodyLength: Infinity,
         }
       );
       setIsProcessing(false);
 
-      // console.log("API Response:", response);                    
+      // console.log("API Response:", response);
 
       if (!(response.success == "false")) {
         handleClose1Prod();
@@ -574,7 +614,6 @@ export default function Homeinformation() {
         getOrder();
         // setItemId([]);
         setSelectedItemsMenu([]);
-
       } else {
         console.error("Failed to add items to menu");
       }
@@ -588,11 +627,11 @@ export default function Homeinformation() {
 
   /*========= Add menu to Order =======*/
 
-
   // ===============note ========
   const toggleInput = (id, currentNote) => {
-    setVisibleInputId(prevId => prevId === id ? null : id);
-    if (visibleInputId !== id) { // Change prevId to visibleInputId
+    setVisibleInputId((prevId) => (prevId === id ? null : id));
+    if (visibleInputId !== id) {
+      // Change prevId to visibleInputId
       setNoteValues(currentNote); // Set the note value when toggling the input
     }
   };
@@ -612,7 +651,7 @@ export default function Homeinformation() {
 
   const handleNoteKeyDown = async (id) => {
     // console.log(id)
-    const noteValues = noteInputRef.current ? noteInputRef.current.value : '';
+    const noteValues = noteInputRef.current ? noteInputRef.current.value : "";
     try {
       const response = await axios.post(
         `${API_URL}/order/addNote/${id}`,
@@ -626,9 +665,9 @@ export default function Homeinformation() {
       // console.log("Note added successfully:", response.data);
 
       // setSavedNote(noteValues);
-      setNoteValues('');
+      setNoteValues("");
       setVisibleInputId(null);
-      noteInputRef.current.value = ''; // Clear the input after saving
+      noteInputRef.current.value = ""; // Clear the input after saving
     } catch (error) {
       console.error(
         "Error adding note:",
@@ -639,34 +678,32 @@ export default function Homeinformation() {
     handleOrderDetails();
   };
 
-
   const handleCredit = () => {
     // { console.log(orderData) }
-    if (orderData?.status == 'delivered' || orderData?.status == 'cancelled') {
-      navigate(`/home/client/crear/${id}`, { replace: true })
+    if (orderData?.status == "delivered" || orderData?.status == "cancelled") {
+      navigate(`/home/client/crear/${id}`, { replace: true });
     } else {
-      alert('No se puede generar una nota de crédito si el pedido actual no ha sido entregado.')
+      alert(
+        "No se puede generar una nota de crédito si el pedido actual no ha sido entregado."
+      );
     }
-  }
+  };
 
   // =============end note==========
 
+  document.addEventListener("DOMContentLoaded", function () {
+    const tabs = document.querySelectorAll("#pills-tab button");
 
-
-
-  document.addEventListener('DOMContentLoaded', function () {
-    const tabs = document.querySelectorAll('#pills-tab button');
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', function () {
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", function () {
         // Remove 'bg-primary', 'text-light', 'bg-light', 'text-dark' from all tabs
-        tabs.forEach(button => {
-          button.classList.remove('bg-primary', 'text-light');
-          button.classList.add('bg-light', 'text-dark');
+        tabs.forEach((button) => {
+          button.classList.remove("bg-primary", "text-light");
+          button.classList.add("bg-light", "text-dark");
         });
         // Add 'bg-primary' and 'text-light' to the clicked tab
-        tab.classList.remove('bg-light', 'text-dark');
-        tab.classList.add('bg-primary', 'text-light');
+        tab.classList.remove("bg-light", "text-dark");
+        tab.classList.add("bg-primary", "text-light");
       });
     });
   });
@@ -687,26 +724,24 @@ export default function Homeinformation() {
 
   const translateOrderType = (orderType) => {
     const translations = {
-      'local': 'Local',
-      'withdraw': 'Retirar',
-      'delivery': 'Entrega',
-      'uber': 'Uber',
+      local: "Local",
+      withdraw: "Retirar",
+      delivery: "Entrega",
+      uber: "Uber",
       // Add more translations as needed
     };
     return translations[orderType?.toLowerCase()] || orderType; // Fallback to original if not found
   };
 
-
   const handlePayment = () => {
-
     // console.log(orderDetails, orderData?);
 
     const currentOrder = {
       orderType: orderData?.order_type,
       orderId: orderData?.id,
       name: orderData?.customer_name,
-      order: "old"
-    }
+      order: "old",
+    };
     let cartItems = [];
     orderDetails?.map((v) => {
       const obj = {
@@ -719,40 +754,40 @@ export default function Homeinformation() {
         count: v.quantity,
         note: v.notes ? v.notes : "",
         isEditing: false,
-        OdId: v.id
-      }
-      cartItems.push(obj)
-    })
+        OdId: v.id,
+      };
+      cartItems.push(obj);
+    });
     localStorage.setItem("tableId", JSON.stringify(orderData?.table_id));
     localStorage.setItem("currentOrder", JSON.stringify(currentOrder));
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
     navigate("/home/usa/bhomedelivery/datos");
-  }
+  };
   useEffect(() => {
-    if (id)
-      fetchCredit();
+    if (id) fetchCredit();
   }, [id]);
 
   const [creditNote, setCreditNote] = useState(false);
-
   const fetchCredit = async () => {
     setIsProcessing(true);
     try {
-      const response = await axios.post(`${API_URL}/order/getCredit`, { admin_id: admin_id }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        `${API_URL}/order/getCredit`,
+        { admin_id: admin_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       // console.log(response.data.data);
-
 
       const credit = response.data.data?.some((v) => v.order_id == id);
 
       setCreditNote(credit);
       // console.log(credit);
-
     } catch (error) {
       console.error(
         "Error fetching allOrder:",
@@ -760,7 +795,7 @@ export default function Homeinformation() {
       );
     }
     setIsProcessing(false);
-  }
+  };
 
   return (
     <div>
@@ -770,47 +805,123 @@ export default function Homeinformation() {
           <Sidenav />
           <div className=" flex-grow-1 sidebar overflow-hidden">
             <div className="p-3 m_bgblack text-white  ">
-              <div className='d-flex text-decoration-none' >
-                <Link to="/home/usa" className='btn bj-btn-outline-primary text-nowrap py-2 d-flex mt-2 ms-3' style={{ borderRadius: "10px" }}> <FaArrowLeft className='me-2 mt-1' />Regresar</Link>
+              <div className="d-flex text-decoration-none">
+                <Link
+                  to="/home/usa"
+                  className="btn bj-btn-outline-primary text-nowrap py-2 d-flex mt-2 ms-3"
+                  style={{ borderRadius: "10px" }}
+                >
+                  {" "}
+                  <FaArrowLeft className="me-2 mt-1" />
+                  Regresar
+                </Link>
               </div>
-              <div className='d-flex justify-content-between align-items-center flex-wrap'>
-                <div className='text-white ms-3 my-4 bj-delivery-text-1' >
+              <div className="d-flex justify-content-between align-items-center flex-wrap">
+                <div className="text-white ms-3 my-4 bj-delivery-text-1">
                   Pedido :- {id}
                 </div>
 
-                <div className='d-flex flex-wrap me-4'>
-                  {showCancelOrderButton ? (
-                    !(orderData?.status == 'delivered' || orderData?.status == 'finalized' || orderData?.status == "cancelled") &&
-                    <div onClick={handleShow} className='btn btn-danger me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center' style={{ backgroundColor: "#F05252", borderRadius: '10px' }}> <IoMdCloseCircle className='me-2' />Anular pedido</div>
-                  ) : (
-                    !(orderData?.status == "cancelled" || pamentDone) && <>
-                      <Link className='text-decoration-none' to={`/home/usa/information/payment_edit/${id}`}>
-                        <div className='btn btn-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center' style={{ backgroundColor: "#147BDE", borderRadius: '10px' }}> <MdEditSquare className='me-2' />Editar Pedido</div>
-                      </Link>
-                      <div className='btn bj-btn-outline-primary b_mar_lef ms-2 py-2 text-nowrap d-flex align-item-center justify-content-center ' style={{ borderRadius: "10px" }} onClick={handleShow1Prod}> <FiPlus className='me-2 mt-1 ' />Agregar Producto</div>
-                    </>
-                  )}
+                <div className="d-flex flex-wrap me-4">
+                  {showCancelOrderButton
+                    ? !(
+                        orderData?.status == "delivered" ||
+                        orderData?.status == "finalized" ||
+                        orderData?.status == "cancelled"
+                      ) && (
+                        <div
+                          onClick={handleShow}
+                          className="btn btn-danger me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center"
+                          style={{
+                            backgroundColor: "#F05252",
+                            borderRadius: "10px",
+                          }}
+                        >
+                          {" "}
+                          <IoMdCloseCircle className="me-2" />
+                          Anular pedido
+                        </div>
+                      )
+                    : !(orderData?.status == "cancelled" || pamentDone) && (
+                        <>
+                          <Link
+                            className="text-decoration-none"
+                            to={`/home/usa/information/payment_edit/${id}`}
+                          >
+                            <div
+                              className="btn btn-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center"
+                              style={{
+                                backgroundColor: "#147BDE",
+                                borderRadius: "10px",
+                              }}
+                            >
+                              {" "}
+                              <MdEditSquare className="me-2" />
+                              Editar Pedido
+                            </div>
+                          </Link>
+                          <div
+                            className="btn bj-btn-outline-primary b_mar_lef ms-2 py-2 text-nowrap d-flex align-item-center justify-content-center "
+                            style={{ borderRadius: "10px" }}
+                            onClick={handleShow1Prod}
+                          >
+                            {" "}
+                            <FiPlus className="me-2 mt-1 " />
+                            Agregar Producto
+                          </div>
+                        </>
+                      )}
                   {/* <div className='btn btn-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center' style={{ backgroundColor: "#147BDE", borderRadius: '10px' }}> <MdEditSquare className='me-2' />Editar Pedido</div> */}
 
-                  {showCancelOrderButton &&
-                    !creditNote &&
-                    (<div onClick={handleCredit} className='btn bj-btn-outline-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center' style={{ borderRadius: '10px' }}> <BsCalculatorFill className='me-2' />Generar nota de crédito</div>)
-                  }
+                  {showCancelOrderButton && !creditNote && (
+                    <div
+                      onClick={handleCredit}
+                      className="btn bj-btn-outline-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center"
+                      style={{ borderRadius: "10px" }}
+                    >
+                      {" "}
+                      <BsCalculatorFill className="me-2" />
+                      Generar nota de crédito
+                    </div>
+                  )}
                 </div>
-
               </div>
               {showDeliveryButton && (
-                <div className='b_borderrr pb-4'>
+                <div className="b_borderrr pb-4">
                   {/* <div style={{ fontWeight: "600", borderRadius: "10px" }} className={`btn a_btn_lightjamun my-3  bj-delivery-text-2 py-2 ms-3  ${orderData?.order_type.toLowerCase() === 'local' ? 'b_indigo' : orderData?.order_type.toLowerCase() === 'order now' ? 'b_ora ' : orderData?.order_type.toLowerCase() === 'delivery' ? 'b_blue' : orderData?.order_type.toLowerCase() === 'uber' ? 'b_ora text-danger' : orderData?.order_type.toLowerCase().includes("with") ? 'b_purple' : 'b_ora text-danger'}`}>
                     {orderData?.order_type.toLowerCase() === 'local' ? 'Local' : orderData?.order_type.toLowerCase().includes("with") ? 'Retiro ' : orderData?.order_type.toLowerCase() === 'delivery' ? 'Entrega' : orderData?.order_type.toLowerCase() === 'uber' ? 'Uber' : orderData?.order_type}</div> */}
 
-
-                  <div style={{ fontWeight: "600", borderRadius: "10px" }} className={`bj-delivery-text-2  b_btn1 mb-3 ms-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                        ${orderData?.order_type?.toLowerCase() === 'local' ? 'b_indigo' : orderData?.order_type?.toLowerCase() === 'order now' ? 'b_ora ' : orderData?.order_type?.toLowerCase() === 'delivery' ? 'b_blue' : orderData?.order_type?.toLowerCase() === 'uber' ? 'b_ora text-danger' : orderData?.order_type?.toLowerCase().includes("with") ? 'b_purple' : 'b_ora text-danger'}`}>
-                    {orderData?.order_type?.toLowerCase() === 'local' ? 'Local' : orderData?.order_type?.toLowerCase().includes("with") ? 'Retiro ' : orderData?.order_type?.toLowerCase() === 'delivery' ? 'Entrega' : orderData?.order_type?.toLowerCase() === 'uber' ? 'Uber' : orderData?.order_type}
+                  <div
+                    style={{ fontWeight: "600", borderRadius: "10px" }}
+                    className={`bj-delivery-text-2  b_btn1 mb-3 ms-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
+                        ${
+                          orderData?.order_type?.toLowerCase() === "local"
+                            ? "b_indigo"
+                            : orderData?.order_type?.toLowerCase() ===
+                              "order now"
+                            ? "b_ora "
+                            : orderData?.order_type?.toLowerCase() ===
+                              "delivery"
+                            ? "b_blue"
+                            : orderData?.order_type?.toLowerCase() === "uber"
+                            ? "b_ora text-danger"
+                            : orderData?.order_type
+                                ?.toLowerCase()
+                                .includes("with")
+                            ? "b_purple"
+                            : "b_ora text-danger"
+                        }`}
+                  >
+                    {orderData?.order_type?.toLowerCase() === "local"
+                      ? "Local"
+                      : orderData?.order_type?.toLowerCase().includes("with")
+                      ? "Retiro "
+                      : orderData?.order_type?.toLowerCase() === "delivery"
+                      ? "Entrega"
+                      : orderData?.order_type?.toLowerCase() === "uber"
+                      ? "Uber"
+                      : orderData?.order_type}
                   </div>
                 </div>
-
               )}
             </div>
 
@@ -820,12 +931,16 @@ export default function Homeinformation() {
               show={show}
               onHide={handleClose}
               backdrop={true}
-
               keyboard={false}
               className="m_modal"
             >
-              <Modal.Header closeButton className="m_borbot b_border_bb mx-3 ps-0">
-                <Modal.Title className="j-tbl-text-10">Anular pedido</Modal.Title>
+              <Modal.Header
+                closeButton
+                className="m_borbot b_border_bb mx-3 ps-0"
+              >
+                <Modal.Title className="j-tbl-text-10">
+                  Anular pedido
+                </Modal.Title>
               </Modal.Header>
               <Modal.Body className="border-0 pb-0 ">
                 <div className="mb-3">
@@ -858,7 +973,11 @@ export default function Homeinformation() {
                     onKeyUp={handlereasons}
                     required
                   />
-                  {errorReason && <div className="text-danger errormessage">{errorReason}</div>}
+                  {errorReason && (
+                    <div className="text-danger errormessage">
+                      {errorReason}
+                    </div>
+                  )}
                 </div>
               </Modal.Body>
               <Modal.Footer className="border-0 pt-0">
@@ -889,17 +1008,13 @@ export default function Homeinformation() {
               show={show12}
               onHide={handleClose12}
               backdrop={true}
-
               keyboard={false}
               className="m_modal"
             >
               <Modal.Header closeButton className="border-0" />
               <Modal.Body>
                 <div className="text-center">
-                  <img
-                    src={require("../Image/check-circle.png")}
-                    alt=""
-                  />
+                  <img src={require("../Image/check-circle.png")} alt="" />
                   <p className="mb-0 mt-2 h6">Pedido anulado</p>
                   <p className="opacity-75">
                     Su pedido ha sido anulado exitosamente
@@ -913,16 +1028,23 @@ export default function Homeinformation() {
               onSelect={handleTabSelect}
               id="fill-tab-example"
               className="mb-3 m_tabs m_bgblack px-2 border-0 p-3 pb-4"
-              fill>
+              fill
+            >
               <Tab
                 eventKey="home"
                 title="Pedidos"
-                className="m_in text-white m-3 aaaaa rounded">
-                <div className='row' >
-                  <div className='col-xl-7 ps-0 col-12 overflow-hidden '>
-                    <div className='p-4 m_bgblack text-white mb-3'>
-                      <p className='bj-delivery-text-65' style={{ marginBottom: "36px" }}>Listado</p>
-                      <div className='a_deli_infolist p-4'>
+                className="m_in text-white m-3 aaaaa rounded"
+              >
+                <div className="row">
+                  <div className="col-xl-7 ps-0 col-12 overflow-hidden ">
+                    <div className="p-4 m_bgblack text-white mb-3">
+                      <p
+                        className="bj-delivery-text-65"
+                        style={{ marginBottom: "36px" }}
+                      >
+                        Listado
+                      </p>
+                      <div className="a_deli_infolist p-4">
                         {/* {console.log(orderDetails)} */}
                         {
                           // product.map((item) => {
@@ -930,44 +1052,85 @@ export default function Homeinformation() {
                           orderDetails?.map((v, index) => {
                             return (
                               <div>
-                                <div className=' py-3 '>
-                                  <div className='row'>
-                                    <div className=' col-sm-8 '>
-                                      <div className='d-flex '>
-                                        <img src={`${API}/images/${v.image}`} alt='pic' className='ms-4' height={70} width={80} />
-                                        <div className='ms-4 '>
-                                          <div className='text-nowrap j-caja-text-2'>{v.name}</div>
-                                          <div className='mt-3 a_mar_new '>{v.description}</div>
+                                <div className=" py-3 ">
+                                  <div className="row">
+                                    <div className=" col-sm-8 ">
+                                      <div className="d-flex ">
+                                        <img
+                                          src={`${API}/images/${v.image}`}
+                                          alt="pic"
+                                          className="ms-4"
+                                          height={70}
+                                          width={80}
+                                        />
+                                        <div className="ms-4 ">
+                                          <div className="text-nowrap j-caja-text-2">
+                                            {v.name}
+                                          </div>
+                                          <div className="mt-3 a_mar_new ">
+                                            {v.description}
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                    <div className='col-sm-2 a_text_price '>
-                                      <div className='pe-3 '>{v.quantity}</div>
+                                    <div className="col-sm-2 a_text_price ">
+                                      <div className="pe-3 ">{v.quantity}</div>
                                     </div>
-                                    <div className='col-sm-2 a_text_price'>
-                                      <div className='pe-5 fw-bold '>${v.amount}</div>
+                                    <div className="col-sm-2 a_text_price">
+                                      <div className="pe-5 fw-bold ">
+                                        ${v.amount}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
 
-                                <div className='' style={{ marginBottom: "68px", cursor: "pointer" }}>
-                                  <a href='#' className='a_home_addnote ms-4 bj-delivery-text-3 text-decoration-none'>
+                                <div
+                                  className=""
+                                  style={{
+                                    marginBottom: "68px",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  <a
+                                    href="#"
+                                    className="a_home_addnote ms-4 bj-delivery-text-3 text-decoration-none"
+                                  >
                                     {v.notes === null ? (
                                       <div key={v.id}>
                                         {visibleInputId !== v.id ? (
-                                          <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => toggleInput(v.id, '')}>
-                                            <span className='j-nota-blue ms-4 text-decoration-underline'>+ Nota</span>
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                            }}
+                                            onClick={() =>
+                                              toggleInput(v.id, "")
+                                            }
+                                          >
+                                            <span className="j-nota-blue ms-4 text-decoration-underline">
+                                              + Nota
+                                            </span>
                                           </div>
                                         ) : (
-                                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <span className='j-nota-blue ms-4 text-decoration-none'>Nota:</span>
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                            }}
+                                          >
+                                            <span className="j-nota-blue ms-4 text-decoration-none">
+                                              Nota:
+                                            </span>
                                             <input
                                               type="text"
-                                              className='j-note-input'
+                                              className="j-note-input"
                                               ref={noteInputRef} // Attach the ref to the input
-                                              onBlur={() => handleNoteKeyDown(v.id)}
+                                              onBlur={() =>
+                                                handleNoteKeyDown(v.id)
+                                              }
                                               onKeyDown={(e) => {
-                                                if (e.key === "Enter") handleNoteKeyDown(v.id);
+                                                if (e.key === "Enter")
+                                                  handleNoteKeyDown(v.id);
                                               }}
                                               autoFocus
                                             />
@@ -977,19 +1140,39 @@ export default function Homeinformation() {
                                     ) : (
                                       <div key={v.id}>
                                         {visibleInputId !== v.id ? (
-                                          <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => toggleInput(v.id, v.notes)}>
-                                            <span className='j-nota-blue ms-4 text-decoration-none'>Nota: {v.notes}</span>
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                            }}
+                                            onClick={() =>
+                                              toggleInput(v.id, v.notes)
+                                            }
+                                          >
+                                            <span className="j-nota-blue ms-4 text-decoration-none">
+                                              Nota: {v.notes}
+                                            </span>
                                           </div>
                                         ) : (
-                                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <span className='j-nota-blue ms-4 text-decoration-none'>Nota:</span>
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                            }}
+                                          >
+                                            <span className="j-nota-blue ms-4 text-decoration-none">
+                                              Nota:
+                                            </span>
                                             <input
                                               type="text"
-                                              className='j-note-input'
+                                              className="j-note-input"
                                               ref={noteInputRef} // Attach the ref to the input
-                                              onBlur={() => handleNoteKeyDown(v.id)}
+                                              onBlur={() =>
+                                                handleNoteKeyDown(v.id)
+                                              }
                                               onKeyDown={(e) => {
-                                                if (e.key === "Enter") handleNoteKeyDown(v.id);
+                                                if (e.key === "Enter")
+                                                  handleNoteKeyDown(v.id);
                                               }}
                                               autoFocus
                                             />
@@ -1000,131 +1183,326 @@ export default function Homeinformation() {
                                   </a>
                                 </div>
                               </div>
-                            )
+                            );
                           })
                         }
                       </div>
                     </div>
                   </div>
-                  <div className='col-xl-5 col-12 overflow-hidden px-0 '>
-                    <div className='p-3 m_bgblack text-white '>
-                      <h5 className='mt-3 ms-2 bj-delivery-text-15'>Resumen</h5>
-                      <div className='deli_infolist p-2'>
-                        <div className='d-flex justify-content-end align-items-center ' >
-                          <div className='d-flex justify-content-end align-items-center me-3 '>
-                            <div className='me-2 fs-4'><FaCalendarAlt className='bj-icon-size-change' /></div>
-                            <div className='pt-1 bj-delivery-text-3'>{new Date(orderData?.created_at).toLocaleDateString('en-GB')}</div>
+                  <div className="col-xl-5 col-12 overflow-hidden px-0 ">
+                    <div className="p-3 m_bgblack text-white ">
+                      <h5 className="mt-3 ms-2 bj-delivery-text-15">Resumen</h5>
+                      <div className="deli_infolist p-2">
+                        <div className="d-flex justify-content-end align-items-center ">
+                          <div className="d-flex justify-content-end align-items-center me-3 ">
+                            <div className="me-2 fs-4">
+                              <FaCalendarAlt className="bj-icon-size-change" />
+                            </div>
+                            <div className="pt-1 bj-delivery-text-3">
+                              {new Date(
+                                orderData?.created_at
+                              ).toLocaleDateString("en-GB")}
+                            </div>
                           </div>
-                          <div className='d-flex justify-content-end align-items-center '>
-                            <div className='me-2 fs-4 '><MdOutlineAccessTimeFilled /></div>
-                            <div className='pt-1 a_time bj-delivery-text-3'>{new Date(orderData?.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                          <div className="d-flex justify-content-end align-items-center ">
+                            <div className="me-2 fs-4 ">
+                              <MdOutlineAccessTimeFilled />
+                            </div>
+                            <div className="pt-1 a_time bj-delivery-text-3">
+                              {new Date(
+                                orderData?.created_at
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </div>
                           </div>
                         </div>
-                        <div className='bj-delivery-text-15'>
-                          Datos
-                        </div>
-                        <div className={`bj-delivery-text-2  b_btn1 mb-3 p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                                            ${pamentDone && orderData?.status.toLowerCase() === 'delivered' ? 'b_blue ' : orderData?.status?.toLowerCase() === 'received' ? 'b_indigo' : orderData?.status?.toLowerCase() === 'prepared' ? 'b_ora ' : orderData?.status?.toLowerCase() === 'delivered' ? 'b_blue' : orderData?.status?.toLowerCase() === 'finalized' ? 'b_green' : orderData?.status?.toLowerCase() === 'withdraw' ? 'b_indigo' : orderData?.status?.toLowerCase() === 'local' ? 'b_purple' : 'b_ora text-danger'}`}>
-                          {pamentDone && orderData?.status.toLowerCase() === 'delivered' ? 'Pagado ' : orderData?.status?.toLowerCase() === 'received' ? 'Recibido' : orderData?.status?.toLowerCase() === 'prepared' ? 'Preparado ' : orderData?.status?.toLowerCase() === 'delivered' ? 'Entregado' : orderData?.status?.toLowerCase() === 'finalized' ? 'Finalizado' : orderData?.status?.toLowerCase() === 'withdraw' ? 'Retirar' : orderData?.status?.toLowerCase() === 'local' ? 'Local' : orderData?.status?.toLowerCase() === 'cancelled' ? 'Cancelar' : ' '}
+                        <div className="bj-delivery-text-15">Datos</div>
+                        <div
+                          className={`bj-delivery-text-2  b_btn1 mb-3 p-0 text-nowrap d-flex  align-items-center justify-content-center 
+                                            ${
+                                              pamentDone &&
+                                              orderData?.status.toLowerCase() ===
+                                                "delivered"
+                                                ? "b_blue "
+                                                : orderData?.status?.toLowerCase() ===
+                                                  "received"
+                                                ? "b_indigo"
+                                                : orderData?.status?.toLowerCase() ===
+                                                  "prepared"
+                                                ? "b_ora "
+                                                : orderData?.status?.toLowerCase() ===
+                                                  "delivered"
+                                                ? "b_blue"
+                                                : orderData?.status?.toLowerCase() ===
+                                                  "finalized"
+                                                ? "b_green"
+                                                : orderData?.status?.toLowerCase() ===
+                                                  "withdraw"
+                                                ? "b_indigo"
+                                                : orderData?.status?.toLowerCase() ===
+                                                  "local"
+                                                ? "b_purple"
+                                                : "b_ora text-danger"
+                                            }`}
+                        >
+                          {pamentDone &&
+                          orderData?.status.toLowerCase() === "delivered"
+                            ? "Pagado "
+                            : orderData?.status?.toLowerCase() === "received"
+                            ? "Recibido"
+                            : orderData?.status?.toLowerCase() === "prepared"
+                            ? "Preparado "
+                            : orderData?.status?.toLowerCase() === "delivered"
+                            ? "Entregado"
+                            : orderData?.status?.toLowerCase() === "finalized"
+                            ? "Finalizado"
+                            : orderData?.status?.toLowerCase() === "withdraw"
+                            ? "Retirar"
+                            : orderData?.status?.toLowerCase() === "local"
+                            ? "Local"
+                            : orderData?.status?.toLowerCase() === "cancelled"
+                            ? "Cancelar"
+                            : " "}
                         </div>
                         {/* <div style={{ fontWeight: "600", borderRadius: "10px" }} className={`bj-delivery-text-2  b_btn1 mb-3   p-0 text-nowrap d-flex  align-items-center justify-content-center 
                         ${orderData?.order_type.toLowerCase() === 'local' ? 'b_indigo' : orderData?.order_type.toLowerCase() === 'order now' ? 'b_ora ' : orderData?.order_type.toLowerCase() === 'delivery' ? 'b_blue' : orderData?.order_type.toLowerCase() === 'uber' ? 'b_ora text-danger' : orderData?.order_type.toLowerCase().includes("with") ? 'b_purple' : 'b_ora text-danger'}`}>
                           {orderData?.order_type.toLowerCase() === 'local' ? 'Local' : orderData?.order_type.toLowerCase().includes("with") ? 'Retiro ' : orderData?.order_type.toLowerCase() === 'delivery' ? 'Entrega' : orderData?.order_type.toLowerCase() === 'uber' ? 'Uber' : orderData?.order_type}
                         </div> */}
-                        <div className='d-flex justify-content-end align-items-center mb-4 mt-3'>
-                          <div className='w-50'>
-                            <div className='mb-3 bj-delivery-text-3'>Codigo pedido</div>
-                            <div className='w-75 a_bg_order  border-0' style={{ borderRadius: "10px" }}><span className=''>{id}</span></div>
+                        <div className="d-flex justify-content-end align-items-center mb-4 mt-3">
+                          <div className="w-50">
+                            <div className="mb-3 bj-delivery-text-3">
+                              Codigo pedido
+                            </div>
+                            <div
+                              className="w-75 a_bg_order  border-0"
+                              style={{ borderRadius: "10px" }}
+                            >
+                              <span className="">{id}</span>
+                            </div>
                           </div>
-                          <div className='w-50'>
-                            <div className='mb-3 bj-delivery-text-3'>Cantidad</div>
-                            <div className='w-75 a_bg_order  border-0 ' style={{ borderRadius: "10px" }}><span className=''>{orderDetails?.length}</span></div>
+                          <div className="w-50">
+                            <div className="mb-3 bj-delivery-text-3">
+                              Cantidad
+                            </div>
+                            <div
+                              className="w-75 a_bg_order  border-0 "
+                              style={{ borderRadius: "10px" }}
+                            >
+                              <span className="">{orderDetails?.length}</span>
+                            </div>
                           </div>
                         </div>
-                        <div className='p-4 a_deli_infolist  mt-3'>
-                          <div className=' a_mar_summary bj-delivery-text-650'>Costo total</div>
-                          <div className='d-flex justify-content-between align-items-center my-1 mb-2'>
-                            <div className='bj-delivery-text-150'>Productos</div>
-                            {/* {console.log("orderDetails", orderDetails)} */}
-                            <div className='bj-delivery-text-151'>${orderDetails?.reduce((acc, v) => v.amount * v.quantity + acc, 0)}</div>
+                        <div className="p-4 a_deli_infolist  mt-3">
+                          <div className=" a_mar_summary bj-delivery-text-650">
+                            Costo total
                           </div>
-                          <div className='d-flex justify-content-between align-items-center my-1'>
-                            <div className='bj-delivery-text-150'>Descuentos</div>
-                            <div className='bj-delivery-text-151'>${parseInt(orderData?.discount)}</div>
+                          <div className="d-flex justify-content-between align-items-center my-1 mb-2">
+                            <div className="bj-delivery-text-150">
+                              Productos
+                            </div>
+                            {/* {console.log("orderDetails", orderDetails)} */}
+                            <div className="bj-delivery-text-151">
+                              $
+                              {orderDetails?.reduce(
+                                (acc, v) => v.amount * v.quantity + acc,
+                                0
+                              )}
+                            </div>
+                          </div>
+                          <div className="d-flex justify-content-between align-items-center my-1">
+                            <div className="bj-delivery-text-150">
+                              Descuentos
+                            </div>
+                            <div className="bj-delivery-text-151">
+                              ${parseInt(orderData?.discount)}
+                            </div>
                           </div>
                           <hr></hr>
                           <div>
-                            <div className='d-flex justify-content-between align-items-center my-1'>
-                              <div className='bj-delivery-text-153'>Total</div>
-                              <div className='bj-delivery-text-153'>${orderDetails?.reduce((acc, v) => v.amount * v.quantity + acc, 0) - parseInt(orderData?.discount)}</div>
+                            <div className="d-flex justify-content-between align-items-center my-1">
+                              <div className="bj-delivery-text-153">Total</div>
+                              <div className="bj-delivery-text-153">
+                                $
+                                {orderDetails?.reduce(
+                                  (acc, v) => v.amount * v.quantity + acc,
+                                  0
+                                ) - parseInt(orderData?.discount)}
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div className='mx-auto text-center mt-3'>
-                          {!(orderData?.status == "cancelled") &&
-                            < div className='d-flex text-decoration-none'>
+                        <div className="mx-auto text-center mt-3">
+                          {!(orderData?.status == "cancelled") && (
+                            <div className="d-flex text-decoration-none">
                               {/* {console.log("payment", pamentDone)} */}
-                              {!pamentDone || (orderData?.status.toLowerCase() !== 'finalized' && orderData?.status.toLowerCase() !== 'delivered') ?
-                                <button className='btn btn-primary w-100 my-4 bj-delivery-text-3' style={{ backgroundColor: "#147BDE", borderRadius: "8px", padding: "10px 20px" }} onClick={handlePayment} disabled={pamentDone}>{pamentDone ? 'Pagado' : 'Cobrar ahora'}</button> :
+                              {!pamentDone ||
+                              (orderData?.status.toLowerCase() !==
+                                "finalized" &&
+                                orderData?.status.toLowerCase() !==
+                                  "delivered") ? (
+                                <button
+                                  className="btn btn-primary w-100 my-4 bj-delivery-text-3"
+                                  style={{
+                                    backgroundColor: "#147BDE",
+                                    borderRadius: "8px",
+                                    padding: "10px 20px",
+                                  }}
+                                  onClick={handlePayment}
+                                  disabled={pamentDone}
+                                >
+                                  {pamentDone ? "Pagado" : "Cobrar ahora"}
+                                </button>
+                              ) : (
                                 ""
-                              }
+                              )}
                             </div>
-                          }
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-
               </Tab>
 
-              <Tab eventKey="profile" title="Información del cliente" className='b_border ' style={{ marginTop: "2px" }}>
-                <div className='b-bg-color1'>
-                  <div className='text-white ms-4 pt-4' >
-                    <h5 >Información del pedido</h5>
+              <Tab
+                eventKey="profile"
+                title="Información del cliente"
+                className="b_border "
+                style={{ marginTop: "2px" }}
+              >
+                <div className="b-bg-color1">
+                  <div className="text-white ms-4 pt-4">
+                    <h5>Información del pedido</h5>
                   </div>
-                  {orderData?.reason &&
-                    <div className='text-white ms-4 pt-4' >
-                      <h5 className='bj-delivery-text-15'>Nota anulación</h5>
-                      <textarea type="text" className="form-control bg-gray border-0 mt-4 py-2" id="inputPassword2" placeholder={orderData?.reason != null ? orderData?.reason : "Estaba sin sal"} style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled></textarea>
+                  {orderData?.reason && (
+                    <div className="text-white ms-4 pt-4">
+                      <h5 className="bj-delivery-text-15">Nota anulación</h5>
+                      <textarea
+                        type="text"
+                        className="form-control bg-gray border-0 mt-4 py-2"
+                        id="inputPassword2"
+                        placeholder={
+                          orderData?.reason != null
+                            ? orderData?.reason
+                            : "Estaba sin sal"
+                        }
+                        style={{
+                          backgroundColor: "#242d38",
+                          borderRadius: "10px",
+                        }}
+                        disabled
+                      ></textarea>
                     </div>
-                  }
+                  )}
 
-                  <div className='d-flex  flex-grow-1 gap-5 mx-4 m b_inputt b_id_input b_home_field  pt-3 '>
-                    <div className='w-100 b_search flex-grow-1  text-white'>
-                      <label htmlFor="inputPassword2" className="mb-2 bj-delivery-text-3">Cliente</label>
-                      <input type="text" className="form-control bg-gray border-0 mt-2 py-3" value={orderData?.customer_name} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled />
+                  <div className="d-flex  flex-grow-1 gap-5 mx-4 m b_inputt b_id_input b_home_field  pt-3 ">
+                    <div className="w-100 b_search flex-grow-1  text-white">
+                      <label
+                        htmlFor="inputPassword2"
+                        className="mb-2 bj-delivery-text-3"
+                      >
+                        Cliente
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control bg-gray border-0 mt-2 py-3"
+                        value={orderData?.customer_name}
+                        id="inputPassword2"
+                        placeholder="-"
+                        style={{
+                          backgroundColor: "#242d38",
+                          borderRadius: "10px",
+                        }}
+                        disabled
+                      />
                     </div>
-                    <div className='w-100 flex-grow-1 b_search text-white'>
-                      <label htmlFor="inputPassword2" className="mb-2 bj-delivery-text-3">Plataforma</label>
-                      <input type="text" className="form-control bg-gray border-0 mt-2 py-3 " value={translateOrderType(orderData?.order_type)} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled />
+                    <div className="w-100 flex-grow-1 b_search text-white">
+                      <label
+                        htmlFor="inputPassword2"
+                        className="mb-2 bj-delivery-text-3"
+                      >
+                        Plataforma
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control bg-gray border-0 mt-2 py-3 "
+                        value={translateOrderType(orderData?.order_type)}
+                        id="inputPassword2"
+                        placeholder="-"
+                        style={{
+                          backgroundColor: "#242d38",
+                          borderRadius: "10px",
+                        }}
+                        disabled
+                      />
                       {/* <input type="text" className="form-control bg-gray border-0 mt-2 py-3 " value={orderData?.order_type} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} disabled/> */}
                     </div>
                   </div>
 
-                  <div className='b_table1 mx-4 mt-2 w-100' >
-                    <div className='text-white mt-4'>
+                  <div className="b_table1 mx-4 mt-2 w-100">
+                    <div className="text-white mt-4">
                       <h5 style={{ fontSize: "16px" }}>Historia del Estado</h5>
                     </div>
-                    <table className='b_table '>
+                    <table className="b_table ">
                       <thead>
-                        <tr className='b_thcolor'>
+                        <tr className="b_thcolor">
                           <th>Fecha</th>
                           <th>hora </th>
                           <th>usuarios</th>
                           <th>estado</th>
-
                         </tr>
                       </thead>
-                      <tbody className='text-white b_btnn '>
+                      <tbody className="text-white b_btnn ">
                         {orderStatus.logs?.map((order) => (
-                          <tr key={id} className='b_row'>
-                            <td className='mb-4 j-caja-text-2 '>{new Date(order?.created_at).toLocaleDateString('en-GB')}</td>
-                            <td className='text-nowrap j-caja-text-2 '>{new Date(order?.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                            <td className='j-caja-text-2 '>{userRole}</td>
-                            <td className={` mt-3 bj-delivery-text-2 mb-3 b_text_w b_btn1 d-flex align-items-center justify-content-center mt-0 
-                              ${order.status.toLowerCase() === 'received' ? 'b_indigo' : order.status.toLowerCase() === 'prepared' ? 'b_ora ' : order.status.toLowerCase() === 'delivered' ? 'b_blue' : order.status.toLowerCase() === 'finalized' ? 'b_green' : order.status.toLowerCase() === 'withdraw' ? 'b_indigo' : order.status.toLowerCase() === 'local' ? 'b_purple' : 'b_ora text-danger'}`}>
-                              {order.status.toLowerCase() === 'received' ? 'Recibido' : order.status.toLowerCase() === 'prepared' ? 'Preparado ' : order.status.toLowerCase() === 'delivered' ? 'Entregado' : order.status.toLowerCase() === 'finalized' ? 'Finalizado' : order.status.toLowerCase() === 'withdraw' ? 'Retirar' : order.status.toLowerCase() === 'local' ? 'Local' : order.status.toLowerCase() === 'cancelled' ? 'Cancelar' : ' '}</td>
+                          <tr key={id} className="b_row">
+                            <td className="mb-4 j-caja-text-2 ">
+                              {new Date(order?.created_at).toLocaleDateString(
+                                "en-GB"
+                              )}
+                            </td>
+                            <td className="text-nowrap j-caja-text-2 ">
+                              {new Date(order?.created_at).toLocaleTimeString(
+                                [],
+                                { hour: "2-digit", minute: "2-digit" }
+                              )}
+                            </td>
+                            <td className="j-caja-text-2 ">{userRole}</td>
+                            <td
+                              className={` mt-3 bj-delivery-text-2 mb-3 b_text_w b_btn1 d-flex align-items-center justify-content-center mt-0 
+                              ${
+                                order.status.toLowerCase() === "received"
+                                  ? "b_indigo"
+                                  : order.status.toLowerCase() === "prepared"
+                                  ? "b_ora "
+                                  : order.status.toLowerCase() === "delivered"
+                                  ? "b_blue"
+                                  : order.status.toLowerCase() === "finalized"
+                                  ? "b_green"
+                                  : order.status.toLowerCase() === "withdraw"
+                                  ? "b_indigo"
+                                  : order.status.toLowerCase() === "local"
+                                  ? "b_purple"
+                                  : "b_ora text-danger"
+                              }`}
+                            >
+                              {order.status.toLowerCase() === "received"
+                                ? "Recibido"
+                                : order.status.toLowerCase() === "prepared"
+                                ? "Preparado "
+                                : order.status.toLowerCase() === "delivered"
+                                ? "Entregado"
+                                : order.status.toLowerCase() === "finalized"
+                                ? "Finalizado"
+                                : order.status.toLowerCase() === "withdraw"
+                                ? "Retirar"
+                                : order.status.toLowerCase() === "local"
+                                ? "Local"
+                                : order.status.toLowerCase() === "cancelled"
+                                ? "Cancelar"
+                                : " "}
+                            </td>
                             {/* <td className='b_text_w'>
                               <button className='b_edit' onClick={() => handleEditClick(id)}><MdEditSquare /></button>
                               <button className='b_edit b_delete' onClick={() => handleDeleteClick(id)}><RiDeleteBin5Fill /></button>
@@ -1137,7 +1515,6 @@ export default function Homeinformation() {
                 </div>
               </Tab>
             </Tabs>
-
           </div>
         </div>
 
@@ -1153,9 +1530,7 @@ export default function Homeinformation() {
             className="m_borbot "
             style={{ backgroundColor: "#111928" }}
           >
-            <Modal.Title className="m18">
-              Agregar artículos
-            </Modal.Title>
+            <Modal.Title className="m18">Agregar artículos</Modal.Title>
           </Modal.Header>
           <Modal.Body
             className="border-0 p-0 "
@@ -1184,17 +1559,24 @@ export default function Homeinformation() {
                               <input
                                 type="checkbox"
                                 checked={checkedParents[parentItem.id]}
-                                onChange={() => handleParentChangeMenu(parentItem.id)}
+                                onChange={() =>
+                                  handleParentChangeMenu(parentItem.id)
+                                }
                                 className="me-2 custom-checkbox"
                               />
-                              <span className="text-white">{parentItem.name}</span>
+                              <span className="text-white">
+                                {parentItem.name}
+                              </span>
                             </label>
                           </div>
                         </div>
                         {checkedParents[parentItem.id] && (
                           <div style={{ marginLeft: "20px" }}>
                             {childCheck
-                              .filter((childItem) => childItem.family_name === parentItem.name)
+                              .filter(
+                                (childItem) =>
+                                  childItem.family_name === parentItem.name
+                              )
                               .map((childItem) => (
                                 <div key={childItem.id}>
                                   <div className="d-flex align-content-center justify-content-between my-2 m14">
@@ -1202,9 +1584,16 @@ export default function Homeinformation() {
                                       <label className="text-white ">
                                         <input
                                           type="checkbox"
-                                          checked={checkedChildren[childItem.id]}
+                                          checked={
+                                            checkedChildren[childItem.id]
+                                          }
                                           className="mx-2"
-                                          onChange={() => handleChildChangeMenu(childItem.id, parentItem.name)}
+                                          onChange={() =>
+                                            handleChildChangeMenu(
+                                              childItem.id,
+                                              parentItem.name
+                                            )
+                                          }
                                         />
                                         {childItem.name}
                                       </label>
@@ -1273,7 +1662,10 @@ export default function Homeinformation() {
                 </div>
                 <div className="row p-2">
                   {filteredItemsMenu.map((ele, index) => {
-                    const isAdded = selectedItemsMenu.length > 0 ? selectedItemsMenu.some((v) => v.item_id == ele.id) : false;
+                    const isAdded =
+                      selectedItemsMenu.length > 0
+                        ? selectedItemsMenu.some((v) => v.item_id == ele.id)
+                        : false;
                     return (
                       <div
                         className="col-md-4 col-xl-3 col-sm-6 col-12 g-3"
@@ -1289,7 +1681,14 @@ export default function Homeinformation() {
                                 style={{ height: "162px", objectFit: "cover" }}
                               />
                             ) : (
-                              <div className="d-flex justify-content-center align-items-center rounded" style={{ height: "200px", backgroundColor: 'rgb(55 65 81 / 34%)', color: 'white' }}>
+                              <div
+                                className="d-flex justify-content-center align-items-center rounded"
+                                style={{
+                                  height: "200px",
+                                  backgroundColor: "rgb(55 65 81 / 34%)",
+                                  color: "white",
+                                }}
+                              >
                                 <p>{ele.name}</p>
                               </div>
                             )}
@@ -1299,16 +1698,22 @@ export default function Homeinformation() {
                               <p className="card-text opacity-50">
                                 Codigo: {ele.code}
                               </p>
-                              <div className="btn w-100 btn-primary text-white"
-                                style={{ backgroundColor: isAdded ? "#063f93" : "#0d6efd" }}
-                                onClick={() => handleAddItem(ele)}>
+                              <div
+                                className="btn w-100 btn-primary text-white"
+                                style={{
+                                  backgroundColor: isAdded
+                                    ? "#063f93"
+                                    : "#0d6efd",
+                                }}
+                                onClick={() => handleAddItem(ele)}
+                              >
                                 <a
                                   href="# "
                                   className="text-white text-decoration-none"
                                   style={{ fontSize: "14px" }}
                                 >
                                   <span className="ms-1">
-                                    {isAdded ? 'Agregado' : 'Agregar al menú'}
+                                    {isAdded ? "Agregado" : "Agregar al menú"}
                                   </span>
                                 </a>
                               </div>
@@ -1337,13 +1742,12 @@ export default function Homeinformation() {
                           </div>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </div>
             </div>
           </Modal.Body>
-
         </Modal>
 
         {/* add production success */}
@@ -1351,41 +1755,43 @@ export default function Homeinformation() {
           show={show1AddSuc}
           onHide={handleClose1AddSuc}
           backdrop={true}
-
           keyboard={false}
           className="m_modal"
         >
           <Modal.Header closeButton className="border-0" />
           <Modal.Body>
             <div className="text-center">
-              <img
-                src={require("../Image/check-circle.png")}
-                alt=""
-              />
+              <img src={require("../Image/check-circle.png")} alt="" />
               <p className="mb-0 mt-2 h6">Nuevos platillos</p>
-              <p className="opacity-75">
-                Han sido agregados exitosamente
-              </p>
+              <p className="opacity-75">Han sido agregados exitosamente</p>
             </div>
           </Modal.Body>
         </Modal>
 
         {/* processing */}
         <Modal
-          show={isProcessing || loadingItem || loadingTable || loadingOrder || loadingUser}
+          show={
+            isProcessing ||
+            loadingItem ||
+            loadingTable ||
+            loadingOrder ||
+            loadingUser
+          }
           keyboard={false}
           backdrop={true}
           className="m_modal  m_user "
         >
           <Modal.Body className="text-center">
             <p></p>
-            <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
+            <Spinner
+              animation="border"
+              role="status"
+              style={{ height: "85px", width: "85px", borderWidth: "6px" }}
+            />
             <p className="mt-2">Procesando solicitud...</p>
           </Modal.Body>
         </Modal>
-
-
       </div>
-    </div >
-  )
+    </div>
+  );
 }

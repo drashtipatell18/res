@@ -555,15 +555,10 @@ const DeliveryPago = () => {
         admin_id: admin_id,
       };
     }
-    const paymentData = {
-      ...payment,
-      amount: totalPaymentAmount,
-      type: selectedCheckboxes,
-      order_master_id: orderType.orderId,
-      return: customerData.turn,
-      admin_id: admin_id,
-    };
 
+
+    
+   
     // console.log(paymentData);
 
     setIsProcessing(true)
@@ -580,7 +575,21 @@ const DeliveryPago = () => {
       const response = await axios.post(`${apiUrl}${url}`, orderData, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      console.log(response.data)
+
+      const orderId = response.data[0]?.order.id || response.data?.kdsOrder?.order_id ;
+    
+      const paymentData = {
+        ...payment,
+        amount: totalPaymentAmount,
+        type: selectedCheckboxes,
+        order_master_id: orderId,
+        return: customerData.turn,
+        admin_id: admin_id,
+      };
+  
+  
+      // console.log(response.data)
+
       if (response.data.success || response.data[1] == 200) {
         try {
           const responsePayment = await axios.post(
