@@ -42,10 +42,10 @@ import Header from "./Header";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Loader from "./Loader";
-import useSocket from "../hooks/useSocket";
 import * as XLSX from "xlsx-js-style";
 import { useChat } from "../contexts/ChatContext";
 import { Modal, Spinner } from "react-bootstrap";
+import useSocket from "../hooks/useSocket";
 // import ApexCharts from "apexcharts";
 // import ApexCharts from 'apexcharts';
 
@@ -126,7 +126,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(localStorage.getItem('userId'));
   const name = localStorage.getItem('name');
-  const email = localStorage.getItem('email')
+  const email =localStorage.getItem('email')
   const echo = useSocket();
   // month select
   const [cancelOrderDay, setCancelOrderDay] = useState('month');
