@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor,selectedCards, getUserName, status, setTableStatus, onShowAvailableModal, handleData, onShowOcupadoModal, isModalOpen, isOffcanvasOpen }) => {
+const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor,selectedCards, getUserName, status, setTableStatus, onShowAvailableModal, handleData, onShowOcupadoModal, isModalOpen, isOffcanvasOpen,setTabledelay,tabledelay }) => {
   const [isSelected, setSelected] = useState(false);
   const tableRef = useRef(null);
 
@@ -12,12 +12,16 @@ const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor
     }
   }, [id]);
 
+  // console.log(tableId,id);
+  
+
   // Handle click outside of the card to deselect only if modal is not open
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (tableRef.current && !tableRef.current.contains(event.target)) {
         setSelected(false);
       }
+      // setTabledelay((prev) => [...prev, tableId]);
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -26,14 +30,18 @@ const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isModalOpen]);
+  
+  // console.log(no);
+  // console.log(tabledelay);
+  
 
   const cardCss = {
-    backgroundColor: (selectedCards?.includes(no)) ? "#147BDE" : 
+    backgroundColor: (selectedCards?.includes(no) && !tabledelay?.includes(no)) ? "#147BDE" : 
       (isSelected && isOffcanvasOpen ? "#147BDE" : 
       (status === "available" ? "#ebf5ff" : "#374151")),
-    color: (selectedCards?.includes(no)) ? "#fff" :
-      (isSelected && isOffcanvasOpen ? "#fff" : 
-      (status === "available" ? "#111928" : "#fff")),
+    color: (selectedCards?.includes(no) && !tabledelay?.includes(no)) ? "#ffffff" :
+      (isSelected && isOffcanvasOpen ? "#ffffff" : 
+      (status === "available" ? "#111928" : "#ffffff")),
     cursor: "pointer",
   };
 
@@ -54,7 +62,7 @@ const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor
     if (!isSelected) {
       setSelected(true);
       setTableStatus(status);
-      localStorage.setItem('selectedTable', id); // Store selected table in local storage
+      localStorage.setItem('selectedTable', no); // Store selected table in local storage
       if (!selectedCards?.includes(no)) {
         if (status === 'available') {
           onShowAvailableModal(no);

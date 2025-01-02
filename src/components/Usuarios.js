@@ -48,7 +48,7 @@ const Usuarios = () => {
   const dispatch = useDispatch();
   const { user, roles, loadingUser} = useSelector((state) => state.user);
 
-  console.log(user, roles);
+  // console.log(user, roles);
   
 
   const roleNamesInSpanish = {
@@ -96,7 +96,7 @@ const Usuarios = () => {
       dispatch(getUser());
     }
     if (roles?.length == 0) {
-      console.log("roles");
+      // console.log("roles");
       
       dispatch(getRols());
     }

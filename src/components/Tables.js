@@ -43,6 +43,7 @@ const Tables = () => {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [selectedTabNo,setSelectedTabNo] = useState('');
+  const [tabledelay, setTabledelay] = useState([]);
 
 
   const dispatch = useDispatch()
@@ -248,8 +249,6 @@ const Tables = () => {
   // Modify handleChange function
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-
     addsector[name] = value;
     // setAddsector({
     //   ...addsector,
@@ -695,7 +694,7 @@ const Tables = () => {
         'X-CSRF-TOKEN': csrfToken,
       }
     });
-    console.log("response", response)
+    // console.log("response", response)
 
     setCardSelect(response.data);
     // Check if the card_id matches and set the table color
@@ -704,8 +703,11 @@ const Tables = () => {
     } else {
       setTableColor(""); // Reset color if it doesn't match
     }
+    if(!tabledelay.includes(selectedTable)){
+      setTabledelay((prev) => [...prev, selectedTable]);
+    }
 
-    // setSelectedTable(null); // for socket
+    setSelectedTable(null); // for socket
 
     // // Remove the table ID from selectedCards
     // const updatedCards = selectedCards.filter(card => card !== tid);
@@ -723,6 +725,9 @@ const Tables = () => {
     setShowOcupadoModal(false);
     setIsOffcanvasOpen(true);
     setSelectedTabNo(no);
+    if(!tabledelay.includes(id)){
+    setTabledelay((prev) => [...prev, id]);
+    }
   };
 
   const handleCloseOcupadoModal = async () => {
@@ -747,7 +752,10 @@ const Tables = () => {
       setTableColor(""); // Reset color if it doesn't match
     }
     setIsOffcanvasOpen(false);
-    setSelectedCards(null);
+    // setSelectedCards(null);
+    if(!tabledelay.includes(selectedTable)){
+      setTabledelay((prev) => [...prev, selectedTable]);
+    }
     setSelectedTable(null); // for socket 
   };
 
@@ -757,6 +765,9 @@ const Tables = () => {
     setShowAvailableModal(false);
     setIsOffcanvasOpen(true);
     setSelectedTabNo(no);
+    if(!tabledelay.includes(id)){
+      setTabledelay((prev) => [...prev, id]);
+      }
   };
 
   /* get name and image */
@@ -1089,9 +1100,13 @@ const Tables = () => {
 
 
   // console.log(selectedCards);
+  // console.log(selectedTable);
+  // console.log(tabledelay);
+  
 
   useEffect(() => {
     const postCardClick = async (selectedTable) => {
+
       // console.log(selectedCards);
       try {
         const response = await axios.post(`${sUrl}/brodcastCardClicked`, {
@@ -1116,7 +1131,9 @@ const Tables = () => {
       }
     };
 
-    postCardClick(selectedTable);
+    if(selectedTable){
+      postCardClick(selectedTable);
+    }
   }, [selectedTable]);
 
   const [cards, setCards] = useState([]);
@@ -1165,7 +1182,7 @@ const Tables = () => {
     //   }
     // });
     echo.channel('box-channel').listen('.CardClick', (event) => {
-      console.log("BoxClicked event received:", event);
+      // console.log("BoxClicked event received:", event);
       if (event.selected) {
         setSelectedCards(prev => {
           const prevArray = prev || [];
@@ -1174,6 +1191,7 @@ const Tables = () => {
       } else {
         // Remove the card_id
         setSelectedCards(prev => prev?.filter(id => id !== event.card_id));
+        setTabledelay((prev) => prev?.filter(id => id !== event.card_id));
       }
     });
   }, [selectedCards]);
@@ -1566,7 +1584,6 @@ const Tables = () => {
                         code={ele.code}
                         status={ele.status}
                         selectedTable={selectedTable}
-                       
                         tId={ele.id}
                         tableId={ele.table_no}
                         userId={ele.user_id} // Access user_id from tableData
@@ -1582,6 +1599,8 @@ const Tables = () => {
                         setSelectedTable={setSelectedTable}
                         setTableStatus={setTableStatus}
                         tableColor={tableColor} // Pass the tableColor prop
+                        setTabledelay={setTabledelay}
+                        tabledelay={tabledelay}
                       />
                     </div>
                   ))}

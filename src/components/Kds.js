@@ -262,12 +262,12 @@ const Kds = () => {
                                             </div>
                                         </Link>
                                     </div>
-                                    {console.log('allOrder',allOrder,selectedCategory)}
+                                    {/* {console.log('allOrder',allOrder,selectedCategory)} */}
                                     { filterOrdersByCategory(allOrder, selectedCategory)
                                         .filter(section => section?.status === orderTypeMapping[orderType])
                                         .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
                                         .map((section, sectionIndex) => {
-                                            console.log("filtered",section)
+                                            // console.log("filtered",section)
                                             // Find the table based on table_id
                                             const table = tableInfo.flatMap(sector => sector.tables).find(table => table.id === section.table_id);
                                             const tableName = table ? table.table_no : ''; // Default if not found

@@ -23,7 +23,7 @@ export const getAllOrders = createAsyncThunk(
   export const getAllPayments = createAsyncThunk(
     "/getAllPayments",
     async (admin_id, { rejectWithValue }) => {
-      console.log(admin_id);
+      // console.log(admin_id);
       try {
         const response = await axiosInstance.post(`/get-payments`,admin_id);
   
@@ -41,7 +41,7 @@ export const getAllOrders = createAsyncThunk(
       try {
         const response = await axiosInstance.post(`/orders/last`,admin_id);
   
-        console.log(response.data.order.id + 1);
+        // console.log(response.data.order.id + 1);
         localStorage.setItem("lastOrder", JSON.stringify(response.data.order.id + 1));
         return response.data.order.id + 1; // Assuming the API returns an array of users
       } catch (error) {

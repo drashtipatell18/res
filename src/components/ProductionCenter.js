@@ -765,7 +765,7 @@ export default function ProductionCenter() {
 
   };
 
-  console.log(itemstoUpdate[0]);
+  // console.log(itemstoUpdate[0]);
 
   // ...
 

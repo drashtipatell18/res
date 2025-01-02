@@ -35,8 +35,8 @@ function Home_client() {
   const {payments, loadingOrder} = useSelector(state => state.orders);
   const {user, loadingUser} = useSelector(state => state.user);
 
-  console.log(payments);
-  console.log(user);
+  // console.log(payments);
+  // console.log(user);
   
 
   useEffect(()=>{
@@ -194,7 +194,7 @@ function Home_client() {
 
   useEffect(() => {
     if (payments?.length > 0) {
-      console.log(payments);
+      // console.log(payments);
       const data = [...payments].reverse();
       const groupedUsers = groupUsersByDetails(data);
       setOrderUser(groupedUsers);
