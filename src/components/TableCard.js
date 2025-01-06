@@ -1,26 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor,selectedCards, getUserName, status, setTableStatus, onShowAvailableModal, handleData, onShowOcupadoModal, isModalOpen, isOffcanvasOpen,setTabledelay,tabledelay }) => {
+const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableColor, selectedCards, getUserName, status, setTableStatus, onShowAvailableModal, handleData, onShowOcupadoModal, isModalOpen, isOffcanvasOpen, setTabledelay, tabledelay }) => {
   const [isSelected, setSelected] = useState(false);
   const tableRef = useRef(null);
 
   // Check local storage for selected table on mount
   useEffect(() => {
     const selectedTable = localStorage.getItem('selectedTable');
-    if (selectedTable === id) {
+    if (selectedTable == no) {
       setSelected(true);
+    }else{
+      setSelected(false);
     }
-  }, [id]);
-
-  // console.log(tableId,id);
+   
+    // console.log(selectedTable , no);
+  }, []);
   
+
+  
+
 
   // Handle click outside of the card to deselect only if modal is not open
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (tableRef.current && !tableRef.current.contains(event.target)) {
+      // console.log(tableRef.current && event.target instanceof Node && !tableRef.current.contains(event.target) , !isOffcanvasOpen)
+      if (tableRef.current && event.target instanceof Node && !tableRef.current.contains(event.target) && !isOffcanvasOpen) {
         setSelected(false);
       }
+      
+     
       // setTabledelay((prev) => [...prev, tableId]);
     };
 
@@ -29,19 +37,19 @@ const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isModalOpen]);
-  
+  }, [isModalOpen,isOffcanvasOpen]);
+
   // console.log(no);
   // console.log(tabledelay);
-  
+
 
   const cardCss = {
-    backgroundColor: (selectedCards?.includes(no) && !tabledelay?.includes(no)) ? "#147BDE" : 
-      (isSelected && isOffcanvasOpen ? "#147BDE" : 
-      (status === "available" ? "#ebf5ff" : "#374151")),
+    backgroundColor: (selectedCards?.includes(no) && !tabledelay?.includes(no)) ? "#147BDE" :
+      (isSelected && isOffcanvasOpen ? "#147BDE" :
+        (status === "available" ? "#ebf5ff" : "#374151")),
     color: (selectedCards?.includes(no) && !tabledelay?.includes(no)) ? "#ffffff" :
-      (isSelected && isOffcanvasOpen ? "#ffffff" : 
-      (status === "available" ? "#111928" : "#ffffff")),
+      (isSelected && isOffcanvasOpen ? "#ffffff" :
+        (status === "available" ? "#111928" : "#ffffff")),
     cursor: "pointer",
   };
 
@@ -71,7 +79,7 @@ const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor
         }
       }
     }
-    if(status === "busy") {
+    if (status === "busy") {
       handleData(id);
     }
     // handleGet(oId);
@@ -80,9 +88,11 @@ const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor
   // Listen for storage changes to update selection
   useEffect(() => {
     const handleStorageChange = (event) => {
+      console.log(event.key, event.newValue);
       if (event.key === 'selectedTable') {
         setSelected(event.newValue === id);
       }
+      
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -90,7 +100,7 @@ const TableCard = ({ name, id, oId,selectedTabNo, no,tableId, userId, tableColor
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [id]);
+  }, [no,isSelected]);
 
   return (
     <div ref={tableRef} className="card j_bgblack position-relative" onClick={handleClick} style={cardCss}>

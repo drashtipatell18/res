@@ -1373,10 +1373,10 @@ input[placeholder],
   color: white !important;
 }
 
-.m_input.form-control:focus,
+/* .m_input.form-control:focus,
 .m_input.form-select:focus {
   box-shadow: none !important;
-}
+} */
 
 .m_input::-webkit-input-placeholder {
   /* WebKit, Blink, Edge */
@@ -8892,4 +8892,20 @@ input[type="search"]::-webkit-search-cancel-button {
 .sj_lightsky {
   transition: all 0.3s ease;  /* smooth transition for the highlight effect */
 }
+
+
+/* ======== */
+
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: inset 0 0 20px 20px #384252 !important;
+  box-shadow: 0 0 0 30px #384252 inset !important;
+  background-color: #384252 !important;
+  -webkit-transition: background-color 5000s ease-in-out 0s !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+
+
 

@@ -243,6 +243,7 @@ export default function Articles() {
         "Error fetching roles:",
         error.response ? error.response.data : error.message
       );
+      
     }
     setIsProcessing(false);
   };
@@ -414,7 +415,7 @@ export default function Articles() {
           setMenu(menu)
         }
        
-      },[family,items,subFamily,menu,show1AddMenuSuc])
+      },[family,items,subFamily,menu,show1AddMenuSuc,dispatch])
 
   // create menu
   const handleCreateMenu = async () => {
@@ -670,7 +671,8 @@ export default function Articles() {
         });
 
         dispatch(getMenu({admin_id}));
-  
+    
+      
         // Update filteredItems state
         setFilteredItems(prevFilteredItems => {
           const updatedFilteredItems = prevFilteredItems.map(menu => {
@@ -689,7 +691,7 @@ export default function Articles() {
   
         // Show all menus by clearing the selectedMenus
         setSelectedMenus([]);
-  
+        setRemovedItems([]);
         // Clear item IDs
         setItemId([]);
   
@@ -972,7 +974,7 @@ export default function Articles() {
                         </label>
                         <input
                           type="text"
-                          className="form-control m_input ps-3"
+                          className="form-control m_input ps-3 "
                           id="exampleFormControlInput1"
                           placeholder="Eje.Desayuno"
                           onChange={(e) => {
@@ -1429,12 +1431,13 @@ export default function Articles() {
                                   )
                                   .map((ele, index) => {
                                     const isAdded = itemId.length > 0 ? itemId.some((item) => item == ele.id) : false;
-                                    // console.log(isAdded);
+                                   
                                     return (
                                       <div
                                         className="col-md-4 col-xl-3 col-sm-6 col-12 g-3"
                                         key={ele.id} // Corrected from 'keys' to 'key'
                                       >
+                                        
                                         <div>
                                           <div className="card m_bgblack text-white position-relative">
                                           {ele.image ? (
@@ -1546,6 +1549,8 @@ export default function Articles() {
                 </div>
 
                 <div className="p-2 row">
+                {console.log("sss",filteredItems)}
+
                   {filteredItems.length > 0 ? (
                     (selectedMenus.length === 0
                       ? filteredItems
@@ -1568,7 +1573,10 @@ export default function Articles() {
                                 </div>
                               )}
                               {hasItems ? (
+
                                 <div className="row">
+                                        {console.log("aa",removedItems)}
+
                                   {menu.items
                                     .filter(
                                       (item) =>
@@ -1591,6 +1599,9 @@ export default function Articles() {
                                           menuId={menu.id}
                                           itemId={ele.id}
                                           showRetirar={showRetirar}
+                                          setMenu={setMenu}
+                                          setFilteredItems={setFilteredItems}
+                                          obj1={obj1}
                                           onRetirar={() =>
                                             handleshow500(menu.id, ele.id)}
                                         />

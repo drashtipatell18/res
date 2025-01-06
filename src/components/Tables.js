@@ -1151,9 +1151,6 @@ const Tables = () => {
       // encrypted: false, // Ensures connection is encrypted
       // disableStats: true, // Enable stats for production
       // enabledTransports: ['ws', 'wss'], // Allow both unencrypted and encrypted WebSocket connections
-
-
-
       broadcaster: "pusher",
       key: "4fc8a6c3a8bed22b1439",
       cluster: "mt1",
@@ -1234,14 +1231,15 @@ const Tables = () => {
                     <div className="m_borbot ">
                       <p className="text-white j-tbl-font-2">Sectores</p>
                       <div className="d-flex align-items-center">
-                        <Button
+                        {(role == "admin" || role == "cashier" ) &&  <Button
                           data-bs-theme="dark"
                           className="j_drop b_btn_pop j_t_sector_button j-tbl-font-3 mb-3"
                           onClick={handleShow}
                         >
                           <FaPlus className="j-icon-font-1" />
                           Crear sector
-                        </Button>
+                        </Button>}
+                       
                       </div>
                     </div>
                   </div>

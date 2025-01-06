@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { IoMdClose } from "react-icons/io";
+import { getMenu } from "../redux/slice/Items.slice";
+import { useDispatch } from "react-redux";
 
 export default function SingleMenu({
   image,
@@ -11,12 +13,17 @@ export default function SingleMenu({
   showRetirar,
   onRetirar,
   menuId,
-  itemId
+  itemId,
+  setMenu,
+  obj1,
+  setFilteredItems
 }) {
   const API = process.env.REACT_APP_IMAGE_URL; // Laravel Image URL
   const apiUrl = process.env.REACT_APP_API_URL;
-  const [ token ] = useState(localStorage.getItem("token"));
-  const [ showConfirmation, setShowConfirmation ] = useState(false);
+  const [token] = useState(localStorage.getItem("token"));
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const dispatch = useDispatch();
+  const admin_id = localStorage.getItem("admin_id");
 
   const handleDeleteMenu = () => {
     axios
@@ -29,6 +36,35 @@ export default function SingleMenu({
       })
       .then((response) => {
         console.log(response);
+        // Update the menu state directly
+        setMenu(prevMenu => {
+          const updatedMenu = prevMenu.map(menu => {
+            if (menu.id === menuId) {
+              // Remove the item with itemId from the menu
+              return {
+                ...menu,
+                items: menu.items.filter(item => item.id !== itemId)
+              };
+            }
+            return menu;
+          });
+          console.log('Updated menu:', updatedMenu);
+          return updatedMenu;
+        });
+        setFilteredItems(prevFilteredItems => {
+          const updatedFilteredItems = prevFilteredItems.map(menu => {
+            if (menu.id === menuId) {
+              // Remove the item with itemId from the filtered items
+              return {
+                ...menu,
+                items: menu.items.filter(item => item.id !== itemId)
+              };
+            }
+            return menu;
+          });
+          console.log('Updated filteredItems:', updatedFilteredItems);
+          return updatedFilteredItems;
+        });
       })
       .catch((error) => {
         console.log(error);

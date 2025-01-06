@@ -19,6 +19,8 @@ function Home_client() {
   const token = localStorage.getItem("token");
   const [isProcessing, setIsProcessing] = useState(false);
   const admin_id = localStorage.getItem("admin_id");
+  const role = localStorage.getItem('role');
+
   const navigate = useNavigate()
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,24 +34,28 @@ function Home_client() {
   const [filteredOrderUser, setFilteredOrderUser] = useState([]);
 
   const dispatch = useDispatch();
-  const {payments, loadingOrder} = useSelector(state => state.orders);
-  const {user, loadingUser} = useSelector(state => state.user);
+  const { payments, loadingOrder } = useSelector(state => state.orders);
+  const { user, loadingUser } = useSelector(state => state.user);
 
   // console.log(payments);
   // console.log(user);
-  
-
-  useEffect(()=>{
-    if(payments?.length == 0){
-        dispatch(getAllPayments({admin_id}))
+  useEffect(() => {
+    if (!(role == "admin" || role == "cashier")) {
+      navigate('/dashboard')
     }
-  },[admin_id])
+  }, [apiUrl, token, role]);
 
-  useEffect(()=>{
-    if(user?.length == 0){
-        dispatch(getUser())
+  useEffect(() => {
+    if (payments?.length == 0) {
+      dispatch(getAllPayments({ admin_id }))
     }
-  },[admin_id])
+  }, [admin_id])
+
+  useEffect(() => {
+    if (user?.length == 0) {
+      dispatch(getUser())
+    }
+  }, [admin_id])
 
   document.addEventListener("DOMContentLoaded", function () {
     const tabs = document.querySelectorAll("#pills-tab button");
@@ -89,7 +95,7 @@ function Home_client() {
         fullName.includes(searchLower) ||
         displayName?.toLowerCase().includes(searchLower) ||
         (user?.lastname?.toLowerCase().includes(searchLower) || '') ||
-        user?.email?.toLowerCase().includes(searchLower)  ||
+        user?.email?.toLowerCase().includes(searchLower) ||
         user.rut?.toLowerCase().includes(searchLower)
       );
     });
@@ -130,11 +136,11 @@ function Home_client() {
     setSearchTerm(e.target.value);
   };
 
-  useEffect(()=>{
-    if(user){
-        setUsers(user)
+  useEffect(() => {
+    if (user) {
+      setUsers(user)
     }
-  },[user])
+  }, [user])
 
   // const fetchUser = async () => {
   //   setIsProcessing(true);
@@ -200,7 +206,7 @@ function Home_client() {
       setOrderUser(groupedUsers);
     }
   }, [payments]);
-  
+
 
   // const fetchPaymentUser = async () => {
   //   setIsProcessing(true);
@@ -228,8 +234,8 @@ function Home_client() {
 
     users.forEach(user => {
       const displayName = user.firstname || user.business_name;
-    const fullName = `${displayName} ${user.lastname || ''}`.trim();
-    const key = `${fullName}|${user.rut}`;
+      const fullName = `${displayName} ${user.lastname || ''}`.trim();
+      const key = `${fullName}|${user.rut}`;
 
       if (!groupedUsers[key]) {
         groupedUsers[key] = {
@@ -278,157 +284,157 @@ function Home_client() {
           <div>
             <div className="overflow-hidden">
 
-            <div className="ms-4 mt-4">
-              <h4 className="text-white bj-delivery-text-65">Clientes</h4>
-            </div>
-            <div className="d-flex b_main_search ms-4 justify-content-between mt-3 mb-3">
-              <div>
-                <div className="">
-                  <div className="m_group ">
-                    <svg
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      className="m_icon"
-                    >
-                      <g>
-                        <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z" />
-                      </g>
-                    </svg>
-                    <input
-                      className="m_input ps-5"
-                      type="search"
-                      placeholder="Buscar"
-                      value={searchTerm}
-                      onChange={handleSearchChange}
-                    />
-                  </div>
-                </div>
+              <div className="ms-4 mt-4">
+                <h4 className="text-white bj-delivery-text-65">Clientes</h4>
               </div>
-            </div>
-            <div className="d-flex justify-content-between me-4 b_btn_main">
-              <div className="ms-4 d-flex gap-5">
-                <div className="mb-3 text-white  ">
-                  <label
-                    htmlFor="exampleFormControlInput6"
-                    className="form-label "
-                  >
-                    Desde
-                  </label>
-                  <select
-                    className="form-select  b_select border-0 py-2  "
-                    style={{ borderRadius: "6px" }}
-                    aria-label="Default select example"
-                    value={selectedDesdeMonth}
-                    onChange={(e) => setSelectedDesdeMonth(e.target.value)}
-                  >
-                    <option selected value="1">
-                      Enero
-                    </option>
-                    <option value="2">Febrero</option>
-                    <option value="3">Marzo</option>
-                    <option value="4">Abril</option>
-                    <option value="5">Mayo</option>
-                    <option value="6">Junio</option>
-                    <option value="7">Julio</option>
-                    <option value="8">Agosto</option>
-                    <option value="9">Septiembre</option>
-                    <option value="10">Octubre </option>
-                    <option value="11">Noviembre</option>
-                    <option value="12">Diciembre</option>
-                  </select>
-                </div>
-                <div className="mb-3  text-white">
-                  <label
-                    htmlFor="exampleFormControlInput6"
-                    className="form-label "
-                  >
-                    Hasta
-                  </label>
-                  <select
-                    className="form-select  b_select border-0 py-2 "
-                    style={{ borderRadius: "6px" }}
-                    aria-label="Default select example "
-                    value={selectedHastaMonth}
-                    onChange={(e) => setSelectedHastaMonth(e.target.value)}
-                  >
-                    <option value="1">Enero</option>
-                    <option value="2">Febrero</option>
-                    <option selected value="3">
-                      Marzo
-                    </option>
-                    <option value="4">Abril</option>
-                    <option value="5">Mayo</option>
-                    <option value="6">Junio</option>
-                    <option value="7">Julio</option>
-                    <option value="8">Agosto</option>
-                    <option value="9">Septiembre</option>
-                    <option value="10">Octubre </option>
-                    <option value="11">Noviembre</option>
-                    <option value="12">Diciembre</option>
-                  </select>
-                </div>
-                {error && (
-                  <div className="alert alert-danger d-flex justify-content-between pointer">
-                    {error}{" "}
-                    <div
-                      className="text-black d-flex align-items-center"
-                      style={{ cursor: "pointer" }}
-                      onClick={(e) => {
-                        setError("");
-                        setSelectedDesdeMonth(1);
-                      }}
-                    >
-                      <RiCloseLargeFill />{" "}
+              <div className="d-flex b_main_search ms-4 justify-content-between mt-3 mb-3">
+                <div>
+                  <div className="">
+                    <div className="m_group ">
+                      <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        className="m_icon"
+                      >
+                        <g>
+                          <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z" />
+                        </g>
+                      </svg>
+                      <input
+                        className="m_input ps-5"
+                        type="search"
+                        placeholder="Buscar"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                      />
                     </div>
                   </div>
-                )}
+                </div>
               </div>
+              <div className="d-flex justify-content-between me-4 b_btn_main">
+                <div className="ms-4 d-flex gap-5">
+                  <div className="mb-3 text-white  ">
+                    <label
+                      htmlFor="exampleFormControlInput6"
+                      className="form-label "
+                    >
+                      Desde
+                    </label>
+                    <select
+                      className="form-select  b_select border-0 py-2  "
+                      style={{ borderRadius: "6px" }}
+                      aria-label="Default select example"
+                      value={selectedDesdeMonth}
+                      onChange={(e) => setSelectedDesdeMonth(e.target.value)}
+                    >
+                      <option selected value="1">
+                        Enero
+                      </option>
+                      <option value="2">Febrero</option>
+                      <option value="3">Marzo</option>
+                      <option value="4">Abril</option>
+                      <option value="5">Mayo</option>
+                      <option value="6">Junio</option>
+                      <option value="7">Julio</option>
+                      <option value="8">Agosto</option>
+                      <option value="9">Septiembre</option>
+                      <option value="10">Octubre </option>
+                      <option value="11">Noviembre</option>
+                      <option value="12">Diciembre</option>
+                    </select>
+                  </div>
+                  <div className="mb-3  text-white">
+                    <label
+                      htmlFor="exampleFormControlInput6"
+                      className="form-label "
+                    >
+                      Hasta
+                    </label>
+                    <select
+                      className="form-select  b_select border-0 py-2 "
+                      style={{ borderRadius: "6px" }}
+                      aria-label="Default select example "
+                      value={selectedHastaMonth}
+                      onChange={(e) => setSelectedHastaMonth(e.target.value)}
+                    >
+                      <option value="1">Enero</option>
+                      <option value="2">Febrero</option>
+                      <option selected value="3">
+                        Marzo
+                      </option>
+                      <option value="4">Abril</option>
+                      <option value="5">Mayo</option>
+                      <option value="6">Junio</option>
+                      <option value="7">Julio</option>
+                      <option value="8">Agosto</option>
+                      <option value="9">Septiembre</option>
+                      <option value="10">Octubre </option>
+                      <option value="11">Noviembre</option>
+                      <option value="12">Diciembre</option>
+                    </select>
+                  </div>
+                  {error && (
+                    <div className="alert alert-danger d-flex justify-content-between pointer">
+                      {error}{" "}
+                      <div
+                        className="text-black d-flex align-items-center"
+                        style={{ cursor: "pointer" }}
+                        onClick={(e) => {
+                          setError("");
+                          setSelectedDesdeMonth(1);
+                        }}
+                      >
+                        <RiCloseLargeFill />{" "}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-              {/* <div className='text-white  d-flex  b_arrow' style={{ alignItems: "baseline" }}>
+                {/* <div className='text-white  d-flex  b_arrow' style={{ alignItems: "baseline" }}>
                             <div className='pe-3 mt-2 b_svg ' style={{ color: "#9CA3AF" }}><FaAngleLeft className='bj-right-icon-size-2' /></div> <span className='mt-2' style={{ color: "#9CA3AF" }}><FaAngleRight className='bj-right-icon-size-2' /></span>
                             <div className='text-white bj-delivery-text-3  d-flex  pt-1 ms-5'>
                                 <p className='b_page_text me-4' style={{ color: "#9CA3AF" }}>vista <span className='text-white'>1-15</span> de <span className='text-white'>30</span></p>
                             </div>
                         </div> */}
-              <div
-                className="text-white  d-flex  b_arrow"
-                style={{ alignItems: "baseline", cursor: "pointer" }}
-              >
                 <div
-                  className="pe-3 mt-2 b_svg "
-                  style={{ color: "#9CA3AF" }}
+                  className="text-white  d-flex  b_arrow"
+                  style={{ alignItems: "baseline", cursor: "pointer" }}
                 >
-                  <FaAngleLeft
-                    className="bj-right-icon-size-2"
-                    onClick={handlePrevPage}
-                    disabled={currentPage === 1}
-                  />
-                </div>
-                <span className="mt-2" style={{ color: "#9CA3AF" }}>
-                  <FaAngleRight
-                    className="bj-right-icon-size-2"
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                  />
-                </span>
-                <div className="text-white bj-delivery-text-3  d-flex  pt-1 ms-5">
-                  <p
-                    className="b_page_text me-4"
+                  <div
+                    className="pe-3 mt-2 b_svg "
                     style={{ color: "#9CA3AF" }}
                   >
-                    vista{" "}
-                    <span className="text-white">
-                      {indexOfFirstFilteredItem + 1}-{Math.min(
-                        indexOfLastFilteredItem,
-                        filteredUsers.length
-                      )}
-                    </span>{" "}
-                    de{" "}
-                    <span className="text-white">{filteredUsers.length}</span>
-                  </p>
+                    <FaAngleLeft
+                      className="bj-right-icon-size-2"
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 1}
+                    />
+                  </div>
+                  <span className="mt-2" style={{ color: "#9CA3AF" }}>
+                    <FaAngleRight
+                      className="bj-right-icon-size-2"
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages}
+                    />
+                  </span>
+                  <div className="text-white bj-delivery-text-3  d-flex  pt-1 ms-5">
+                    <p
+                      className="b_page_text me-4"
+                      style={{ color: "#9CA3AF" }}
+                    >
+                      vista{" "}
+                      <span className="text-white">
+                        {indexOfFirstFilteredItem + 1}-{Math.min(
+                          indexOfLastFilteredItem,
+                          filteredUsers.length
+                        )}
+                      </span>{" "}
+                      de{" "}
+                      <span className="text-white">{filteredUsers.length}</span>
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
             </div>
             <div className="b_table1 w-100" >
               <table className="b_table ">
