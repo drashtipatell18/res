@@ -29,6 +29,9 @@ function Home_detail_no2() {
     const [orderAlldata, setOrderAlldata] = useState([]);
     const [paymentData, setPaymentData] = useState();
 
+    console.log(orderAlldata);
+    
+
     useEffect(() => {
         if (creditNote)
             fetchpayment();
@@ -72,7 +75,7 @@ function Home_detail_no2() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setOrderAlldata(response.data);
+            setOrderAlldata(response.data.find((v) => v.id == id));
         } catch (error) {
             console.error(
                 "Error fetching allOrders:",
@@ -166,26 +169,14 @@ function Home_detail_no2() {
         });
     }, []);
 
-    const obj1 = {
-        name: "Damian Gonzales",
-        credCode: "01234",
-        id: "01234",
-        email: "ejemplo@gmail.com",
-        image: img1,
-        pName: "Pollo frito crujiente",
-        note: "Nota: Sin salsa de tomate",
-        pPrice: "5.00",
-        pQty: "1",
-        totalPrice: "5.00",
-        sCode: "0012",
-        destination: "-",
-        destination2: "004"
-
-    };
-
     const handleNavigate = () => {
         navigate("/home/client/detail", { state });
     }
+
+    const  total = returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0);
+    const final = parseFloat(total) - parseFloat(orderAlldata?.discount);
+    const tax = parseFloat(final * 0.19).toFixed(2);
+    const finalTotal = (parseFloat(final) + parseFloat(tax)).toFixed(2);
 
 
     return (
@@ -273,27 +264,31 @@ function Home_detail_no2() {
                                 </div>
 
                             ))}
-                        <div className='my-4 mx-4 py-3 p-2' style={{ backgroundColor: "#374151", borderRadius: "10px" }}>
-                            <div className='text-white'>
-                            <div className=' ms-4 my-3 '>
-                                    <div className='my-3  fw-bold' style={{ fontSize: "20px" }}>Costo total</div>
-                                    <div className='d-flex justify-content-between'>
-                                        <div>Productos</div>
-                                        <div className='me-5'>${returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0)}</div>
+                         <div className='my-4 mx-4 py-3 p-2 ' style={{ backgroundColor: "#374151", borderRadius: "10px" }}>
+                                <div className='text-white'>
+                                    <div className=' ms-4 my-3 '>
+                                        <div className='my-3  fw-bold' style={{ fontSize: "20px" }}>Costo total</div>
+                                        <div className='d-flex justify-content-between'>
+                                            <div>Productos</div>
+                                            <div className='me-5'>${total}</div>
+                                        </div>
+                                        <div className='d-flex justify-content-between'>
+                                            <div>Descuentos</div>
+                                            <div className='me-5'>${orderAlldata?.discount}</div>
+                                        </div>
+                                        <div className='d-flex justify-content-between mt-2'>
+                                            <div>IVA 19.00%</div>
+                                            <div className='me-5'>${tax}</div>
+                                        </div>
+                                        <hr className='w-100' />
+                                        <div className='d-flex justify-content-between'>
+                                            <div>Total</div>
+                                            <div className='me-5 fw-bold'>${finalTotal}</div>
+                                        </div>
                                     </div>
-                                    <div className='d-flex justify-content-between mt-2'>
-                                        <div>IVA 19.00%</div>
-                                        <div className='me-5'>${(returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0) * 0.19).toFixed(2)}</div>
-                                    </div>
-                                    <hr className='w-100' />
-                                    <div className='d-flex justify-content-between'>
-                                        <div>Total</div>
-                                        <div className='me-5 fw-bold'>${returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0) + parseFloat((returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0) * 0.19).toFixed(2))}</div>
-                                    </div>
-                                </div>
 
+                                </div>
                             </div>
-                        </div>
                         <div className='text-white ms-4'>
                             <h5 className='b_fs'>Pedido</h5>
                         </div>

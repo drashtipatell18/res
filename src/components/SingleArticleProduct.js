@@ -835,7 +835,6 @@ export default function SingleArticleProduct() {
   // console.log(datatab);
   // console.log(payments);
   
-  
   return (
     <div>
       <div className="m_bg_black">
@@ -1827,7 +1826,7 @@ export default function SingleArticleProduct() {
                                       </td>
 
                                       <td className="p-0 ps-3">
-                                      <div className={`m_btn1 m12 text-nowrap`}
+                                      <div className={`m12 text-nowrap ${paymentStatus === "Pagado" ? "b_btn1 b_blue" : "m_btn1"}`}
                                         style={{ width: "90px" }}>{paymentStatus}</div>
                                          </td>
                                     </tr>

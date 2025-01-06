@@ -416,11 +416,8 @@ const Counter_finalP = () => {
       const credit = response.data.data?.find((v) => v.id == creditId);
       // console.log(credit);
 
-      const Total = credit.return_items?.reduce((acc, v) => acc + v.amount * v.quantity, 0);
+      const Total = credit.return_items?.reduce((acc, v) => acc + v.amount * v.quantity, 0) - 1.0;
       const creditTotal = parseFloat((Total + Total * 0.19).toFixed(2))
-
-      // console.log(Total,creditTotal);
-
       setCreditData({ ...credit, creditTotal: creditTotal });
       // console.log(credit);
 

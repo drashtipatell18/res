@@ -89,6 +89,7 @@ const TableInformation = () => {
   const gettableData = async () => {
     if (tId) {
       try {
+        setIsProcessing(true)
         const response = await axios.get(
           `${apiUrl}/single-table/${tId}`,
           {
@@ -97,12 +98,14 @@ const TableInformation = () => {
             },
           }
         );
+        setIsProcessing(false)
         if (response.data.tables) {
           setTableData(response.data.tables);
         } else {
           console.error("No tables found in response");
         }
       } catch (error) {
+        setIsProcessing(false)
         console.error("Error fetching data:", error);
       }
     } else {
@@ -605,7 +608,7 @@ const TableInformation = () => {
         setIsProcessing(false);
         handleShowEditFamSuc();
         gettableData();
-        dispatch(getAllTableswithSector(admin_id));
+        dispatch(getAllTableswithSector({admin_id}));
         // getSector();
         // getSectorTable(); 
       }
@@ -637,7 +640,7 @@ const TableInformation = () => {
         );
 
         if (response.status == 200) {
-          dispatch(getAllTableswithSector(admin_id));
+          dispatch(getAllTableswithSector({admin_id}));
           setIsProcessing(false);
           setShowDeleteConfirm(false);
           handleShowEditFamDel();

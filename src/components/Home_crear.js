@@ -494,6 +494,11 @@ export default function Home_crear({ item }) {
 
     console.log(selectedItems);
 
+    const total = selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0);
+    const final = parseInt(total) - parseFloat(orderAlldata.discount).toFixed(2)
+    const tax = parseFloat(final*0.19.toFixed(2))
+    const finaltotal = final + tax
+
 
     // ===============note ========
 
@@ -735,13 +740,13 @@ export default function Home_crear({ item }) {
                             {showCancelOrderButton ? (
                                 <div className="d-flex justify-content-between align-items-center flex-wrap ms-3">
                                     <div className="text-white  my-2">
-                                        DNI :- {userPayment?.rut}
+                                        DNI :- {userPayment?.rut || '-'}
                                     </div>
                                 </div>
                             ) : (
                                 <div className="d-flex justify-content-between align-items-center flex-wrap ms-3">
                                     <div className="text-white  my-2">
-                                        DNI :- {userPayment?.rut}
+                                        DNI :- {userPayment?.rut || "-"}
                                     </div>
                                 </div>
                             )}
@@ -988,13 +993,13 @@ export default function Home_crear({ item }) {
                                                                 <div className="fw-bold fs-5">Datos</div>
                                                                 <div className="w-100 mt-4">
                                                                     <div>Nombre</div>
-                                                                    <div className="w-100 a_bg_order mt-2 border-0" style={{ borderRadius: "10px" }}><span className="">{userPayment?.firstname ? userPayment.firstname : userPayment?.business_name} {userPayment?.lastname}</span></div>
+                                                                    <div className="w-100 a_bg_order mt-2 border-0" style={{ borderRadius: "10px" }}><span className="">{userPayment?.firstname ? userPayment.firstname : userPayment?.business_name} {userPayment?.lastname ? userPayment?.lastname : '-'}</span></div>
                                                                 </div>
                                                                 <div className="d-flex justify-content-end align-items-center mt-4">
 
                                                                     <div className="w-50">
                                                                         <div>DNI</div>
-                                                                        <div className="w-75 a_bg_order border-0 mt-2" style={{ borderRadius: "10px" }}><span className="">{userPayment?.rut}</span></div>
+                                                                        <div className="w-75 a_bg_order border-0 mt-2" style={{ borderRadius: "10px" }}><span className="">{userPayment?.rut || '-'}</span></div>
                                                                     </div>
                                                                     <div className="w-50">
                                                                         <div>Correo electrónico</div>
@@ -1027,13 +1032,21 @@ export default function Home_crear({ item }) {
                                                                     <div className="a_mar_summary fs-5 fw-bold">Costo total</div>
                                                                     <div className="d-flex justify-content-between align-items-center my-1">
                                                                         <div>Productos</div>
-                                                                        <div>${selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0)}</div>
+                                                                        <div>${total}</div>
+                                                                    </div>
+                                                                    <div className="d-flex justify-content-between align-items-center my-1">
+                                                                        <div>Descuentos</div>
+                                                                        <div>${orderAlldata?.discount}</div>
+                                                                    </div>
+                                                                    <div className="d-flex justify-content-between align-items-center my-1">
+                                                                        <div>IVA 19.00%</div>
+                                                                        <div>${total ? tax : 0}</div>
                                                                     </div>
                                                                     <hr />
                                                                     <div>
                                                                         <div className="d-flex justify-content-between align-items-center my-1 fw-bold">
                                                                             <div>Total</div>
-                                                                            <div>${selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0)}</div>
+                                                                            <div>${total ? finaltotal : 0}</div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1097,17 +1110,25 @@ export default function Home_crear({ item }) {
                                                                 </div>
                                                                 <div className='b_borderrr mx-1 mb-4 mt-3'>
                                                                 </div>
-                                                                <div className="p-4 a_deli_infolist  mt-3">
-                                                                    <div className=" a_mar_summary fs-5 fw-bold">Costo total</div>
+                                                                <div className="p-4 a_deli_infolist mt-3">
+                                                                    <div className="a_mar_summary fs-5 fw-bold">Costo total</div>
                                                                     <div className="d-flex justify-content-between align-items-center my-1">
                                                                         <div>Productos</div>
-                                                                        <div>${selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0)}</div>
+                                                                        <div>${total}</div>
                                                                     </div>
-                                                                    <hr></hr>
+                                                                    <div className="d-flex justify-content-between align-items-center my-1">
+                                                                        <div>Descuentos</div>
+                                                                        <div>${orderAlldata?.discount}</div>
+                                                                    </div>
+                                                                    <div className="d-flex justify-content-between align-items-center my-1">
+                                                                        <div>IVA 19.00%</div>
+                                                                        <div>${total ? tax : 0}</div>
+                                                                    </div>
+                                                                    <hr />
                                                                     <div>
-                                                                        <div className="d-flex justify-content-between align-items-center my-1  fw-bold">
+                                                                        <div className="d-flex justify-content-between align-items-center my-1 fw-bold">
                                                                             <div>Total</div>
-                                                                            <div>${selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0)}</div>
+                                                                            <div>${total ? finaltotal : 0}</div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1122,21 +1143,21 @@ export default function Home_crear({ item }) {
                                                                             <div>${selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0)}</div>
                                                                         </div>
                                                                     </div> */}
-                                                                    <div className='b_bborder my-3 p-4'>
+                                                                    <div className='b_bborder my-2 p-4'>
                                                                         <h5>Tipos de pago</h5>
                                                                         <div className='d-flex justify-content-between'>
-                                                                            <div className='mt-3'>
+                                                                            <div className='mt-1'>
                                                                                 {selectedCheckbox == "1" ? "Futura Compra" :
                                                                                     selectedCheckbox == "2" && selectedPaytype ? selectedPaytype : ""}
                                                                             </div>
-                                                                            <div>${selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0)}</div>
+                                                                            <div>${total ? finaltotal : 0}</div>
                                                                         </div>
                                                                     </div>
-                                                                    <div className='b_bborder my-3 p-4'>
+                                                                    <div className='b_bborder my-2 p-4'>
                                                                         <h5>Devolución</h5>
                                                                         <div className='d-flex justify-content-between'>
-                                                                            <div className='mt-3'>Cantidad</div>
-                                                                            <div className='text-danger'>-${selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0)}</div>
+                                                                            <div className='mt-1'>Cantidad</div>
+                                                                            <div>${total ? finaltotal : 0}</div>
                                                                         </div>
                                                                     </div>
                                                                 </div>

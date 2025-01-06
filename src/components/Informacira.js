@@ -59,14 +59,14 @@ const Informacira = () => {
 
   useEffect(() => {
     if (selectedDesdeMonth > selectedHastaMonth) {
-      setError("Hasta month must be greater than or equal to Desde month.");
+      setError("Hasta debe ser mayor o igual que Desde.");
       setData([]);
     }
   }, [selectedDesdeMonth, selectedHastaMonth]);
   useEffect(() => {
     if (selectedDesdeMonthReport > selectedHastaMonthReport) {
       setErrorReport(
-        "Hasta month must be greater than or equal to Desde month."
+        "Hasta debe ser mayor o igual que Desde."
       );
       setData([]);
     }
@@ -480,6 +480,8 @@ const Informacira = () => {
           createdAt: new Date(box.created_at).toLocaleString(), // Assuming the API returns a 'created_at' field
         }))
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        console.log(data);
+        
       setData(data);
     } catch (error) {
       console.error("Error fetching boxes:", error);
@@ -776,7 +778,7 @@ const Informacira = () => {
   const generateExcelReport = async () => {
     if (selectedDesdeMonthReport > selectedHastaMonthReport) {
       setErrorReport(
-        "Hasta month must be greater than or equal to Desde month."
+        "Hasta debe ser mayor o igual que Desde."
       );
       setData([]);
       return;

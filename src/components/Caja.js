@@ -297,10 +297,14 @@ const Caja = () => {
     // },[data])
 
     useEffect(() => {
-        if (data.length > 0 && !selectedBoxId) {
+        if (data.length > 0) {
+            console.log(data);
+            
             // Find the first open box
             const openBox = data.find(box => {
                 const lastBoxRecord = getLastBoxRecord(box.id);
+                console.log(lastBoxRecord);
+                
                 return lastBoxRecord && lastBoxRecord.close_amount === null;
             });
             

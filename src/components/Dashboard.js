@@ -2359,21 +2359,28 @@ const Dashboard = () => {
                     ];
 
                     // console.log(chartData,ele.box_name,totalAmount,ele);
-
-
+                    // console.log(chartData);
+                    
                     return (
                       <div className="j-chart-entry-1 d-flex align-items-center" key={ele.id}>
                         <ResponsiveContainer width={100} height={100}>
+                        {chartData && chartData?.[1].order ? (
                           <LineChart data={chartData}>
-                            <Tooltip cursor={false} />
-                            <Line
-                              type="monotoneX"
-                              dataKey="Order"
-                              stroke="#0e9f6e"
-                              dot={false}
-                              strokeWidth={2}
-                            />
-                          </LineChart>
+                          <Tooltip cursor={false} />
+                          <Line
+                            type="monotoneX"
+                            dataKey="Order"
+                            stroke="#0e9f6e"
+                            dot={false}
+                            strokeWidth={2}
+                          />
+                        </LineChart>
+                        ):(
+                          <div className="d-flex justify-content-center align-items-center rounded text-truncate overflow-hidden ps-2" style={{ borderRadius: "8px", width: "100%", height: "100%", color: 'white', fontSize: "12px", fontWeight: "500", lineHeight: "21px", textJustify: "center", textAlign: "center" }}>
+                              <p className="mb-0 text-truncate w-100">Sin datos</p>
+                          </div>
+                        )}
+                          
                         </ResponsiveContainer>
                         <div className="j-chart-entry-data ps-3">
                           <p className="sjfs-14">{ele.box_name}</p>

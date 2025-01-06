@@ -68,7 +68,7 @@ function Home_detail_no() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setOrderAlldata(response.data);
+            setOrderAlldata(response.data.find((v) => v.id == id));
         } catch (error) {
             console.error(
                 "Error fetching allOrders:",
@@ -225,10 +225,6 @@ function Home_detail_no() {
         setError(null)
     }
 
-
-
-
-
     const obj1 = {
         name: "Damian Gonzales",
         credCode: "01234",
@@ -249,7 +245,6 @@ function Home_detail_no() {
         navigate("/home/client/detail", { state });
 
     }
-
 
     useEffect(() => {
         if (creditNote)
@@ -279,6 +274,13 @@ function Home_detail_no() {
             setIsProcessing(false);
         }
     }
+
+    const  total = returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0);
+
+    
+    const final = parseFloat(total) - parseFloat(orderAlldata?.discount);
+    const tax = parseFloat(final * 0.19).toFixed(2);
+    const finalTotal = (parseFloat(final) + parseFloat(tax)).toFixed(2);
     return (
         <div className='b_bg_color'>
             <Header />
@@ -322,21 +324,21 @@ function Home_detail_no() {
                                 <div className=' mx-4 mt-4 b_inputt b_home_field'>
                                     <div className='w-100 b_search text-white mb-3'>
                                         <label htmlFor="inputPassword2 " className="">Nombre</label>
-                                        <input type="text" className="form-control bg-gray border-0 mt-2 py-3" value={creditNote?.name} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} />
+                                        <input type="text" className="form-control bg-gray border-0 mt-2 py-3" value={creditNote?.name || '-'} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} />
                                     </div>
                                     <div className='w-100 b_search text-white mb-3'>
                                         <label htmlFor="inputPassword2" className="">Código nota de credito</label>
-                                        <input type="text" className="form-control bg-gray  border-0 mt-2 py-3" value={creditNote?.code} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} />
+                                        <input type="text" className="form-control bg-gray  border-0 mt-2 py-3" value={creditNote?.code || '-'} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} />
                                     </div>
                                 </div>
                                 <div className='d-flex gap-5 mx-4 m b_inputt b_id_input b_home_field'>
                                     <div className='w-100 b_search  text-white mb-3'>
                                         <label htmlFor="inputPassword2" className="">DNI</label>
-                                        <input type="text" className="form-control bg-gray  border-0 mt-2 py-3 " value={paymentData?.rut} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} />
+                                        <input type="text" className="form-control bg-gray  border-0 mt-2 py-3 " value={paymentData?.rut || '-'} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} />
                                     </div>
                                     <div className='w-100 b_search text-white mb-3'>
                                         <label htmlFor="inputPassword2" className="">Correo electrónico</label>
-                                        <input type="text" className="form-control bg-gray  border-0 mt-2 py-3 " value={creditNote?.email} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} />
+                                        <input type="text" className="form-control bg-gray  border-0 mt-2 py-3 " value={creditNote?.email || '-'} id="inputPassword2" placeholder="-" style={{ backgroundColor: '#242d38', borderRadius: "10px" }} />
                                     </div>
                                 </div>
                             </form>
@@ -393,16 +395,20 @@ function Home_detail_no() {
                                         <div className='my-3  fw-bold' style={{ fontSize: "20px" }}>Costo total</div>
                                         <div className='d-flex justify-content-between'>
                                             <div>Productos</div>
-                                            <div className='me-5'>${returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0)}</div>
+                                            <div className='me-5'>${total}</div>
+                                        </div>
+                                        <div className='d-flex justify-content-between'>
+                                            <div>Descuentos</div>
+                                            <div className='me-5'>${orderAlldata?.discount}</div>
                                         </div>
                                         <div className='d-flex justify-content-between mt-2'>
                                             <div>IVA 19.00%</div>
-                                            <div className='me-5'>${(returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0) * 0.19).toFixed(2)}</div>
+                                            <div className='me-5'>${total != 0 ? tax : 0}</div>
                                         </div>
                                         <hr className='w-100' />
                                         <div className='d-flex justify-content-between'>
                                             <div>Total</div>
-                                            <div className='me-5 fw-bold'>${returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0) + parseFloat((returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0) * 0.19).toFixed(2))}</div>
+                                            <div className='me-5 fw-bold'>${finalTotal}</div>
                                         </div>
                                     </div>
 
