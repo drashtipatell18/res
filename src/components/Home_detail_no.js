@@ -276,8 +276,6 @@ function Home_detail_no() {
     }
 
     const  total = returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0);
-
-    
     const final = parseFloat(total) - parseFloat(orderAlldata?.discount);
     const tax = parseFloat(final * 0.19).toFixed(2);
     const finalTotal = (parseFloat(final) + parseFloat(tax)).toFixed(2);

@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.cdadeadd.css",
-    "main.js": "/static/js/main.de069693.js",
-    "static/js/213.87ce42da.chunk.js": "/static/js/213.87ce42da.chunk.js",
-    "static/js/455.96184095.chunk.js": "/static/js/455.96184095.chunk.js",
-    "static/js/453.584e3e5b.chunk.js": "/static/js/453.584e3e5b.chunk.js",
+    "main.css": "/static/css/main.66daf65b.css",
+    "main.js": "/static/js/main.423b3cde.js",
+    "static/js/213.ef50bb80.chunk.js": "/static/js/213.ef50bb80.chunk.js",
+    "static/js/455.8f811b59.chunk.js": "/static/js/455.8f811b59.chunk.js",
+    "static/js/453.0354e514.chunk.js": "/static/js/453.0354e514.chunk.js",
     "static/media/crispy-fry-chicken.png": "/static/media/crispy-fry-chicken.58758e80bb6bc2a0f440.png",
     "static/media/login_n1.png": "/static/media/login_n1.0a4b3fe8483ea667190a.png",
     "static/media/cheese-soup.png": "/static/media/cheese-soup.01c0239fdcda993e80a9.png",
@@ -25,14 +25,14 @@
     "static/media/home1.svg": "/static/media/home1.f07a6130de913bfb8095202735976d0d.svg",
     "index.html": "/index.html",
     "static/media/home3.svg": "/static/media/home3.18e8918f36c172a9abb766abee0475b8.svg",
-    "main.cdadeadd.css.map": "/static/css/main.cdadeadd.css.map",
-    "main.de069693.js.map": "/static/js/main.de069693.js.map",
-    "213.87ce42da.chunk.js.map": "/static/js/213.87ce42da.chunk.js.map",
-    "455.96184095.chunk.js.map": "/static/js/455.96184095.chunk.js.map",
-    "453.584e3e5b.chunk.js.map": "/static/js/453.584e3e5b.chunk.js.map"
+    "main.66daf65b.css.map": "/static/css/main.66daf65b.css.map",
+    "main.423b3cde.js.map": "/static/js/main.423b3cde.js.map",
+    "213.ef50bb80.chunk.js.map": "/static/js/213.ef50bb80.chunk.js.map",
+    "455.8f811b59.chunk.js.map": "/static/js/455.8f811b59.chunk.js.map",
+    "453.0354e514.chunk.js.map": "/static/js/453.0354e514.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.cdadeadd.css",
-    "static/js/main.de069693.js"
+    "static/css/main.66daf65b.css",
+    "static/js/main.423b3cde.js"
   ]
 }

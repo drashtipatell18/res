@@ -8906,6 +8906,68 @@ input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:foc
   transition: background-color 5000s ease-in-out 0s !important;
 }
 
+/* Add this CSS to your stylesheet */
+.custom-datepicker {
+  background-color: #343a40; /* Dark background */
+  color: white ; /* Text color */
+  border: 1px solid #495057; /* Border color */
+  border-radius: 0.25rem; /* Rounded corners */
+  padding: 0.5rem; /* Padding */
+}
 
+.react-datepicker{
+  background: #1f2a37 !important;
+  font-size: 20px;
+  border: 1px solid gray !important;
+}
 
+.custom-datepicker:focus {
+  border-color: #007bff; /* Change border color on focus */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Shadow effect */
+}
 
+/* Style the dropdown */
+.react-datepicker__header {
+  background-color: #1f2a37 !important; /* Header background */
+  color: white !important; /* Header text color */
+}
+
+.react-datepicker__month {
+  background-color: #1f2a37 !important; /* Month background */
+  font-size: 16px !important;
+  color: white;
+}
+
+.react-datepicker__day {
+  color: white; /* Day text color */
+}
+
+.react-datepicker__day--selected {
+  background-color: #007bff; /* Selected day background */
+  color: white; /* Selected day text color */
+}
+.react-datepicker__month-text{
+  width: 100% !important;
+  text-transform: capitalize;
+}
+
+.react-datepicker__month-text:hover{
+  background-color: #0d6efd !important;
+}
+
+.react-datepicker__tab-loop{
+  position: relative !important;
+}
+.react-datepicker-popper {
+  width: 100%;
+  transform: translate(0px, 10px) !important;
+}
+.react-datepicker {
+  width: 85%;
+}
+.react-datepicker__month-container{
+  width: 100%;
+}
+.react-datepicker__input-container input{
+  text-transform: capitalize !important;
+}

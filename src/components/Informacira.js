@@ -20,6 +20,13 @@ import { getAllTableswithSector } from "../redux/slice/table.slice";
 import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
 //import { enqueueSnackbar  } from "notistack";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import es from "date-fns/locale/es"; // Added import for Spanish locale
+import { registerLocale } from "react-datepicker";
+
+registerLocale("es", es); // Register the Spanish locale
+
 const Informacira = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const [token] = useState(localStorage.getItem("token"));
@@ -50,9 +57,13 @@ const Informacira = () => {
     new Date().getMonth() + 1
   );
   const [errorReport, setErrorReport] = useState("");
-  const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(1);
+  const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(() => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - 12); // Subtract 12 months
+    return new Date(date) ; // Return the month (1-12)
+  });
   const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
-    new Date().getMonth() + 1
+    new Date()
   );
   const [boxnameError, setBoxnameError] = useState();
   const [boxcashError, setBoxcashError] = useState();
@@ -65,9 +76,7 @@ const Informacira = () => {
   }, [selectedDesdeMonth, selectedHastaMonth]);
   useEffect(() => {
     if (selectedDesdeMonthReport > selectedHastaMonthReport) {
-      setErrorReport(
-        "Hasta debe ser mayor o igual que Desde."
-      );
+      setErrorReport("Hasta debe ser mayor o igual que Desde.");
       setData([]);
     }
   }, [selectedDesdeMonthReport, selectedHastaMonthReport]);
@@ -220,10 +229,14 @@ const Informacira = () => {
   const cashierIdRef = useRef(null);
 
   const dispatch = useDispatch();
-  const { box, boxLogs,loadingBox } = useSelector((state) => state.boxs);
-  const { user, roles ,loadingUser} = useSelector((state) => state.user);
-  const { orders, payments,loadingOrder } = useSelector((state) => state.orders);
-  const { tablewithSector,loadingTable } = useSelector((state) => state.tables);
+  const { box, boxLogs, loadingBox } = useSelector((state) => state.boxs);
+  const { user, roles, loadingUser } = useSelector((state) => state.user);
+  const { orders, payments, loadingOrder } = useSelector(
+    (state) => state.orders
+  );
+  const { tablewithSector, loadingTable } = useSelector(
+    (state) => state.tables
+  );
 
   const handleEdit = (box) => {
     if (!box || !box[0]) return;
@@ -248,7 +261,7 @@ const Informacira = () => {
     }
 
     handleClose();
-    setIsProcessing(true);
+    // setIsProcessing(true);
 
     try {
       const response = await axios.post(
@@ -295,7 +308,7 @@ const Informacira = () => {
   const handleDelete = async () => {
     if (!selectedBox) return;
     setShowDeleteModal(false); // Close the modal
-    setIsProcessing(true);
+    // setIsProcessing(true);
     try {
       const response = await axios.delete(
         `${apiUrl}/box/delete/${selectedBox.id}`,
@@ -334,11 +347,78 @@ const Informacira = () => {
     setIsProcessing(false);
   };
 
+  const [finaldata, setFinalData] = useState(null);
   const [finalAmount, setFinalAmount] = useState(0);
+  const [amount, setAmount] = useState(0);
+  const [credits, setCredits] = useState(0);
 
   useEffect(() => {
     finalamount();
-  }, [bId, data]);
+  }, [data]);
+
+  useEffect(() => {
+    if (finaldata?.orderId.length > 0) {
+      fetchCredit();
+    }
+  }, [finaldata, orders]);
+
+  const fetchCredit = async () => {
+    try {
+      const response = await axios.post(
+        `${apiUrl}/order/getCredit`,
+        { admin_id: admin_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // console.log(response.data.data);
+      // console.log(finaldata);
+
+      const filterecredit = response.data.data.filter(
+        (v) =>
+          finaldata?.orderId?.includes(v.order_id.toString()) &&
+          v.credit_method != "future purchase"
+      );
+
+      // console.log(filterecredit);
+
+      const totalCredit = filterecredit.reduce((sum, credit) => {
+        // console.log(credit);
+        const discount =
+          orders.find((v) => v.id == credit.order_id)?.discount || 1.0;
+
+        const total = credit.return_items
+          ? credit.return_items.reduce(
+              (acc, v) => acc + v.amount * v.quantity,
+              0
+            )
+          : 0;
+        // console.log(total,discount);
+
+        const final = parseFloat(total) - parseFloat(discount);
+        const tax = parseFloat(final * 0.19).toFixed(2);
+
+        return sum + (parseFloat(final) + parseFloat(tax));
+      }, 0);
+
+      // console.log(totalCredit);
+      setCredits(totalCredit);
+    } catch (error) {
+      console.error(
+        "Error fetching allOrder:",
+        error.response ? error.response.data : error.message
+      );
+    }
+  };
+
+  // useEffect(()=>{
+  //   if(credits > 0 && amount > 0){
+  //     setFinalAmount(parseFloat(amount.toFixed(2))- parseFloat(credits.toFixed(2)))
+  //   }
+  // },[finaldata,amount])
 
   const finalamount = async () => {
     try {
@@ -355,14 +435,20 @@ const Informacira = () => {
         }
       );
 
+      if (response.data) {
+        setFinalData({
+          orderId: response.data.order.split(","),
+          paymentId: response.data.payment.split(","),
+        });
+      }
       if (response.data.total_amount > 0) {
-        setFinalAmount(
+        setAmount(
           (
             response.data.total_amount + parseFloat(data[0].open_amount)
           ).toFixed(2)
         );
       } else {
-        setFinalAmount(data[0]?.open_amount);
+        setAmount(data[0]?.open_amount);
       }
     } catch (error) {
       console.log(error);
@@ -464,7 +550,7 @@ const Informacira = () => {
   //   setIsProcessing(false);
   // };
   const fetchAllBox = async () => {
-    setIsProcessing(true);
+    // setIsProcessing(true);
     try {
       const response = await axios.get(
         `${apiUrl}/get-boxlogs-all/${bId}?from_month=${selectedDesdeMonth}&to_month=${selectedHastaMonth}`,
@@ -480,8 +566,8 @@ const Informacira = () => {
           createdAt: new Date(box.created_at).toLocaleString(), // Assuming the API returns a 'created_at' field
         }))
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        console.log(data);
-        
+      console.log(data);
+
       setData(data);
     } catch (error) {
       console.error("Error fetching boxes:", error);
@@ -489,7 +575,7 @@ const Informacira = () => {
     setIsProcessing(false);
   };
 
-
+  // setIsProcessing(false);
   // const fetchAllBoxReport = async () => {
   //   setIsProcessing(true);
   //   try {
@@ -576,14 +662,15 @@ const Informacira = () => {
       setCashier(cashiers);
     }
     if (orders) {
-      const filteredOrders = orders.filter((order) => order.box_id == bId).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      const filteredOrders = orders
+        .filter((order) => order.box_id == bId)
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setAllOrder(filteredOrders);
     }
     if (payments) {
       setAllpayments(payments);
     }
-  }, [tablewithSector]);;
-
+  }, [tablewithSector]);
 
   // // get box
   // const getBox = async () => {
@@ -655,7 +742,7 @@ const Informacira = () => {
       }
     }
     handleClose16();
-    setIsProcessing(true);
+    // setIsProcessing(true);
     try {
       const response = await axios.post(
         `${apiUrl}/box/statusChange`,
@@ -703,13 +790,13 @@ const Informacira = () => {
     // console.log("close Price", closePrice)
     // console.log("cashier Price", pricesecond)
     handleClose11();
-    setIsProcessing(true);
+    // setIsProcessing(true);
     try {
       const response = await axios.post(
         `${apiUrl}/box/statusChange`, // Replace with the correct endpoint
         {
           box_id: bId, // Pass the box ID
-          close_amount: finalAmount, // Pass the close amount
+          close_amount: (amount - credits)?.toFixed(2), // Pass the close amount
           cash_amount: pricesecond,
           admin_id: admin_id,
         },
@@ -777,17 +864,17 @@ const Informacira = () => {
 
   const generateExcelReport = async () => {
     if (selectedDesdeMonthReport > selectedHastaMonthReport) {
-      setErrorReport(
-        "Hasta debe ser mayor o igual que Desde."
-      );
+      setErrorReport("Hasta debe ser mayor o igual que Desde.");
       setData([]);
       return;
     }
-    setIsProcessing(true);
+    // setIsProcessing(true);
     try {
+      const desd = selectedDesdeMonthReport.toLocaleString('default', { month: '2-digit', year: 'numeric' })
+      const hast = selectedHastaMonthReport.toLocaleString('default', { month: '2-digit', year: 'numeric' })
       // Fetch box report details from the API
       const responseB = await axios.get(
-        `${apiUrl}/get-boxlogs-all/${bId}?from_month=${selectedDesdeMonthReport}&to_month=${selectedHastaMonthReport}`,
+        `${apiUrl}/get-boxlogs-all/${bId}?from_month=${desd}&to_month=${hast}`,
         {
           // const response = await axios.get(`${API_URL}/getAllboxes`, {
           headers: {
@@ -1193,6 +1280,9 @@ const Informacira = () => {
     }
   };
 
+  const [startDate, setStartDate] = useState(new Date());
+  console.log(startDate);
+
   return (
     <section>
       <div className="s_bg_dark">
@@ -1389,8 +1479,30 @@ const Informacira = () => {
                               <label className="mb-1 j-caja-text-1">
                                 Desde
                               </label>
+                              <div className="position-relative">
+                                <DatePicker
+                                  showPopperArrow={false}
+                                  // selected={new Date(selectedDesdeMonthReport)}
+                                  // onChange={(date) => setSelectedDesdeMonthReport(date.getMonth() + 1)} // Adjust as needed
+                                  selected={selectedDesdeMonthReport}
+                                  onChange={(date) => setSelectedDesdeMonthReport(date)}
+                                  dateFormat="MMMM-yyyy"
+                                  locale={es} // Changed to Spanish locale
+                                  showMonthYearPicker
+                                  showFullMonthYearPicker
+                                  showTwoColumnMonthYearPicker
+                                  className="form-select  b_select border-0 py-2 w-100" // Add Bootstrap class and custom class
+                                />
+                              </div>
 
-                              <select
+                              {/* <MonthPicker
+                                value={selectedDesdeMonthReport} // Set the current value
+                                onChange={(value) => setSelectedDesdeMonthReport(value)} // Update the state on change
+                                year={2023} // Set the default year (you can make this dynamic)
+                                className="form-select b_select border-0 py-2" // Add your custom styles
+                              /> */}
+
+                              {/* <select
                                 className="form-select  b_select border-0 py-2  "
                                 style={{ borderRadius: "8px" }}
                                 aria-label="Default select example"
@@ -1413,13 +1525,28 @@ const Informacira = () => {
                                 <option value="10">Octubre </option>
                                 <option value="11">Noviembre</option>
                                 <option value="12">Diciembre</option>
-                              </select>
+                              </select> */}
                             </div>
                             <div className="col-6">
                               <label className="mb-1 j-caja-text-1">
                                 Hasta
                               </label>
-                              <select
+                              <div className="position-relative">
+                              <DatePicker
+                                  showPopperArrow={false}
+                                  // selected={new Date(selectedDesdeMonthReport)}
+                                  // onChange={(date) => setSelectedDesdeMonthReport(date.getMonth() + 1)} // Adjust as needed
+                                  selected={selectedHastaMonthReport}
+                                  onChange={(date) => setSelectedHastaMonthReport(date)}
+                                  dateFormat="MMMM-yyyy"
+                                  locale={es} // Changed to Spanish locale
+                                  showMonthYearPicker
+                                  showFullMonthYearPicker
+                                  showTwoColumnMonthYearPicker
+                                  className="form-select  b_select border-0 py-2 w-100" // Add Bootstrap class and custom class
+                                />
+                                </div>
+                              {/* <select
                                 className="form-select  b_select border-0 py-2  "
                                 style={{ borderRadius: "8px" }}
                                 aria-label="Default select example"
@@ -1442,7 +1569,7 @@ const Informacira = () => {
                                 <option value="10">Octubre </option>
                                 <option value="11">Noviembre</option>
                                 <option value="12">Diciembre</option>
-                              </select>
+                              </select> */}
                             </div>
                             <div className="d-flex w-auto justify-content-end gap-5">
                               {errorReport && (
@@ -1753,7 +1880,7 @@ const Informacira = () => {
                               type="text"
                               id="final"
                               className="sj_modelinput j-tbl-information-input py-2 px-3 opacity-75"
-                              value={`$${finalAmount}`}
+                              value={`$${(amount - credits).toFixed(2)}`}
                               onChange={handleprice}
                               disabled
                             />
@@ -2953,7 +3080,7 @@ const Informacira = () => {
                     </Modal>
 
                     {/* Proccesing */}
-                    <Modal
+                    {/* <Modal
                       show={isProcessing || loadingBox || loadingTable || loadingOrder || loadingUser}
                       keyboard={false}
                       backdrop={true}
@@ -2972,7 +3099,7 @@ const Informacira = () => {
                         />
                         <p className="mt-2">Procesando solicitud...</p>
                       </Modal.Body>
-                    </Modal>
+                    </Modal> */}
                   </div>
                 </Tab>
               </Tabs>

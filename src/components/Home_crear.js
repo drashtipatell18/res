@@ -961,7 +961,7 @@ export default function Home_crear({ item }) {
                                                                             <div className='mt-2'>
                                                                                 <h5 className='caja-pajo-text'>Cantidad</h5>
                                                                                 <div className="mb-3 b_gray">
-                                                                                    <input type="text" id="disabledTextInput" className="form-control mt-2 text-white b_gray" value={`$${selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0)}`}
+                                                                                    <input type="text" id="disabledTextInput" className="form-control mt-2 text-white b_gray" value={`$${total ? finaltotal : 0}`}
                                                                                         onChange={handleprice} style={{ borderRadius: "10px" }} />
                                                                                 </div>
                                                                             </div>
