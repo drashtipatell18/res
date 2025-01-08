@@ -49,6 +49,18 @@ export const getAllOrders = createAsyncThunk(
       }
     }
   );
+
+  export const getCredit = createAsyncThunk(
+    "/getCredit",
+    async (admin_id, { rejectWithValue }) => {
+      try {
+        const response = await axiosInstance.post(`/order/getCredit`,admin_id);
+        return response.data.data;
+      } catch (error) {
+        return handleErrors(error, null, rejectWithValue);
+      }
+    }
+  );
   
 
   const orderSlice = createSlice({
@@ -57,6 +69,7 @@ export const getAllOrders = createAsyncThunk(
       orders: [],
       lastOrder: '',
       payments: [],
+      credit: [],
       loadingOrder: false,
     },
     reducers: {},
@@ -86,6 +99,18 @@ export const getAllOrders = createAsyncThunk(
           state.loadingOrder = false;
         })
 
+         // getAllPayments
+         .addCase(getCredit.pending, (state) => {
+          state.loadingOrder = true;
+        })
+        .addCase(getCredit.fulfilled, (state, action) => {
+          state.loadingOrder = false;
+          state.credit = action.payload;
+        })
+        .addCase(getCredit.rejected, (state, action) => {
+          state.loadingOrder = false;
+        })
+        
          // getAllPayments
          .addCase(getLastOrder.pending, (state) => {
           state.loadingOrder = true;

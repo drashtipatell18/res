@@ -242,6 +242,8 @@ const generateOrderReceipt =  ( cartItems, tableId = '', payment = {} ) => {
     if (Array.isArray(cartItems)) {
       cartItems.forEach(item => {
         doc.text(item.name, leftMargin, yPos);
+        yPos += 6; // Move down for the note
+        doc.text(`Note: ${item.note || 'N/A'}`, leftMargin, yPos); // Add note below the name
         doc.text(item.count.toString(), 100, yPos);
         doc.text(`$ ${parseFloat(item.price).toFixed(2)}`, 130, yPos);
         doc.text(`$ ${(parseFloat(item.price) * item.count).toFixed(2)}`, 160, yPos);

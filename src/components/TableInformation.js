@@ -10,28 +10,42 @@ import axios from "axios";
 import { RiCloseLargeFill } from "react-icons/ri";
 import * as XLSX from "xlsx-js-style";
 import { BsCheckLg } from "react-icons/bs";
-import { useDispatch } from "react-redux";
-import { getAllTableswithSector } from "../redux/slice/table.slice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllTableswithSector,
+  getTableState,
+} from "../redux/slice/table.slice";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import es from "date-fns/locale/es"; 
+import { registerLocale } from "react-datepicker";
+registerLocale("es", es);
 
 const TableInformation = () => {
   const location = useLocation();
+  // const dispatch = useDispatch();
   // const tId = location.state?.selectedTable;
   const apiUrl = process.env.REACT_APP_API_URL;
   const API = process.env.REACT_APP_IMAGE_URL;
   const [token] = useState(localStorage.getItem("token"));
   const [role] = useState(localStorage.getItem("role"));
-  const admin_id = localStorage.getItem("admin_id")
+  const admin_id = localStorage.getItem("admin_id");
+
+  const { tableState } = useSelector((state) => state.tables);
 
   const [tId, setTId] = useState(location.state?.selectedTable);
   console.log(tId);
 
-
   const [userData, setUserData] = useState({});
   const [userTableData, setUserTableData] = useState({});
-  const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(1);
-  const [selectedHastaMonth, setSelectedHastaMonth] = useState(
-    new Date().getMonth() + 1
-  );
+   const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
+      const date = new Date();
+      date.setMonth(date.getMonth() - 1); 
+      return new Date(date) ; 
+    });
+    const [selectedHastaMonth, setSelectedHastaMonth] = useState(
+      new Date()
+    );
   const [datatab, setDatatab] = useState([]);
   const [error, setError] = useState("");
 
@@ -49,19 +63,22 @@ const TableInformation = () => {
     }, 2000);
   };
 
-  const [tableData, setTableData] = useState()
+  const [tableData, setTableData] = useState();
 
   const [show15, setShow15] = useState(false);
 
   const handleClose15 = () => setShow15(false);
   const handleShow15 = () => setShow15(true);
 
-
   const [errorReport, setErrorReport] = useState("");
-  const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(1);
-  const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
-    new Date().getMonth() + 1
-  );
+  const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(() => {
+      const date = new Date();
+      date.setMonth(date.getMonth() - 1);
+      return new Date(date) ; 
+    });
+    const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
+      new Date()
+    );
 
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
@@ -69,43 +86,36 @@ const TableInformation = () => {
 
   useEffect(() => {
     if (!(role == "admin" || role == "cashier" || role == "waitress")) {
-      navigate('/dashboard')
+      navigate("/dashboard");
     }
-  }, [role])
+  }, [role]);
 
-  useEffect(
-    () => {
-      if (selectedDesdeMonthReport > selectedHastaMonthReport) {
-        setErrorReport("Hasta el mes debe ser mayor o igual que Desde el mes.");
-        setData([]);
-      } else {
-        setErrorReport("");
-      }
-    },
-    [selectedDesdeMonthReport, selectedHastaMonthReport]
-  );
-
+  useEffect(() => {
+    if (selectedDesdeMonthReport > selectedHastaMonthReport) {
+      setErrorReport("Hasta el mes debe ser mayor o igual que Desde el mes.");
+      setData([]);
+    } else {
+      setErrorReport("");
+    }
+  }, [selectedDesdeMonthReport, selectedHastaMonthReport]);
 
   const gettableData = async () => {
     if (tId) {
       try {
-        setIsProcessing(true)
-        const response = await axios.get(
-          `${apiUrl}/single-table/${tId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setIsProcessing(false)
+        setIsProcessing(true);
+        const response = await axios.get(`${apiUrl}/single-table/${tId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setIsProcessing(false);
         if (response.data.tables) {
           setTableData(response.data.tables);
         } else {
           console.error("No tables found in response");
         }
       } catch (error) {
-        setIsProcessing(false)
+        setIsProcessing(false);
         console.error("Error fetching data:", error);
       }
     } else {
@@ -113,14 +123,15 @@ const TableInformation = () => {
     }
   };
 
-  // Ensure useEffect is correctly set to call gettableData when tId changes
+  useEffect(() => {
+    dispatch(getTableState({ admin_id, tid: tId }));
+  }, [tId]);
+
   useEffect(() => {
     if (tId) {
       gettableData(tId);
     }
   }, [tId]);
-  // console.log(tableData);
-
 
   const [data, setData] = useState([
     {
@@ -128,10 +139,8 @@ const TableInformation = () => {
       fecha: "24/05/2023",
       hora: "11:00 AM",
       cliente: "Damian Gonzales",
-      estado: "Recibido"
+      estado: "Recibido",
     },
-
-
   ]);
 
   const [activeTab, setActiveTab] = useState("home");
@@ -154,22 +163,19 @@ const TableInformation = () => {
     });
   });
 
-  useEffect(
-    () => {
-      if (mapVal.length > 0) {
-        const newCategories = mapVal.map((val, index) => `S ${index + 1}`);
-        setCategories(newCategories);
-      }
-    },
-    [mapVal]
-  );
+  useEffect(() => {
+    if (mapVal.length > 0) {
+      const newCategories = mapVal.map((val, index) => `S ${index + 1}`);
+      setCategories(newCategories);
+    }
+  }, [mapVal]);
 
   const [chartState, setChartState] = useState({
     series: [
       {
         name: "Estadisticas",
-        data: mapVal
-      }
+        data: mapVal,
+      },
     ],
     options: {
       chart: {
@@ -179,15 +185,15 @@ const TableInformation = () => {
           show: false,
           tools: {
             download: false,
-            resetZoom: false
-          }
-        }
+            resetZoom: false,
+          },
+        },
       },
       dataLabels: {
-        enabled: false
+        enabled: false,
       },
       stroke: {
-        curve: "smooth"
+        curve: "smooth",
       },
       xaxis: {
         type: "category",
@@ -195,16 +201,16 @@ const TableInformation = () => {
         labels: {
           style: {
             colors: "#d0d5db",
-            fontSize: "14px"
+            fontSize: "14px",
           },
-          offsetY: 5
+          offsetY: 5,
         },
         axisBorder: {
-          show: false
+          show: false,
         },
         axisTicks: {
-          show: false
-        }
+          show: false,
+        },
       },
       grid: {
         borderColor: "#dee2e62a",
@@ -212,17 +218,17 @@ const TableInformation = () => {
         yaxis: {
           lines: {
             show: true,
-            interval: 1
-          }
+            interval: 1,
+          },
         },
         row: {
           colors: ["transparent", "transparent"], // Optional: set background colors for rows
-          opacity: 0.5
-        }
+          opacity: 0.5,
+        },
       },
       yaxis: {
         show: false,
-        tickAmount: 5 // This will add 4 horizontal lines
+        tickAmount: 5, // This will add 4 horizontal lines
       },
       fill: {
         type: "gradient",
@@ -230,13 +236,12 @@ const TableInformation = () => {
           shadeIntensity: 1,
           opacityFrom: 0.4,
           opacityTo: 0.1,
-          stops: ["0,0,0"]
-        }
+          stops: ["0,0,0"],
+        },
       },
-      colors: ["#008FFB"]
-    }
+      colors: ["#008FFB"],
+    },
   });
-
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -255,25 +260,22 @@ const TableInformation = () => {
   const [analysis, setAnalysis] = useState("");
   const [isProgressing, setIsProgressing] = useState(null);
 
-  useEffect(
-    () => {
-      setChartState((prevState) => ({
-        ...prevState,
-        series: [{ data: mapVal }],
-        options: {
-          ...prevState.options,
-          xaxis: { ...prevState.options.xaxis, categories: categories }
-        }
-      }));
-      generateAnalysis(mapVal);
-    },
-    [mapVal, categories]
-  );
+  useEffect(() => {
+    setChartState((prevState) => ({
+      ...prevState,
+      series: [{ data: mapVal }],
+      options: {
+        ...prevState.options,
+        xaxis: { ...prevState.options.xaxis, categories: categories },
+      },
+    }));
+    generateAnalysis(mapVal);
+  }, [mapVal, categories]);
 
   const generateAnalysis = (data) => {
     const initial = data[0];
     const final = data[data.length - 1];
-    const percentageChange = (final - initial) / initial * 100;
+    const percentageChange = ((final - initial) / initial) * 100;
 
     setIsProgressing(percentageChange >= 0);
     const analysisText = ` ${Math.abs(percentageChange).toFixed(2)}% `;
@@ -289,54 +291,54 @@ const TableInformation = () => {
     }
   }, [selectedDesdeMonth, selectedHastaMonth]);
 
-
   const fetchData = async (tableId) => {
     try {
-      const response = await axios.post(
-        `${apiUrl}/table/getStats/${tableId}?from_month=${selectedDesdeMonth}&to_month=${selectedHastaMonth}`,
-        { admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      // const response = await axios.post(
+      //   `${apiUrl}/table/getStats/${tableId}?from_month=${selectedDesdeMonth}&to_month=${selectedHastaMonth}`,
+      //   { admin_id },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   }
+      // );
+      const data = tableState.filter(
+        (v) =>
+          new Date(selectedHastaMonth) >= new Date(v.created_at) &&
+          new Date(selectedDesdeMonth) <= new Date(v.created_at)
       );
-      setDatatab(response.data);
+      setDatatab(data);
       const newMapValue = {};
 
-      response.data.forEach((order) => {
+      data.forEach((order) => {
         newMapValue[order.id] = order.order_total;
       });
-      const orderTotals = response.data.map((order) => order.order_total);
+      const orderTotals = data.map((order) => order.order_total);
 
       setMapVal(orderTotals);
-
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  const [tableid, setTableid] = useState('')
+  const [tableid, setTableid] = useState("");
 
-  useEffect(
-    () => {
-      if (tableData) {
-        const userIds = tableData.user_id;
-        const tableId = tableData.id;
-        setTableid(tableId)
-        fetchUserData(userIds);
-        fetchtTableData(tableId);
-        fetchData(tableId)
-      }
-    },
-    [tableData, selectedDesdeMonth, selectedHastaMonth]
-  );
+  useEffect(() => {
+    if (tableData) {
+      const userIds = tableData.user_id;
+      const tableId = tableData.id;
+      setTableid(tableId);
+      fetchUserData(userIds);
+      fetchtTableData(tableId);
+      fetchData(tableId);
+    }
+  }, [tableData, selectedDesdeMonth, selectedHastaMonth]);
   const fetchUserData = async (userIds) => {
     try {
       const response = await axios.get(`${apiUrl}/get-user/${userIds}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       setUserData(response.data);
     } catch (error) {
@@ -346,14 +348,11 @@ const TableInformation = () => {
   };
   const fetchtTableData = async (tableId) => {
     try {
-      const response = await axios.get(
-        `${apiUrl}/sector/by-table/${tableId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      const response = await axios.get(`${apiUrl}/sector/by-table/${tableId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setUserTableData(response.data.sector);
     } catch (error) {
@@ -380,7 +379,6 @@ const TableInformation = () => {
     return `${hours}:${minutes} ${period}`;
   };
 
-
   const monthNames = [
     "Enero",
     "Febrero",
@@ -393,37 +391,40 @@ const TableInformation = () => {
     "Septiembre",
     "Octubre",
     "Noviembre",
-    "Diciembre"
+    "Diciembre",
   ];
-
-
 
   const generateExcelReport = async () => {
     setIsProcessing(true);
     if (selectedDesdeMonthReport > selectedHastaMonthReport) {
-      setErrorReport("Hasta month must be greater than or equal to Desde month.");
+      setErrorReport(
+        "Hasta month must be greater than or equal to Desde month."
+      );
       setData([]);
       return;
     }
     try {
-
       // =======infomation=======
       const infomation = {
         Creador_mesa: userData[0]?.name,
-        Fecha_creación: new Date(tableData?.created_at).toLocaleDateString('en-GB'),
+        Fecha_creación: new Date(tableData?.created_at).toLocaleDateString(
+          "en-GB"
+        ),
         Sector: tableData?.id,
-        Número_mesa: tableData?.sector_id
+        Número_mesa: tableData?.sector_id,
       };
 
-      const formattedData = Object.entries(
-        infomation
-      ).map(([key, value]) => ({
-        Campo: key == "Creador_mesa" ? "Creador mesa" :
-          key == "Fecha_creación" ? "Fecha creación" :
-            key == "Número_mesa" ? "Número mesa" : key,
-        Valor: value
+      const formattedData = Object.entries(infomation).map(([key, value]) => ({
+        Campo:
+          key == "Creador_mesa"
+            ? "Creador mesa"
+            : key == "Fecha_creación"
+            ? "Fecha creación"
+            : key == "Número_mesa"
+            ? "Número mesa"
+            : key,
+        Valor: value,
       }));
-
 
       // Create a worksheet
       const wsi = XLSX.utils.json_to_sheet(formattedData, { origin: "A2" });
@@ -436,7 +437,7 @@ const TableInformation = () => {
       // Apply styles to the heading
       wsi["A1"].s = {
         font: { name: "Aptos Narrow", bold: true, sz: 16 },
-        alignment: { horizontal: "center", vertical: "center" }
+        alignment: { horizontal: "center", vertical: "center" },
       };
 
       // Set row height for the heading
@@ -450,39 +451,56 @@ const TableInformation = () => {
       // Set row height for header
       wsi["!rows"] = [{ hpt: 25 }]; // Set height of first row to 25
 
-
       // Create a workbook
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, wsi, "Información");
 
       //  // =============== Historial =============
 
-      const response = await axios.post(
-        `${apiUrl}/table/getStats/${tableid}?from_month=${selectedDesdeMonthReport}&to_month=${selectedHastaMonthReport}`, { admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      // const response = await axios.post(
+      //   `${apiUrl}/table/getStats/${tableid}?from_month=${selectedDesdeMonthReport}&to_month=${selectedHastaMonthReport}`, { admin_id },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   }
+      // );
+      const data = tableState.filter(
+        (v) =>
+          new Date(selectedHastaMonthReport) >= new Date(v.created_at) &&
+          new Date(selectedDesdeMonthReport) <= new Date(v.created_at)
       );
-      const historia = response.data.map((table) => {
+      const historia = data.map((table) => {
         return {
           Pedido: table.id,
           Fecha: formatDate(table.created_at),
           Hora: formatTime(table.created_at),
           Cliente: table.customer_name,
-          Estado: table.status.toLowerCase() === "received" ? "Recibido" :
-            table.status.toLowerCase() === "prepared" ? "Preparado" :
-              table.status.toLowerCase() === "delivered" ? "Entregado" :
-                table.status.toLowerCase() === "finalized" ? "Finalizado" :
-                  table.status.toLowerCase() === "withdraw" ? "Retirar" :
-                    table.status.toLowerCase() === "local" ? "Local" :
-                      table.status.toLowerCase() === "cancelled" ? "Cancelado" :
-                        table.status
+          Estado:
+            table.status.toLowerCase() === "received"
+              ? "Recibido"
+              : table.status.toLowerCase() === "prepared"
+              ? "Preparado"
+              : table.status.toLowerCase() === "delivered"
+              ? "Entregado"
+              : table.status.toLowerCase() === "finalized"
+              ? "Finalizado"
+              : table.status.toLowerCase() === "withdraw"
+              ? "Retirar"
+              : table.status.toLowerCase() === "local"
+              ? "Local"
+              : table.status.toLowerCase() === "cancelled"
+              ? "Cancelado"
+              : table.status,
         };
       });
 
-      const ws = XLSX.utils.json_to_sheet(historia.length > 0 ? historia : [{ Pedido: "", Fecha: "", Hora: "", Cliente: "", Estado: "" }], { origin: "A2" });
+      const ws = XLSX.utils.json_to_sheet(
+        historia.length > 0
+          ? historia
+          : [{ Pedido: "", Fecha: "", Hora: "", Cliente: "", Estado: "" }],
+        { origin: "A2" }
+      );
 
       // Add a heading "Reporte de Entrega"
       XLSX.utils.sheet_add_aoa(ws, [["Historial"]], { origin: "A1" });
@@ -491,7 +509,7 @@ const TableInformation = () => {
       // Add column names only if there is data
       if (historia.length > 0) {
         const columnNames = ["Pedido", "Fecha", " Hora", "Cliente", "Estado"];
-        XLSX.utils.sheet_add_aoa(ws, [columnNames], { origin: "A2" })
+        XLSX.utils.sheet_add_aoa(ws, [columnNames], { origin: "A2" });
       } else {
         // Add column names even if there's no data
         const columnNames = ["Pedido", "Fecha", "Hora", "Cliente", "Estado"];
@@ -501,7 +519,7 @@ const TableInformation = () => {
       // Apply styles to the heading
       ws["A1"].s = {
         font: { name: "Aptos Narrow", bold: true, sz: 16 },
-        alignment: { horizontal: "center", vertical: "center" }
+        alignment: { horizontal: "center", vertical: "center" },
       };
 
       // Set row height for the heading
@@ -510,12 +528,18 @@ const TableInformation = () => {
       ws["!rows"][1] = { hpt: 25 }; // Set height for column names
 
       // Auto-size columns
-      const colWidths = [{ wch: 10 }, { wch: 15 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
+      const colWidths = [
+        { wch: 10 },
+        { wch: 15 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+      ];
       ws["!cols"] = colWidths;
 
       // Add sorting functionality
       if (historia.length > 0) {
-        ws['!autofilter'] = { ref: `A2:E${historia.length}` }; // Enable autofilter for the range
+        ws["!autofilter"] = { ref: `A2:E${historia.length}` }; // Enable autofilter for the range
       }
       // Create a workbook
       XLSX.utils.book_append_sheet(wb, ws, "Historial");
@@ -530,7 +554,6 @@ const TableInformation = () => {
       setIsProcessing(false);
 
       handleShow12();
-
     } catch (error) {
       console.error("Error generating report:", error);
       setErrorReport(
@@ -541,9 +564,10 @@ const TableInformation = () => {
   const [showEdittable, setShowEdittable] = useState(false);
 
   const handleCloseEdittable = () => setShowEdittable(false);
-  const handleShowEdittable = () => {setShowEdittable(true);
-    setTableName(tableData.name || '')
-  }
+  const handleShowEdittable = () => {
+    setShowEdittable(true);
+    setTableName(tableData.name || "");
+  };
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -554,7 +578,7 @@ const TableInformation = () => {
     setShowEditFamDel(true);
     setTimeout(() => {
       setShowEditFamDel(false);
-      navigate("/table")
+      navigate("/table");
     }, 2000);
   };
 
@@ -569,83 +593,79 @@ const TableInformation = () => {
   };
 
   let [tableName, setTableName] = useState(null);
-  let [editErrorName, setEditErrorsName] = useState('');
+  let [editErrorName, setEditErrorsName] = useState("");
   //edit table
   const handleEditChange = (e) => {
     const name = e.target.value;
-    tableName = (name);
+    tableName = name;
     if (name) {
-      setEditErrorsName('');
+      setEditErrorsName("");
     }
   };
 
   const handleEditSubmit = async () => {
-
     if (!tableName) {
       setEditErrorsName("Debe ingresar un nombre de mesa.");
-      return
+      return;
     }
 
     handleCloseEdittable();
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
       const response = await axios.post(
         `${apiUrl}/table/updateTableName`,
         {
           table_id: tId,
-          name: tableName
+          name: tableName,
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         }
-
       );
       if (response.status == 200) {
-        setTableName(null)
+        setTableName(null);
         setIsProcessing(false);
         handleShowEditFamSuc();
         gettableData();
-        dispatch(getAllTableswithSector({admin_id}));
+        dispatch(getAllTableswithSector({ admin_id }));
         // getSector();
-        // getSectorTable(); 
+        // getSectorTable();
       }
     } catch (error) {
       console.error("Error updating sector:", error);
       alert("Failed to update sector. Please try again.");
     }
-  }
+  };
 
   const handleDeleteClick = () => {
     console.log(tId);
     setShowDeleteConfirm(true); // Show confirmation modal
     handleCloseEdittable();
-  }
+  };
 
   const handleDeleteConfirmation = async () => {
-
     if (tId) {
-      setIsProcessing(true)
+      setIsProcessing(true);
       try {
         const response = await axios.delete(
           // `${apiUrl}/order/deleteSingle/${itemToDelete}`,
           `${apiUrl}/table/delete/${tId}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
         if (response.status == 200) {
-          dispatch(getAllTableswithSector({admin_id}));
+          dispatch(getAllTableswithSector({ admin_id }));
           setIsProcessing(false);
           setShowDeleteConfirm(false);
           handleShowEditFamDel();
         }
-
 
         // getSector();
         // getSectorTable();
@@ -659,9 +679,7 @@ const TableInformation = () => {
       }
       setIsProcessing(false);
     }
-
-  }
-
+  };
 
   // console.log(tableData);
 
@@ -673,9 +691,7 @@ const TableInformation = () => {
         {/* {console.log(tableData)} */}
         <div className=" flex-grow-1 sidebar" style={{ width: "50%" }}>
           {tableData ? (
-
             <div>
-
               <div className="m_bgblack text-white m_borbot  b_border_bb j-tbl-font-1">
                 <div className="j-table-datos-btn">
                   <Link to={"/table"}>
@@ -690,7 +706,10 @@ const TableInformation = () => {
                 </div>
                 <div className="j-table-information-head-buttons">
                   <h5 className="j-table-information-1 j-table-text-23 ">
-                  Datos mesa <span>- {tableData?.name} ( {tableData?.id} )</span>
+                    Datos mesa{" "}
+                    <span>
+                      - {tableData?.name} ( {tableData?.id} )
+                    </span>
                   </h5>
 
                   <div className="j-table-information-btn-1">
@@ -720,7 +739,6 @@ const TableInformation = () => {
                         <span className=""> Generar reporte</span>
                       </div>
                     </Button>
-
 
                     <Button
                       data-bs-theme="dark"
@@ -787,7 +805,7 @@ const TableInformation = () => {
                             value={userData[0]?.name}
                             readOnly
                           />
-                          {console.log(userData)}
+                          {/* {console.log(userData)} */}
                         </div>
                         <div className="col-6 mb-3">
                           <label
@@ -801,7 +819,9 @@ const TableInformation = () => {
                             className="form-control j-tbl-information-input"
                             id="exampleFormControlInput1"
                             placeholder="-"
-                            value={new Date(tableData?.created_at).toLocaleDateString('en-GB')}
+                            value={new Date(
+                              tableData?.created_at
+                            ).toLocaleDateString("en-GB")}
                             readOnly
                           />
                         </div>
@@ -875,7 +895,26 @@ const TableInformation = () => {
                             >
                               Desde
                             </label>
-                            <select
+                            <div className="position-relative">
+                                                    <DatePicker
+                                                      showPopperArrow={false}
+                                                      selected={selectedDesdeMonth}
+                                                      onChange={(date) => {
+                                                        const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
+                                                        setSelectedDesdeMonth(aa);
+                                                      }}
+                                                      dateFormat="MMMM-yyyy"
+                                                      locale={es} 
+                                                      showMonthYearPicker
+                                                      showFullMonthYearPicker
+                                                      showTwoColumnMonthYearPicker
+                                                      className="form-select  b_select border-0 py-2"
+                                                      style={{ borderRadius: "8px", cursor: "pointer" }}
+                                                      // disabledKeyboardNavigation
+                                                      shouldCloseOnSelect={false}
+                                                    />
+                                                    </div>
+                            {/* <select
                               className="form-select  b_select border-0 py-2  "
                               style={{ borderRadius: "8px" }}
                               aria-label="Default select example"
@@ -898,7 +937,7 @@ const TableInformation = () => {
                               <option value="10">Octubre </option>
                               <option value="11">Noviembre</option>
                               <option value="12">Diciembre</option>
-                            </select>
+                            </select> */}
                           </div>
                           <div className="mb-3">
                             <label
@@ -907,7 +946,24 @@ const TableInformation = () => {
                             >
                               Hasta
                             </label>
-                            <select
+                             <div className="position-relative">
+                                                    <DatePicker
+                                                      showPopperArrow={false}
+                                                      selected={selectedHastaMonth}
+                                                      onChange={(date) => {
+                                                        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+                                                        setSelectedHastaMonth(lastDay);
+                                                      }}
+                                                      dateFormat="MMMM-yyyy"
+                                                      locale={es} 
+                                                      showMonthYearPicker
+                                                      showFullMonthYearPicker
+                                                      showTwoColumnMonthYearPicker
+                                                      className="form-select  b_select border-0 py-2"
+                                                      style={{ borderRadius: "8px", cursor: "pointer", width:'100px !important' }}
+                                                    />
+                                                    </div>
+                            {/* <select
                               className="form-select  b_select border-0 py-2  "
                               style={{ borderRadius: "8px" }}
                               aria-label="Default select example"
@@ -930,12 +986,25 @@ const TableInformation = () => {
                               <option value="10">Octubre </option>
                               <option value="11">Noviembre</option>
                               <option value="12">Diciembre</option>
-                            </select>
+                            </select> */}
                           </div>
                         </div>
                       </div>
-                      {error && <div className="alert alert-danger d-flex justify-content-between pointer">{error} <div className="text-black d-flex align-items-center" style={{ cursor: 'pointer' }} onClick={(e) => { setError(''); setSelectedDesdeMonth(1) }}><RiCloseLargeFill />  </div></div>}
-
+                      {error && (
+                        <div className="alert alert-danger d-flex justify-content-between pointer">
+                          {error}{" "}
+                          <div
+                            className="text-black d-flex align-items-center"
+                            style={{ cursor: "pointer" }}
+                            onClick={(e) => {
+                              setError("");
+                              setSelectedDesdeMonth(1);
+                            }}
+                          >
+                            <RiCloseLargeFill />{" "}
+                          </div>
+                        </div>
+                      )}
                     </form>
 
                     <div className="b_table1">
@@ -953,27 +1022,35 @@ const TableInformation = () => {
 
                         <tbody className="text-white b_btnn ">
                           {datatab.length > 0 ? (
-
-                            datatab.map((order) => (
-                              console.log(order.status),
-
-                              <tr key={order.id} className="b_row">
-                                <Link to={`/home_Pedidos/paymet/${order.id}`}>
-                                  <div
-                                    className="b_idbtn j-tbl-font-3 "
-                                    style={{ borderRadius: "10px", fontSize: "12px" }}
-                                  >
-                                    {order.id}
-                                  </div>
-                                </Link>
-                                <td className="j-tbl-text-8"> {formatDate(order.created_at)}</td>
-                                <td className="text-nowrap j-tbl-text-8">
-                                  {formatTime(order.created_at)}
-                                </td>
-                                <td className="text-nowrap j-tbl-text-8">
-                                  {order.customer_name}
-                                </td>
-                                {/* <td
+                            datatab.map(
+                              (order) => (
+                                // console.log(order.status),
+                                (
+                                  <tr key={order.id} className="b_row">
+                                    <Link
+                                      to={`/home_Pedidos/paymet/${order.id}`}
+                                    >
+                                      <div
+                                        className="b_idbtn j-tbl-font-3 "
+                                        style={{
+                                          borderRadius: "10px",
+                                          fontSize: "12px",
+                                        }}
+                                      >
+                                        {order.id}
+                                      </div>
+                                    </Link>
+                                    <td className="j-tbl-text-8">
+                                      {" "}
+                                      {formatDate(order.created_at)}
+                                    </td>
+                                    <td className="text-nowrap j-tbl-text-8">
+                                      {formatTime(order.created_at)}
+                                    </td>
+                                    <td className="text-nowrap j-tbl-text-8">
+                                      {order.customer_name}
+                                    </td>
+                                    {/* <td
                                   style={{ fontSize: "12px" }}
                                   className={`b_btn1 mb-3 ms-3 text-nowrap d-flex j-tbl-font-3  align-items-center justify-content-center ${order.estado ==
                                     "received"
@@ -988,31 +1065,79 @@ const TableInformation = () => {
                                 >
                                   {order.status}
                                 </td> */}
-                                <td className={`bj-delivery-text-2  b_btn1 mb-3 ms-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                                                        ${order.status.toLowerCase() === 'received' ? 'b_indigo' : order.status.toLowerCase() === 'prepared' ? 'b_ora' : order.status.toLowerCase() === 'delivered' ? 'b_blue' : order.status.toLowerCase() === 'finalized' ? 'b_green' : order.status.toLowerCase() === 'withdraw' ? 'b_indigo' : order.status.toLowerCase() === 'local' ? 'b_purple' : 'b_ora text-danger'}`}>
-                                  {order.status.toLowerCase() === 'received' ? 'Recibido' : order.status.toLowerCase() === 'prepared' ? 'Preparado ' : order.status.toLowerCase() === 'delivered' ? 'Entregado' : order.status.toLowerCase() === 'finalized' ? 'Finalizado' : order.status.toLowerCase() === 'withdraw' ? 'Retirar' : order.status.toLowerCase() === 'local' ? 'Local' : order.status.toLowerCase() === 'cancelled' ? 'cancelado' : ' '}
-                                </td>
-                                <td>
-                                  <Link to={`/home_Pedidos/paymet/${order.id}`}>
                                     <td
-                                      style={{ fontSize: "12px" }}
-                                      className="b_idbtn j-btn-primary text-nowrap j-tbl-font-3 "
+                                      className={`bj-delivery-text-2  b_btn1 mb-3 ms-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
+                                                        ${
+                                                          order.status.toLowerCase() ===
+                                                          "received"
+                                                            ? "b_indigo"
+                                                            : order.status.toLowerCase() ===
+                                                              "prepared"
+                                                            ? "b_ora"
+                                                            : order.status.toLowerCase() ===
+                                                              "delivered"
+                                                            ? "b_blue"
+                                                            : order.status.toLowerCase() ===
+                                                              "finalized"
+                                                            ? "b_green"
+                                                            : order.status.toLowerCase() ===
+                                                              "withdraw"
+                                                            ? "b_indigo"
+                                                            : order.status.toLowerCase() ===
+                                                              "local"
+                                                            ? "b_purple"
+                                                            : "b_ora text-danger"
+                                                        }`}
                                     >
-                                      Ver detalles
+                                      {order.status.toLowerCase() === "received"
+                                        ? "Recibido"
+                                        : order.status.toLowerCase() ===
+                                          "prepared"
+                                        ? "Preparado "
+                                        : order.status.toLowerCase() ===
+                                          "delivered"
+                                        ? "Entregado"
+                                        : order.status.toLowerCase() ===
+                                          "finalized"
+                                        ? "Finalizado"
+                                        : order.status.toLowerCase() ===
+                                          "withdraw"
+                                        ? "Retirar"
+                                        : order.status.toLowerCase() === "local"
+                                        ? "Local"
+                                        : order.status.toLowerCase() ===
+                                          "cancelled"
+                                        ? "cancelado"
+                                        : " "}
                                     </td>
-                                  </Link>
-                                </td>
-                              </tr>
-                            ))
+                                    <td>
+                                      <Link
+                                        to={`/home_Pedidos/paymet/${order.id}`}
+                                      >
+                                        <td
+                                          style={{ fontSize: "12px" }}
+                                          className="b_idbtn j-btn-primary text-nowrap j-tbl-font-3 "
+                                        >
+                                          Ver detalles
+                                        </td>
+                                      </Link>
+                                    </td>
+                                  </tr>
+                                )
+                              )
+                            )
                           ) : (
                             <tr>
-                              <td colSpan="6" className="text-center"> {/* Added colSpan to span all columns */}
-                                <div className="text-center">No hay datos para mostrar</div>
+                              <td colSpan="6" className="text-center">
+                                {" "}
+                                {/* Added colSpan to span all columns */}
+                                <div className="text-center">
+                                  No hay datos para mostrar
+                                </div>
                               </td>
                             </tr>
                           )}
                         </tbody>
-
                       </table>
                     </div>
                   </div>
@@ -1035,7 +1160,36 @@ const TableInformation = () => {
                               >
                                 Desde
                               </label>
-                              <select
+                              <div className="position-relative">
+                                <DatePicker
+                                  showPopperArrow={false}
+                                  selected={selectedDesdeMonth}
+                                  onChange={(date) => {
+                                    const aa = new Date(
+                                      date.getFullYear(),
+                                      date.getMonth(),
+                                      1,
+                                      0,
+                                      0,
+                                      1
+                                    );
+                                    setSelectedDesdeMonth(aa);
+                                  }}
+                                  dateFormat="MMMM-yyyy"
+                                  locale={es}
+                                  showMonthYearPicker
+                                  showFullMonthYearPicker
+                                  showTwoColumnMonthYearPicker
+                                  className="form-select  b_select border-0 py-2"
+                                  style={{
+                                    borderRadius: "8px",
+                                    cursor: "pointer",
+                                  }}
+                                  // disabledKeyboardNavigation
+                                  shouldCloseOnSelect={false}
+                                />
+                              </div>
+                              {/* <select
                                 className="form-select  b_select border-0 py-2  "
                                 style={{ borderRadius: "8px" }}
                                 aria-label="Default select example"
@@ -1058,7 +1212,7 @@ const TableInformation = () => {
                                 <option value="10">Octubre </option>
                                 <option value="11">Noviembre</option>
                                 <option value="12">Diciembre</option>
-                              </select>
+                              </select> */}
                             </div>
                             <div className="mb-3  j-input-width2">
                               <label
@@ -1067,7 +1221,35 @@ const TableInformation = () => {
                               >
                                 Hasta
                               </label>
-                              <select
+                              <div className="position-relative">
+                                <DatePicker
+                                  showPopperArrow={false}
+                                  selected={selectedHastaMonth}
+                                  onChange={(date) => {
+                                    const lastDay = new Date(
+                                      date.getFullYear(),
+                                      date.getMonth() + 1,
+                                      0,
+                                      23,
+                                      59,
+                                      59
+                                    );
+                                    setSelectedHastaMonth(lastDay);
+                                  }}
+                                  dateFormat="MMMM-yyyy"
+                                  locale={es}
+                                  showMonthYearPicker
+                                  showFullMonthYearPicker
+                                  showTwoColumnMonthYearPicker
+                                  className="form-select  b_select border-0 py-2"
+                                  style={{
+                                    borderRadius: "8px",
+                                    cursor: "pointer",
+                                    width: "100px !important",
+                                  }}
+                                />
+                              </div>
+                              {/* <select
                                 className="form-select  b_select border-0 py-2  "
                                 style={{ borderRadius: "8px" }}
                                 aria-label="Default select example"
@@ -1090,11 +1272,24 @@ const TableInformation = () => {
                                 <option value="10">Octubre </option>
                                 <option value="11">Noviembre</option>
                                 <option value="12">Diciembre</option>
-                              </select>
+                              </select> */}
                             </div>
                           </div>
-                          {error && <div className="alert alert-danger d-flex justify-content-between pointer">{error} <div className="text-black d-flex align-items-center" style={{ cursor: 'pointer' }} onClick={(e) => { setError(''); setSelectedDesdeMonth(1) }}><RiCloseLargeFill />  </div></div>}
-
+                          {error && (
+                            <div className="alert alert-danger d-flex justify-content-between pointer">
+                              {error}{" "}
+                              <div
+                                className="text-black d-flex align-items-center"
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  setError("");
+                                  setSelectedDesdeMonth(1);
+                                }}
+                              >
+                                <RiCloseLargeFill />{" "}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="col-6">
@@ -1119,7 +1314,7 @@ const TableInformation = () => {
                                 right: "20px",
                                 fontSize: "16px",
                                 color: isProgressing ? "green" : "red",
-                                fontWeight: 700
+                                fontWeight: 700,
                               }}
                             >
                               {analysis}{" "}
@@ -1134,11 +1329,8 @@ const TableInformation = () => {
               </Tabs>
             </div>
           ) : (
-
             <div>No Table Data Found</div>
-
           )}
-
 
           {/* generat report  */}
           <Modal
@@ -1159,17 +1351,42 @@ const TableInformation = () => {
             <Modal.Body>
               <div className="row">
                 <div className="col-6">
-                  <label className="mb-1 j-caja-text-1">
-                    Desde
-                  </label>
+                  <label className="mb-1 j-caja-text-1">Desde</label>
+                  <div className="position-relative">
+                    <DatePicker
+                      showPopperArrow={false}
+                      // selected={new Date(selectedDesdeMonthReport)}
+                      // onChange={(date) => setSelectedDesdeMonthReport(date.getMonth() + 1)} // Adjust as needed
+                      selected={selectedDesdeMonthReport}
+                      onChange={(date) => {
+                        const aa = new Date(
+                          date.getFullYear(),
+                          date.getMonth(),
+                          1,
+                          0,
+                          0,
+                          1
+                        );
+                        setSelectedDesdeMonthReport(aa);
+                      }}
+                      dateFormat="MMMM-yyyy"
+                      locale={es} // Changed to Spanish locale
+                      showMonthYearPicker
+                      showFullMonthYearPicker
+                      showTwoColumnMonthYearPicker
+                      className="form-select  b_select border-0 py-2 w-100" // Add Bootstrap class and custom class
+                      shouldCloseOnSelect={true}
+                    />
+                  </div>
 
-                  <select
+                  {/* <select
                     className="form-select  b_select border-0 py-2  "
                     style={{ borderRadius: "8px" }}
                     aria-label="Default select example"
                     value={selectedDesdeMonthReport}
                     onChange={(e) =>
-                      setSelectedDesdeMonthReport(e.target.value)}
+                      setSelectedDesdeMonthReport(e.target.value)
+                    }
                   >
                     <option selected value="1">
                       Enero
@@ -1185,19 +1402,41 @@ const TableInformation = () => {
                     <option value="10">Octubre </option>
                     <option value="11">Noviembre</option>
                     <option value="12">Diciembre</option>
-                  </select>
+                  </select> */}
                 </div>
                 <div className="col-6">
-                  <label className="mb-1 j-caja-text-1">
-                    Hasta
-                  </label>
-                  <select
+                  <label className="mb-1 j-caja-text-1">Hasta</label>
+                  <div className="position-relative">
+                    <DatePicker
+                      showPopperArrow={false}
+                      selected={selectedHastaMonthReport}
+                      onChange={(date) => {
+                        const lastDay = new Date(
+                          date.getFullYear(),
+                          date.getMonth() + 1,
+                          0,
+                          23,
+                          59,
+                          59
+                        );
+                        setSelectedHastaMonthReport(lastDay);
+                      }}
+                      dateFormat="MMMM-yyyy"
+                      locale={es}
+                      showMonthYearPicker
+                      showFullMonthYearPicker
+                      showTwoColumnMonthYearPicker
+                      className="form-select  b_select border-0 py-2 w-100"
+                    />
+                  </div>
+                  {/* <select
                     className="form-select  b_select border-0 py-2  "
                     style={{ borderRadius: "8px" }}
                     aria-label="Default select example"
                     value={selectedHastaMonthReport}
                     onChange={(e) =>
-                      setSelectedHastaMonthReport(e.target.value)}
+                      setSelectedHastaMonthReport(e.target.value)
+                    }
                   >
                     <option selected value="1">
                       Enero
@@ -1213,7 +1452,7 @@ const TableInformation = () => {
                     <option value="10">Octubre </option>
                     <option value="11">Noviembre</option>
                     <option value="12">Diciembre</option>
-                  </select>
+                  </select> */}
                 </div>
                 <div className="d-flex w-auto justify-content-end gap-5">
                   {errorReport && (
@@ -1247,9 +1486,8 @@ const TableInformation = () => {
                 className="btn j-btn-primary text-white j-caja-text-1"
                 onClick={() => {
                   // handleShow12();
-                  // 
+                  //
                   generateExcelReport();
-
                 }}
               >
                 Generar reporte
@@ -1299,7 +1537,6 @@ const TableInformation = () => {
                 </label>
                 <input
                   type="text"
-
                   className="form-control j-table_input"
                   id="exampleFormControlInput1"
                   placeholder={"-"}
@@ -1342,7 +1579,11 @@ const TableInformation = () => {
             keyboard={false}
             className="m_modal jay-modal"
           >
-            <Modal.Header closeButton className="border-0" onClick={() => setShowDeleteConfirm(false)} />
+            <Modal.Header
+              closeButton
+              className="border-0"
+              onClick={() => setShowDeleteConfirm(false)}
+            />
             <Modal.Body className="border-0">
               <div className="text-center">
                 <img
@@ -1366,7 +1607,9 @@ const TableInformation = () => {
               <Button
                 className="j-tbl-btn-font-1"
                 variant="secondary"
-                onClick={() => { setShowDeleteConfirm(false) }} // Cancel deletion
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                }} // Cancel deletion
               >
                 No, cancelar
               </Button>
@@ -1401,7 +1644,13 @@ const TableInformation = () => {
             keyboard={false}
             className="m_modal jay-modal"
           >
-            <Modal.Header closeButton className="border-0" onClick={() => { setShowEditFamSuc(false) }} />
+            <Modal.Header
+              closeButton
+              className="border-0"
+              onClick={() => {
+                setShowEditFamSuc(false);
+              }}
+            />
             <Modal.Body>
               <div className="text-center">
                 <img src={require("../Image/check-circle.png")} alt="" />
@@ -1421,11 +1670,14 @@ const TableInformation = () => {
             className="m_modal  m_user "
           >
             <Modal.Body className="text-center">
-              <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
+              <Spinner
+                animation="border"
+                role="status"
+                style={{ height: "85px", width: "85px", borderWidth: "6px" }}
+              />
               <p className="mt-2">Procesando solicitud...</p>
             </Modal.Body>
           </Modal>
-
         </div>
       </div>
     </div>

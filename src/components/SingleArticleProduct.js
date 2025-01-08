@@ -19,10 +19,16 @@ import { CgLayoutGrid } from "react-icons/cg";
 import * as XLSX from "xlsx-js-style";
 import useAudioManager from "./audioManager";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllDeleteditems, getAllitems, getFamily, getProduction, getSubFamily } from "../redux/slice/Items.slice";
+import { getAllDeleteditems, getAllitems, getFamily, getProduction, getSaleReport, getSubFamily } from "../redux/slice/Items.slice";
 import { getAllPayments } from "../redux/slice/order.slice";
 import { getAllTableswithSector } from "../redux/slice/table.slice";
 import { getRols } from "../redux/slice/user.slice";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import es from "date-fns/locale/es"; 
+import { registerLocale } from "react-datepicker";
+registerLocale("es", es);
+
 //import { enqueueSnackbar  } from "notistack";
 
 export default function SingleArticleProduct() {
@@ -41,10 +47,10 @@ export default function SingleArticleProduct() {
   const [childCheck, setChildCheck] = useState([]);
   const [selectedFamily, setSelectedFamily] = useState(null);
   const [productionSel, setProductionSel] = useState([]);
-  const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(1);
-  const [selectedHastaMonth, setSelectedHastaMonth] = useState(
-    new Date().getMonth() + 1
-  );
+  // const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(1);
+  // const [selectedHastaMonth, setSelectedHastaMonth] = useState(
+  //   new Date().getMonth() + 1
+  // );
   // const [payments, setPayments] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [datatab, setDatatab] = useState([]);
@@ -58,7 +64,7 @@ export default function SingleArticleProduct() {
 
   const location = useLocation(); // Get the current location
   const previousPath = location.state?.from || "/articles"; // Default to /articles if no previous path
-  console.log("previous Path: ", location);
+  // console.log("previous Path: ", location);
 
   const dispatch = useDispatch();
   const { box } = useSelector((state) => state.boxs);
@@ -66,8 +72,25 @@ export default function SingleArticleProduct() {
   // const user = useSelector((state) => state.user.user);
   const {payments ,loadingOrder} = useSelector((state) => state.orders);
   const { tablewithSector ,loadingTable} = useSelector((state) => state.tables);
-  const {deletedAllItems,subFamily,family,production,loadingItem} = useSelector((state) => state.items);
+  const {deletedAllItems,subFamily,family,production,loadingItem,saleReport} = useSelector((state) => state.items);
 
+ const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(() => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - 1);
+    return new Date(date) ; 
+  });
+  const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
+    new Date()
+  );
+
+  const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - 1); 
+    return new Date(date) ; 
+  });
+  const [selectedHastaMonth, setSelectedHastaMonth] = useState(
+    new Date()
+  );
 
 
   const handleClose = () => {
@@ -124,6 +147,7 @@ export default function SingleArticleProduct() {
         if(production.length == 0){
            dispatch(getProduction({admin_id}))
            }
+        dispatch(getSaleReport({admin_id,id}))
     }, [admin_id]);
   
     useEffect(() => {
@@ -182,32 +206,31 @@ export default function SingleArticleProduct() {
     },
     [mapVal]
   );
-  const fetchData = async () => {
-    try {
+  const fetchData = () => {
+    
       // await delay(1000);
-      const response = await axios.get(
-        `${apiUrl}/item/getSaleReport/${id}?from_month=${selectedDesdeMonth}&to_month=${selectedHastaMonth}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      setDatatab(response.data);
-      setCost(response.data.length);
+      // const response = await axios.get(
+      //   `${apiUrl}/item/getSaleReport/${id}?from_month=${selectedDesdeMonth}&to_month=${selectedHastaMonth}`,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`
+      //     }
+      //   }
+      // );
+      const data = saleReport.filter((v)=>new Date(selectedHastaMonth) >= new Date(v.created_at) && new Date(selectedDesdeMonth) <= new Date(v.created_at))
+      setDatatab(data);
+      setCost(data?.length);
       // setCost(response.data[0].order_total || 0);
       // setCost(response.data.reduce((acc, curr) => acc + curr.order_total, 0));
       const newMapValue = {};
 
-      response.data.forEach((order) => {
+      data.forEach((order) => {
         newMapValue[order.id] = order.order_total;
       });
-      const orderTotals = response.data.map((order) => order.order_total);
+      const orderTotals = data.map((order) => order.order_total);
 
       setMapVal(orderTotals);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+  
   };
 
   // function debounce(func, wait) {
@@ -389,7 +412,7 @@ export default function SingleArticleProduct() {
       return;
     }
 
-    console.log("Form Details", formDetails);
+    // console.log("Form Details", formDetails);
 
     const formData = new FormData();
     for (const key in formDetails) {
@@ -415,7 +438,7 @@ export default function SingleArticleProduct() {
         );
       }
     }
-    console.log("Form Data", formData);
+    // console.log("Form Data", formData);
     handleClose();
 
     setIsProcessing(true);
@@ -571,8 +594,14 @@ export default function SingleArticleProduct() {
 
   const generateMonthLabels = () => {
     const monthLabels = [];
-    for (let month = selectedDesdeMonth; month <= selectedHastaMonth; month++) {
-      monthLabels.push(`S${month - selectedDesdeMonth + 1}`); // Generate labels S1, S2, S3, etc.
+    let i = new Date(selectedDesdeMonth).getMonth() +1 ;
+    console.log(i);
+
+    const j = new Date(selectedHastaMonth).getMonth() +1
+    console.log(j);
+    
+    for (i ; i <= j; i++) {
+      monthLabels.push(`S${i}`); // Generate labels S1, S2, S3, etc.
     }
     return monthLabels;
   };
@@ -583,7 +612,7 @@ export default function SingleArticleProduct() {
     series: [
       {
         name: "Sales",
-        data: mapVal.slice(selectedDesdeMonth - 1, selectedHastaMonth) // Adjust data based on selected months
+        data: mapVal.slice(new Date(selectedDesdeMonth).getMonth()+1 - 1, new Date(selectedHastaMonth).getMonth()+1) // Adjust data based on selected months
       }
     ]
   };
@@ -615,10 +644,10 @@ export default function SingleArticleProduct() {
   const handleShow15 = () => setShow15(true);
 
   const [errorReport, setErrorReport] = useState("");
-  const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(1);
-  const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
-    new Date().getMonth() + 1
-  );
+  // const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(1);
+  // const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
+  //   new Date().getMonth() + 1
+  // );
 
   useEffect(
     () => {
@@ -628,9 +657,7 @@ export default function SingleArticleProduct() {
       } else {
         setErrorReport("");
       }
-    },
-    [selectedDesdeMonthReport, selectedHastaMonthReport]
-  );
+    }, [selectedDesdeMonthReport, selectedHastaMonthReport]);
 
   const monthNames = [
     "Enero",
@@ -646,10 +673,9 @@ export default function SingleArticleProduct() {
     "Noviembre",
     "Diciembre"
   ];
-  const generateExcelReport = async () => {
+  const generateExcelReport =() => {
     setIsProcessing(true);
-    try {
-      // Get family, subfamily, and production center names
+    // try{      // Get family, subfamily, and production center names
       const familyName = getFamilyName(formDetails.family_id);
       const subFamilyName = getSubFamilyName(formDetails.sub_family_id);
       const productionCenterName = getProductionName(
@@ -667,16 +693,18 @@ export default function SingleArticleProduct() {
         Subfamilia: subFamilyName,
         "Centro de Producción": productionCenterName
       };
-      const response = await axios.get(
-        `${apiUrl}/item/getSaleReport/${id}?from_month=${selectedDesdeMonthReport}&to_month=${selectedHastaMonthReport}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      setIsProcessing(false);
-      const data = response.data;
+
+       const salesData = saleReport.filter((v)=>new Date(selectedHastaMonthReport) >= new Date(v.created_at) && new Date(selectedDesdeMonthReport) <= new Date(v.created_at))
+      // const response = await axios.get(
+      //   `${apiUrl}/item/getSaleReport/${id}?from_month=${selectedDesdeMonthReport}&to_month=${selectedHastaMonthReport}`,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`
+      //     }
+      //   }
+      // );
+      // setIsProcessing(false);
+      // const data = response.data;
       // Convert the single record to an array for vertical display
       const formattedData = Object.entries(
         singleRecord
@@ -716,17 +744,17 @@ export default function SingleArticleProduct() {
 
       // new sheet
 
-      // Fetch sales report data for the new sheet
-      const salesResponse = await axios.get(
-        `${apiUrl}/item/getSaleReport/${id}?from_month=${selectedDesdeMonthReport}&to_month=${selectedHastaMonthReport}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      // // Fetch sales report data for the new sheet
+      // const salesResponse = await axios.get(
+      //   `${apiUrl}/item/getSaleReport/${id}?from_month=${selectedDesdeMonthReport}&to_month=${selectedHastaMonthReport}`,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`
+      //     }
+      //   }
+      // );
 
-      const salesData = salesResponse.data;
+      // const salesData = salesResponse.data;
 
       // Map sales data to include only specific fields
       const filteredSalesData = salesData.map((order) => {
@@ -807,12 +835,12 @@ export default function SingleArticleProduct() {
       );
 
       handleShow12();
-    } catch (error) {
-      console.error("Error generating report:", error);
-      setErrorReport(
-        "No se pudo generar el informe. Por favor inténtalo de nuevo."
-      );
-    }
+    // } catch (error) {
+    //   console.error("Error generating report:", error);
+    //   setErrorReport(
+    //     "No se pudo generar el informe. Por favor inténtalo de nuevo."
+    //   );
+    // }
   };
 
   // // get all payment
@@ -1339,7 +1367,27 @@ export default function SingleArticleProduct() {
                                 Desde
                               </label>
 
-                              <select
+                               <div className="position-relative">
+                                                              <DatePicker
+                                                                showPopperArrow={false}
+                                                                // selected={new Date(selectedDesdeMonthReport)}
+                                                                // onChange={(date) => setSelectedDesdeMonthReport(date.getMonth() + 1)} // Adjust as needed
+                                                                selected={selectedDesdeMonthReport}
+                                                                onChange={(date) => {
+                                                                  const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
+                                                                  setSelectedDesdeMonthReport(aa);
+                                                                }}
+                                                                dateFormat="MMMM-yyyy"
+                                                                locale={es} // Changed to Spanish locale
+                                                                showMonthYearPicker
+                                                                showFullMonthYearPicker
+                                                                showTwoColumnMonthYearPicker
+                                                                className="form-select  b_select border-0 py-2 w-100" // Add Bootstrap class and custom class
+                                                                shouldCloseOnSelect={true}
+                                                              />
+                                                            </div>
+
+                              {/* <select
                                 className="form-select  b_select border-0 py-2  "
                                 style={{ borderRadius: "8px" }}
                                 aria-label="Default select example"
@@ -1361,13 +1409,28 @@ export default function SingleArticleProduct() {
                                 <option value="10">Octubre </option>
                                 <option value="11">Noviembre</option>
                                 <option value="12">Diciembre</option>
-                              </select>
+                              </select> */}
                             </div>
                             <div className="col-6">
                               <label className="mb-1 j-caja-text-1">
                                 Hasta
                               </label>
-                              <select
+                              <div className="position-relative">
+                                                            <DatePicker
+                                                                showPopperArrow={false}
+                                                                selected={selectedHastaMonthReport} onChange={(date) => {
+                                                                  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+                                                                  setSelectedHastaMonthReport(lastDay);
+                                                                }}
+                                                                dateFormat="MMMM-yyyy"
+                                                                locale={es} 
+                                                                showMonthYearPicker
+                                                                showFullMonthYearPicker
+                                                                showTwoColumnMonthYearPicker
+                                                                className="form-select  b_select border-0 py-2 w-100"
+                                                              />
+                                                              </div>
+                              {/* <select
                                 className="form-select  b_select border-0 py-2  "
                                 style={{ borderRadius: "8px" }}
                                 aria-label="Default select example"
@@ -1389,7 +1452,7 @@ export default function SingleArticleProduct() {
                                 <option value="10">Octubre </option>
                                 <option value="11">Noviembre</option>
                                 <option value="12">Diciembre</option>
-                              </select>
+                              </select> */}
                             </div>
                           </div>
                           <div className="d-flex w-auto justify-content-end gap-5 row m-2">
@@ -1684,7 +1747,26 @@ export default function SingleArticleProduct() {
                             >
                               Desde
                             </label>
-                            <select
+                            <div className="position-relative">
+                        <DatePicker
+                          showPopperArrow={false}
+                          selected={selectedDesdeMonth}
+                          onChange={(date) => {
+                            const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
+                            setSelectedDesdeMonth(aa);
+                          }}
+                          dateFormat="MMMM-yyyy"
+                          locale={es} 
+                          showMonthYearPicker
+                          showFullMonthYearPicker
+                          showTwoColumnMonthYearPicker
+                          className="form-select  b_select border-0 py-2"
+                          style={{ borderRadius: "8px", cursor: "pointer" }}
+                          // disabledKeyboardNavigation
+                          shouldCloseOnSelect={false}
+                        />
+                        </div>
+                            {/* <select
                               className="form-select m_input text-capitalize"
                               aria-label="Default select example"
                               onChange={(e) =>
@@ -1705,7 +1787,7 @@ export default function SingleArticleProduct() {
                               <option value="10">Octubre</option>
                               <option value="11">Noviembre</option>
                               <option value="12">Diciembre</option>
-                            </select>
+                            </select> */}
                           </div>
                           <div className="mb-3 flex-grow-1">
                             <label
@@ -1714,7 +1796,24 @@ export default function SingleArticleProduct() {
                             >
                               Hasta
                             </label>
-                            <select
+                            <div className="position-relative">
+                        <DatePicker
+                          showPopperArrow={false}
+                          selected={selectedHastaMonth}
+                          onChange={(date) => {
+                            const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+                            setSelectedHastaMonth(lastDay);
+                          }}
+                          dateFormat="MMMM-yyyy"
+                          locale={es} 
+                          showMonthYearPicker
+                          showFullMonthYearPicker
+                          showTwoColumnMonthYearPicker
+                          className="form-select  b_select border-0 py-2"
+                          style={{ borderRadius: "8px", cursor: "pointer", width:'100px !important' }}
+                        />
+                        </div>
+                            {/* <select
                               className="form-select m_input text-capitalize"
                               aria-label="Default select example"
                               onChange={(e) =>
@@ -1735,7 +1834,7 @@ export default function SingleArticleProduct() {
                               <option value="10">Octubre</option>
                               <option value="11">Noviembre</option>
                               <option value="12">Diciembre</option>
-                            </select>
+                            </select> */}
                           </div>
                         </div>
                       </div>
@@ -1861,7 +1960,26 @@ export default function SingleArticleProduct() {
                               >
                                 Desde
                               </label>
-                              <select
+                              <div className="position-relative">
+                        <DatePicker
+                          showPopperArrow={false}
+                          selected={selectedDesdeMonth}
+                          onChange={(date) => {
+                            const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
+                            setSelectedDesdeMonth(aa);
+                          }}
+                          dateFormat="MMMM-yyyy"
+                          locale={es} 
+                          showMonthYearPicker
+                          showFullMonthYearPicker
+                          showTwoColumnMonthYearPicker
+                          className="form-select j-input-width2 j-tbl-information-input w-100  b_select border-0 py-2"
+                          style={{ borderRadius: "8px", cursor: "pointer" }}
+                          // disabledKeyboardNavigation
+                          shouldCloseOnSelect={false}
+                        />
+                        </div>
+                              {/* <select
                                 className="form-select j-input-width2 j-tbl-information-input w-100  b_select border-0 py-2  "
                                 style={{ borderRadius: "6px" }}
                                 aria-label="Default select example"
@@ -1883,7 +2001,7 @@ export default function SingleArticleProduct() {
                                 <option value="10">Octubre</option>
                                 <option value="11">Noviembre</option>
                                 <option value="12">Diciembre</option>
-                              </select>
+                              </select> */}
                             </div>
                             <div className="mb-3 col-xs-6   j-input-width2 flex-grow-1">
                               <label
@@ -1892,7 +2010,24 @@ export default function SingleArticleProduct() {
                               >
                                 Hasta
                               </label>
-                              <select
+                              <div className="position-relative">
+                        <DatePicker
+                          showPopperArrow={false}
+                          selected={selectedHastaMonth}
+                          onChange={(date) => {
+                            const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+                            setSelectedHastaMonth(lastDay);
+                          }}
+                          dateFormat="MMMM-yyyy"
+                          locale={es} 
+                          showMonthYearPicker
+                          showFullMonthYearPicker
+                          showTwoColumnMonthYearPicker
+                          className="form-select j-input-width2 j-tbl-information-input w-100  b_select border-0 py-2"
+                          style={{ borderRadius: "8px", cursor: "pointer", width:'100px !important' }}
+                        />
+                        </div>
+                              {/* <select
                                 className="form-select w-100 j-input-width2 j-tbl-information-input  b_select border-0 py-2  "
                                 style={{ borderRadius: "6px" }}
                                 aria-label="Default select example"
@@ -1914,7 +2049,7 @@ export default function SingleArticleProduct() {
                                 <option value="10">Octubre</option>
                                 <option value="11">Noviembre</option>
                                 <option value="12">Diciembre</option>
-                              </select>
+                              </select> */}
                             </div>
                           </div>
                           {error && (
@@ -1935,7 +2070,7 @@ export default function SingleArticleProduct() {
                         </div>
                         {mapVal.length > 0 ? (
                           <div className="col-xl-6">
-                            {/* <ApexChart mapVal={mapVal} cat={categories} /> */}
+                           
                             <ApexChart
                               mapVal={chartData.series[0].data}
                               cat={chartData.labels}

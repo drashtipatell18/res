@@ -8971,3 +8971,7 @@ input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:foc
 .react-datepicker__input-container input{
   text-transform: capitalize !important;
 }
+
+.j-btn-primary{
+  border: 1px solid transparent !important;
+}

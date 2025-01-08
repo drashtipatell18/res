@@ -17,20 +17,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { getboxs, getboxsLogs } from "../redux/slice/box.slice";
 import { getRols, getUser } from "../redux/slice/user.slice";
 import { getAllTableswithSector } from "../redux/slice/table.slice";
-import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
+import { getAllOrders, getAllPayments, getCredit } from "../redux/slice/order.slice";
 //import { enqueueSnackbar  } from "notistack";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import es from "date-fns/locale/es"; // Added import for Spanish locale
 import { registerLocale } from "react-datepicker";
-
 registerLocale("es", es); // Register the Spanish locale
 
 const Informacira = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const [token] = useState(localStorage.getItem("token"));
   const [role] = useState(localStorage.getItem("role"));
+
   // console.log(role)
   const location = useLocation();
   const queryString = location.search;
@@ -52,15 +52,19 @@ const Informacira = () => {
   const [errorCashPrice, setErrorCashPrice] = useState("");
   const [allOrder, setAllOrder] = useState([]);
   const [allTable, setAllTable] = useState([]);
-  const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(1);
+  const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - 1); 
+    return new Date(date) ; 
+  });
   const [selectedHastaMonth, setSelectedHastaMonth] = useState(
-    new Date().getMonth() + 1
+    new Date()
   );
   const [errorReport, setErrorReport] = useState("");
   const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(() => {
     const date = new Date();
-    date.setMonth(date.getMonth() - 12); // Subtract 12 months
-    return new Date(date) ; // Return the month (1-12)
+    date.setMonth(date.getMonth() - 1);
+    return new Date(date) ; 
   });
   const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
     new Date()
@@ -72,12 +76,14 @@ const Informacira = () => {
     if (selectedDesdeMonth > selectedHastaMonth) {
       setError("Hasta debe ser mayor o igual que Desde.");
       setData([]);
+      setPrData([]);
     }
   }, [selectedDesdeMonth, selectedHastaMonth]);
   useEffect(() => {
     if (selectedDesdeMonthReport > selectedHastaMonthReport) {
       setErrorReport("Hasta debe ser mayor o igual que Desde.");
       setData([]);
+      setPrData([]);
     }
   }, [selectedDesdeMonthReport, selectedHastaMonthReport]);
 
@@ -86,7 +92,6 @@ const Informacira = () => {
     if (value.startsWith("$")) {
       value = value.substring(1);
     }
-
     setClosePrice(value);
     setErrorClosePrice("");
   };
@@ -209,6 +214,7 @@ const Informacira = () => {
   };
   // **************************************API******************************************************
   const [data, setData] = useState([]);
+  const [prData, setPrData] = useState([]);
   const [users, setUsers] = useState([]);
   const [userName, setUserName] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -231,7 +237,7 @@ const Informacira = () => {
   const dispatch = useDispatch();
   const { box, boxLogs, loadingBox } = useSelector((state) => state.boxs);
   const { user, roles, loadingUser } = useSelector((state) => state.user);
-  const { orders, payments, loadingOrder } = useSelector(
+  const { orders, payments, credit, loadingOrder } = useSelector(
     (state) => state.orders
   );
   const { tablewithSector, loadingTable } = useSelector(
@@ -353,7 +359,9 @@ const Informacira = () => {
   const [credits, setCredits] = useState(0);
 
   useEffect(() => {
-    finalamount();
+    if(amount == 0){
+      finalamount();
+    }
   }, [data]);
 
   useEffect(() => {
@@ -364,27 +372,13 @@ const Informacira = () => {
 
   const fetchCredit = async () => {
     try {
-      const response = await axios.post(
-        `${apiUrl}/order/getCredit`,
-        { admin_id: admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // console.log(credit);
 
-      // console.log(response.data.data);
-      // console.log(finaldata);
-
-      const filterecredit = response.data.data.filter(
+      const filterecredit = credit.filter(
         (v) =>
           finaldata?.orderId?.includes(v.order_id.toString()) &&
           v.credit_method != "future purchase"
       );
-
-      // console.log(filterecredit);
-
       const totalCredit = filterecredit.reduce((sum, credit) => {
         // console.log(credit);
         const discount =
@@ -550,28 +544,28 @@ const Informacira = () => {
   //   setIsProcessing(false);
   // };
   const fetchAllBox = async () => {
-    // setIsProcessing(true);
-    try {
-      const response = await axios.get(
-        `${apiUrl}/get-boxlogs-all/${bId}?from_month=${selectedDesdeMonth}&to_month=${selectedHastaMonth}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const data = response.data
+
+    setIsProcessing(true);
+      const data = boxLogs.filter((v)=>v.box_id ==bId)
         .map((box) => ({
           ...box,
           createdAt: new Date(box.created_at).toLocaleString(), // Assuming the API returns a 'created_at' field
         }))
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      console.log(data);
-
       setData(data);
-    } catch (error) {
-      console.error("Error fetching boxes:", error);
-    }
+
+      console.log(selectedHastaMonth,selectedDesdeMonth);
+      
+
+      const pdata = boxLogs.filter((v)=>v.box_id ==bId && new Date(selectedHastaMonth) >= new Date(v.created_at) && new Date(selectedDesdeMonth) <= new Date(v.created_at))
+      .map((box) => ({
+        ...box,
+        createdAt: new Date(box.created_at).toLocaleString(), // Assuming the API returns a 'created_at' field
+      }))
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      setPrData(pdata);
+
     setIsProcessing(false);
   };
 
@@ -632,6 +626,9 @@ const Informacira = () => {
     if (box?.length == 0) {
       dispatch(getboxs({ admin_id }));
     }
+    if (boxLogs?.length == 0) {
+      dispatch(getboxsLogs({ admin_id }));
+    }
     if (user?.length == 0) {
       dispatch(getUser());
     }
@@ -646,6 +643,9 @@ const Informacira = () => {
     }
     if (payments?.length == 0) {
       dispatch(getAllPayments({ admin_id }));
+    }
+    if(credit?.length == 0){
+      dispatch(getCredit({admin_id}));
     }
   }, [admin_id]);
 
@@ -670,7 +670,10 @@ const Informacira = () => {
     if (payments) {
       setAllpayments(payments);
     }
-  }, [tablewithSector]);
+    if(boxLogs?.length>0){
+      fetchAllBox();
+    }
+  }, [tablewithSector,box,boxLogs,payments,orders]);
 
   // // get box
   // const getBox = async () => {
@@ -841,7 +844,7 @@ const Informacira = () => {
   useEffect(() => {
     if (selectedDesdeMonthReport > selectedHastaMonthReport) {
       setErrorReport("Hasta el mes debe ser mayor o igual que Desde el mes.");
-      setData([]);
+      // setData([]);
     } else {
       setErrorReport("");
     }
@@ -865,27 +868,31 @@ const Informacira = () => {
   const generateExcelReport = async () => {
     if (selectedDesdeMonthReport > selectedHastaMonthReport) {
       setErrorReport("Hasta debe ser mayor o igual que Desde.");
-      setData([]);
+      // setData([]);
       return;
     }
-    // setIsProcessing(true);
+    setIsProcessing(true);
     try {
-      const desd = selectedDesdeMonthReport.toLocaleString('default', { month: '2-digit', year: 'numeric' })
-      const hast = selectedHastaMonthReport.toLocaleString('default', { month: '2-digit', year: 'numeric' })
-      // Fetch box report details from the API
-      const responseB = await axios.get(
-        `${apiUrl}/get-boxlogs-all/${bId}?from_month=${desd}&to_month=${hast}`,
-        {
-          // const response = await axios.get(`${API_URL}/getAllboxes`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    //   const desd = selectedDesdeMonthReport.toLocaleString('default', { month: '2-digit', year: 'numeric' })
+    //   const hast = selectedHastaMonthReport.toLocaleString('default', { month: '2-digit', year: 'numeric' })
+    //   // Fetch box report details from the API
+    //   const responseB = await axios.get(
+    //     `${apiUrl}/get-boxlogs-all/${bId}?from_month=${desd}&to_month=${hast}`,
+    //     {
+    //       // const response = await axios.get(`${API_URL}/getAllboxes`, {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     }
+    //   );
 
-      // console.log(responseB.data);
+    //   console.log(responseB.data);
 
-      const boxData = responseB.data.map((box) => {
+      
+
+      const boxData =  boxLogs.filter((v)=>v.box_id == bId && new Date(selectedHastaMonthReport) >= new Date(v.created_at) && new Date(selectedDesdeMonthReport) <= new Date(v.created_at))
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .map((box) => {
         return {
           Horario_de_apertura: new Date(box.created_at).toLocaleString(), // Corrected to format date and time
           Horario_de_cierre: box.close_time || "N/A", // Handle potential null values
@@ -1280,9 +1287,6 @@ const Informacira = () => {
     }
   };
 
-  const [startDate, setStartDate] = useState(new Date());
-  console.log(startDate);
-
   return (
     <section>
       <div className="s_bg_dark">
@@ -1485,13 +1489,17 @@ const Informacira = () => {
                                   // selected={new Date(selectedDesdeMonthReport)}
                                   // onChange={(date) => setSelectedDesdeMonthReport(date.getMonth() + 1)} // Adjust as needed
                                   selected={selectedDesdeMonthReport}
-                                  onChange={(date) => setSelectedDesdeMonthReport(date)}
+                                  onChange={(date) => {
+                                    const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
+                                    setSelectedDesdeMonthReport(aa);
+                                  }}
                                   dateFormat="MMMM-yyyy"
                                   locale={es} // Changed to Spanish locale
                                   showMonthYearPicker
                                   showFullMonthYearPicker
                                   showTwoColumnMonthYearPicker
                                   className="form-select  b_select border-0 py-2 w-100" // Add Bootstrap class and custom class
+                                  shouldCloseOnSelect={true}
                                 />
                               </div>
 
@@ -1534,16 +1542,16 @@ const Informacira = () => {
                               <div className="position-relative">
                               <DatePicker
                                   showPopperArrow={false}
-                                  // selected={new Date(selectedDesdeMonthReport)}
-                                  // onChange={(date) => setSelectedDesdeMonthReport(date.getMonth() + 1)} // Adjust as needed
-                                  selected={selectedHastaMonthReport}
-                                  onChange={(date) => setSelectedHastaMonthReport(date)}
+                                  selected={selectedHastaMonthReport} onChange={(date) => {
+                                    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+                                    setSelectedHastaMonthReport(lastDay);
+                                  }}
                                   dateFormat="MMMM-yyyy"
-                                  locale={es} // Changed to Spanish locale
+                                  locale={es} 
                                   showMonthYearPicker
                                   showFullMonthYearPicker
                                   showTwoColumnMonthYearPicker
-                                  className="form-select  b_select border-0 py-2 w-100" // Add Bootstrap class and custom class
+                                  className="form-select  b_select border-0 py-2 w-100"
                                 />
                                 </div>
                               {/* <select
@@ -1580,7 +1588,9 @@ const Informacira = () => {
                                     style={{ cursor: "pointer" }}
                                     onClick={(e) => {
                                       setErrorReport("");
-                                      setSelectedDesdeMonthReport(1);
+                                      const date = new Date();
+                                      date.setMonth(date.getMonth() - 1);
+                                      setSelectedDesdeMonthReport(new Date(date));
                                     }}
                                   >
                                     <RiCloseLargeFill />{" "}
@@ -2012,8 +2022,27 @@ const Informacira = () => {
                     <div className="d-flex col-md-6 justify-content-end gap-4">
                       <div>
                         <label className="mb-1 j-caja-text-1">Desde</label>
+                        <div className="position-relative">
+                        <DatePicker
+                          showPopperArrow={false}
+                          selected={selectedDesdeMonth}
+                          onChange={(date) => {
+                            const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
+                            setSelectedDesdeMonth(aa);
+                          }}
+                          dateFormat="MMMM-yyyy"
+                          locale={es} 
+                          showMonthYearPicker
+                          showFullMonthYearPicker
+                          showTwoColumnMonthYearPicker
+                          className="form-select  b_select border-0 py-2"
+                          style={{ borderRadius: "8px", cursor: "pointer" }}
+                          // disabledKeyboardNavigation
+                          shouldCloseOnSelect={false}
+                        />
+                        </div>
 
-                        <select
+                        {/* <select
                           className="form-select  b_select border-0 py-2  "
                           style={{ borderRadius: "8px" }}
                           aria-label="Default select example"
@@ -2036,11 +2065,28 @@ const Informacira = () => {
                           <option value="10">Octubre </option>
                           <option value="11">Noviembre</option>
                           <option value="12">Diciembre</option>
-                        </select>
+                        </select> */}
                       </div>
                       <div>
                         <label className="mb-1 j-caja-text-1">Hasta</label>
-                        <select
+                        <div className="position-relative">
+                        <DatePicker
+                          showPopperArrow={false}
+                          selected={selectedHastaMonth}
+                          onChange={(date) => {
+                            const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+                            setSelectedHastaMonth(lastDay);
+                          }}
+                          dateFormat="MMMM-yyyy"
+                          locale={es} 
+                          showMonthYearPicker
+                          showFullMonthYearPicker
+                          showTwoColumnMonthYearPicker
+                          className="form-select  b_select border-0 py-2"
+                          style={{ borderRadius: "8px", cursor: "pointer", width:'100px !important' }}
+                        />
+                        </div>
+                        {/* <select
                           className="form-select  b_select border-0 py-2  "
                           style={{ borderRadius: "8px" }}
                           aria-label="Default select example"
@@ -2063,7 +2109,7 @@ const Informacira = () => {
                           <option value="10">Octubre </option>
                           <option value="11">Noviembre</option>
                           <option value="12">Diciembre</option>
-                        </select>
+                        </select> */}
                       </div>
                     </div>
                   </div>
@@ -2076,7 +2122,9 @@ const Informacira = () => {
                           style={{ cursor: "pointer" }}
                           onClick={(e) => {
                             setError("");
-                            setSelectedDesdeMonth(1);
+                            const date = new Date();
+                            date.setMonth(date.getMonth() - 1);
+                            setSelectedDesdeMonth(new Date(date));
                           }}
                         >
                           <RiCloseLargeFill />{" "}
@@ -2104,8 +2152,8 @@ const Informacira = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {data.length > 0 ? (
-                          data.map((box, index) => (
+                        {prData.length > 0 ? (
+                          prData.map((box, index) => (
                             // console.log(box.close_time),
                             <tr
                               key={box.id}

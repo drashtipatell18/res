@@ -13,6 +13,11 @@ import { Modal, Spinner } from "react-bootstrap";
 import { getAllPayments } from "../redux/slice/order.slice";
 import { getUser } from "../redux/slice/user.slice";
 import { useDispatch, useSelector } from "react-redux";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import es from "date-fns/locale/es"; 
+import { registerLocale } from "react-datepicker";
+registerLocale("es", es);
 
 function Home_client() {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -24,10 +29,18 @@ function Home_client() {
   const navigate = useNavigate()
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(1);
-  const [selectedHastaMonth, setSelectedHastaMonth] = useState(
-    new Date().getMonth() + 1
-  );
+  // const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(1);
+  // const [selectedHastaMonth, setSelectedHastaMonth] = useState(
+  //   new Date().getMonth() + 1
+  // );
+  const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - 1); 
+        return new Date(date) ; 
+      });
+      const [selectedHastaMonth, setSelectedHastaMonth] = useState(
+        new Date()
+      );
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
   const [orderUser, setOrderUser] = useState([]);
@@ -122,7 +135,7 @@ function Home_client() {
         setUsers([]);
       } else {
         const filtered = orderUser.filter(user => {
-          const userMonth = new Date(user.created_at).getMonth() + 1; // Assuming user.date is the date field
+          const userMonth = new Date(user.created_at)
           return userMonth >= selectedDesdeMonth && userMonth <= selectedHastaMonth;
         });
         setFilteredOrderUser(filtered);
@@ -282,7 +295,7 @@ function Home_client() {
         >
 
           <div>
-            <div className="overflow-hidden">
+            <div className="">
 
               <div className="ms-4 mt-4">
                 <h4 className="text-white bj-delivery-text-65">Clientes</h4>
@@ -320,7 +333,26 @@ function Home_client() {
                     >
                       Desde
                     </label>
-                    <select
+                        <div className="position-relative">
+                        <DatePicker
+                          showPopperArrow={false}
+                          selected={selectedDesdeMonth}
+                          onChange={(date) => {
+                            const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
+                            setSelectedDesdeMonth(aa);
+                          }}
+                          dateFormat="MMMM-yyyy"
+                          locale={es} 
+                          showMonthYearPicker
+                          showFullMonthYearPicker
+                          showTwoColumnMonthYearPicker
+                          className="form-select  b_select border-0 py-2"
+                          style={{ borderRadius: "8px", cursor: "pointer" }}
+                          // disabledKeyboardNavigation
+                          // shouldCloseOnSelect={false}
+                        />
+                        </div>
+                    {/* <select
                       className="form-select  b_select border-0 py-2  "
                       style={{ borderRadius: "6px" }}
                       aria-label="Default select example"
@@ -341,7 +373,7 @@ function Home_client() {
                       <option value="10">Octubre </option>
                       <option value="11">Noviembre</option>
                       <option value="12">Diciembre</option>
-                    </select>
+                    </select> */}
                   </div>
                   <div className="mb-3  text-white">
                     <label
@@ -350,7 +382,24 @@ function Home_client() {
                     >
                       Hasta
                     </label>
-                    <select
+                    <div className="position-relative">
+                        <DatePicker
+                          showPopperArrow={false}
+                          selected={selectedHastaMonth}
+                          onChange={(date) => {
+                            const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+                            setSelectedHastaMonth(lastDay);
+                          }}
+                          dateFormat="MMMM-yyyy"
+                          locale={es} 
+                          showMonthYearPicker
+                          showFullMonthYearPicker
+                          showTwoColumnMonthYearPicker
+                          className="form-select  b_select border-0 py-2"
+                          style={{ borderRadius: "8px", cursor: "pointer", width:'100px !important' }}
+                        />
+                        </div>
+                    {/* <select
                       className="form-select  b_select border-0 py-2 "
                       style={{ borderRadius: "6px" }}
                       aria-label="Default select example "
@@ -371,7 +420,7 @@ function Home_client() {
                       <option value="10">Octubre </option>
                       <option value="11">Noviembre</option>
                       <option value="12">Diciembre</option>
-                    </select>
+                    </select> */}
                   </div>
                   {error && (
                     <div className="alert alert-danger d-flex justify-content-between pointer">
