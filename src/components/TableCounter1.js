@@ -20,6 +20,7 @@ import { getAllitems, getFamily, getProduction, getProductionData, getSubFamily 
 import { getRols, getUser } from "../redux/slice/user.slice";
 import { getAllOrders } from "../redux/slice/order.slice";
 import { getAllTableswithSector } from "../redux/slice/table.slice";
+import { getAllKds } from "../redux/slice/kds.slice";
 //import { enqueueSnackbar  } from "notistack";
 
 const TableCounter1 = () => {
@@ -738,7 +739,7 @@ const TableCounter1 = () => {
 
           dispatch(getAllOrders({admin_id}));
           dispatch(getAllTableswithSector({admin_id}));
-
+          dispatch(getAllKds({ admin_id }))
           console.log("Table status updated successfully", resTable.data);
           localStorage.removeItem("cartItems");
           setCartItems([]);

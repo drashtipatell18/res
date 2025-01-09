@@ -684,7 +684,7 @@ const Usuarios = () => {
                       <FaFilter /> &nbsp; <span className="b_ttt">Filtro</span>
                     </Dropdown.Toggle>
                     <Dropdown.Menu className="m14 m_filter">
-                      {roles?.map((role) => (
+                      {roles?.filter(role => role.id !== 1 && role.id !== 5).map((role) => (
                         <div
                           className="px-3 py-1 d-flex gap-2 align-items-center fw-500"
                           key={role.id}

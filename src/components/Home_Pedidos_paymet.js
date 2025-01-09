@@ -425,9 +425,10 @@ export default function Home_Pedidos_paymet() {
   //   }
   // };
 
-  const handleOrderDetails = () => {
+  const handleOrderDetails = async () => {
     // Check if orderData is not null before accessing its properties
     if (orderData) {
+      console.log("Orderdata ", orderData);
       const details = orderData.order_details.map((orderItem) => {
         const matchingItem = items.find(
           (item) => item.id === orderItem.item_id
@@ -949,7 +950,7 @@ export default function Home_Pedidos_paymet() {
                         {
                           // product.map((item, index) => {
                           orderDetails?.map((v, index) => {
-                            // console.log(item)
+                            console.log("asasAS",v)
                             return (
                               <div>
                                 <div className=" py-3 ">

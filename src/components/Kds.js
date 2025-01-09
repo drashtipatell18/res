@@ -26,45 +26,45 @@ const Kds = () => {
     const [isProcessing, setIsProcessing] = useState(false);
 
     const dispatch = useDispatch();
-    const {kds,loadingKds} = useSelector(state => state.kds);
-    const {user, loadingUser} = useSelector(state => state.user);
-    const {items,production, loadingItem} = useSelector(state => state.items);
-    const {tablewithSector, loadingTable} = useSelector(state => state.tables);
+    const { kds, loadingKds } = useSelector(state => state.kds);
+    const { user, loadingUser } = useSelector(state => state.user);
+    const { items, production, loadingItem } = useSelector(state => state.items);
+    const { tablewithSector, loadingTable } = useSelector(state => state.tables);
 
-    useEffect(()=>{
-        if(tablewithSector.length == 0){
-          dispatch(getAllTableswithSector({admin_id}));
+    useEffect(() => {
+        if (tablewithSector.length == 0) {
+            dispatch(getAllTableswithSector({ admin_id }));
         }
-         if(items.length == 0){
-              dispatch(getAllitems());
-         }
-         if(user.length == 0){
+        if (items.length == 0) {
+            dispatch(getAllitems());
+        }
+        if (user.length == 0) {
             dispatch(getUser())
-         }
-         if(kds.length == 0){
-            dispatch(getAllKds({admin_id}))
-         }
-         if(production.length == 0){
-            dispatch(getProduction({admin_id}))
-         }
-      }, [admin_id]);
-    
-      useEffect(()=>{
-    
-        if(tablewithSector){
+        }
+        if (kds.length == 0) {
+            dispatch(getAllKds({ admin_id }))
+        }
+        if (production.length == 0) {
+            dispatch(getProduction({ admin_id }))
+        }
+    }, [admin_id]);
+
+    useEffect(() => {
+
+        if (tablewithSector) {
             setTableInfo(tablewithSector);
         }
-        if(items){
+        if (items) {
             setAllItems(items);
         }
-        if(kds){
-        setAllOrder(kds);
+        if (kds) {
+            setAllOrder(kds);
         }
-        if(production){
+        if (production) {
             setCenterProduction(production);
         }
-      },[tablewithSector,items,kds,production])
-    
+    }, [tablewithSector, items, kds, production])
+
     // useEffect(() => {
     //     fetchOrder();
     //     fetchUser();
@@ -263,7 +263,7 @@ const Kds = () => {
                                         </Link>
                                     </div>
                                     {/* {console.log('allOrder',allOrder,selectedCategory)} */}
-                                    { filterOrdersByCategory(allOrder, selectedCategory)
+                                    {filterOrdersByCategory(allOrder, selectedCategory)
                                         .filter(section => section?.status === orderTypeMapping[orderType])
                                         .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
                                         .map((section, sectionIndex) => {
@@ -307,7 +307,7 @@ const Kds = () => {
                                                             }).filter(item => item !== null)
                                                             : [selectedCategory]
                                                         }
-                                                    />        
+                                                    />
                                                 </>
                                             )
                                         })}

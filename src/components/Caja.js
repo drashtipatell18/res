@@ -283,6 +283,7 @@ const Caja = () => {
         
         return matchingBoxes[matchingBoxes.length - 1]; // Get the last item
     };
+    console.log(localStorage.getItem("boxId"))
 
     const [selectedBoxId, setSelectedBoxId] = useState(parseInt(localStorage.getItem("boxId")) || 0);
 
@@ -297,30 +298,23 @@ const Caja = () => {
     // },[data])
 
     useEffect(() => {
-        if (data.length > 0) {
-            console.log(data);
-            
+        if (data.length > 0) {            
             // Find the first open box
             const openBox = data.find(box => {
-                const lastBoxRecord = getLastBoxRecord(box.id);
-                console.log(lastBoxRecord);
-                
+                const lastBoxRecord = getLastBoxRecord(box.id);                    
                 return lastBoxRecord && lastBoxRecord.close_amount === null;
-            });
-            
-            // If there's an open box, select it
-            if (openBox) {
-                setSelectedBoxId(openBox.id);
-                localStorage.setItem('boxId', openBox.id);
+            });            
+            // Check if boxId is null before selecting the first open box
+            if (localStorage.getItem('boxId') === null && openBox) {
+                setSelectedBoxId(openBox.id); // Select the first open box
+                localStorage.setItem('boxId', openBox.id); // Store the selected box ID
             }
         }
-    }, [data,dataBox]);
+    }, [data, dataBox]);
 
     const handleBoxSelection = (boxId) => {
          setSelectedBoxId(boxId);
-        localStorage.setItem('boxId', boxId);
-        // console.log("Selected Box ID", boxId);
-    };
+        localStorage.setItem('boxId', boxId);};
 
     return (
         <>

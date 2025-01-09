@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getboxs } from "../redux/slice/box.slice";
 import { getProduction } from "../redux/slice/Items.slice";
 import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
+import { getAllKds } from "../redux/slice/kds.slice";
 
 const Counter_finalP = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -664,6 +665,7 @@ const Counter_finalP = () => {
 
           dispatch(getAllOrders({ admin_id }));
           dispatch(getAllPayments({ admin_id }));
+          dispatch(getAllKds({ admin_id }))
           localStorage.removeItem("cartItems");
           localStorage.removeItem("currentOrder");
           localStorage.removeItem("payment");

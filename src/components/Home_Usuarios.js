@@ -6,7 +6,7 @@ import { MdEditSquare } from "react-icons/md";
 import { RiCloseLargeFill, RiDeleteBin5Fill } from "react-icons/ri";
 import { BiSolidFoodMenu } from 'react-icons/bi';
 import { TfiAngleLeft, TfiAngleRight } from 'react-icons/tfi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6';
 import { Button, Modal, Spinner } from 'react-bootstrap';
 import axios from 'axios';
@@ -22,12 +22,13 @@ function Home_Usuarios() {
     // const [token, setToken] = useState(
     //     "2647|bkAORMNJS6ite9xHPiGmApoi78Dfz9tV8Bzbyb6a1ca62063"
     // );
+    const role = localStorage.getItem("role");
 
     const API_URL = process.env.REACT_APP_API_URL;
     const API = process.env.REACT_APP_IMAGE_URL;
     const token = localStorage.getItem("token");
     const admin_id = localStorage.getItem("admin_id");
-
+    const navigate = useNavigate();
     const [filterData, setFilterData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [orderAlldata, setOrderAlldata] = useState([]);
@@ -62,9 +63,19 @@ function Home_Usuarios() {
     );
 
     //  const [payments, setPayments] = useState([]);
+    useEffect(() => {
+        if (role == "waitress") {
+            navigate("/dashboard");
+        }
+        // else if (token) {
+        //   setIsProcessing(true);
+        //   fetchUser();
+        // fetchRole();
+        //   setIsProcessing(false);
+        // }
+    }, [token]);
 
-     
-    const {orders,payments, loadingOrder} = useSelector(state => state.orders);
+    const { orders, payments, loadingOrder } = useSelector(state => state.orders);
 
     useEffect(
         () => {
@@ -186,42 +197,42 @@ function Home_Usuarios() {
 
     const dispatch = useDispatch();
     useEffect(() => {
-        if(orders.length == 0){
-            dispatch(getAllOrders({admin_id}))
+        if (orders.length == 0) {
+            dispatch(getAllOrders({ admin_id }))
         }
-        if(payments.length == 0){
-            dispatch(getAllPayments({admin_id}))
+        if (payments.length == 0) {
+            dispatch(getAllPayments({ admin_id }))
         }
     }, [admin_id]);
 
-    useEffect(()=>{
-        if(orders){
+    useEffect(() => {
+        if (orders) {
             setOrderAlldata(orders)
             setFilterData(orders)
         }
-    },[orders])
+    }, [orders])
 
-//     useEffect(() => {
-//         getAllorder();
-//         getAllPayments();
-//     }, []);
+    //     useEffect(() => {
+    //         getAllorder();
+    //         getAllPayments();
+    //     }, []);
 
-//      // get all payment
-//   const getAllPayments = async () => {
-//     try {
-//       const response = await axios.post(`${API_URL}/get-payments`, {admin_id} ,{
-//         headers: {
-//           Authorization: `Bearer ${token}`
-//         }
-//       });
+    //      // get all payment
+    //   const getAllPayments = async () => {
+    //     try {
+    //       const response = await axios.post(`${API_URL}/get-payments`, {admin_id} ,{
+    //         headers: {
+    //           Authorization: `Bearer ${token}`
+    //         }
+    //       });
 
-//       console.log(response.data.result);
-      
-//       setPayments(response.data.result);
-//     } catch (error) {
-//       console.error("Error fetching payments:", error);
-//     }
-//   };
+    //       console.log(response.data.result);
+
+    //       setPayments(response.data.result);
+    //     } catch (error) {
+    //       console.error("Error fetching payments:", error);
+    //     }
+    //   };
 
     // const getAllorder = async () => {
     //     setIsProcessing(true)
@@ -232,7 +243,7 @@ function Home_Usuarios() {
     //             },
     //         });
     //         console.log(response.data);
-            
+
     //         setFilterData(response.data);
     //         setOrderAlldata(response.data);
     //         // console.log(response.data);
@@ -349,7 +360,7 @@ function Home_Usuarios() {
         setShowEditFamDel(true)
         setTimeout(() => {
             setShowEditFamDel(false)
-            dispatch(getAllOrders({admin_id}))
+            dispatch(getAllOrders({ admin_id }))
         }, 2000);
     };
 
@@ -522,45 +533,46 @@ function Home_Usuarios() {
                                             <tbody className='text-white b_btnn '>
                                                 {getCurrentItems().length > 0 ?
                                                     getCurrentItems().map((order) => {
-                                                        const paydata = payments?.find((v)=>v.order_master_id == order.id)
-                                                        const amount = order.order_details.reduce((acc, v) => acc + parseInt(v.amount) * parseInt(v.quantity), 0)- parseFloat(order.discount).toFixed(2)
+                                                        const paydata = payments?.find((v) => v.order_master_id == order.id)
+                                                        const amount = order.order_details.reduce((acc, v) => acc + parseInt(v.amount) * parseInt(v.quantity), 0) - parseFloat(order.discount).toFixed(2)
                                                         const IVA = amount * 0.19
                                                         const total = parseFloat(amount + IVA).toFixed(2)
                                                         return (
-                                                        // console.log(order),
+                                                            // console.log(order),
 
-                                                        <tr key={order.id} className='b_row'>
-                                                            <Link to={`/home/usa/information/${order.id}`}>
-                                                                <td className='b_idbtn bj-delivery-text-2 ms-3' style={{ borderRadius: "10px" }}>{order.id}</td>
-                                                            </Link>
-                                                            <td className='b_text_w'>{new Date(order?.created_at).toLocaleDateString('en-GB')}</td>
-                                                            <td className='b_text_w'>{new Date(order?.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                                                            <td className='b_text_w'>{order.customer_name ? order.customer_name : paydata?.firstname || paydata?.business_name}</td>
-                                                            <td className='b_text_w'>${paydata?.amount || total}</td>
-                                                            {/* <td className='b_text_w'>{order.payment_type}</td> */}
-                                                            <td className='b_text_w'>
-                                                                {
-                                                                    order.payment_type == 'cash' ? 'Efectivo' :
-                                                                        order.payment_type == 'debit' ? 'Débito' :
-                                                                            order.payment_type == 'credit' ? 'Crédito' :
-                                                                                order.payment_type == 'transfer' ? 'Transferencia' : " "
-                                                                }
-                                                            </td>
-                                                            <td className='b_text_w'>{paydata?.return ? `$${paydata?.return}` : "-"}</td>
-                                                            {/* <td className='b_btn1 bj-delivery-text-2 mb-3 ms-3 d-flex align-items-center justify-content-center'>{order.order_type}</td> */}
-                                                            <td className={`bj-delivery-text-2  b_btn1 mb-3 ms-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                                                            ${order.order_type.toLowerCase() === 'local' ? 'b_indigo' : order.order_type.toLowerCase() === 'order now' ? 'b_ora ' : order.order_type.toLowerCase() === 'delivery' ? 'b_blue' : order.order_type.toLowerCase() === 'uber' ? 'b_ora text-danger' : order.order_type.toLowerCase().includes("with") ? 'b_purple' : 'b_ora text-danger'}`}>
-                                                                {order.order_type.toLowerCase() === 'local' ? 'Local' : order.order_type.toLowerCase().includes("with") ? 'Retiro ' : order.order_type.toLowerCase() === 'delivery' ? 'Entrega' : order.order_type.toLowerCase() === 'uber' ? 'Uber' : order.order_type}
-                                                            </td>
-
-                                                            <td className='b_text_w'>
+                                                            <tr key={order.id} className='b_row'>
                                                                 <Link to={`/home/usa/information/${order.id}`}>
-                                                                    <button className='b_edit me-5'><MdEditSquare /></button>
+                                                                    <td className='b_idbtn bj-delivery-text-2 ms-3' style={{ borderRadius: "10px" }}>{order.id}</td>
                                                                 </Link>
-                                                                <button className='b_edit b_delete' onClick={() => deleteProductModal(order.id)}><RiDeleteBin5Fill /></button>
-                                                            </td>
-                                                        </tr>
-                                                    )})
+                                                                <td className='b_text_w'>{new Date(order?.created_at).toLocaleDateString('en-GB')}</td>
+                                                                <td className='b_text_w'>{new Date(order?.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                                                                <td className='b_text_w'>{order.customer_name ? order.customer_name : paydata?.firstname || paydata?.business_name}</td>
+                                                                <td className='b_text_w'>${paydata?.amount || total}</td>
+                                                                {/* <td className='b_text_w'>{order.payment_type}</td> */}
+                                                                <td className='b_text_w'>
+                                                                    {
+                                                                        order.payment_type == 'cash' ? 'Efectivo' :
+                                                                            order.payment_type == 'debit' ? 'Débito' :
+                                                                                order.payment_type == 'credit' ? 'Crédito' :
+                                                                                    order.payment_type == 'transfer' ? 'Transferencia' : " "
+                                                                    }
+                                                                </td>
+                                                                <td className='b_text_w'>{paydata?.return ? `$${paydata?.return}` : "-"}</td>
+                                                                {/* <td className='b_btn1 bj-delivery-text-2 mb-3 ms-3 d-flex align-items-center justify-content-center'>{order.order_type}</td> */}
+                                                                <td className={`bj-delivery-text-2  b_btn1 mb-3 ms-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
+                                                            ${order.order_type.toLowerCase() === 'local' ? 'b_indigo' : order.order_type.toLowerCase() === 'order now' ? 'b_ora ' : order.order_type.toLowerCase() === 'delivery' ? 'b_blue' : order.order_type.toLowerCase() === 'uber' ? 'b_ora text-danger' : order.order_type.toLowerCase().includes("with") ? 'b_purple' : 'b_ora text-danger'}`}>
+                                                                    {order.order_type.toLowerCase() === 'local' ? 'Local' : order.order_type.toLowerCase().includes("with") ? 'Retiro ' : order.order_type.toLowerCase() === 'delivery' ? 'Entrega' : order.order_type.toLowerCase() === 'uber' ? 'Uber' : order.order_type}
+                                                                </td>
+
+                                                                <td className='b_text_w'>
+                                                                    <Link to={`/home/usa/information/${order.id}`}>
+                                                                        <button className='b_edit me-5'><MdEditSquare /></button>
+                                                                    </Link>
+                                                                    <button className='b_edit b_delete' onClick={() => deleteProductModal(order.id)}><RiDeleteBin5Fill /></button>
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    })
                                                     :
                                                     <tr>
                                                         <td colSpan="9" className="text-center"> {/* Added colSpan to span all columns */}
