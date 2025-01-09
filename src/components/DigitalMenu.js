@@ -14,15 +14,20 @@ import axios from "axios";
 import Loader from "./Loader";
 import useAudioManager from "./audioManager";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllitems, getFamily, getMenu, getSubFamily } from "../redux/slice/Items.slice";
+import {
+  getAllitems,
+  getFamily,
+  getMenu,
+  getSubFamily,
+} from "../redux/slice/Items.slice";
 //import { enqueueSnackbar  } from "notistack";
 
 export default function Articles() {
   const API = process.env.REACT_APP_IMAGE_URL; // Laravel Image URL
   const apiUrl = process.env.REACT_APP_API_URL;
   const [token] = useState(localStorage.getItem("token"));
-  const [role]= useState(localStorage.getItem("role"));
-  const admin_id=localStorage.getItem("admin_id");
+  const [role] = useState(localStorage.getItem("role"));
+  const admin_id = localStorage.getItem("admin_id");
   const [createMenuError, setCreateMenuError] = useState("");
   const [editMenuError, setEditMenuError] = useState("");
   const [menuName, setmenuName] = useState("");
@@ -45,11 +50,13 @@ export default function Articles() {
   // const { playNotificationSound } = useAudioManager();
   const location = useLocation();
 
-  const dispatch = useDispatch()
-  const {items,subFamily,family,menu,loadingItem} = useSelector((state) => state.items);
+  const dispatch = useDispatch();
+  const { items, subFamily, family, menu, loadingItem } = useSelector(
+    (state) => state.items
+  );
 
   const [isProcessing, setIsProcessing] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   /*  const [ filteredItems, setFilteredItems ] = useState([]); // State to hold filtered items */
   const [searchTermMenu, setSearchTermMenu] = useState(""); // State to hold search term
   const [filteredItemsMenu, setFilteredItemsMenu] = useState(obj1);
@@ -58,14 +65,14 @@ export default function Articles() {
 
   // Add product
   const [show1, setShow1] = useState(false);
-  const handleClose1 = () => { 
+  const handleClose1 = () => {
     // console.log("close");
-   setSelectedItemsCount(0);
-   setItemId([]); 
-   setSelectedMenus([]);
-   setItemId([]);
-   setMenuId(null); 
-   setShow1(false);
+    setSelectedItemsCount(0);
+    setItemId([]);
+    setSelectedMenus([]);
+    setItemId([]);
+    setMenuId(null);
+    setShow1(false);
   };
   const handleShow1 = () => {
     setShow1(true);
@@ -125,10 +132,10 @@ export default function Articles() {
     setShow1AddMenuSuc(true);
     setTimeout(() => {
       setSelectedMenus([]);
-      setSelectedItemsCount(0)
+      setSelectedItemsCount(0);
       setItemId([]);
       setMenuId(null);
-      // fetchMenuData(); 
+      // fetchMenuData();
       // fetchMenuItemData();
       // fetchAllItems();
       setShow1AddMenuSuc(false);
@@ -235,7 +242,11 @@ export default function Articles() {
   const fetchMenuData = async () => {
     setIsProcessing(true);
     try {
-      const response = await axios.post(`${apiUrl}/menu/get`, {admin_id: admin_id},{headers:{Authorization:`Bearer ${token}`}});
+      const response = await axios.post(
+        `${apiUrl}/menu/get`,
+        { admin_id: admin_id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setMenu(response.data.menus);
       /* console.log(response.data.menus); */
     } catch (error) {
@@ -243,7 +254,6 @@ export default function Articles() {
         "Error fetching roles:",
         error.response ? error.response.data : error.message
       );
-      
     }
     setIsProcessing(false);
   };
@@ -251,7 +261,11 @@ export default function Articles() {
   // get menu item
   const fetchMenuItemData = async () => {
     try {
-      const response = await axios.post(`${apiUrl}/menu/get`, {admin_id: admin_id},{headers:{Authorization:`Bearer ${token}`}});
+      const response = await axios.post(
+        `${apiUrl}/menu/get`,
+        { admin_id: admin_id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setItem(response.data.menus);
       setFilteredItems(response.data.menus);
       /* console.log(response.data.menus); */
@@ -296,7 +310,7 @@ export default function Articles() {
           );
           return {
             ...menu,
-            items: filteredItems
+            items: filteredItems,
           };
         })
         .filter(
@@ -311,7 +325,9 @@ export default function Articles() {
   // get family
   const fetchFamilyData = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/family/getFamily`,{headers:{Authorization:`Bearer ${token}`}});
+      const response = await axios.get(`${apiUrl}/family/getFamily`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setParentCheck(response.data);
     } catch (error) {
       console.error(
@@ -324,7 +340,9 @@ export default function Articles() {
   // get subfamily
   const fetchSubFamilyData = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`,{headers:{Authorization:`Bearer ${token}`}});
+      const response = await axios.get(`${apiUrl}/subfamily/getSubFamily`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setChildCheck(response.data);
     } catch (error) {
       console.error(
@@ -337,7 +355,9 @@ export default function Articles() {
   // get product
   const fetchAllItems = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/item/getAll`,{headers:{Authorization:`Bearer ${token}`}});
+      const response = await axios.get(`${apiUrl}/item/getAll`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setObj1(response.data.items);
       setFilteredMenuItems(response.data.items);
       setFilteredItemsMenu(response.data.items);
@@ -357,14 +377,14 @@ export default function Articles() {
   const handleParentChange = (parentId) => {
     setCheckedParents((prevState) => ({
       ...prevState,
-      [parentId]: !prevState[parentId]
+      [parentId]: !prevState[parentId],
     }));
   };
 
   useEffect(() => {
     if (!(role == "admin" || role == "cashier" || role == "waitress")) {
-      navigate('/dashboard')
-    } 
+      navigate("/dashboard");
+    }
     // else {
     //   if (token) {
     //     setSelectedMenus([]);
@@ -377,45 +397,44 @@ export default function Articles() {
     //     fetchAllItems();
     //   }
     // }
-  }, [role, token,show1AddMenuSuc]);
+  }, [role, token, show1AddMenuSuc]);
 
-   useEffect(()=>{
-        setSelectedMenus([]);
-        setItemId([]);
-        setMenuId(null);
-        if(items.length == 0){
-          dispatch(getAllitems());
-        }
-        if(subFamily.length == 0){
-          dispatch(getSubFamily());
-        }
-        if(family.length == 0){
-          dispatch(getFamily());
-        }
-       if(menu.length == 0){
-        dispatch(getMenu({admin_id}));
-       }
-      }, []);
-    
-      useEffect(()=>{
-        if(family){
-          setParentCheck(family);
-        }
-        if(items){
-          setFilteredMenuItems(items)
-          setObj1(items)
-          setFilteredItemsMenu(items)
-        }
-        if(subFamily){
-          setChildCheck(subFamily)
-        }
-        if(menu){
-          setFilteredItems(menu)
-          setItem(menu)
-          setMenu(menu)
-        }
-       
-      },[family,items,subFamily,menu,show1AddMenuSuc,dispatch])
+  useEffect(() => {
+    setSelectedMenus([]);
+    setItemId([]);
+    setMenuId(null);
+    if (items.length == 0) {
+      dispatch(getAllitems());
+    }
+    if (subFamily.length == 0) {
+      dispatch(getSubFamily());
+    }
+    if (family.length == 0) {
+      dispatch(getFamily());
+    }
+    if (menu.length == 0) {
+      dispatch(getMenu({ admin_id }));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (family) {
+      setParentCheck(family);
+    }
+    if (items) {
+      setFilteredMenuItems(items);
+      setObj1(items);
+      setFilteredItemsMenu(items);
+    }
+    if (subFamily) {
+      setChildCheck(subFamily);
+    }
+    if (menu) {
+      setFilteredItems(menu);
+      setItem(menu);
+      setMenu(menu);
+    }
+  }, [family, items, subFamily, menu, show1AddMenuSuc, dispatch]);
 
   // create menu
   const handleCreateMenu = async () => {
@@ -442,22 +461,21 @@ export default function Articles() {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          maxBodyLength: Infinity
+          maxBodyLength: Infinity,
         }
       );
       console.log(response.data, "create menu");
       handleShowCreSuc();
-      dispatch(getMenu({admin_id}));
+      dispatch(getMenu({ admin_id }));
       // fetchMenuData();
       if (response.data && response.data.notification) {
         //enqueueSnackbar (response.data.notification, { variant: 'success' });
         // playNotificationSound();;
       } else {
         //enqueueSnackbar (`Menú ${menuName} creado exitosamente`, { variant: 'success' });
-      // playNotificationSound();;
-
+        // playNotificationSound();;
       }
     } catch (error) {
       console.error(
@@ -493,49 +511,45 @@ export default function Articles() {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          maxBodyLength: Infinity
+          maxBodyLength: Infinity,
         }
       );
       console.log(response.data, "update menu");
 
       // Update the menu state
       setSelectedMenus([]);
-      setSelectedItemsCount(0)
-  
-        // Clear item IDs
+      setSelectedItemsCount(0);
+
+      // Clear item IDs
       setItemId([]);
 
       setMenu((prevMenu) =>
-        prevMenu.map(
-          (m) =>
-            m.id === selectedMenu.id ? { ...m, name: selectedMenu.name } : m
+        prevMenu.map((m) =>
+          m.id === selectedMenu.id ? { ...m, name: selectedMenu.name } : m
         )
       );
 
       // Update the filteredItems state
       setFilteredItems((prevItems) =>
-        prevItems.map(
-          (item) =>
-            item.id === selectedMenu.id
-              ? { ...item, name: selectedMenu.name }
-              : item
+        prevItems.map((item) =>
+          item.id === selectedMenu.id
+            ? { ...item, name: selectedMenu.name }
+            : item
         )
       );
 
       // Update the item state (which is used for search)
       setItem((prevItem) =>
-        prevItem.map(
-          (i) =>
-            i.id === selectedMenu.id ? { ...i, name: selectedMenu.name } : i
+        prevItem.map((i) =>
+          i.id === selectedMenu.id ? { ...i, name: selectedMenu.name } : i
         )
       );
 
-      dispatch(getMenu({admin_id}));
+      dispatch(getMenu({ admin_id }));
 
-       handleShowEditFamSuc();
-     
+      handleShowEditFamSuc();
     } catch (error) {
       console.error(
         "Error updating menu:",
@@ -630,71 +644,69 @@ export default function Articles() {
     try {
       handleClose1(); // Close the modal first
       setIsProcessing(true); // Then show the loader
-  
+
       const response = await axios.post(
         `${apiUrl}/item/addToMenu`,
         {
           item_ids: itemId,
-          menu_id: menuId
+          menu_id: menuId,
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          maxBodyLength: Infinity
+          maxBodyLength: Infinity,
         }
       );
-  
+
       console.log("API Response:", response.data);
-  
+
       if (response.data.success) {
         // Handle UI updates
         handleShow1AddMenuSuc();
-  
+
         // Update the menu state directly
-        setMenu(prevMenu => {
-          const updatedMenu = prevMenu.map(menu => {
+        setMenu((prevMenu) => {
+          const updatedMenu = prevMenu.map((menu) => {
             if (menu.id === menuId) {
               // Find the newly added items
-              const newItems = obj1.filter(item => itemId.includes(item.id));
+              const newItems = obj1.filter((item) => itemId.includes(item.id));
               // Add the new items to the menu
               return {
                 ...menu,
-                items: [...menu.items, ...newItems]
+                items: [...menu.items, ...newItems],
               };
             }
             return menu;
           });
-          console.log('Updated menu:', updatedMenu);
+          console.log("Updated menu:", updatedMenu);
           return updatedMenu;
         });
 
-        dispatch(getMenu({admin_id}));
-    
-      
+        dispatch(getMenu({ admin_id }));
+
         // Update filteredItems state
-        setFilteredItems(prevFilteredItems => {
-          const updatedFilteredItems = prevFilteredItems.map(menu => {
+        setFilteredItems((prevFilteredItems) => {
+          const updatedFilteredItems = prevFilteredItems.map((menu) => {
             if (menu.id === menuId) {
-              const newItems = obj1.filter(item => itemId.includes(item.id));
+              const newItems = obj1.filter((item) => itemId.includes(item.id));
               return {
                 ...menu,
-                items: [...menu.items, ...newItems]
+                items: [...menu.items, ...newItems],
               };
             }
             return menu;
           });
-          console.log('Updated filteredItems:', updatedFilteredItems);
+          console.log("Updated filteredItems:", updatedFilteredItems);
           return updatedFilteredItems;
         });
-  
+
         // Show all menus by clearing the selectedMenus
         setSelectedMenus([]);
         setRemovedItems([]);
         // Clear item IDs
         setItemId([]);
-  
       } else {
         console.error("Failed to add items to menu");
       }
@@ -712,9 +724,9 @@ export default function Articles() {
 
   const filterItems = (searchTerm, checkedParents, childCheck) => {
     return obj1.filter((item) => {
-      const matchesSearch = 
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.code.toLowerCase().includes(searchTerm.toLowerCase()); 
+      const matchesSearch =
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.code.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCheckbox =
         checkedParents[item.family_id] ||
         (childCheck &&
@@ -744,7 +756,7 @@ export default function Articles() {
   const handleParentChangeMenu = (parentId) => {
     const newCheckedParents = {
       ...checkedParents,
-      [parentId]: !checkedParents[parentId]
+      [parentId]: !checkedParents[parentId],
     };
     setCheckedParents(newCheckedParents);
 
@@ -802,7 +814,7 @@ export default function Articles() {
   const handleshow500 = (menuId, itemId) => {
     setRemovedItems((prevRemovedItems) => [
       ...prevRemovedItems,
-      { menuId, itemId }
+      { menuId, itemId },
     ]);
     setShow500(true);
     setTimeout(() => {
@@ -817,13 +829,10 @@ export default function Articles() {
     }
   }, []);
 
-  useEffect(
-    () => {
-      // Save removed items to local storage
-      localStorage.setItem("removedItems", JSON.stringify(removedItems));
-    },
-    [removedItems]
-  );
+  useEffect(() => {
+    // Save removed items to local storage
+    localStorage.setItem("removedItems", JSON.stringify(removedItems));
+  }, [removedItems]);
   useEffect(() => {
     const handleBeforeUnload = () => {
       localStorage.removeItem("removedItems");
@@ -853,19 +862,23 @@ export default function Articles() {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          maxBodyLength: Infinity
+          maxBodyLength: Infinity,
         }
       );
       console.log(response.data, "delete menu");
 
       // Update state to remove the deleted menu
-      setMenu(prevMenu => prevMenu.filter(m => m.id !== selectedMenu.id));
-      setFilteredItems(prevItems => prevItems.filter(m => m.id !== selectedMenu.id));
-      setSelectedMenus(prevSelected => prevSelected.filter(m => m.id !== selectedMenu.id));
+      setMenu((prevMenu) => prevMenu.filter((m) => m.id !== selectedMenu.id));
+      setFilteredItems((prevItems) =>
+        prevItems.filter((m) => m.id !== selectedMenu.id)
+      );
+      setSelectedMenus((prevSelected) =>
+        prevSelected.filter((m) => m.id !== selectedMenu.id)
+      );
 
-      dispatch(getMenu({admin_id}));
+      dispatch(getMenu({ admin_id }));
 
       handleShowEditFamDel();
       setShowDeleteConfirmation(false);
@@ -874,8 +887,7 @@ export default function Articles() {
         "Error deleting menu:",
         error.response ? error.response.data : error.message
       );
-      if(error.response.data){
-
+      if (error.response.data) {
         //enqueueSnackbar (error?.response?.data?.alert, { variant: 'error' })
         // playNotificationSound();;
       }
@@ -883,32 +895,32 @@ export default function Articles() {
       setIsProcessing(false);
     }
   };
-  useEffect(()=>{
-    if(!showRetirar){
-        //  console.log("update");
+  useEffect(() => {
+    if (!showRetirar) {
+      //  console.log("update");
       setSelectedMenus([]);
       setItemId([]);
       setMenuId(null);
       setSelectedItemsCount(0);
-      // fetchMenuData(); 
+      // fetchMenuData();
       // fetchMenuItemData();
       // fetchAllItems();
       // dispatch(getMenu({admin_id}));
       // dispatch(getAllitems())
     }
-  },[showRetirar])
+  }, [showRetirar]);
 
   const handlesaveEdit = () => {
-      dispatch(getMenu({admin_id}));
-      dispatch(getAllitems())
-    if(showRetirar){
+    dispatch(getMenu({ admin_id }));
+    dispatch(getAllitems());
+    if (showRetirar) {
       setSelectedMenus([]);
       setItemId([]);
       setMenuId(null);
       setSelectedItemsCount(0);
     }
-    setShowRetirar(!showRetirar)
-  }
+    setShowRetirar(!showRetirar);
+  };
   return (
     <div className="m_bg_black">
       <Header />
@@ -917,14 +929,15 @@ export default function Articles() {
           <Sidenav />
         </div>
         <div className=" flex-grow-1 sidebar">
-
           <div>
             <div className="p-3 m_bgblack text-white m_borbot jay-table-fixed-kya">
               <h5 className="mb-0 m18">Menú digital</h5>
             </div>
-
             <div className="row ">
-              <div className="col-sm-2 col-4 m_bgblack   m-0 p-0  m_borrig " style={{ minHeight: "100vh" }}>
+              <div
+                className="col-sm-2 col-4 m_bgblack   m-0 p-0  m_borrig "
+                style={{ minHeight: "100vh" }}
+              >
                 <div className="j-articals-sticky">
                   <div className="ms-3 pe-3 mt-2 j-table-position-sticky">
                     <div className="m_borbot ">
@@ -936,7 +949,13 @@ export default function Articles() {
                           <div>
                             <button
                               className="btn mb-3 text-white m12 j-btn-primary"
-                              onClick={handleShow}
+                              onClick={()=>{
+                                if(showRetirar){
+                                  alert( "Por favor, guarda los cambios antes de continuar."); 
+                                }else{
+                                  handleShow()
+                                }
+                              }}
                             >
                               + Crear menú
                             </button>
@@ -945,274 +964,48 @@ export default function Articles() {
                       </div>
                     </div>
                   </div>
-                  {/* CRAETE product */}
-                  {/* .............................BRIJESH ............................... */}
-                  <Modal
-                    show={show}
-                    onHide={handleClose}
-                    backdrop={true}
-                    keyboard={false}
-                    className="m_modal"
-                  >
-                    <Modal.Header
-                      closeButton
-                      className="m_borbot b_border_bb mx-3 ps-0"
-                    >
-                      <Modal.Title>
-                        <Link className="text-white text-decoration-none ">
-                          Crear menú
-                        </Link>{" "}
-                      </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body className="border-0 pb-0">
-                      <div className="mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput1"
-                          className="form-label"
-                        >
-                          Nombre
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control m_input ps-3 "
-                          id="exampleFormControlInput1"
-                          placeholder="Eje.Desayuno"
-                          onChange={(e) => {
-                            setmenuName(e.target.value);
-                            if (createMenuError) setCreateMenuError("");
-                          }}
-                        />
-                        {createMenuError && (
-                          <div className="text-danger errormessage">
-                            {createMenuError}
-                          </div>
-                        )}
-                      </div>
-                    </Modal.Body>
-                    <Modal.Footer className="border-0 pt-0">
-                      <Button
-                        variant="primary"
-                        className="b_btn_pop"
-                        onClick={() => {
-                          handleCreateMenu();
-                        }}
-                      >
-                        Crear
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
 
-                  {/* .............................BRIJESH ............................... */}
-                  {/* product success */}
-                  <Modal
-                    show={showCreSuc}
-                    onHide={handleCloseCreSuc}
-                    backdrop={true}
-                    keyboard={false}
-                    className="m_modal"
-                  >
-                    <Modal.Header closeButton className="border-0" />
-                    <Modal.Body>
-                      <div className="text-center">
-                        <img
-                          src={require("../Image/check-circle.png")}
-                          alt=""
-                        />
-                        <p className="mb-0 mt-2 h6">Menú</p>
-                        <p className="opacity-75">Creado exitosamente</p>
-                      </div>
-                    </Modal.Body>
-                  </Modal>
                   <div className="py-3 m_borbot mx-3  m14 j-table-position-sticky-sector">
                     {menuData.map((item, index) => (
                       <div key={item.id}>
                         <div className="d-flex justify-content-between align-items-center flex-wrap mb-2">
                           <div className="d-flex align-items-center flex-grow-1">
-                           
-                              <input
-                                type="checkbox"
-                                className="me-2 custom-checkbox"
-                                checked={selectedMenus.includes(item)}
-                                onChange={() => {
+                            <input
+                              type="checkbox"
+                              className="me-2 custom-checkbox"
+                              checked={selectedMenus.includes(item)}
+                              onChange={() => {
+                                if (showRetirar) {
+                                  alert( "Por favor, guarda los cambios antes de continuar."); 
+                                } else {
                                   handleChangeData(item);
                                   setMenuId(item.id);
-                                }}
-                              />
-                              <p className="text-white mb-0 text-wrap">{item.name}</p>
-                           
+                                }
+                              }}
+                              disabled={showRetirar} 
+                            />
+                            <p className="text-white mb-0 text-wrap">
+                              {item.name}
+                            </p>
                           </div>
-                          { (role == "admin" || role == "cashier") &&
-                          <div
-                            className="text-white ms-3"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => handleShowEditFam(item)}
-                          >
-                            <BsThreeDots className="j-tbl-dot-color" />
-                          </div>
-                          }
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Edit product */}
-                    {/* ................. BRIJESh................................ */}
-                    <Modal
-                      show={showEditFam}
-                      onHide={handleCloseEditFam}
-                      backdrop={true}
-                      keyboard={false}
-                      className="m_modal"
-                    >
-                      <Modal.Header
-                        closeButton
-                        className="m_borbot b_border_bb mx-3 ps-0"
-                      >
-                        <Modal.Title>
-                          <Link
-                            className="text-white text-decoration-none"
-                            to="/singleatricleproduct"
-                          >
-                            Editar menú
-                          </Link>
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body className="border-0 pb-0">
-                        <div className="mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput1"
-                            className="form-label"
-                          >
-                            Nombre
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control m_input ps-3"
-                            id="exampleFormControlInput1"
-                            placeholder="Desayuno"
-                            value={selectedMenu ? selectedMenu.name : ""}
-                            onChange={(e) => {
-                              setSelectedMenu({
-                                ...selectedMenu,
-                                name: e.target.value
-                              });
-                              if (editMenuError) setEditMenuError("");
-                            }}
-                          />
-                          {editMenuError && (
-                            <div className="text-danger errormessage">
-                              {editMenuError}
+                          {(role == "admin" || role == "cashier") && (
+                            <div
+                              className="text-white ms-3"
+                              style={{ cursor: "pointer" }}
+                              onClick={() =>{
+                                if (showRetirar) {
+                                  alert("Por favor, guarda los cambios antes de continuar."); 
+                                } else {
+                                  handleShowEditFam(item)
+                                }
+                              }}
+                            >
+                              <BsThreeDots className="j-tbl-dot-color" />
                             </div>
                           )}
                         </div>
-                      </Modal.Body>
-                      <Modal.Footer className="border-0 pb-4 pt-2 ">
-                        <Button
-                          variant="danger"
-                          className="b_btn_close"
-                          onClick={() => {
-                            handleCloseEditFam();
-                            handleDeleteFam();
-                          }}
-                        >
-                          Eliminar
-                        </Button>
-                        <Button
-                          variant="primary"
-                          className="b_btn_pop"
-                          onClick={() => {
-                            handleSaveEditFam();
-                          }}
-                        >
-                          Guardar cambios
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-
-                    {/* ................. BRIJESh................................ */}
-                    {/* delete confime message */}
-
-                    <Modal
-                      show={showDeleteConfirmation}
-                      onHide={() => setShowDeleteConfirmation(false)}
-                      backdrop={true}
-                      keyboard={false}
-                      className="m_modal jay-modal"
-                    >
-                      <Modal.Header closeButton className="border-0" />
-
-                      <Modal.Body>
-                        <div className="text-center">
-                          <img
-                            src={require("../Image/trash-outline-secondary.png")}
-                            alt=" "
-                          />
-                          <p className="mb-0 mt-3 h6">
-                            {" "}
-                            ¿Estás seguro de que quieres eliminar este menú?
-                          </p>
-                        </div>
-                      </Modal.Body>
-                      <Modal.Footer className="border-0 ">
-                        <Button
-                          className="j-tbl-btn-font-1 b_btn_close"
-                          variant="danger"
-                          onClick={confirmDeleteFam}
-                        >
-                          Si, seguro
-                        </Button>
-                        <Button
-                          className="j-tbl-btn-font-1 "
-                          variant="secondary"
-                          onClick={() => setShowDeleteConfirmation(false)}
-                        >
-                          No, cancelar
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    {/* edit product success  */}
-                    <Modal
-                      show={showEditFamSuc}
-                      onHide={handleCloseEditFamSuc}
-                      backdrop={true}
-                      keyboard={false}
-                      className="m_modal"
-                    >
-                      <Modal.Header closeButton className="border-0" />
-                      <Modal.Body>
-                        <div className="text-center">
-                          <img
-                            src={require("../Image/check-circle.png")}
-                            alt=""
-                          />
-                          <p className="mb-0 mt-2 h6">Familia</p>
-                          <p className="opacity-75">
-                            Ha sido modificada exitosamente
-                          </p>
-                        </div>
-                      </Modal.Body>
-                    </Modal>
-                    {/* edit product eliminate  */}
-                    <Modal
-                      show={showEditFamDel}
-                      onHide={handleCloseEditFamDel}
-                      backdrop={true}
-                      keyboard={false}
-                      className="m_modal"
-                    >
-                      <Modal.Header closeButton className="border-0" />
-                      <Modal.Body>
-                        <div className="text-center">
-                          <img
-                            src={require("../Image/trash-check 1.png")}
-                            alt=""
-                          />
-                          <p className="mb-0 mt-2 h6">Menú</p>
-                          <p className="opacity-75">
-                            Se ha eliminado con éxito
-                          </p>
-                        </div>
-                      </Modal.Body>
-                    </Modal>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1221,7 +1014,6 @@ export default function Articles() {
                   <div className="mb-3">
                     <h6 className="mb-0 ">Entradas</h6>
                   </div>
-
                   <div>
                     <div className="d-flex justify-content-between m_property">
                       <div className="me-2">
@@ -1247,25 +1039,24 @@ export default function Articles() {
                           </div>
                         </div>
                       </div>
-                      {
-                          (role == "admin" || role == "cashier") && 
-                      <div>
-                        <button
-                          className="btn j-btn-primary j_editor_menu text-white text-nowrap m12 me-2"
-                          onClick={handlesaveEdit}
-                        >
-                          {showRetirar ? "Guardar"  : "+ Editar"}
-                        </button>
-                        {(selectedMenus.length == 1 && !showRetirar)  && 
+                      {(role == "admin" || role == "cashier") && (
+                        <div>
+                          <button
+                            className="btn j-btn-primary j_editor_menu text-white text-nowrap m12 me-2"
+                            onClick={handlesaveEdit}
+                          >
+                            {showRetirar ? "Guardar" : "+ Editar"}
+                          </button>
+                          {selectedMenus.length == 1 && !showRetirar && (
                             <button
                               className="btn j-btn-primary text-white text-nowrap m12 "
                               onClick={handleShow1}
                             >
                               + Agregar
                             </button>
-                          }
-                      </div>
-                        }
+                          )}
+                        </div>
+                      )}
                     </div>
                     {/* add product*/}
 
@@ -1313,14 +1104,13 @@ export default function Articles() {
                                             <input
                                               type="checkbox"
                                               checked={
-                                                !!checkedParents[
-                                                parentItem.id
-                                                ]
+                                                !!checkedParents[parentItem.id]
                                               }
                                               onChange={() =>
                                                 handleParentChangeMenu(
                                                   parentItem.id
-                                                )}
+                                                )
+                                              }
                                               className="me-2 custom-checkbox"
                                             />
                                             <span className="text-white">
@@ -1426,32 +1216,48 @@ export default function Articles() {
                             <div className="row p-2">
                               {filteredItemsMenu.length > 0 ? (
                                 filteredItemsMenu
-                                  .filter(ele =>
-                                    !selectedMenus[0]?.items.some(item => item.id === ele.id)
+                                  .filter(
+                                    (ele) =>
+                                      !selectedMenus[0]?.items.some(
+                                        (item) => item.id === ele.id
+                                      )
                                   )
                                   .map((ele, index) => {
-                                    const isAdded = itemId.length > 0 ? itemId.some((item) => item == ele.id) : false;
-                                   
+                                    const isAdded =
+                                      itemId.length > 0
+                                        ? itemId.some((item) => item == ele.id)
+                                        : false;
+
                                     return (
                                       <div
                                         className="col-md-4 col-xl-3 col-sm-6 col-12 g-3"
                                         key={ele.id} // Corrected from 'keys' to 'key'
                                       >
-                                        
                                         <div>
                                           <div className="card m_bgblack text-white position-relative">
-                                          {ele.image ? (
-                                            <img
-                                              src={`${API}/images/${ele.image}`}
-                                              className="card-img-top object-fit-cover rounded"
-                                              alt={ele.name}
-                                              style={{ height: "162px", objectFit: "cover" }}
-                                            />
-                                          ) : (
-                                            <div className="d-flex justify-content-center align-items-center rounded" style={{ height: "200px", backgroundColor: 'rgb(55 65 81 / 34%)', color: 'white' }}>
-                                              <p>{ele.name}</p>
-                                            </div>
-                                          )}
+                                            {ele.image ? (
+                                              <img
+                                                src={`${API}/images/${ele.image}`}
+                                                className="card-img-top object-fit-cover rounded"
+                                                alt={ele.name}
+                                                style={{
+                                                  height: "162px",
+                                                  objectFit: "cover",
+                                                }}
+                                              />
+                                            ) : (
+                                              <div
+                                                className="d-flex justify-content-center align-items-center rounded"
+                                                style={{
+                                                  height: "200px",
+                                                  backgroundColor:
+                                                    "rgb(55 65 81 / 34%)",
+                                                  color: "white",
+                                                }}
+                                              >
+                                                <p>{ele.name}</p>
+                                              </div>
+                                            )}
                                             <div className="card-body">
                                               <h6 className="card-title">
                                                 {ele.name}
@@ -1463,18 +1269,24 @@ export default function Articles() {
                                                 Codigo: {ele.code}
                                               </p>
                                               <div
-                                                style={{ backgroundColor: isAdded ? "#063f93" : "#0d6efd" }}
+                                                style={{
+                                                  backgroundColor: isAdded
+                                                    ? "#063f93"
+                                                    : "#0d6efd",
+                                                }}
                                                 onClick={() =>
-                                                  handleAddItem(ele.id)}
+                                                  handleAddItem(ele.id)
+                                                }
                                                 className="btn w-100 btn-primary text-white"
-
                                               >
                                                 <Link
                                                   className="text-white text-decoration-none"
                                                   style={{ fontSize: "14px" }}
                                                 >
                                                   <span className="ms-1">
-                                                    {isAdded ? 'Agregado' : 'Agregar al menú'}
+                                                    {isAdded
+                                                      ? "Agregado"
+                                                      : "Agregar al menú"}
                                                   </span>
                                                 </Link>
                                               </div>
@@ -1485,13 +1297,15 @@ export default function Articles() {
                                             >
                                               <Link
                                                 to={`/articles/singleatricleproduct/${ele.id}`}
-                                                state={{ from: location.pathname }}
+                                                state={{
+                                                  from: location.pathname,
+                                                }}
                                                 className="text-white text-decoration-none"
                                               >
                                                 <p
                                                   className="px-1 rounded m-2"
                                                   style={{
-                                                    backgroundColor: "#374151"
+                                                    backgroundColor: "#374151",
                                                   }}
                                                 >
                                                   <IoMdInformationCircle />{" "}
@@ -1506,7 +1320,7 @@ export default function Articles() {
                                           </div>
                                         </div>
                                       </div>
-                                    )
+                                    );
                                   })
                               ) : (
                                 <div className="col-12 text-center text-white mt-5">
@@ -1549,12 +1363,12 @@ export default function Articles() {
                 </div>
 
                 <div className="p-2 row">
-                {console.log("sss",filteredItems)}
+                  {console.log("sss", filteredItems)}
 
                   {filteredItems.length > 0 ? (
-                    (selectedMenus.length === 0
-                      ? filteredItems
-                      : selectedMenus).filter(menu => menu && menu.id).map((menu) => {
+                    (selectedMenus.length === 0 ? filteredItems : selectedMenus)
+                      .filter((menu) => menu && menu.id)
+                      .map((menu) => {
                         const hasItems = menu.items.length > 0;
                         const shouldShow =
                           selectedMenus.length === 0 ||
@@ -1573,9 +1387,8 @@ export default function Articles() {
                                 </div>
                               )}
                               {hasItems ? (
-
                                 <div className="row">
-                                        {console.log("aa",removedItems)}
+                                  {console.log("aa", removedItems)}
 
                                   {menu.items
                                     .filter(
@@ -1603,7 +1416,8 @@ export default function Articles() {
                                           setFilteredItems={setFilteredItems}
                                           obj1={obj1}
                                           onRetirar={() =>
-                                            handleshow500(menu.id, ele.id)}
+                                            handleshow500(menu.id, ele.id)
+                                          }
                                         />
                                       </div>
                                     ))}
@@ -1628,6 +1442,234 @@ export default function Articles() {
                     </div>
                   )}
                 </div>
+
+                {/* CRAETE product */}
+                {/* .............................BRIJESH ............................... */}
+                <Modal
+                  show={show}
+                  onHide={handleClose}
+                  backdrop={true}
+                  keyboard={false}
+                  className="m_modal"
+                >
+                  <Modal.Header
+                    closeButton
+                    className="m_borbot b_border_bb mx-3 ps-0"
+                  >
+                    <Modal.Title>
+                      <Link className="text-white text-decoration-none ">
+                        Crear menú
+                      </Link>{" "}
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body className="border-0 pb-0">
+                    <div className="mb-3">
+                      <label
+                        htmlFor="exampleFormControlInput1"
+                        className="form-label"
+                      >
+                        Nombre
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control m_input ps-3 "
+                        id="exampleFormControlInput1"
+                        placeholder="Eje.Desayuno"
+                        onChange={(e) => {
+                          setmenuName(e.target.value);
+                          if (createMenuError) setCreateMenuError("");
+                        }}
+                      />
+                      {createMenuError && (
+                        <div className="text-danger errormessage">
+                          {createMenuError}
+                        </div>
+                      )}
+                    </div>
+                  </Modal.Body>
+                  <Modal.Footer className="border-0 pt-0">
+                    <Button
+                      variant="primary"
+                      className="b_btn_pop"
+                      onClick={() => {
+                        handleCreateMenu();
+                      }}
+                    >
+                      Crear
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+
+                {/* .............................BRIJESH ............................... */}
+                {/* product success */}
+                <Modal
+                  show={showCreSuc}
+                  onHide={handleCloseCreSuc}
+                  backdrop={true}
+                  keyboard={false}
+                  className="m_modal"
+                >
+                  <Modal.Header closeButton className="border-0" />
+                  <Modal.Body>
+                    <div className="text-center">
+                      <img src={require("../Image/check-circle.png")} alt="" />
+                      <p className="mb-0 mt-2 h6">Menú</p>
+                      <p className="opacity-75">Creado exitosamente</p>
+                    </div>
+                  </Modal.Body>
+                </Modal>
+                {/* Edit product */}
+                {/* ................. BRIJESh................................ */}
+                <Modal
+                  show={showEditFam}
+                  onHide={handleCloseEditFam}
+                  backdrop={true}
+                  keyboard={false}
+                  className="m_modal"
+                >
+                  <Modal.Header
+                    closeButton
+                    className="m_borbot b_border_bb mx-3 ps-0"
+                  >
+                    <Modal.Title>
+                      <Link
+                        className="text-white text-decoration-none"
+                        to="/singleatricleproduct"
+                      >
+                        Editar menú
+                      </Link>
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body className="border-0 pb-0">
+                    <div className="mb-3">
+                      <label
+                        htmlFor="exampleFormControlInput1"
+                        className="form-label"
+                      >
+                        Nombre
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control m_input ps-3"
+                        id="exampleFormControlInput1"
+                        placeholder="Desayuno"
+                        value={selectedMenu ? selectedMenu.name : ""}
+                        onChange={(e) => {
+                          setSelectedMenu({
+                            ...selectedMenu,
+                            name: e.target.value,
+                          });
+                          if (editMenuError) setEditMenuError("");
+                        }}
+                      />
+                      {editMenuError && (
+                        <div className="text-danger errormessage">
+                          {editMenuError}
+                        </div>
+                      )}
+                    </div>
+                  </Modal.Body>
+                  <Modal.Footer className="border-0 pb-4 pt-2 ">
+                    <Button
+                      variant="danger"
+                      className="b_btn_close"
+                      onClick={() => {
+                        handleCloseEditFam();
+                        handleDeleteFam();
+                      }}
+                    >
+                      Eliminar
+                    </Button>
+                    <Button
+                      variant="primary"
+                      className="b_btn_pop"
+                      onClick={() => {
+                        handleSaveEditFam();
+                      }}
+                    >
+                      Guardar cambios
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+
+                {/* ................. BRIJESh................................ */}
+                {/* delete confime message */}
+
+                <Modal
+                  show={showDeleteConfirmation}
+                  onHide={() => setShowDeleteConfirmation(false)}
+                  backdrop={true}
+                  keyboard={false}
+                  className="m_modal jay-modal"
+                >
+                  <Modal.Header closeButton className="border-0" />
+
+                  <Modal.Body>
+                    <div className="text-center">
+                      <img
+                        src={require("../Image/trash-outline-secondary.png")}
+                        alt=" "
+                      />
+                      <p className="mb-0 mt-3 h6">
+                        {" "}
+                        ¿Estás seguro de que quieres eliminar este menú?
+                      </p>
+                    </div>
+                  </Modal.Body>
+                  <Modal.Footer className="border-0 ">
+                    <Button
+                      className="j-tbl-btn-font-1 b_btn_close"
+                      variant="danger"
+                      onClick={confirmDeleteFam}
+                    >
+                      Si, seguro
+                    </Button>
+                    <Button
+                      className="j-tbl-btn-font-1 "
+                      variant="secondary"
+                      onClick={() => setShowDeleteConfirmation(false)}
+                    >
+                      No, cancelar
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+                {/* edit product success  */}
+                <Modal
+                  show={showEditFamSuc}
+                  onHide={handleCloseEditFamSuc}
+                  backdrop={true}
+                  keyboard={false}
+                  className="m_modal"
+                >
+                  <Modal.Header closeButton className="border-0" />
+                  <Modal.Body>
+                    <div className="text-center">
+                      <img src={require("../Image/check-circle.png")} alt="" />
+                      <p className="mb-0 mt-2 h6">Familia</p>
+                      <p className="opacity-75">
+                        Ha sido modificada exitosamente
+                      </p>
+                    </div>
+                  </Modal.Body>
+                </Modal>
+                {/* edit product eliminate  */}
+                <Modal
+                  show={showEditFamDel}
+                  onHide={handleCloseEditFamDel}
+                  backdrop={true}
+                  keyboard={false}
+                  className="m_modal"
+                >
+                  <Modal.Header closeButton className="border-0" />
+                  <Modal.Body>
+                    <div className="text-center">
+                      <img src={require("../Image/trash-check 1.png")} alt="" />
+                      <p className="mb-0 mt-2 h6">Menú</p>
+                      <p className="opacity-75">Se ha eliminado con éxito</p>
+                    </div>
+                  </Modal.Body>
+                </Modal>
+
                 <Modal
                   show={show500}
                   onHide={handleclose500}
@@ -1638,10 +1680,7 @@ export default function Articles() {
                   <Modal.Header closeButton className="border-0" />
                   <Modal.Body>
                     <div className="j-modal-trash text-center">
-                      <img
-                        src={require("../Image/trash-outline.png")}
-                        alt=""
-                      />
+                      <img src={require("../Image/trash-outline.png")} alt="" />
                       <p className="mb-0 mt-3 h6 j-tbl-pop-1">
                         Menú digital eliminado
                       </p>
@@ -1660,14 +1699,21 @@ export default function Articles() {
                 >
                   <Modal.Body className="text-center">
                     <p></p>
-                    <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
+                    <Spinner
+                      animation="border"
+                      role="status"
+                      style={{
+                        height: "85px",
+                        width: "85px",
+                        borderWidth: "6px",
+                      }}
+                    />
                     <p className="mt-2">Procesando solicitud...</p>
                   </Modal.Body>
                 </Modal>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

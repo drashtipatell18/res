@@ -45,6 +45,10 @@ const Counter_finalP = () => {
     setShow11(false)
     if (creditId) {
       localStorage.removeItem("credit");
+      localStorage.removeItem("payment");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("currentOrder");
+      
       navigate(`/home/client/detail_no2/${creditData?.order_id}`);
     }
     navigate('/counter');
@@ -261,8 +265,9 @@ const Counter_finalP = () => {
 
   const totalCost = getTotalCost();
   const discount = 1.0;
-  const finalTotal = totalCost - discount - (creditId ? creditData?.creditTotal : 0);
+  const finalTotal = totalCost - discount;
   const taxAmount = finalTotal * 0.19;
+  const lastTotal = parseFloat(finalTotal.toFixed(2)) + parseFloat(taxAmount.toFixed(2)) -(creditId ? creditData?.creditTotal : 0)
 
   const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
   const [customerData, setCustomerData] = useState(initialCustomerData);
@@ -309,7 +314,7 @@ const Counter_finalP = () => {
     setCustomerData((prevState) => {
 
       const currentValue = parseFloat(value) || 0;
-      const totalDue = finalTotal + taxAmount + tipAmount;
+      const totalDue = lastTotal + tipAmount;
       const otherAmount = Math.max(totalDue - currentValue, 0);
 
       // console.log(otherAmount);
@@ -328,7 +333,7 @@ const Counter_finalP = () => {
 
       // New calculation for turn
       const totalAmount = parseFloat(updatedState.cashAmount || 0) + parseFloat(updatedState.debitAmount || 0) + parseFloat(updatedState.creditAmount || 0) + parseFloat(updatedState.transferAmount || 0);
-      updatedState.turn = totalAmount - (finalTotal + taxAmount + tipAmount); // Update turn based on total amounts
+      updatedState.turn = totalAmount - (lastTotal + tipAmount); // Update turn based on total amounts
       return updatedState;
 
     });
@@ -479,16 +484,18 @@ const Counter_finalP = () => {
       errors.paymentType = "Por favor seleccione un tipo de pago";
     }
 
-    const totalWithTax = finalTotal + taxAmount + tipAmount;
+    const totalWithTax = lastTotal;
 
     const totalPaymentAmount = parseFloat(customerData.cashAmount || 0) + parseFloat(customerData.debitAmount || 0) + parseFloat(customerData.creditAmount || 0) + parseFloat(customerData.transferAmount || 0);
     // console.log(totalPaymentAmount < totalWithTax, totalPaymentAmount <= 0)
     // Validate payment amount
+    // console.log(totalWithTax,totalPaymentAmount,totalWithTax > totalPaymentAmount);
+    
     if (!totalPaymentAmount || totalPaymentAmount <= 0) {
       errors.amount = "Por favor, introduzca un importe de pago válido";
       // } else if (parseFloat(customerData.amount) < totalWithTax.toFixed(2)) {
 
-    } else if (totalPaymentAmount < totalWithTax.toFixed(2)) {
+    } else if (totalPaymentAmount < parseFloat(totalWithTax)) {
       errors.amount = "El monto del pago debe cubrir el costo total";
     }
     return errors;
@@ -507,6 +514,7 @@ const Counter_finalP = () => {
 
   const navigationPage = () => {
     // console.log(navigationPath, "asgaysg ");
+    localStorage.removeItem("credit")
     if (navigationPath) {
       navigate(navigationPath);
     }
@@ -544,9 +552,16 @@ const Counter_finalP = () => {
   // submit
   const handleSubmit = async () => {
     const errors = validateForm();
+    console.log(errors);
+    
     if (Object.keys(errors).length > 0) {
       // Display errors to user
       setFormErrors(errors);
+      return;
+    }
+
+    if(lastTotal<0){
+      alert('añadir a más productos')
       return;
     }
 
@@ -590,7 +605,7 @@ const Counter_finalP = () => {
         return;
       }
       if (!orderId) {
-        const response = await axios.post(`${apiUrl}/order/place_new`, orderData, {
+        const response = await axios.post(`${apiUrl}/order/place_ne`, orderData, {
           headers: { Authorization: `Bearer ${token}` }
         })
         if (!response.data.success) {
@@ -614,7 +629,7 @@ const Counter_finalP = () => {
         };
         try {
           const responsePayment = await axios.post(
-            `${apiUrl}/payment/insert`,
+            `${apiUrl}/payment/inser`,
             paymentData,
             {
               headers: {
@@ -640,7 +655,7 @@ const Counter_finalP = () => {
 
           if (creditId) {
             setIsProcessing(true);
-            axios.post(`${apiUrl}/order/getCreditUpdate/${creditId}`,{
+            axios.post(`${apiUrl}/order/getCreditUpdat/${creditId}`,{
                   status: "Completed",
                   destination: orderType.orderId
                 },{
@@ -668,6 +683,7 @@ const Counter_finalP = () => {
           localStorage.removeItem("currentOrder");
           localStorage.removeItem("payment");
           sessionStorage.removeItem("orderId");
+          localStorage.removeItem("credit")
           setOrderId('');
           setIsSubmitted(true);
           handleShow11();
@@ -1297,7 +1313,7 @@ const Counter_finalP = () => {
                             Total
                           </p>
                           <span className="text-white bj-delivery-text-153">
-                            ${(finalTotal + taxAmount + tipAmount).toFixed(2)}
+                            ${(lastTotal + tipAmount).toFixed(2)}
                           </span>
                         </div>
                         <div className="btn w-100 j-btn-primary text-white">

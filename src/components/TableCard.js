@@ -67,6 +67,8 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
   };
 
   const handleClick = () => {
+    console.log("aaa",isSelected,no);
+    
     if (!isSelected) {
       setSelected(true);
       setTableStatus(status);

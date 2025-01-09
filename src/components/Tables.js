@@ -1139,36 +1139,36 @@ const Tables = () => {
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    window.Pusher = require('pusher-js');
+    // window.Pusher = require('pusher-js');
 
-    const socket = new Echo({
-      // broadcaster: 'pusher',
-      // key: "7ae046560a0ed83ad8c7", // Replace with your actual Pusher key
-      // cluster: "mt1", // Ensure this matches your Pusher cluster
-      // wsHost: window.location.hostname, // Automatically use the current hostname
-      // wsPort: 6001, // Ensure this is the port your WebSocket server is using
-      // forceTLS: false, // Set to true for HTTPS
-      // encrypted: false, // Ensures connection is encrypted
-      // disableStats: true, // Enable stats for production
-      // enabledTransports: ['ws', 'wss'], // Allow both unencrypted and encrypted WebSocket connections
-      broadcaster: "pusher",
-      key: "4fc8a6c3a8bed22b1439",
-      cluster: "mt1",
-      wsHost: window.location.hostname,
-      wsPort: 6001,
-      forceTLS: false,
-      disableStats: true,
-      enabledTransports: ['ws', 'wss'], 
-    });
+    // const socket = new Echo({
+    //   // broadcaster: 'pusher',
+    //   // key: "7ae046560a0ed83ad8c7", // Replace with your actual Pusher key
+    //   // cluster: "mt1", // Ensure this matches your Pusher cluster
+    //   // wsHost: window.location.hostname, // Automatically use the current hostname
+    //   // wsPort: 6001, // Ensure this is the port your WebSocket server is using
+    //   // forceTLS: false, // Set to true for HTTPS
+    //   // encrypted: false, // Ensures connection is encrypted
+    //   // disableStats: true, // Enable stats for production
+    //   // enabledTransports: ['ws', 'wss'], // Allow both unencrypted and encrypted WebSocket connections
+    //   broadcaster: "pusher",
+    //   key: "4fc8a6c3a8bed22b1439",
+    //   cluster: "mt1",
+    //   wsHost: window.location.hostname,
+    //   wsPort: 6001,
+    //   forceTLS: false,
+    //   disableStats: true,
+    //   enabledTransports: ['ws', 'wss'], 
+    // });
 
 
 
-    socket.connector.pusher.connection.bind('connected', () => {
-      console.log("hello ")// Update state when connected
-    });
-    socket.connector.pusher.connection.bind('error', (error) => {
-      console.error("Connection error:", error);
-    });
+    // socket.connector.pusher.connection.bind('connected', () => {
+    //   console.log("hello ")// Update state when connected
+    // });
+    // socket.connector.pusher.connection.bind('error', (error) => {
+    //   console.error("Connection error:", error);
+    // });
     // const channel = echo.channel('chatMessage');
 
     // channel.listen('CardClick', (e) => {
