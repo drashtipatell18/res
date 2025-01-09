@@ -38,7 +38,7 @@ function Home_client() {
         date.setMonth(date.getMonth() - 1); 
         return new Date(date) ; 
       });
-      const [selectedHastaMonth, setSelectedHastaMonth] = useState(
+  const [selectedHastaMonth, setSelectedHastaMonth] = useState(
         new Date()
       );
   const [users, setUsers] = useState([]);

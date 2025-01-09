@@ -13,6 +13,11 @@ import axios from 'axios';
 import * as XLSX from "xlsx-js-style";
 import { getAllOrders, getAllPayments } from '../redux/slice/order.slice';
 import { useDispatch, useSelector } from 'react-redux';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import es from "date-fns/locale/es"; 
+import { registerLocale } from "react-datepicker";
+registerLocale("es", es);
 
 function Home_Usuarios() {
 
@@ -57,10 +62,19 @@ function Home_Usuarios() {
     };
 
     const [errorReport, setErrorReport] = useState("");
-    const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(1);
-    const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
-        new Date().getMonth() + 1
-    );
+    // const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(1);
+    // const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
+    //     new Date().getMonth() + 1
+    // );
+
+    const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(() => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - 1);
+        return new Date(date) ; 
+      });
+      const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
+        new Date()
+      );
 
     //  const [payments, setPayments] = useState([]);
     useEffect(() => {
@@ -89,29 +103,28 @@ function Home_Usuarios() {
         [selectedDesdeMonthReport, selectedHastaMonthReport]
     );
 
-    const monthNames = [
-        "Enero",
-        "Febrero",
-        "Marzo",
-        "Abril",
-        "Mayo",
-        "Junio",
-        "Julio",
-        "Agosto",
-        "Septiembre",
-        "Octubre",
-        "Noviembre",
-        "Diciembre"
-    ];
+    // const monthNames = [
+    //     "Enero",
+    //     "Febrero",
+    //     "Marzo",
+    //     "Abril",
+    //     "Mayo",
+    //     "Junio",
+    //     "Julio",
+    //     "Agosto",
+    //     "Septiembre",
+    //     "Octubre",
+    //     "Noviembre",
+    //     "Diciembre"
+    // ];
 
     const generateExcelReport = async () => {
         setIsProcessing(true);
         try {
-            const filteredOrderData = orderAlldata.filter((order) => {
-                const orderDate = new Date(order.created_at);
-                const orderMonth = orderDate.getMonth() + 1; // Months are 0-indexed
-                return orderMonth >= selectedDesdeMonthReport && orderMonth <= selectedHastaMonthReport;
-            }).map((order) => {
+            const filteredOrderData = orderAlldata.filter((v) => 
+                new Date(selectedHastaMonthReport) >= new Date(v.created_at) && 
+                new Date(selectedDesdeMonthReport) <= new Date(v.created_at)
+              ).map((order) => {
                 const date = new Date(order.created_at);
                 const formattedDate = date.toLocaleDateString('en-GB'); // Format date
                 const formattedTime = date.toLocaleTimeString([], {
@@ -183,8 +196,12 @@ function Home_Usuarios() {
             XLSX.utils.book_append_sheet(wb, ws, "Reporte de Entrega");
 
             // Generate Excel file
-            const desdeMonthName = monthNames[selectedDesdeMonthReport - 1];
-            const hastaMonthName = monthNames[selectedHastaMonthReport - 1];
+            const Ddate = new Date(selectedDesdeMonthReport);
+            const Hdate = new Date(selectedHastaMonthReport)
+            // Generate Excel file
+            // XLSX.writeFile(wb, `Reporte de Articulo ${formDetails.name}_${selectedDesdeMonthReport}-${selectedHastaMonthReport}.xlsx`);
+            const desdeMonthName = `${String(Ddate.getMonth() + 1).padStart(2, '0')}/${Ddate.getFullYear()}`;
+            const hastaMonthName = `${String(Hdate.getMonth() + 1).padStart(2, '0')}/${Hdate.getFullYear()}`;
             XLSX.writeFile(wb, `Reporte de Entrega ${desdeMonthName}-${hastaMonthName}.xlsx`);
             setIsProcessing(false)
             handleShow12();
@@ -912,7 +929,27 @@ function Home_Usuarios() {
                                                 Desde
                                             </label>
 
-                                            <select
+                                            <div className="position-relative">
+                                                              <DatePicker
+                                                                showPopperArrow={false}
+                                                                // selected={new Date(selectedDesdeMonthReport)}
+                                                                // onChange={(date) => setSelectedDesdeMonthReport(date.getMonth() + 1)} // Adjust as needed
+                                                                selected={selectedDesdeMonthReport}
+                                                                onChange={(date) => {
+                                                                  const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
+                                                                  setSelectedDesdeMonthReport(aa);
+                                                                }}
+                                                                dateFormat="MMMM-yyyy"
+                                                                locale={es} // Changed to Spanish locale
+                                                                showMonthYearPicker
+                                                                showFullMonthYearPicker
+                                                                showTwoColumnMonthYearPicker
+                                                                className="form-select  b_select border-0 py-2 w-100" // Add Bootstrap class and custom class
+                                                                shouldCloseOnSelect={true}
+                                                              />
+                                                            </div>
+
+                                            {/* <select
                                                 className="form-select  b_select border-0 py-2  "
                                                 style={{ borderRadius: "8px" }}
                                                 aria-label="Default select example"
@@ -932,13 +969,28 @@ function Home_Usuarios() {
                                                 <option value="10">Octubre </option>
                                                 <option value="11">Noviembre</option>
                                                 <option value="12">Diciembre</option>
-                                            </select>
+                                            </select> */}
                                         </div>
                                         <div className="col-6">
                                             <label className="mb-1 j-caja-text-1">
                                                 Hasta
                                             </label>
-                                            <select
+                                            <div className="position-relative">
+                                                            <DatePicker
+                                                                showPopperArrow={false}
+                                                                selected={selectedHastaMonthReport} onChange={(date) => {
+                                                                  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+                                                                  setSelectedHastaMonthReport(lastDay);
+                                                                }}
+                                                                dateFormat="MMMM-yyyy"
+                                                                locale={es} 
+                                                                showMonthYearPicker
+                                                                showFullMonthYearPicker
+                                                                showTwoColumnMonthYearPicker
+                                                                className="form-select  b_select border-0 py-2 w-100"
+                                                              />
+                                                              </div>
+                                            {/* <select
                                                 className="form-select  b_select border-0 py-2  "
                                                 style={{ borderRadius: "8px" }}
                                                 aria-label="Default select example"
@@ -958,7 +1010,7 @@ function Home_Usuarios() {
                                                 <option value="10">Octubre </option>
                                                 <option value="11">Noviembre</option>
                                                 <option value="12">Diciembre</option>
-                                            </select>
+                                            </select> */}
                                         </div>
                                     </div>
                                     <div className="d-flex w-auto justify-content-end gap-5 row m-2">

@@ -2359,12 +2359,12 @@ const Dashboard = () => {
                     ];
 
                     // console.log(chartData,ele.box_name,totalAmount,ele);
-                    // console.log(chartData);
+                    console.log(chartData);
                     
                     return (
                       <div className="j-chart-entry-1 d-flex align-items-center" key={ele.id}>
                         <ResponsiveContainer width={100} height={100}>
-                        {chartData && chartData?.[1].order ? (
+                        {chartData && chartData?.[1].order != NaN ? (
                           <LineChart data={chartData}>
                           <Tooltip cursor={false} />
                           <Line
@@ -2384,7 +2384,7 @@ const Dashboard = () => {
                         </ResponsiveContainer>
                         <div className="j-chart-entry-data ps-3">
                           <p className="sjfs-14">{ele.box_name}</p>
-                          <h5 className="sjfs-2"> {parseFloat(totalAmount) % 1 === 0 ? `${parseFloat(totalAmount).toFixed(0)}$` : `${parseFloat(totalAmount)}$`}</h5> {/* Display total amount */}
+                          <h5 className="sjfs-2"> {parseFloat(totalAmount) % 1 === 0 ? `${(parseFloat(totalAmount)).toFixed(2)}$` : `${(parseFloat(totalAmount)).toFixed(2)}$`}</h5> {/* Display total amount */}
 
                         </div>
                       </div>

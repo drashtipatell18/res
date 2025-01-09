@@ -85,7 +85,7 @@ export default function SingleArticleProduct() {
 
   const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
     const date = new Date();
-    date.setMonth(date.getMonth() - 1); 
+    date.setMonth(date.getMonth() - 6); 
     return new Date(date) ; 
   });
   const [selectedHastaMonth, setSelectedHastaMonth] = useState(
@@ -195,7 +195,7 @@ export default function SingleArticleProduct() {
         }
       }
     },
-    [token, selectedDesdeMonth, selectedHastaMonth, role]
+    [token, selectedDesdeMonth, selectedHastaMonth, role,saleReport]
   );
   useEffect(
     () => {
@@ -207,30 +207,48 @@ export default function SingleArticleProduct() {
     [mapVal]
   );
   const fetchData = () => {
+
+    const data = saleReport.filter((v) => 
+      new Date(selectedHastaMonth) >= new Date(v.created_at) && 
+      new Date(selectedDesdeMonth) <= new Date(v.created_at)
+    );
+
+   
+    setDatatab(data);
+    setCost(data?.length);
+
+    const monthlySales = {};
+
+    const monthKeys = [];
+    const startMonth = selectedDesdeMonth.getMonth();
+    const endMonth = selectedHastaMonth.getMonth();
+    const startYear = selectedDesdeMonth.getFullYear();
+    const endYear = selectedHastaMonth.getFullYear();
+
+
+    for (let year = startYear; year <= endYear; year++) {
+        const monthLimit = year === endYear ? endMonth : 11; 
+        const monthStart = year === startYear ? startMonth : 0; 
+        for (let month = monthStart; month <= monthLimit; month++) {
+            monthKeys.push(`${year}-${month + 1}`); 
+            monthlySales[`${year}-${month + 1}`] = 0;
+        }
+    }
+
+    data.forEach((order) => {
+        const orderDate = new Date(order.created_at);
+        const monthKey = `${orderDate.getFullYear()}-${orderDate.getMonth() + 1}`; // Create a key like "2024-11"
+        // console.log(monthKey);
     
-      // await delay(1000);
-      // const response = await axios.get(
-      //   `${apiUrl}/item/getSaleReport/${id}?from_month=${selectedDesdeMonth}&to_month=${selectedHastaMonth}`,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`
-      //     }
-      //   }
-      // );
-      const data = saleReport.filter((v)=>new Date(selectedHastaMonth) >= new Date(v.created_at) && new Date(selectedDesdeMonth) <= new Date(v.created_at))
-      setDatatab(data);
-      setCost(data?.length);
-      // setCost(response.data[0].order_total || 0);
-      // setCost(response.data.reduce((acc, curr) => acc + curr.order_total, 0));
-      const newMapValue = {};
+        if (monthlySales[monthKey] !== undefined) {
+            monthlySales[monthKey] += order.order_total;
+        }
+    });
 
-      data.forEach((order) => {
-        newMapValue[order.id] = order.order_total;
-      });
-      const orderTotals = data.map((order) => order.order_total);
-
-      setMapVal(orderTotals);
-  
+   
+    const orderTotals = monthKeys.map(key => monthlySales[key]); 
+    // console.log(orderTotals, data, monthlySales);
+    setMapVal(orderTotals);
   };
 
   // function debounce(func, wait) {
@@ -594,28 +612,42 @@ export default function SingleArticleProduct() {
 
   const generateMonthLabels = () => {
     const monthLabels = [];
-    let i = new Date(selectedDesdeMonth).getMonth() +1 ;
-    console.log(i);
+    const startMonth = new Date(selectedDesdeMonth).getMonth(); // Get the starting month (0-11)
+    const startYear = new Date(selectedDesdeMonth).getFullYear(); // Get the starting year
+    const endMonth = new Date(selectedHastaMonth).getMonth(); // Get the ending month (0-11)
+    const endYear = new Date(selectedHastaMonth).getFullYear(); // Get the ending year
 
-    const j = new Date(selectedHastaMonth).getMonth() +1
-    console.log(j);
-    
-    for (i ; i <= j; i++) {
-      monthLabels.push(`S${i}`); // Generate labels S1, S2, S3, etc.
+    let count = 1
+    // Loop through the years from startYear to endYear
+    for (let year = startYear; year <= endYear; year++) {
+      // Determine the starting and ending month for the current year
+      const monthStart = year === startYear ? startMonth : 0; // Start from startMonth in the first year
+      const monthEnd = year === endYear ? endMonth : 11; // End at endMonth in the last year
+
+      for (let month = monthStart; month <= monthEnd; month++) {
+        monthLabels.push(`S${count}`); // Generate labels S1, S2, S3, etc.
+        count++
+      }
     }
+
+    console.log(monthLabels);
     return monthLabels;
   };
 
   // Update the chart data whenever selected months change
   const chartData = {
     labels: generateMonthLabels(), // Use the generated month labels
+    
     series: [
       {
         name: "Sales",
-        data: mapVal.slice(new Date(selectedDesdeMonth).getMonth()+1 - 1, new Date(selectedHastaMonth).getMonth()+1) // Adjust data based on selected months
+        data:mapVal // Adjust data based on selected months
       }
     ]
   };
+
+  // console.log(chartData);
+  
 
   // delete message Confirmation
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -681,8 +713,6 @@ export default function SingleArticleProduct() {
       const productionCenterName = getProductionName(
         formDetails.production_center_id
       );
-
-      // Create a single record object with product information
       const singleRecord = {
         Nombre: formDetails.name,
         Código: formDetails.code,
@@ -825,22 +855,18 @@ export default function SingleArticleProduct() {
 
       XLSX.utils.book_append_sheet(wb, salesWs, "Historial"); // Append new sheet
 
+      const Ddate = new Date(selectedDesdeMonthReport);
+      const Hdate = new Date(selectedHastaMonthReport)
       // Generate Excel file
       // XLSX.writeFile(wb, `Reporte de Articulo ${formDetails.name}_${selectedDesdeMonthReport}-${selectedHastaMonthReport}.xlsx`);
-      const desdeMonthName = monthNames[selectedDesdeMonthReport - 1];
-      const hastaMonthName = monthNames[selectedHastaMonthReport - 1];
+      const desdeMonthName = `${String(Ddate.getMonth() + 1).padStart(2, '0')}/${Ddate.getFullYear()}`;;
+      const hastaMonthName = `${String(Hdate.getMonth() + 1).padStart(2, '0')}/${Hdate.getFullYear()}`;;
       XLSX.writeFile(
         wb,
         `Reporte de Articulo ${formDetails.name} ${desdeMonthName}-${hastaMonthName}.xlsx`
       );
-
+      setIsProcessing(false);
       handleShow12();
-    // } catch (error) {
-    //   console.error("Error generating report:", error);
-    //   setErrorReport(
-    //     "No se pudo generar el informe. Por favor inténtalo de nuevo."
-    //   );
-    // }
   };
 
   // // get all payment
@@ -2070,6 +2096,7 @@ export default function SingleArticleProduct() {
                         </div>
                         {mapVal.length > 0 ? (
                           <div className="col-xl-6">
+                           {console.log(chartData)}
                            
                             <ApexChart
                               mapVal={chartData.series[0].data}

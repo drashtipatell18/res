@@ -118,7 +118,7 @@ const ApexChart = ({mapVal,cat}) => {
       <div id="chart" className='m_chart'>
         <ReactApexChart options={chartState.options} series={chartState.series} type="area" height={350} />
       </div>
-      <div
+      {/* <div
         id="analysis"
         style={{
           position: 'absolute',
@@ -130,7 +130,7 @@ const ApexChart = ({mapVal,cat}) => {
         }}
       >
         {analysis}  {isProgressing ? <FaArrowUp /> : <FaArrowDown />}
-      </div>
+      </div> */}
     </div>
   );
 };
