@@ -8905,22 +8905,55 @@ input[type="search"]::-webkit-search-cancel-button {
   -webkit-transition: background-color 5000s ease-in-out 0s !important;
   transition: background-color 5000s ease-in-out 0s !important;
 } */
+
+/* General autofill styles for all inputs */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-text-fill-color: #ffffff !important; /* Text color inside the autofilled input */
-  background-color: #384252 !important; /* Background color */
-  box-shadow: 0 0 0 30px #384252 inset !important; /* Shadow for the autofill effect */
+  background-color: #384252 !important;       /* Background color */
+  box-shadow: 0 0 0 30px #384252 inset !important; /* Shadow to simulate autofill effect */
+  transition: background-color 5000s ease-in-out 0s; /* Prevent autofill flicker */
 }
+
+input:-moz-autofill,
+input:-moz-autofill:hover,
+input:-moz-autofill:focus,
+input:-moz-autofill:active {
+  -moz-text-fill-color: #ffffff !important; /* Text color inside the autofilled input */
+  background-color: #384252 !important;       /* Background color */
+  box-shadow: 0 0 0 30px #384252 inset !important; /* Shadow to simulate autofill effect */
+  transition: background-color 5000s ease-in-out 0s; /* Prevent autofill flicker */
+}
+
+/* Autofill styles specifically for inputs with the Bootstrap form-control class */
 input.form-control:-webkit-autofill,
 input.form-control:-webkit-autofill:hover,
 input.form-control:-webkit-autofill:focus,
 input.form-control:-webkit-autofill:active {
-  -webkit-text-fill-color: #ffffff !important;
-  background-color: #384252 !important;
+  -webkit-text-fill-color: #ffffff !important; /* Ensure consistency for form-control */
+  background-color: #384252 !important;       /* Same background color */
   box-shadow: 0 0 0 30px #384252 inset !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
+
+input::selection {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+
+
+input:autofill,
+input:autofill:hover,
+input:autofill:focus,
+input:autofill:active {
+  -webkit-text-fill-color: #ffffff !important; /* Text color inside the autofilled input */
+  background-color: #384252 !important;       /* Background color */
+  box-shadow: 0 0 0 30px #384252 inset !important; /* Shadow to simulate autofill effect */
+  transition: background-color 5000s ease-in-out 0s; /* Prevent autofill flicker */
+}
+
 
 /* Add this CSS to your stylesheet */
 .custom-datepicker {

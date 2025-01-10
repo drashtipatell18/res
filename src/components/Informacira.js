@@ -54,8 +54,8 @@ const Informacira = () => {
   const [allTable, setAllTable] = useState([]);
   const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
     const date = new Date();
-    date.setMonth(date.getMonth() - 1); 
-    return new Date(date) ; 
+    date.setMonth(date.getMonth() - 1);
+    return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
   });
   const [selectedHastaMonth, setSelectedHastaMonth] = useState(
     new Date()
@@ -63,8 +63,8 @@ const Informacira = () => {
   const [errorReport, setErrorReport] = useState("");
   const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(() => {
     const date = new Date();
-    date.setMonth(date.getMonth() - 1);
-    return new Date(date) ; 
+    date.setMonth(date.getMonth() - 4);
+    return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
   });
   const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
     new Date()
@@ -1086,8 +1086,11 @@ const Informacira = () => {
 
       XLSX.utils.book_append_sheet(wb, wsM, "Movimientos");
 
-      const desdeMonthName = monthNames[selectedDesdeMonthReport - 1];
-      const hastaMonthName = monthNames[selectedHastaMonthReport - 1];
+      const Ddate = new Date(selectedDesdeMonthReport);
+      const Hdate = new Date(selectedHastaMonthReport)
+      
+      const desdeMonthName = `${String(Ddate.getMonth() + 1).padStart(2, '0')}/${Ddate.getFullYear()}`;
+      const hastaMonthName = `${String(Hdate.getMonth() + 1).padStart(2, '0')}/${Hdate.getFullYear()}`;
       XLSX.writeFile(
         wb,
         `Reporte de Caja ${desdeMonthName}-${hastaMonthName}.xlsx`

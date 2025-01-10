@@ -75,9 +75,9 @@ export default function SingleArticleProduct() {
   const {deletedAllItems,subFamily,family,production,loadingItem,saleReport} = useSelector((state) => state.items);
 
  const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(() => {
-    const date = new Date();
-    date.setMonth(date.getMonth() - 1);
-    return new Date(date) ; 
+  const date = new Date();
+  date.setMonth(date.getMonth() - 4);
+  return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
   });
   const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
     new Date()
@@ -85,8 +85,8 @@ export default function SingleArticleProduct() {
 
   const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
     const date = new Date();
-    date.setMonth(date.getMonth() - 6); 
-    return new Date(date) ; 
+    date.setMonth(date.getMonth() - 1);
+    return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
   });
   const [selectedHastaMonth, setSelectedHastaMonth] = useState(
     new Date()

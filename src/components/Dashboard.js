@@ -2342,29 +2342,35 @@ const Dashboard = () => {
                   className="j-chart-entry"
                   style={{ height: "300px", overflowY: "auto" }}
                 >
-
+                 { console.log(boxDetails)}
+                  
                   {boxDetails.map((ele, index) => {
                     const totalAmount = ele.logs.reduce((sum, log) => {
-                      const closeAmount = parseFloat(log.close_amount);
+                      const closeAmount = parseFloat(log.close_amount) || 0;
                       const openAmount = parseFloat(log.open_amount) || 0;
                       return closeAmount ? sum + (closeAmount - openAmount) : sum;
                     }, 0);
+
+                    console.log(ele.logs);
+                    
                     // Prepare data for the chart
                     const chartData = [
                       { name: '', Order: 0 }, // Start with 0 value
                       ...ele.logs.map(log => ({
                         name: log.open_time, // Use open_time as the x-axis label
-                        Order: parseFloat(log.close_amount) - parseFloat(log.open_amount) // Calculate the order value
+                        Order: log.close_amount ? (parseFloat(log.close_amount) - parseFloat(log.open_amount)) : 0// Calculate the order value
                       }))
                     ];
 
                     // console.log(chartData,ele.box_name,totalAmount,ele);
-                    console.log(chartData);
+                    // console.log(chartData);
                     
                     return (
                       <div className="j-chart-entry-1 d-flex align-items-center" key={ele.id}>
                         <ResponsiveContainer width={100} height={100}>
-                        {chartData && chartData?.[1].order != NaN ? (
+                         {/* {console.log(chartData)} */}
+                          
+                        {chartData && chartData?.[1].Order != 0 ? (
                           <LineChart data={chartData}>
                           <Tooltip cursor={false} />
                           <Line

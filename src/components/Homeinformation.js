@@ -18,7 +18,7 @@ import { RiDeleteBin5Fill } from "react-icons/ri";
 import { BsCalculatorFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { getRols, getUser } from "../redux/slice/user.slice";
-import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
+import { getAllOrders, getAllPayments, getCredit } from "../redux/slice/order.slice";
 import { getAllTableswithSector } from "../redux/slice/table.slice";
 import {
   getAllDeleteditems,
@@ -133,12 +133,14 @@ export default function Homeinformation() {
   const { box, loadingBox } = useSelector((state) => state.boxs);
   const { roles, loadingUser } = useSelector((state) => state.user);
   const allusers = useSelector((state) => state.user.user);
-  const { payments, loadingOrder } = useSelector((state) => state.orders);
+  const { payments, loadingOrder,orders ,credit } = useSelector((state) => state.orders);
   const { tablewithSector, loadingTable } = useSelector(
     (state) => state.tables
   );
   const { deletedAllItems, subFamily, family, loadingItem } = useSelector((state) => state.items);
 
+
+  const [pamentDone, setPaymentDone] = useState(false);
   // const [filteredMenuItems, setFilteredMenuItems] = useState([]); // State to hold filtered items
   // const [searchTerm, setSearchTerm] = useState(""); // State to hold search term
   // const [menuId, setMenuId] = useState(null);
@@ -190,12 +192,7 @@ export default function Homeinformation() {
   }, []);
 
   useEffect(() => {
-    getOrder();
-    // getItems();
     getOrderStatus();
-    // getRole();
-    // getFamily();
-    // getSubFamily();
   }, [show12]);
 
   useEffect(() => {
@@ -221,6 +218,12 @@ export default function Homeinformation() {
     if (family?.length == 0) {
       dispatch(getFamily());
     }
+    if(orders?.length == 0){
+      dispatch(getAllOrders({ admin_id }));
+    }
+    if(credit?.length == 0){
+      dispatch(getCredit({ admin_id }));
+    }
   }, [admin_id]);
 
   useEffect(() => {
@@ -244,7 +247,17 @@ export default function Homeinformation() {
     if (subFamily) {
       setChildCheck(subFamily);
     }
-  }, [box]);
+    if(orders){
+      const order = orders?.find((v) => v.id == id);
+      if(order){
+        setOrderData(order);
+      }
+    }
+    if(credit){
+      const creditdata = credit?.some((v) => v.order_id == id);
+      setCreditNote(creditdata);
+    } 
+  }, [credit,orders,payments,deletedAllItems,subFamily,family]);
 
   useEffect(() => {
     if (orderData && items.length > 0) {
@@ -266,7 +279,7 @@ export default function Homeinformation() {
   //   getPaymentsData();
   // }, [admin_id, id]);
 
-  const [pamentDone, setPaymentDone] = useState(false);
+
 
   // const getPaymentsData = async () => {
   //   // console.log(admin_id,id);
@@ -289,37 +302,37 @@ export default function Homeinformation() {
   //   }
   // }
 
-  const getOrder = async () => {
-    try {
-      const response = await axios.post(
-        `${API_URL}/order/getSingle/${id}`,
-        { admin_id: admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setOrderData(response.data[0]);
-      if (response.data[0] && tablewithSector) {
-        const sectorWithTable = tablewithSector?.find((v) =>
-          v.tables.some((a) => a.id == response.data[0].table_id)
-        );
+  // const getOrder = async () => {
+  //   try {
+  //     const response = await axios.post(
+  //       `${API_URL}/order/getSingle/${id}`,
+  //       { admin_id: admin_id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     setOrderData(response.data[0]);
+  //     if (response.data[0] && tablewithSector) {
+  //       const sectorWithTable = tablewithSector?.find((v) =>
+  //         v.tables.some((a) => a.id == response.data[0].table_id)
+  //       );
 
-        if (sectorWithTable) {
-          setSector(sectorWithTable);
-          setTable(
-            sectorWithTable.tables.find((a) => a.id == orderData.table_id)
-          );
-        }
-      }
-    } catch (error) {
-      console.error(
-        "Error fetching OrderData:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
+  //       if (sectorWithTable) {
+  //         setSector(sectorWithTable);
+  //         setTable(
+  //           sectorWithTable.tables.find((a) => a.id == orderData.table_id)
+  //         );
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching OrderData:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  // };
 
   // const getItems = async () => {
   //   // setIsProcessing(true);
@@ -371,6 +384,7 @@ export default function Homeinformation() {
     }
     setIsProcessing(false);
   };
+
   const getUserdata = () => {
     const user = allusers?.find((v) => v.id == orderData.user_id);
     if (user) {
@@ -611,7 +625,8 @@ export default function Homeinformation() {
       if (!(response.success == "false")) {
         handleClose1Prod();
         handleShow1AddSuc();
-        getOrder();
+        dispatch(getAllOrders({ admin_id }));
+        handleOrderDetails();
         // setItemId([]);
         setSelectedItemsMenu([]);
       } else {
@@ -674,7 +689,7 @@ export default function Homeinformation() {
         error.response ? error.response.data : error.message
       );
     }
-    getOrder();
+    dispatch(getAllOrders({ admin_id }));
     handleOrderDetails();
   };
 
@@ -764,38 +779,37 @@ export default function Homeinformation() {
 
     navigate("/home/usa/bhomedelivery/datos");
   };
-  useEffect(() => {
-    if (id) fetchCredit();
-  }, [id]);
+
 
   const [creditNote, setCreditNote] = useState(false);
-  const fetchCredit = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(
-        `${API_URL}/order/getCredit`,
-        { admin_id: admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
 
-      // console.log(response.data.data);
+  // const fetchCredit = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.post(
+  //       `${API_URL}/order/getCredit`,
+  //       { admin_id: admin_id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
 
-      const credit = response.data.data?.some((v) => v.order_id == id);
+  //     // console.log(response.data.data);
 
-      setCreditNote(credit);
-      // console.log(credit);
-    } catch (error) {
-      console.error(
-        "Error fetching allOrder:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  //     const credit = response.data.data?.some((v) => v.order_id == id);
+
+  //     setCreditNote(credit);
+  //     // console.log(credit);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching allOrder:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
 
   return (
     <div>

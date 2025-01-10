@@ -60,7 +60,7 @@ export const NotificationProvider = ({ children }) => {
       });
   }
    const updateToken = useCallback((newToken) => {
-    console.log(token,newToken);
+    // console.log(token,newToken);
     if(!token){
     setToken(newToken);
   }

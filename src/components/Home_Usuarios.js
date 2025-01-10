@@ -70,7 +70,7 @@ function Home_Usuarios() {
     const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(() => {
         const date = new Date();
         date.setMonth(date.getMonth() - 1);
-        return new Date(date) ; 
+        return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
       });
       const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
         new Date()

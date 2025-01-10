@@ -134,7 +134,7 @@ const Login = () => {
           },
         }
       )
-      console.log(responce);
+      // console.log(responce);
       socket();
       fetchAllUsers(access_token);
       // setupEchoListeners(userId);
@@ -169,7 +169,7 @@ const Login = () => {
       const response = await axios.get(`${apiUrl}/chat/user`, {
         headers: { Authorization: `Bearer ${access_token}` }
       });
-      console.log(response.data.users);
+      // console.log(response.data.users);
       // setAllUser(response.data.users);
       // setGroups(response.data.groups);
       // setgroupChats(response.data.groupChats);

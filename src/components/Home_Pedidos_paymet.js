@@ -4,15 +4,11 @@ import Sidenav from "./Sidenav";
 import { Badge, Button, Modal, Spinner } from "react-bootstrap";
 import { FaArrowLeft, FaCalendarAlt } from "react-icons/fa";
 import { MdEditSquare } from "react-icons/md";
-import { CgCalendarDates } from "react-icons/cg";
 import { FiPlus } from "react-icons/fi";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
-import pic1 from "../img/Image.png";
-import pic2 from "../img/Image(1).jpg";
-import pic3 from "../img/Image (2).png";
+
 import { Tabs, Tab } from "react-bootstrap";
 import { IoMdCloseCircle, IoMdInformationCircle } from "react-icons/io";
-import img2 from "../Image/addmenu.jpg";
 import { Link, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -21,16 +17,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllDeleteditems, getFamily, getSubFamily } from "../redux/slice/Items.slice";
 import { getRols, getUser } from "../redux/slice/user.slice";
 import { getAllTableswithSector } from "../redux/slice/table.slice";
-import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
+import { getAllOrders, getAllPayments, getCredit } from "../redux/slice/order.slice";
 
 export default function Home_Pedidos_paymet() {
   const apiUrl = process.env.REACT_APP_API_URL; // Laravel API URL
   const API = process.env.REACT_APP_IMAGE_URL;
   const [token] = useState(localStorage.getItem("token"));
   const admin_id = localStorage.getItem("admin_id");
-
   const { id } = useParams();
-
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -87,6 +81,7 @@ export default function Home_Pedidos_paymet() {
         }
       );
       getOrderStatus();
+      dispatch(getAllOrders({ admin_id }));
       // getOrder();
       // console.log("Order Cancle successfully:", response.data);
     } catch (error) {
@@ -99,11 +94,10 @@ export default function Home_Pedidos_paymet() {
     }
 
     // ---End-resons----
-    dispatch(getAllOrders({ admin_id }));
     setShow12(true);
     setTimeout(() => {
       setShow12(false);
-      getOrder();
+      // getOrder();
       // navigate(`/home_Pedidos/payment_edit/${id}`, { replace: true, state: "profile" });
     }, 2000);
   };
@@ -135,7 +129,7 @@ export default function Home_Pedidos_paymet() {
   const { box , loadingBox} = useSelector((state) => state.boxs);
   const {roles} = useSelector((state) => state.user);
   const allusers = useSelector((state) => state.user.user);
-  const {payments, loadingOrder } = useSelector((state) => state.orders);
+  const {payments, loadingOrder,orders ,credit} = useSelector((state) => state.orders);
   const { tablewithSector , loadingTable} = useSelector((state) => state.tables);
   const {deletedAllItems,subFamily,family,loadingItem} = useSelector((state) => state.items);
 
@@ -144,6 +138,9 @@ export default function Home_Pedidos_paymet() {
   // const [searchTerm, setSearchTerm] = useState(""); // State to hold search term
   // const [menuId, setMenuId] = useState(null);
   // const [itemId, setItemId] = useState([]);
+
+  const [creditNote, setCreditNote] = useState(false);
+  const [pamentDone, setPaymentDone] = useState(false);
 
   // Add producttion
   const [show1Prod, setShow1Prod] = useState(false);
@@ -166,7 +163,6 @@ export default function Home_Pedidos_paymet() {
   };
 
   useEffect(() => {
-    getOrder();
     getOrderStatus();
   }, [show12]);
 
@@ -189,10 +185,16 @@ export default function Home_Pedidos_paymet() {
     }
    if(subFamily.length == 0){
        dispatch(getSubFamily());
-     }
-     if(family.length == 0){
+    }
+    if(family.length == 0){
        dispatch(getFamily());
-     }
+    }
+    if(orders?.length == 0){
+      dispatch(getAllOrders({ admin_id }));
+    }
+    if(credit?.length == 0){
+      dispatch(getCredit({ admin_id }));
+    }
   }, [admin_id]);
 
   useEffect(() => {
@@ -207,7 +209,7 @@ export default function Home_Pedidos_paymet() {
       setParentCheck(family);
     }
     if(deletedAllItems){
-      console.log(deletedAllItems);
+      // console.log(deletedAllItems);
       
       setItems(deletedAllItems);
       setObj1(deletedAllItems?.filter((v) => v.deleted_at == null));
@@ -216,9 +218,21 @@ export default function Home_Pedidos_paymet() {
     if(subFamily){
       setChildCheck(subFamily)
     }
-  }, [box]);
+    if(orders){
+      const order = orders?.find((v) => v.id == id);
+      if(order){
+        setOrderData(order);
+      }
+    }
+    if(credit){
+      const creditdata = credit?.some((v) => v.order_id == id);
+      setCreditNote(creditdata);
+    } 
+  }, [credit,orders,payments,deletedAllItems,subFamily,family]);
 
+  // console.log(orderData,items);
   useEffect(() => {
+  
     if (orderData && items.length > 0) {
       handleOrderDetails();
       getSector();
@@ -234,40 +248,41 @@ export default function Home_Pedidos_paymet() {
     }
   }, [user]);
 
-  useEffect(() => {
-    fetchCredit();
-  }, [admin_id, id]);
-  const [creditNote, setCreditNote] = useState(false);
+  // useEffect(() => {
+  //   fetchCredit();
+  // }, [admin_id, id]);
 
-  const fetchCredit = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(
-        `${apiUrl}/order/getCredit`,
-        { admin_id: admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  
 
-      // console.log(response.data.data);
+  // const fetchCredit = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.post(
+  //       `${apiUrl}/order/getCredit`,
+  //       { admin_id: admin_id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
 
-      const credit = response.data.data?.some((v) => v.order_id == id);
+  //     // console.log(response.data.data);
 
-      setCreditNote(credit);
-      // console.log(credit);
-    } catch (error) {
-      console.error(
-        "Error fetching allOrder:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  //     const credit = response.data.data?.some((v) => v.order_id == id);
 
-  const [pamentDone, setPaymentDone] = useState(false);
+  //     setCreditNote(credit);
+  //     // console.log(credit);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching allOrder:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
+
+  
 
   // const getPaymentsData = async () => {
   //   // console.log(admin_id, admin_id);
@@ -291,27 +306,27 @@ export default function Home_Pedidos_paymet() {
   //   }
   // };
 
-  const getOrder = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await axios.post(
-        `${apiUrl}/order/getSingle/${id}`,
-        { admin_id: admin_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setOrderData(response.data[0]);
-    } catch (error) {
-      console.error(
-        "Error fetching OrderData:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setIsProcessing(false);
-  };
+  // const getOrder = async () => {
+  //   setIsProcessing(true);
+  //   try {
+  //     const response = await axios.post(
+  //       `${apiUrl}/order/getSingle/${id}`,
+  //       { admin_id: admin_id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     setOrderData(response.data[0]);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error fetching OrderData:",
+  //       error.response ? error.response.data : error.message
+  //     );
+  //   }
+  //   setIsProcessing(false);
+  // };
 
   // const getItems = async () => {
   //   setIsProcessing(true);
@@ -425,10 +440,10 @@ export default function Home_Pedidos_paymet() {
   //   }
   // };
 
-  const handleOrderDetails = async () => {
+  const handleOrderDetails = () => {
     // Check if orderData is not null before accessing its properties
-    if (orderData) {
-      console.log("Orderdata ", orderData);
+    // if (orderData) {
+      // console.log("Orderdata ", orderData);
       const details = orderData.order_details.map((orderItem) => {
         const matchingItem = items.find(
           (item) => item.id === orderItem.item_id
@@ -440,11 +455,8 @@ export default function Home_Pedidos_paymet() {
             ? matchingItem.description
             : orderItem.description,
         };
-      });
+      });  
       setOrderDetails(details);
-    } else {
-      console.error("orderData is null, cannot handle order details.");
-    }
   };
 
   // ----resons section -----
@@ -593,9 +605,11 @@ export default function Home_Pedidos_paymet() {
       if (!(response.success == "false")) {
         handleClose1Prod();
         handleShow1AddSuc();
-        getOrder();
+        // getOrder();
         // setItemId([]);
         setSelectedItemsMenu([]);
+        dispatch(getAllOrders({ admin_id }));
+        handleOrderDetails();
       } else {
         console.error("Failed to add items to menu");
       }
@@ -647,7 +661,8 @@ export default function Home_Pedidos_paymet() {
         error.response ? error.response.data : error.message
       );
     }
-    getOrder();
+    dispatch(getAllOrders({ admin_id }));
+    // getOrder();
     handleOrderDetails();
     // Here you can handle saving the note to your state or backend
     // console.log("Final Note:", finalNote);

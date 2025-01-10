@@ -34,10 +34,10 @@ function Home_client() {
   //   new Date().getMonth() + 1
   // );
   const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
-        const date = new Date();
-        date.setMonth(date.getMonth() - 1); 
-        return new Date(date) ; 
-      });
+    const date = new Date();
+    date.setMonth(date.getMonth() - 4);
+    return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
+  });
   const [selectedHastaMonth, setSelectedHastaMonth] = useState(
         new Date()
       );

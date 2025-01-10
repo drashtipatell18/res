@@ -12,13 +12,7 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
     }else{
       setSelected(false);
     }
-   
-    // console.log(selectedTable , no);
-  }, []);
-  
-
-  
-
+  }, [isOffcanvasOpen]);
 
   // Handle click outside of the card to deselect only if modal is not open
   useEffect(() => {
@@ -26,9 +20,10 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
       // console.log(tableRef.current && event.target instanceof Node && !tableRef.current.contains(event.target) , !isOffcanvasOpen)
       if (tableRef.current && event.target instanceof Node && !tableRef.current.contains(event.target) && !isOffcanvasOpen) {
         setSelected(false);
+       
       }
+      localStorage.removeItem('selectedTable')
       
-     
       // setTabledelay((prev) => [...prev, tableId]);
     };
 
@@ -65,14 +60,20 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
   const cardBodyStyle = {
     marginTop: status === "available" ? "40px" : "20px",
   };
+  console.log("aaa",isSelected,no);
 
   const handleClick = () => {
     console.log("aaa",isSelected,no);
+
+    console.log(selectedCards);
+    
     
     if (!isSelected) {
       setSelected(true);
       setTableStatus(status);
       localStorage.setItem('selectedTable', no); // Store selected table in local storage
+      console.log("bzxcbzxcb");
+      
       if (!selectedCards?.includes(no)) {
         if (status === 'available') {
           onShowAvailableModal(no);
@@ -90,19 +91,17 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
   // Listen for storage changes to update selection
   useEffect(() => {
     const handleStorageChange = (event) => {
+      console.log("bsdbdb");
       console.log(event.key, event.newValue);
       if (event.key === 'selectedTable') {
-        setSelected(event.newValue === id);
+        setSelected(event.newValue === no);
       }
-      
     };
-
-    window.addEventListener('storage', handleStorageChange);
-
+    window.addEventListener("storage", handleStorageChange);
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
-  }, [no,isSelected]);
+  }, [no]);
 
   return (
     <div ref={tableRef} className="card j_bgblack position-relative" onClick={handleClick} style={cardCss}>

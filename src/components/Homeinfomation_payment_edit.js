@@ -19,6 +19,8 @@ import { BsCalculatorFill } from 'react-icons/bs';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { getAllOrders } from '../redux/slice/order.slice';
+import { useDispatch } from 'react-redux';
 
 const Homeinfomation_payment_edit = ({ item }) => {
     // create family
@@ -31,6 +33,7 @@ const Homeinfomation_payment_edit = ({ item }) => {
     const { state, replace } = useLocation();
     const navigate = useNavigate();
     const location = useLocation();
+    const dispatch = useDispatch();
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -40,12 +43,13 @@ const Homeinfomation_payment_edit = ({ item }) => {
     const handleClose20 = () => setShow20(false);
     const handleShow20 = () => {
         setShow20(true)
+        dispatch(getAllOrders({ admin_id }));
         setTimeout(() => {
             setShow20(false)
             navigate(`/home/usa/information/${id}`, { replace: true });
         }, 2000);
     };
-    console.log(state);
+    // console.log(state);
 
 
     // =============new==========
@@ -674,6 +678,14 @@ const Homeinfomation_payment_edit = ({ item }) => {
             );
         }
         // setIsProcessing(false);
+
+    }
+  
+    const handleBack = () => {
+        console.log("dfbfb");
+        
+        dispatch(getAllOrders({ admin_id }));
+        navigate(`/home/usa`, { replace: true });
     }
     return (
         <div>
@@ -684,7 +696,7 @@ const Homeinfomation_payment_edit = ({ item }) => {
                     <div className=" flex-grow-1 sidebar overflow-hidden">
                         <div className="p-3 m_bgblack text-white  ">
                             <div className='d-flex text-decoration-none' >
-                                <Link to="/home/usa" className='btn btn-outline-primary text-nowrap py-2 d-flex mt-2 ms-3' style={{ borderRadius: "10px" }}> <FaArrowLeft className='me-2 mt-1' />Regresar</Link>
+                                <div  onClick = {handleBack} className='btn btn-outline-primary text-nowrap py-2 d-flex mt-2 ms-3' style={{ borderRadius: "10px" }}> <FaArrowLeft className='me-2 mt-1' />Regresar</div>
                             </div>
                             <div className='d-flex justify-content-between align-items-center flex-wrap'>
                                 <div className='text-white ms-3 my-4' style={{ fontSize: "18px" }}>

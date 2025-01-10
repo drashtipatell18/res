@@ -30,7 +30,6 @@ const Counter_finalP = () => {
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems")) || []
   );
-
   const [payment, setPayment] = useState(
     JSON.parse(localStorage.getItem("payment"))
   );
@@ -275,6 +274,11 @@ const Counter_finalP = () => {
   // console.log(selectedCheckboxes);
 
   const handleCheckboxChange = (value) => {
+
+    if (lastTotal < 0) {
+      alert('Por favor, añada más productos para continuar con el pago');
+      return;
+    }
     // console.log(value);
     if (selectedCheckboxes.includes(value)) {
 
@@ -562,7 +566,7 @@ const Counter_finalP = () => {
     }
 
     if(lastTotal<0){
-      alert('añadir a más productos')
+      alert('Por favor, añada más productos para continuar con el pago')
       return;
     }
 
@@ -850,7 +854,6 @@ const Counter_finalP = () => {
                     </Button>
                   </Modal.Footer>
                 </Modal>
-
 
                 <Modal
                   show={showCreSubSuc}

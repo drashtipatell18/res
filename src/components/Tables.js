@@ -45,7 +45,6 @@ const Tables = () => {
   const [selectedTabNo,setSelectedTabNo] = useState('');
   const [tabledelay, setTabledelay] = useState([]);
 
-
   const dispatch = useDispatch()
   const {tablewithSector,sector, loadingTable} = useSelector(state=>state.tables);
    const {items, loadingItem} = useSelector((state) => state.items);
@@ -1063,13 +1062,7 @@ const Tables = () => {
 
 
 
-  // redirect to new page
-  const handleLinkClick = (e) => {
-    e.preventDefault(); // Prevent default link behavior
-    localStorage.removeItem("cartItems"); // Clear only cart items from local storage
-
-    navigate(`/table1?id=${selectedTable}&status=${tableStatus}`); // Navigate to the new page
-  };
+ 
 
 
 
@@ -1206,6 +1199,14 @@ const Tables = () => {
   //   body: JSON.stringify({ card_id: selectedTable, }),
 
   // });
+
+   // redirect to new page
+   const handleLinkClick = (e) => {
+    e.preventDefault(); // Prevent default link behavior
+    localStorage.removeItem("cartItems"); // Clear only cart items from local storage
+          // to={`/table1?id=${selectedTable}&status=${tableStatus}`}
+    navigate(`/table1?id=${selectedTable}&status=${tableStatus}`); // Navigate to the new page
+  };
 
 
 
@@ -1781,7 +1782,7 @@ const Tables = () => {
             <div className="j_offcanavs_button">
               <div className="d-flex align-items-center">
                 <Link
-                  to={`/table1?id=${selectedTable}&status=${tableStatus}`}
+                  // to={`/table1?id=${selectedTable}&status=${tableStatus}`}
                   data-bs-theme="dark"
                   onClick={handleLinkClick}
                   className="j-canvas-btn j-tbl-font-3"
@@ -1878,7 +1879,8 @@ const Tables = () => {
             <div className="j_offcanavs_button">
               <div className="d-flex align-items-center">
                 <Link
-                  to={`/table1?id=${selectedTable}&status=${tableStatus}`}
+                  // to={`/table1?id=${selectedTable}&status=${tableStatus}`}
+                  onClick={handleLinkClick}
                   data-bs-theme="dark"
                   className="j-canvas-btn j-tbl-font-3"
                 >

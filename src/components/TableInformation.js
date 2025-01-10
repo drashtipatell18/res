@@ -38,14 +38,17 @@ const TableInformation = () => {
 
   const [userData, setUserData] = useState({});
   const [userTableData, setUserTableData] = useState({});
-   const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
-      const date = new Date();
-      date.setMonth(date.getMonth() - 1); 
-      return new Date(date) ; 
-    });
+  const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - 1);
+    return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0); 
+  });
     const [selectedHastaMonth, setSelectedHastaMonth] = useState(
       new Date()
     );
+
+  // console.log(selectedDesdeMonth,selectedHastaMonth);
+    
   const [datatab, setDatatab] = useState([]);
   const [error, setError] = useState("");
 
@@ -72,9 +75,9 @@ const TableInformation = () => {
 
   const [errorReport, setErrorReport] = useState("");
   const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(() => {
-      const date = new Date();
-      date.setMonth(date.getMonth() - 1);
-      return new Date(date) ; 
+    const date = new Date();
+    date.setMonth(date.getMonth() - 4);
+    return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
     });
     const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
       new Date()
@@ -544,8 +547,11 @@ const TableInformation = () => {
       // Create a workbook
       XLSX.utils.book_append_sheet(wb, ws, "Historial");
 
-      const desdeMonthName = monthNames[selectedDesdeMonthReport - 1];
-      const hastaMonthName = monthNames[selectedHastaMonthReport - 1];
+      const Ddate = new Date(selectedDesdeMonthReport);
+      const Hdate = new Date(selectedHastaMonthReport)
+      
+      const desdeMonthName = `${String(Ddate.getMonth() + 1).padStart(2, '0')}/${Ddate.getFullYear()}`;
+      const hastaMonthName = `${String(Hdate.getMonth() + 1).padStart(2, '0')}/${Hdate.getFullYear()}`;
       XLSX.writeFile(
         wb,
         `Reporte de mesa ${tId} -  ${desdeMonthName}-${hastaMonthName}.xlsx`
@@ -1306,7 +1312,7 @@ const TableInformation = () => {
                                 height={350}
                               />
                             </div>
-                            <div
+                            {/* <div
                               id="analysis"
                               style={{
                                 position: "absolute",
@@ -1319,7 +1325,7 @@ const TableInformation = () => {
                             >
                               {analysis}{" "}
                               {isProgressing ? <FaArrowUp /> : <FaArrowDown />}
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>
