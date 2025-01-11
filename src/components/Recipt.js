@@ -1,6 +1,6 @@
 import React from "react";
 
-const Recipt = ({ payment, item, discount, paymentAmt, paymentType, creditTotal }) => {
+const Recipt = ({ payment, item, discount, paymentAmt, paymentType, creditTotal,tipAmount = 0 }) => {
   console.log(payment.firstname ? payment.firstname : payment.business_name)
   const role = localStorage.getItem("name");
   const currentDate = new Date();
@@ -57,17 +57,32 @@ const Recipt = ({ payment, item, discount, paymentAmt, paymentType, creditTotal 
     (sum, item) => sum + item.total,
     0
   );
-  const price = itemsTotal - discount - (creditTotal ? creditTotal : 0);
-  const iva = price * 0.19; // 12% tax
-  const total = price + iva;
+
+  const getTotalCost = () => {
+    return (
+      item.reduce(
+        (total, item, index) => total + parseInt(item.price) * item.count,
+        0
+      )
+    );
+  };
+
+  const totalCost = getTotalCost();
+  const discounta = discount;
+  const finalTotal = totalCost - discounta;
+  const iva = finalTotal * 0.19;
+  const total = parseFloat(finalTotal.toFixed(2)) + parseFloat(iva.toFixed(2)) + parseFloat(tipAmount.toFixed(2)) - parseFloat(creditTotal || 0)
+  // const price = itemsTotal - discount - (creditTotal ? creditTotal : 0);
+  // const iva = price * 0.19; // 12% tax
+  // const total = price + iva;
 
   receiptData.totals = {
     subtotalIva: itemsTotal,
     subtotal0: 0.0,
-    discount: discount,
+    discount: discounta,
     iva: iva,
     total: total,
-    received: total, // Assuming the exact amount is received
+    received: total, 
     change: 0.0
   };
   
@@ -79,10 +94,7 @@ const Recipt = ({ payment, item, discount, paymentAmt, paymentType, creditTotal 
   // Add other payment types as needed
 };
 
-// const paymentList = paymentType.split(",");
-// const translatedPayments = paymentList
-// .map(payment => paymentTypes[payment.trim()])
-// .filter(Boolean); // Filter out any undefined values
+
 let translatedPayments;
 
 console.log(paymentType);

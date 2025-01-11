@@ -1,41 +1,36 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableColor, selectedCards, getUserName, status, setTableStatus, onShowAvailableModal, handleData, onShowOcupadoModal, isModalOpen, isOffcanvasOpen, setTabledelay, tabledelay }) => {
-  const [isSelected, setSelected] = useState(false);
-  const tableRef = useRef(null);
+const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableColor, selectedCards, getUserName, status, setTableStatus, onShowAvailableModal, handleData, onShowOcupadoModal, isModalOpen, isOffcanvasOpen, setTabledelay, tabledelay,isSelected }) => {
+  // const [isSelected, setSelected] = useState(false);
+  // const tableRef = useRef(null);
 
-  // Check local storage for selected table on mount
-  useEffect(() => {
-    const selectedTable = localStorage.getItem('selectedTable');
-    if (selectedTable == no) {
-      setSelected(true);
-    }else{
-      setSelected(false);
-    }
-  }, [isOffcanvasOpen]);
+  // console.log("isSelected",isSelected,no);
+  
 
-  // Handle click outside of the card to deselect only if modal is not open
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // console.log(tableRef.current && event.target instanceof Node && !tableRef.current.contains(event.target) , !isOffcanvasOpen)
-      if (tableRef.current && event.target instanceof Node && !tableRef.current.contains(event.target) && !isOffcanvasOpen) {
-        setSelected(false);
-       
-      }
-      localStorage.removeItem('selectedTable')
+  // useEffect(() => {
+  //   const selectedTable = localStorage.getItem('selectedTable');
+  //   if (selectedTable == no) {
+  //     setSelected(true);
+  //   }else{
+  //     setSelected(false);
+  //   }
+  // }, [isOffcanvasOpen]);
+
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
       
-      // setTabledelay((prev) => [...prev, tableId]);
-    };
+  //     if (tableRef.current && event.target instanceof Node && !tableRef.current.contains(event.target) && !isOffcanvasOpen) {
+  //       setSelected(false);
+  //     }
+  //     localStorage.removeItem('selectedTable')
+  //   }
 
-    document.addEventListener('mousedown', handleClickOutside);
+  //   document.addEventListener('mousedown', handleClickOutside);
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isModalOpen,isOffcanvasOpen]);
-
-  // console.log(no);
-  // console.log(tabledelay);
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   };
+  // }, [isModalOpen,isOffcanvasOpen]);
 
 
   const cardCss = {
@@ -47,6 +42,9 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
         (status === "available" ? "#111928" : "#ffffff")),
     cursor: "pointer",
   };
+
+  // console.log(tabledelay);
+  
 
   // const cardCss = {
   //   backgroundColor: (selectedCards === no) ? "#147BDE" : 
@@ -60,21 +58,13 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
   const cardBodyStyle = {
     marginTop: status === "available" ? "40px" : "20px",
   };
-  console.log("aaa",isSelected,no);
+ 
 
   const handleClick = () => {
-    console.log("aaa",isSelected,no);
-
-    console.log(selectedCards);
-    
-    
     if (!isSelected) {
-      setSelected(true);
       setTableStatus(status);
-      localStorage.setItem('selectedTable', no); // Store selected table in local storage
-      console.log("bzxcbzxcb");
-      
-      if (!selectedCards?.includes(no)) {
+      // localStorage.setItem('selectedTable', no); 
+      if (!selectedCards?.includes(no) ) {
         if (status === 'available') {
           onShowAvailableModal(no);
         } else {
@@ -82,29 +72,13 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
         }
       }
     }
-    if (status === "busy") {
+    if (status === "busy" || status === 'available') {
       handleData(id);
     }
-    // handleGet(oId);
   };
 
-  // Listen for storage changes to update selection
-  useEffect(() => {
-    const handleStorageChange = (event) => {
-      console.log("bsdbdb");
-      console.log(event.key, event.newValue);
-      if (event.key === 'selectedTable') {
-        setSelected(event.newValue === no);
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, [no]);
-
   return (
-    <div ref={tableRef} className="card j_bgblack position-relative" onClick={handleClick} style={cardCss}>
+    <div  className="card j_bgblack position-relative" onClick={handleClick} style={cardCss}>
       <div className={`card-body jcard-color`} style={cardBodyStyle}>
         {(status === "busy") ? (
           <>

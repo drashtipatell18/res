@@ -1077,12 +1077,12 @@ export default function Home_crear({ item }) {
                                                                 <div className="fw-bold fs-5">Datos</div>
                                                                 <div className="w-100 mt-4">
                                                                     <div>Nombre</div>
-                                                                    <div className="w-100 a_bg_order  mt-2 border-0 " style={{ borderRadius: "10px" }}><span className="">{userPayment?.firstname ? userPayment.firstname : userPayment?.business_name} {userPayment?.lastname}</span></div>
+                                                                    <div className="w-100 a_bg_order  mt-2 border-0 " style={{ borderRadius: "10px" }}><span className="">{userPayment?.firstname ? userPayment.firstname : userPayment?.business_name} {userPayment?.lastname ? userPayment?.lastname : '-'}</span></div>
                                                                 </div>
                                                                 <div className="d-flex justify-content-end align-items-center mt-4">
                                                                     <div className="w-50">
                                                                         <div className='mb-2'>DNI</div>
-                                                                        <div className="w-75 a_bg_order  border-0 " style={{ borderRadius: "10px" }}><span className="">{userPayment?.rut}</span></div>
+                                                                        <div className="w-75 a_bg_order  border-0 " style={{ borderRadius: "10px" }}><span className="">{userPayment?.rut || '-'}</span></div>
                                                                     </div>
                                                                     <div className="w-50">
                                                                         <div className='mb-2'>Correo electrónico</div>

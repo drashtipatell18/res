@@ -14,14 +14,17 @@ import { FaL, FaMinus, FaPlus } from "react-icons/fa6";
 import TableRecipt from "./TableRecipt";
 import axios from "axios";
 import Loader from "./Loader";
-import { debounce } from 'lodash'; // Import lodash for debouncing
+import { debounce } from "lodash"; // Import lodash for debouncing
 import echo from "../echo";
 import Echo from "laravel-echo";
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 import useAudioManager from "./audioManager";
 import ElapsedTimeDisplay from "./ElapsedTimeDisplay";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllSector, getAllTableswithSector } from "../redux/slice/table.slice";
+import {
+  getAllSector,
+  getAllTableswithSector,
+} from "../redux/slice/table.slice";
 import { getAllitems } from "../redux/slice/Items.slice";
 import { getUser } from "../redux/slice/user.slice";
 //import { enqueueSnackbar  } from "notistack";
@@ -42,76 +45,74 @@ const Tables = () => {
   const [showDeleteOrderConfirm, setShowDeleteOrderConfirm] = useState(false);
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
   const [users, setUsers] = useState([]);
-  const [selectedTabNo,setSelectedTabNo] = useState('');
+  const [selectedTabNo, setSelectedTabNo] = useState("");
   const [tabledelay, setTabledelay] = useState([]);
 
-  const dispatch = useDispatch()
-  const {tablewithSector,sector, loadingTable} = useSelector(state=>state.tables);
-   const {items, loadingItem} = useSelector((state) => state.items);
-   const {user, loadingUser} = useSelector((state) => state.user);
-  
-  useEffect(()=>{
-      if(tablewithSector.length == 0){
-        dispatch(getAllTableswithSector({admin_id}));
-      }
-      if(sector.length == 0){
-        dispatch(getAllSector({admin_id}));
-      }
-       if(items.length == 0){
-            dispatch(getAllitems());
-       }
-       if(user.length == 0){
-          dispatch(getUser())
-       }
-    }, []);
+  const dispatch = useDispatch();
+  const { tablewithSector, sector, loadingTable } = useSelector(
+    (state) => state.tables
+  );
+  const { items, loadingItem } = useSelector((state) => state.items);
+  const { user, loadingUser } = useSelector((state) => state.user);
 
-    useEffect(()=>{
-      if(sector){
-        setCheckboxes(sector);
-        setsectors(sector);
-      }
-      if(tablewithSector){
-        setSecTab(tablewithSector);
-      }
-      if(items){
-        setObj1(items);
-      }
-      if(user){
-        setUsers(user);
-      }
-    },[sector,tablewithSector,items,user])
+  useEffect(() => {
+    if (tablewithSector.length == 0) {
+      dispatch(getAllTableswithSector({ admin_id }));
+    }
+    if (sector.length == 0) {
+      dispatch(getAllSector({ admin_id }));
+    }
+    if (items.length == 0) {
+      dispatch(getAllitems());
+    }
+    if (user.length == 0) {
+      dispatch(getUser());
+    }
+  }, []);
 
-
-  
-
+  useEffect(() => {
+    if (sector) {
+      setCheckboxes(sector);
+      setsectors(sector);
+    }
+    if (tablewithSector) {
+      setSecTab(tablewithSector);
+    }
+    if (items) {
+      setObj1(items);
+    }
+    if (user) {
+      setUsers(user);
+    }
+  }, [sector, tablewithSector, items, user]);
 
   const [newTable, setNewTable] = useState({
     sectorName: "",
-    noOfTables: ""
+    noOfTables: "",
   });
   const [addsector, setAddsector] = useState({
     name: "",
-    noOfTables: ""
+    noOfTables: "",
   });
   const [tableData, setTableData] = useState([]);
   const [obj1, setObj1] = useState([]);
   const [createErrors, setCreateErrors] = useState({
     name: "",
-    noOfTables: ""
+    noOfTables: "",
   });
   const [paymentData, setPaymentData] = useState([]);
   const [editErrors, setEditErrors] = useState({ name: "", noOfTables: "" });
   const [addTableErrors, setAddTableErrors] = useState({
     sectorName: "",
-    noOfTables: ""
+    noOfTables: "",
   });
   const [tableStatus, setTableStatus] = useState(null); // State for table status
 
   useEffect(() => {
     if (!(role == "admin" || role == "cashier" || role == "waitress")) {
-      navigate('/dashboard')
+      navigate("/dashboard");
     }
-  }, [role])
+  }, [role]);
 
   // // Debounce function for API calls
   // const debouncedFetchData = useRef(
@@ -178,13 +179,17 @@ const Tables = () => {
 
   /* get table data */
   const getTableData = async (id) => {
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
-      const response = await axios.post(`${apiUrl}/table/getStats/${id}`, { admin_id: admin_id }, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.post(
+        `${apiUrl}/table/getStats/${id}`,
+        { admin_id: admin_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
       if (Array.isArray(response.data) && response.data.length > 0) {
         const lastRecordArray = [response.data[response.data.length - 1]];
         setTableData(lastRecordArray);
@@ -198,21 +203,20 @@ const Tables = () => {
         error.response ? error.response.data : error.message
       );
     }
-    setIsProcessing(false)
+    setIsProcessing(false);
   };
 
   // get payment data
   const getPaymentData = async (id) => {
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
       const response = await axios.get(`${apiUrl}/getsinglepayments/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.data) {
-
         setPaymentData(response.data.data);
       } else {
         console.error("Response data is not an array:", response.data);
@@ -223,13 +227,15 @@ const Tables = () => {
         error.response ? error.response.data : error.message
       );
     }
-    setIsProcessing(false)
+    setIsProcessing(false);
   };
 
   const getSectorTable = async () => {
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
-      const response = await axios.post(`${apiUrl}/sector/getWithTable`, { admin_id: admin_id });
+      const response = await axios.post(`${apiUrl}/sector/getWithTable`, {
+        admin_id: admin_id,
+      });
       if (response.data) {
         setSecTab(response.data.data);
       } else {
@@ -241,7 +247,7 @@ const Tables = () => {
         error.response ? error.response.data : error.message
       );
     }
-    setIsProcessing(false)
+    setIsProcessing(false);
   };
 
   // Get sectors
@@ -254,7 +260,7 @@ const Tables = () => {
     //   [name]: value
     // });
     // Clear error when user types
-    if(createErrors[name]){
+    if (createErrors[name]) {
       setCreateErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
     }
   };
@@ -263,7 +269,7 @@ const Tables = () => {
     const { name, value } = e.target;
     setNewTable((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     // Clear error when user types
     setAddTableErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
@@ -282,7 +288,7 @@ const Tables = () => {
     if (!newTable.sectorName) {
       setAddTableErrors((prev) => ({
         ...prev,
-        sectorName: "Por favor seleccione un sector"
+        sectorName: "Por favor seleccione un sector",
       }));
       hasErrors = true;
     }
@@ -291,35 +297,34 @@ const Tables = () => {
       setAddTableErrors((prev) => ({
         ...prev,
         noOfTables:
-          "Por favor ingrese un número válido de tablas (debe ser mayor a 0)"
+          "Por favor ingrese un número válido de tablas (debe ser mayor a 0)",
       }));
       hasErrors = true;
     }
 
     if (hasErrors) return;
     handleClose1();
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
       const response = await axios.post(
         `${apiUrl}/sector/addTables`,
         {
           sector_id: newTable.sectorName,
           noOfTables: newTable.noOfTables,
-          admin_id: admin_id
-
+          admin_id: admin_id,
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (response.status === 200) {
         handleShowCreSuc2();
-        dispatch(getAllSector({admin_id}));
-        dispatch(getAllTableswithSector(({admin_id})));
+        dispatch(getAllSector({ admin_id }));
+        dispatch(getAllTableswithSector({ admin_id }));
         setIsProcessing(false);
         setNewTable({ sectorName: "", noOfTables: "" });
         if (response.data && response.data.notification) {
@@ -350,7 +355,7 @@ const Tables = () => {
     if (!selectedFamily.name.trim()) {
       setEditErrors((prev) => ({
         ...prev,
-        name: "Introduzca un nombre de sector"
+        name: "Introduzca un nombre de sector",
       }));
       hasErrors = true;
     }
@@ -359,14 +364,14 @@ const Tables = () => {
       setEditErrors((prev) => ({
         ...prev,
         noOfTables:
-          "Por favor ingrese un número válido de tablas (debe ser mayor a 0)"
+          "Por favor ingrese un número válido de tablas (debe ser mayor a 0)",
       }));
       hasErrors = true;
     }
 
     if (hasErrors) return;
     handleCloseEditFam();
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
       const response = await axios.post(
         `${apiUrl}/sector/update/${selectedFamily.id}`,
@@ -374,14 +379,14 @@ const Tables = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
       if (response.status === 200) {
         handleShowEditFamSuc();
-        dispatch(getAllSector({admin_id}));
-        dispatch(getAllTableswithSector(({admin_id})));
+        dispatch(getAllSector({ admin_id }));
+        dispatch(getAllTableswithSector({ admin_id }));
         setIsProcessing(false);
         if (response.data && response.data.notification) {
           //enqueueSnackbar (response.data.notification, { variant: 'success' });
@@ -403,21 +408,21 @@ const Tables = () => {
         `${apiUrl}/sector/update/${selectedFamily.id}`,
         {
           name: selectedFamily.name,
-          noOfTables: selectedFamily.noOfTables
+          noOfTables: selectedFamily.noOfTables,
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (response.status === 200) {
         handleCloseEditFam();
         handleShowEditFamSuc();
-        dispatch(getAllSector({admin_id}));
-        dispatch(getAllTableswithSector(({admin_id})));
+        dispatch(getAllSector({ admin_id }));
+        dispatch(getAllTableswithSector({ admin_id }));
       } else {
         throw new Error("Failed to update sector");
       }
@@ -437,7 +442,7 @@ const Tables = () => {
     if (!addsector.name.trim()) {
       setCreateErrors((prev) => ({
         ...prev,
-        name: "Introduzca un nombre de sector"
+        name: "Introduzca un nombre de sector",
       }));
       hasErrors = true;
     }
@@ -446,27 +451,31 @@ const Tables = () => {
       setCreateErrors((prev) => ({
         ...prev,
         noOfTables:
-          "Por favor ingrese un número válido de tablas (debe ser mayor a 0)"
+          "Por favor ingrese un número válido de tablas (debe ser mayor a 0)",
       }));
       hasErrors = true;
     }
 
     if (hasErrors) return;
     handleClose();
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
-      const response = await axios.post(`${apiUrl}/sector/create`, { ...addsector, admin_id: admin_id }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        maxBodyLength: Infinity
-      });
+      const response = await axios.post(
+        `${apiUrl}/sector/create`,
+        { ...addsector, admin_id: admin_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          maxBodyLength: Infinity,
+        }
+      );
       if (response.status === 200) {
         handleShowCreSuc();
-        dispatch(getAllSector({admin_id}));
-        dispatch(getAllTableswithSector(({admin_id})));
-        setIsProcessing(false)
+        dispatch(getAllSector({ admin_id }));
+        dispatch(getAllTableswithSector({ admin_id }));
+        setIsProcessing(false);
         setAddsector({ name: "", noOfTables: "" }); // Reset form
         if (response.data && response.data.notification) {
           //enqueueSnackbar (response.data.notification, { variant: 'success' });
@@ -488,8 +497,8 @@ const Tables = () => {
     axios
       .delete(`${apiUrl}/sector/delete/${sectorId}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((response) => {
         handleCloseEditFam();
@@ -497,8 +506,8 @@ const Tables = () => {
         setCheckboxes((prevCheckboxes) =>
           prevCheckboxes.filter((sector) => sector.id !== sectorId)
         );
-        dispatch(getAllSector({admin_id}));
-        dispatch(getAllTableswithSector(({admin_id})));
+        dispatch(getAllSector({ admin_id }));
+        dispatch(getAllTableswithSector({ admin_id }));
       })
       .catch((error) => {
         console.error(
@@ -532,11 +541,10 @@ const Tables = () => {
   const [selectedSectors, setSelectedSectors] = useState([]);
 
   const handleCheckboxChange = (index) => {
-    setSelectedSectors(
-      (prevSelectedSectors) =>
-        prevSelectedSectors?.includes(index)
-          ? prevSelectedSectors.filter((i) => i !== index)
-          : [...prevSelectedSectors, index]
+    setSelectedSectors((prevSelectedSectors) =>
+      prevSelectedSectors?.includes(index)
+        ? prevSelectedSectors.filter((i) => i !== index)
+        : [...prevSelectedSectors, index]
     );
   };
 
@@ -545,8 +553,8 @@ const Tables = () => {
   const filteredTables = () => {
     let tables = secTab.flatMap((ele) => ele.tables);
     if (selectedSectors.length !== 0) {
-      tables = secTab.flatMap(
-        (ele, index) => (selectedSectors?.includes(index) ? ele.tables : [])
+      tables = secTab.flatMap((ele, index) =>
+        selectedSectors?.includes(index) ? ele.tables : []
       );
     }
     if (filterStatus) {
@@ -642,7 +650,6 @@ const Tables = () => {
   const [countsoup, setCountsoup] = useState([]);
   const [cartItems, setCartItems] = useState([]);
 
-
   const [isEditing, setIsEditing] = useState(false);
 
   const handleEditClick = () => {
@@ -653,6 +660,9 @@ const Tables = () => {
   const [showAvailableModal, setShowAvailableModal] = useState(false);
   const [showOcupadoModal, setShowOcupadoModal] = useState(false);
 
+  const [tableColor, setTableColor] = useState("");
+  const [cardSelect, setCardSelect] = useState([]);
+  const [selectedCards, setSelectedCards] = useState("");
 
   // const handleCloseAvailableModal = async (tid) => {
   //   setShowAvailableModal(false);
@@ -672,101 +682,82 @@ const Tables = () => {
   //   setSelectedCards(response1.data.card_id);
 
   //   // console.log("response", response.data.card_id);
-  //   // setSelectedTable(null); // for socket 
+  //   // setSelectedTable(null); // for socket
   // };
 
-
-
   const sUrl = process.env.REACT_APP_API_URL;
-
 
   const handleCloseAvailableModal = async (tid) => {
     setShowAvailableModal(false);
     setIsOffcanvasOpen(false);
+    setSelectedTable(null);
 
-    const response = await axios.post(`${sUrl}/brodcastCardClicked`, {
-      card_id: selectedTable,
-      selected: 0
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': csrfToken,
+    setSelectedCards((prev) => prev?.filter((id) => id !== selectedTable));
+    const response = await axios.post(
+      `${sUrl}/brodcastCardClicked`,
+      {
+        card_id: selectedTable,
+        selected: 0,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": csrfToken,
+        },
       }
-    });
-    // console.log("response", response)
-
-    setCardSelect(response.data);
-    // Check if the card_id matches and set the table color
-    if (response.data.card_id === selectedCards) {
-      setTableColor("blue"); // Replace "desiredColor" with your color
-    } else {
-      setTableColor(""); // Reset color if it doesn't match
-    }
-    if(!tabledelay.includes(selectedTable)){
+    );
+    if (!tabledelay.includes(selectedTable)) {
       setTabledelay((prev) => [...prev, selectedTable]);
     }
-
-    setSelectedTable(null); // for socket
-
-    // // Remove the table ID from selectedCards
-    // const updatedCards = selectedCards.filter(card => card !== tid);
-    // setSelectedCards(updatedCards);
-
-    // // Remove the table ID from the socket broadcast
-    // await axios.post(`http://127.0.0.1:8000/api/brodcastCardClicked`, {
-    //   card_id: updatedCards // Pass the updatedCards
-    // });
-    // console.log("Updated Cards:", updatedCards);
   };
-  const handleShowAvailableModal = (id,no) => {
+  const handleShowAvailableModal = (id, no) => {
     setSelectedTable(id);
     setShowAvailableModal(true);
     setShowOcupadoModal(false);
     setIsOffcanvasOpen(true);
     setSelectedTabNo(no);
-    if(!tabledelay.includes(id)){
-    setTabledelay((prev) => [...prev, id]);
+    if (!tabledelay.includes(id)) {
+      setTabledelay((prev) => [...prev, id]);
     }
   };
 
   const handleCloseOcupadoModal = async () => {
     setShowOcupadoModal(false);
     setIsEditing(false);
-    const response = await axios.post(`${sUrl}/brodcastCardClicked`, {
-      card_id: selectedTable,
-      selected: 0
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': csrfToken,
-      }
-    });
-    console.log("response", response)
-
-    setCardSelect(response.data);
-    // Check if the card_id matches and set the table color
-    if (response.data.card_id === selectedCards) {
-      setTableColor("blue"); // Replace "desiredColor" with your color
-    } else {
-      setTableColor(""); // Reset color if it doesn't match
-    }
     setIsOffcanvasOpen(false);
-    // setSelectedCards(null);
-    if(!tabledelay.includes(selectedTable)){
+    setSelectedTable(null); 
+
+    if (!tabledelay.includes(selectedTable)) {
       setTabledelay((prev) => [...prev, selectedTable]);
     }
-    setSelectedTable(null); // for socket 
+
+    setSelectedCards((prev) => prev?.filter((id) => id !== selectedTable));
+    const response = await axios.post(
+
+      `${sUrl}/brodcastCardClicked`,
+      {
+        card_id: selectedTable,
+        selected: 0,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": csrfToken,
+        },
+      }
+    );
+
   };
 
-  const handleShowOcupadoModal = (id,no) => {
+  const handleShowOcupadoModal = (id, no) => {
     setSelectedTable(id);
     setShowOcupadoModal(true);
     setShowAvailableModal(false);
     setIsOffcanvasOpen(true);
     setSelectedTabNo(no);
-    if(!tabledelay.includes(id)){
+    if (!tabledelay.includes(id)) {
       setTabledelay((prev) => [...prev, id]);
-      }
+    }
   };
 
   /* get name and image */
@@ -780,19 +771,18 @@ const Tables = () => {
     Array(tableData.flatMap((t) => t.items).length).fill(false)
   );
 
-
   /* add note */
   const addNoteToDatabase = async (itemId, note) => {
     try {
       const response = await axios.post(
         `${apiUrl}/order/addNote/${itemId}`,
         {
-          notes: note
+          notes: note,
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -813,28 +803,28 @@ const Tables = () => {
 
   const handleSubmitNote = async (e, index, oId) => {
     e.preventDefault();
-    
+
     // Get the note value, handling both form submit and blur events
     let finalNote;
     if (e.target.elements) {
-        // Form submit event
-        finalNote = e.target.elements[0]?.value.trim();
+      // Form submit event
+      finalNote = e.target.elements[0]?.value.trim();
     } else if (e.target.value) {
-        // Direct input blur event
-        finalNote = e.target.value.trim();
+      // Direct input blur event
+      finalNote = e.target.value.trim();
     } else {
-        // Fallback
-        return;
+      // Fallback
+      return;
     }
 
     if (finalNote) {
-        const success = await addNoteToDatabase(oId, finalNote);
+      const success = await addNoteToDatabase(oId, finalNote);
 
-        if (success) {
-            handleNoteChange(index, finalNote);
-        } else {
-            console.error("Failed to add note to database");
-        }
+      if (success) {
+        handleNoteChange(index, finalNote);
+      } else {
+        console.error("Failed to add note to database");
+      }
     }
 
     const updatedAddNotes = [...addNotes];
@@ -912,14 +902,14 @@ const Tables = () => {
           order_details: [
             {
               item_id: item_id,
-              quantity: quantity + 1
-            }
-          ]
+              quantity: quantity + 1,
+            },
+          ],
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       console.log("Note added successfully:", response.data);
@@ -941,14 +931,14 @@ const Tables = () => {
           order_details: [
             {
               item_id: item_id,
-              quantity: quantity - 1
-            }
-          ]
+              quantity: quantity - 1,
+            },
+          ],
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       console.log("Note added successfully:", response.data);
@@ -986,7 +976,7 @@ const Tables = () => {
   };
   // delete sector
   const handleDeleteConfirmation = async () => {
-    console.log(itemToDelete)
+    console.log(itemToDelete);
 
     if (itemToDelete) {
       try {
@@ -995,8 +985,8 @@ const Tables = () => {
           `${apiUrl}/sector/delete/${itemToDelete}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
@@ -1004,13 +994,13 @@ const Tables = () => {
         setCheckboxes((prevCheckboxes) =>
           prevCheckboxes.filter((sector) => sector.id !== itemToDelete)
         );
-        dispatch(getAllSector({admin_id}));
-        dispatch(getAllTableswithSector(({admin_id})));
-        getTableData(selectedTable)
+        dispatch(getAllSector({ admin_id }));
+        dispatch(getAllTableswithSector({ admin_id }));
+        getTableData(selectedTable);
         handleShowEditFamDel();
         setShowDeleteConfirm(false);
         setItemToDelete(null);
-        setSelectedSectors([])
+        setSelectedSectors([]);
         if (response.data && response.data.notification) {
           //enqueueSnackbar (response.data.notification, { variant: 'success' });
         } else {
@@ -1028,7 +1018,7 @@ const Tables = () => {
     }
   };
   const handleDeleteOrderConfirmation = async () => {
-    console.log(itemToDelete)
+    console.log(itemToDelete);
 
     if (itemToDelete) {
       try {
@@ -1036,8 +1026,8 @@ const Tables = () => {
           `${apiUrl}/order/deleteSingle/${itemToDelete}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
@@ -1045,9 +1035,9 @@ const Tables = () => {
         setCheckboxes((prevCheckboxes) =>
           prevCheckboxes.filter((sector) => sector.id !== itemToDelete)
         );
-        dispatch(getAllSector({admin_id}));
-        dispatch(getAllTableswithSector(({admin_id})));
-        getTableData(selectedTable)
+        dispatch(getAllSector({ admin_id }));
+        dispatch(getAllTableswithSector({ admin_id }));
+        getTableData(selectedTable);
         handleShowEditFamDel();
         setShowDeleteOrderConfirm(false);
         setItemToDelete(null);
@@ -1060,20 +1050,12 @@ const Tables = () => {
     }
   };
 
-
-
- 
-
-
-
-
-
   // get user name
 
   const fetchUser = async () => {
     await axios
       .get(`${apiUrl}/get-users`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
         setUsers(response.data);
@@ -1087,44 +1069,43 @@ const Tables = () => {
     return user ? user.name : "Unknown User"; // Return 'Unknown User' if not found
   };
   // socket
-  const [tableColor, setTableColor] = useState("");
-  const [cardSelect, setCardSelect] = useState([]);
-  const [selectedCards, setSelectedCards] = useState('');
 
 
   // console.log(selectedCards);
-  // console.log(selectedTable);
+  console.log(selectedTable);
   // console.log(tabledelay);
-  
 
   useEffect(() => {
     const postCardClick = async (selectedTable) => {
-
       // console.log(selectedCards);
       try {
-        const response = await axios.post(`${sUrl}/brodcastCardClicked`, {
-          card_id: selectedTable,
-          selected: 1
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
+        const response = await axios.post(
+          `${sUrl}/brodcastCardClicked`,
+          {
+            card_id: selectedTable,
+            selected: 1,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-TOKEN": csrfToken,
+            },
           }
-        });
+        );
         // console.log(response);
         setCardSelect(response.data);
-      
+
         // if (response.data.card_id === selectedCards) {
-        //   setTableColor("blue"); 
+        //   setTableColor("blue");
         // } else {
-        //   setTableColor(""); 
+        //   setTableColor("");
         // }
       } catch (error) {
         console.error("Error posting card click", error);
       }
     };
 
-    if(selectedTable){
+    if (selectedTable) {
       postCardClick(selectedTable);
     }
   }, [selectedTable]);
@@ -1151,10 +1132,8 @@ const Tables = () => {
     //   wsPort: 6001,
     //   forceTLS: false,
     //   disableStats: true,
-    //   enabledTransports: ['ws', 'wss'], 
+    //   enabledTransports: ['ws', 'wss'],
     // });
-
-
 
     // socket.connector.pusher.connection.bind('connected', () => {
     //   console.log("hello ")// Update state when connected
@@ -1171,24 +1150,26 @@ const Tables = () => {
     //     setSelectedCards(prevCards => [...new Set([...pre vCards, e.card_id])]);
     //   }
     // });
-    echo.channel('box-channel').listen('.CardClick', (event) => {
+    echo.channel("box-channel").listen(".CardClick", (event) => {
       // console.log("BoxClicked event received:", event);
       if (event.selected) {
-        setSelectedCards(prev => {
+        setSelectedCards((prev) => {
           const prevArray = prev || [];
-          return prevArray.includes(event.card_id) ? prevArray : [...prevArray, event.card_id];
+          return prevArray.includes(event.card_id)
+            ? prevArray
+            : [...prevArray, event.card_id];
         });
       } else {
         // Remove the card_id
-        setSelectedCards(prev => prev?.filter(id => id !== event.card_id));
-        setTabledelay((prev) => prev?.filter(id => id !== event.card_id));
+        setSelectedCards((prev) => prev?.filter((id) => id !== event.card_id));
+        setTabledelay((prev) => prev?.filter((id) => id !== event.card_id));
       }
     });
   }, [selectedCards]);
 
   // Get CSRF token
   const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
-  const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
+  const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute("content") : "";
 
   // fetch(`${sUrl}/brodcastCardClicked`, {
   //   method: 'POST',
@@ -1200,24 +1181,22 @@ const Tables = () => {
 
   // });
 
-   // redirect to new page
-   const handleLinkClick = (e) => {
+  // redirect to new page
+  const handleLinkClick = (e) => {
     e.preventDefault(); // Prevent default link behavior
     localStorage.removeItem("cartItems"); // Clear only cart items from local storage
-          // to={`/table1?id=${selectedTable}&status=${tableStatus}`}
+    // to={`/table1?id=${selectedTable}&status=${tableStatus}`}
     navigate(`/table1?id=${selectedTable}&status=${tableStatus}`); // Navigate to the new page
   };
 
-
-
   return (
+    <>
     <section>
       <Header />
       <div className="d-flex">
         <Sidenav />
 
         <div className=" flex-grow-1 sidebar">
-
           <div>
             <div className="p-3 m_bgblack text-white m_borbot j-tbl-font-1 jay-table-fixed-kya">
               <h5 className="mb-0 j-tbl-font-1">Mesas</h5>
@@ -1232,15 +1211,16 @@ const Tables = () => {
                     <div className="m_borbot ">
                       <p className="text-white j-tbl-font-2">Sectores</p>
                       <div className="d-flex align-items-center">
-                        {(role == "admin" || role == "cashier" ) &&  <Button
-                          data-bs-theme="dark"
-                          className="j_drop b_btn_pop j_t_sector_button j-tbl-font-3 mb-3"
-                          onClick={handleShow}
-                        >
-                          <FaPlus className="j-icon-font-1" />
-                          Crear sector
-                        </Button>}
-                       
+                        {(role == "admin" || role == "cashier") && (
+                          <Button
+                            data-bs-theme="dark"
+                            className="j_drop b_btn_pop j_t_sector_button j-tbl-font-3 mb-3"
+                            onClick={handleShow}
+                          >
+                            <FaPlus className="j-icon-font-1" />
+                            Crear sector
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1325,7 +1305,10 @@ const Tables = () => {
                     <Modal.Header closeButton className="border-0" />
                     <Modal.Body>
                       <div className="text-center">
-                        <img src={require("../Image/check-circle.png")} alt="" />
+                        <img
+                          src={require("../Image/check-circle.png")}
+                          alt=""
+                        />
                         <p className="mb-0 mt-2 h6">Subfamilia</p>
                         <p className="opacity-75">creada exitosamente</p>
                       </div>
@@ -1343,7 +1326,10 @@ const Tables = () => {
                     <Modal.Header closeButton className="border-0" />
                     <Modal.Body>
                       <div className="text-center">
-                        <img src={require("../Image/check-circle.png")} alt="" />
+                        <img
+                          src={require("../Image/check-circle.png")}
+                          alt=""
+                        />
                         <p className="mb-0 mt-2 h6 j-tbl-pop-1">Sector</p>
                         <p className="opacity-75 j-tbl-pop-2">
                           Se ha creado exitosamente
@@ -1362,7 +1348,10 @@ const Tables = () => {
                     <Modal.Header closeButton className="border-0" />
                     <Modal.Body>
                       <div className="text-center">
-                        <img src={require("../Image/check-circle.png")} alt="" />
+                        <img
+                          src={require("../Image/check-circle.png")}
+                          alt=""
+                        />
                         <p className="mb-0 mt-2 h6 j-tbl-pop-1">Mesas</p>
                         <p className="opacity-75 j-tbl-pop-2">
                           La mesas han sido agregadas exitosamente
@@ -1426,7 +1415,10 @@ const Tables = () => {
                       keyboard={false}
                       className="m_modal"
                     >
-                      <Modal.Header closeButton className="m_borbot b_border_bb1">
+                      <Modal.Header
+                        closeButton
+                        className="m_borbot b_border_bb1"
+                      >
                         <Modal.Title className="j-tbl-text-10">
                           Agregar mesa
                         </Modal.Title>
@@ -1504,13 +1496,12 @@ const Tables = () => {
                 >
                   <Modal.Header
                     closeButton
-                    className="j-caja-border-bottom p-0 m-3 mb-0 pb-3" />
-
+                    className="j-caja-border-bottom p-0 m-3 mb-0 pb-3"
+                  />
 
                   <Modal.Body className="border-0">
                     <div className="text-center">
                       <img
-
                         src={require("../Image/trash-outline-secondary.png")}
                         alt=""
                       />
@@ -1576,8 +1567,11 @@ const Tables = () => {
                       <TableCard
                         isOffcanvasOpen={isOffcanvasOpen}
                         onShowAvailableModal={() =>
-                          handleShowAvailableModal(ele.id,ele.table_no)}
-                        onShowOcupadoModal={() => handleShowOcupadoModal(ele.id,ele.table_no)}
+                          handleShowAvailableModal(ele.id, ele.table_no)
+                        }
+                        onShowOcupadoModal={() =>
+                          handleShowOcupadoModal(ele.id, ele.table_no)
+                        }
                         name={ele.name}
                         no={ele.id}
                         code={ele.code}
@@ -1585,21 +1579,19 @@ const Tables = () => {
                         selectedTable={selectedTable}
                         tId={ele.id}
                         tableId={ele.table_no}
-                        userId={ele.user_id} // Access user_id from tableData
+                        userId={ele.user_id}
                         oId={ele.order_id}
                         selectedCards={selectedCards}
                         handleData={() => {
                           getTableData(ele.id);
                         }}
-                        // handleGet={() => {
-                        //   // getPaymentData(ele.order_id);
-                        // }}
                         getUserName={getUserName}
                         setSelectedTable={setSelectedTable}
                         setTableStatus={setTableStatus}
-                        tableColor={tableColor} // Pass the tableColor prop
+                        tableColor={tableColor}
                         setTabledelay={setTabledelay}
                         tabledelay={tabledelay}
+                        isSelected={selectedTable === ele.id}
                       />
                     </div>
                   ))}
@@ -1607,7 +1599,6 @@ const Tables = () => {
               </div>
             </div>
           </div>
-
         </div>
 
         {/* {/ Edit family /} */}
@@ -1851,14 +1842,27 @@ const Tables = () => {
             </div>
 
             <div className="b-product-order text-center">
-            <svg className="w-6 h-6 text-gray-800 dark:text-white mb-2" style={{color:"white"}} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
-                          <path fillRule="evenodd" d="M4.857 3A1.857 1.857 0 0 0 3 4.857v4.286C3 10.169 3.831 11 4.857 11h4.286A1.857 1.857 0 0 0 11 9.143V4.857A1.857 1.857 0 0 0 9.143 3H4.857Zm10 0A1.857 1.857 0 0 0 13 4.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 9.143V4.857A1.857 1.857 0 0 0 19.143 3h-4.286Zm-10 10A1.857 1.857 0 0 0 3 14.857v4.286C3 20.169 3.831 21 4.857 21h4.286A1.857 1.857 0 0 0 11 19.143v-4.286A1.857 1.857 0 0 0 9.143 13H4.857Zm10 0A1.857 1.857 0 0 0 13 14.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 19.143v-4.286A1.857 1.857 0 0 0 19.143 13h-4.286Z" clipRule="evenodd" />
-                        </svg>
+              <svg
+                className="w-6 h-6 text-gray-800 dark:text-white mb-2"
+                style={{ color: "white" }}
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="28"
+                height="28"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M4.857 3A1.857 1.857 0 0 0 3 4.857v4.286C3 10.169 3.831 11 4.857 11h4.286A1.857 1.857 0 0 0 11 9.143V4.857A1.857 1.857 0 0 0 9.143 3H4.857Zm10 0A1.857 1.857 0 0 0 13 4.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 9.143V4.857A1.857 1.857 0 0 0 19.143 3h-4.286Zm-10 10A1.857 1.857 0 0 0 3 14.857v4.286C3 20.169 3.831 21 4.857 21h4.286A1.857 1.857 0 0 0 11 19.143v-4.286A1.857 1.857 0 0 0 9.143 13H4.857Zm10 0A1.857 1.857 0 0 0 13 14.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 19.143v-4.286A1.857 1.857 0 0 0 19.143 13h-4.286Z"
+                  clipRule="evenodd"
+                />
+              </svg>
               <h6 className="h6-product-order text-white j-tbl-pop-1">
-              Empezar Pedido
+                Empezar Pedido
               </h6>
               <p className="p-product-order j-tbl-btn-font-1 ">
-              Agregar producto para comenzar el pedido
+                Agregar producto para comenzar el pedido
               </p>
             </div>
           </Offcanvas.Body>
@@ -1894,26 +1898,28 @@ const Tables = () => {
                 onClick={handleEditClick}
               >
                 <div className="d-flex align-items-center">
-                  {!isEditing && <svg
-                    className="j-canvas-btn-i"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M11.32 6.176H5c-1.105 0-2 .949-2 2.118v10.588C3 20.052 3.895 21 5 21h11c1.105 0 2-.948 2-2.118v-7.75l-3.914 4.144A2.46 2.46 0 0 1 12.81 16l-2.681.568c-1.75.37-3.292-1.263-2.942-3.115l.536-2.839c.097-.512.335-.983.684-1.352l2.914-3.086Z"
-                      clip-rule="evenodd"
-                    />
-                    <path
-                      fill-rule="evenodd"
-                      d="M19.846 4.318a2.148 2.148 0 0 0-.437-.692 2.014 2.014 0 0 0-.654-.463 1.92 1.92 0 0 0-1.544 0 2.014 2.014 0 0 0-.654.463l-.546.578 2.852 3.02.546-.579a2.14 2.14 0 0 0 .437-.692 2.244 2.244 0 0 0 0-1.635ZM17.45 8.721 14.597 5.7 9.82 10.76a.54.54 0 0 0-.137.27l-.536 2.84c-.07.37.239.696.588.622l2.682-.567a.492.492 0 0 0 .255-.145l4.778-5.06Z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>}
+                  {!isEditing && (
+                    <svg
+                      className="j-canvas-btn-i"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M11.32 6.176H5c-1.105 0-2 .949-2 2.118v10.588C3 20.052 3.895 21 5 21h11c1.105 0 2-.948 2-2.118v-7.75l-3.914 4.144A2.46 2.46 0 0 1 12.81 16l-2.681.568c-1.75.37-3.292-1.263-2.942-3.115l.536-2.839c.097-.512.335-.983.684-1.352l2.914-3.086Z"
+                        clip-rule="evenodd"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M19.846 4.318a2.148 2.148 0 0 0-.437-.692 2.014 2.014 0 0 0-.654-.463 1.92 1.92 0 0 0-1.544 0 2.014 2.014 0 0 0-.654.463l-.546.578 2.852 3.02.546-.579a2.14 2.14 0 0 0 .437-.692 2.244 2.244 0 0 0 0-1.635ZM17.45 8.721 14.597 5.7 9.82 10.76a.54.54 0 0 0-.137.27l-.536 2.84c-.07.37.239.696.588.622l2.682-.567a.492.492 0 0 0 .255-.145l4.778-5.06Z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  )}
                   {isEditing ? "Guardar" : "Editar"}
                 </div>
               </button>
@@ -2036,7 +2042,8 @@ const Tables = () => {
                                             item.item_id,
                                             item.quantity,
                                             selectedTable
-                                          )}
+                                          )
+                                        }
                                       >
                                         <FaMinus />
                                       </button>
@@ -2049,7 +2056,8 @@ const Tables = () => {
                                             item.item_id,
                                             item.quantity,
                                             selectedTable
-                                          )}
+                                          )
+                                        }
                                       >
                                         <FaPlus />
                                       </button>
@@ -2059,7 +2067,9 @@ const Tables = () => {
                                     </h4>
                                     <button
                                       className="j-delete-btn me-2 mb-0"
-                                      onClick={() => handleDeleteOrderClick(item.id)}
+                                      onClick={() =>
+                                        handleDeleteOrderClick(item.id)
+                                      }
                                     >
                                       <RiDeleteBin6Fill />
                                     </button>
@@ -2070,7 +2080,8 @@ const Tables = () => {
                                     addNotes[index] ? (
                                       <form
                                         onSubmit={(e) =>
-                                          handleSubmitNote(e, index, item.id)}
+                                          handleSubmitNote(e, index, item.id)
+                                        }
                                       >
                                         <span className="j-nota-blue">
                                           Nota:{" "}
@@ -2080,23 +2091,29 @@ const Tables = () => {
                                           type="text"
                                           defaultValue={item.notes || ""}
                                           autoFocus
-                                          onBlur={(e) => handleSubmitNote(e, index, item.id)}    
+                                          onBlur={(e) =>
+                                            handleSubmitNote(e, index, item.id)
+                                          }
                                         />
                                       </form>
                                     ) : (
-                                      <span  className="j-nota-blue" onClick={() =>
-                                        handleAddNoteClick(index)}
-                                        style={{cursor: "pointer"}}>
+                                      <span
+                                        className="j-nota-blue"
+                                        onClick={() =>
+                                          handleAddNoteClick(index)
+                                        }
+                                        style={{ cursor: "pointer" }}
+                                      >
                                         Nota: {item.notes}
                                       </span>
                                     )
-
                                   ) : (
                                     <div>
                                       {addNotes[index] ? (
                                         <form
                                           onSubmit={(e) =>
-                                            handleSubmitNote(e, index, item.id)}
+                                            handleSubmitNote(e, index, item.id)
+                                          }
                                         >
                                           <span className="j-nota-blue">
                                             Nota:{" "}
@@ -2106,7 +2123,13 @@ const Tables = () => {
                                             type="text"
                                             defaultValue={item.notes || ""}
                                             autoFocus
-                                            onBlur={(e) => handleSubmitNote(e, index, item.id)}
+                                            onBlur={(e) =>
+                                              handleSubmitNote(
+                                                e,
+                                                index,
+                                                item.id
+                                              )
+                                            }
                                           />
                                         </form>
                                       ) : (
@@ -2114,7 +2137,8 @@ const Tables = () => {
                                           type="button"
                                           className="j-note-final-button"
                                           onClick={() =>
-                                            handleAddNoteClick(index)}
+                                            handleAddNoteClick(index)
+                                          }
                                         >
                                           + Agregar nota
                                         </button>
@@ -2127,7 +2151,7 @@ const Tables = () => {
                           })
                       )}
 
-                      {tableData[0]?.items.length >= 4 &&
+                      {tableData[0]?.items.length >= 4 && (
                         <a
                           href="#"
                           onClick={handleShowMoreClick}
@@ -2135,7 +2159,7 @@ const Tables = () => {
                         >
                           {showAll ? "Ver menos" : "Ver más"}
                         </a>
-                      }
+                      )}
                     </div>
                     <div className="j-counter-total-2">
                       <h5 className="text-white j-tbl-text-15 ">Costo total</h5>
@@ -2178,7 +2202,6 @@ const Tables = () => {
                     </div>
                   </div>
                 </div>
-
 
                 <Modal
                   show={show18}
@@ -2301,8 +2324,11 @@ const Tables = () => {
                                     addNotes[index] ? (
                                       <form
                                         onSubmit={(e) =>
-                                          handleSubmitNote(e, index, item.id)}
-                                        onBlur={(e) => handleSubmitNote(e, index, item.id)}
+                                          handleSubmitNote(e, index, item.id)
+                                        }
+                                        onBlur={(e) =>
+                                          handleSubmitNote(e, index, item.id)
+                                        }
                                       >
                                         <span className="j-nota-blue">
                                           Nota:{" "}
@@ -2315,9 +2341,13 @@ const Tables = () => {
                                         />
                                       </form>
                                     ) : (
-                                      <span className="j-nota-blue" onClick={() =>
-                                        handleAddNoteClick(index)}
-                                        style={{cursor: "pointer"}}>
+                                      <span
+                                        className="j-nota-blue"
+                                        onClick={() =>
+                                          handleAddNoteClick(index)
+                                        }
+                                        style={{ cursor: "pointer" }}
+                                      >
                                         Nota: {item.notes}
                                       </span>
                                     )
@@ -2326,8 +2356,11 @@ const Tables = () => {
                                       {addNotes[index] ? (
                                         <form
                                           onSubmit={(e) =>
-                                            handleSubmitNote(e, index, item.id)}
-                                          onBlur={(e) => handleSubmitNote(e, index, item.id)}
+                                            handleSubmitNote(e, index, item.id)
+                                          }
+                                          onBlur={(e) =>
+                                            handleSubmitNote(e, index, item.id)
+                                          }
                                         >
                                           <span className="j-nota-blue">
                                             Nota:{" "}
@@ -2344,7 +2377,8 @@ const Tables = () => {
                                           type="button"
                                           className="j-note-final-button"
                                           onClick={() =>
-                                            handleAddNoteClick(index)}
+                                            handleAddNoteClick(index)
+                                          }
                                         >
                                           + Agregar nota
                                         </button>
@@ -2356,7 +2390,7 @@ const Tables = () => {
                             );
                           })
                       )}
-                      {tableData[0]?.items.length >= 4 &&
+                      {tableData[0]?.items.length >= 4 && (
                         <a
                           href="#"
                           onClick={handleShowMoreClick}
@@ -2364,7 +2398,7 @@ const Tables = () => {
                         >
                           {showAll ? "Ver menos" : "Ver más"}
                         </a>
-                      }
+                      )}
                     </div>
                     <div className="j-counter-total-2">
                       <h5 className="text-white j-tbl-text-15 ">Costo total</h5>
@@ -2442,11 +2476,17 @@ const Tables = () => {
         className="m_modal  m_user "
       >
         <Modal.Body className="text-center">
-          <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
+          <Spinner
+            animation="border"
+            role="status"
+            style={{ height: "85px", width: "85px", borderWidth: "6px" }}
+          />
           <p className="mt-2">Procesando solicitud...</p>
         </Modal.Body>
       </Modal>
+     
     </section>
+</>
   );
 };
 

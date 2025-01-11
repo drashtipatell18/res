@@ -76,8 +76,8 @@ const Counter_finalP = () => {
     if (numericValue > maxTip) {
       value = maxTip.toFixed(2);
     }
-    setPrice(value);
-    setTipAmount(parseFloat(value));
+    setPrice(parseFloat(numericValue));
+    // setTipAmount(parseFloat(value));
   };
 
   const [showAllItems, setShowAllItems] = useState(false);
@@ -107,7 +107,7 @@ const Counter_finalP = () => {
   const handleCloseCreSubSuc = () => setShowCreSubSuc(false);
   const handleShowCreSubSuc = () => {
     setShowCreSubSuc(true);
-    setTipAmount(parseFloat(price) || 0);
+    setTipAmount(price || 0);
     setTimeout(() => {
       handleCloseCreSubSuc();
     }, 2000);
@@ -247,11 +247,11 @@ const Counter_finalP = () => {
   };
 
   const initialCustomerData = {
-    cashAmount: "",      // Amount for cash payment
-    debitAmount: "",     // Amount for debit payment
-    creditAmount: "",    // Amount for credit payment
-    transferAmount: "",  // Amount for transfer payment
-    turn: ""
+    cashAmount: 0,      // Amount for cash payment
+    debitAmount: 0,     // Amount for debit payment
+    creditAmount: 0,    // Amount for credit payment
+    transferAmount: 0,  // Amount for transfer payment
+    turn: 0
   };
 
   const getTotalCost = () => {
@@ -267,8 +267,10 @@ const Counter_finalP = () => {
   const discount = 1.0;
   const finalTotal = totalCost - discount;
   const taxAmount = finalTotal * 0.19;
-  const lastTotal = parseFloat(finalTotal.toFixed(2)) + parseFloat(taxAmount.toFixed(2)) -(creditId ? creditData?.creditTotal : 0)
+  const lastTotal = parseFloat(finalTotal.toFixed(2)) + parseFloat(taxAmount.toFixed(2)) + parseFloat(tipAmount.toFixed(2)) -(creditId ? creditData?.creditTotal : 0)
 
+  // console.log(lastTotal,tipAmount);
+  
   const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
   const [customerData, setCustomerData] = useState(initialCustomerData);
   // console.log(selectedCheckboxes);
@@ -299,7 +301,7 @@ const Counter_finalP = () => {
       setCustomerData({
         ...customerData,
         [value + "Amount"]: customerData?.turn && customerData.turn < 0 ?
-          (Math.abs(customerData.turn.toFixed(2))).toString() : '',
+          (Math.abs(customerData.turn.toFixed(2))).toString() : 0,
         turn: customerData?.turn && customerData.turn > 0 ? customerData.turn : 0
       });
     }
@@ -311,15 +313,19 @@ const Counter_finalP = () => {
   };
 
   const handleChange = (event) => {
+    if(lastTotal == 0){
+      return;
+    }
+    
     let { name, value } = event.target;
-    value = value.replace(/[^0-9.]/g, ""); // Allow only numbers and decimal points
+    value = value.replace(/[^0-9.]/g, ''); // Allow only numbers and decimal points
     // console.log(name);
     const otherbox = selectedCheckboxes.filter(item => !name.includes(item))
     // console.log(otherbox);
     setCustomerData((prevState) => {
 
       const currentValue = parseFloat(value) || 0;
-      const totalDue = lastTotal + tipAmount;
+      const totalDue = lastTotal;
       const otherAmount = Math.max(totalDue - currentValue, 0);
 
       // console.log(otherAmount);
@@ -338,7 +344,7 @@ const Counter_finalP = () => {
 
       // New calculation for turn
       const totalAmount = parseFloat(updatedState.cashAmount || 0) + parseFloat(updatedState.debitAmount || 0) + parseFloat(updatedState.creditAmount || 0) + parseFloat(updatedState.transferAmount || 0);
-      updatedState.turn = totalAmount - (lastTotal + tipAmount); // Update turn based on total amounts
+      updatedState.turn = totalAmount - (lastTotal); // Update turn based on total amounts
       return updatedState;
 
     });
@@ -495,8 +501,7 @@ const Counter_finalP = () => {
     // console.log(totalPaymentAmount < totalWithTax, totalPaymentAmount <= 0)
     // Validate payment amount
     // console.log(totalWithTax,totalPaymentAmount,totalWithTax > totalPaymentAmount);
-    
-    if (!totalPaymentAmount || totalPaymentAmount <= 0) {
+    if ( totalPaymentAmount < 0) {
       errors.amount = "Por favor, introduzca un importe de pago válido";
       // } else if (parseFloat(customerData.amount) < totalWithTax.toFixed(2)) {
 
@@ -610,7 +615,7 @@ const Counter_finalP = () => {
         return;
       }
       if (!orderId) {
-        const response = await axios.post(`${apiUrl}/order/place_ne`, orderData, {
+        const response = await axios.post(`${apiUrl}/order/place_new`, orderData, {
           headers: { Authorization: `Bearer ${token}` }
         })
         if (!response.data.success) {
@@ -634,7 +639,7 @@ const Counter_finalP = () => {
         };
         try {
           const responsePayment = await axios.post(
-            `${apiUrl}/payment/inser`,
+            `${apiUrl}/payment/insert`,
             paymentData,
             {
               headers: {
@@ -660,7 +665,7 @@ const Counter_finalP = () => {
 
           if (creditId) {
             setIsProcessing(true);
-            axios.post(`${apiUrl}/order/getCreditUpdat/${creditId}`,{
+            axios.post(`${apiUrl}/order/getCreditUpdate/${creditId}`,{
                   status: "Completed",
                   destination: orderType.orderId
                 },{
@@ -960,7 +965,7 @@ const Counter_finalP = () => {
                                 type="text"
                                 id="cashAmount" // change
                                 name="cashAmount" // change
-                                value={`$${customerData.cashAmount || ""}`} // change
+                                value={`$${customerData.cashAmount || ''}`} // change
                                 onChange={handleChange}
                                 className="input_bg_dark w-full px-4 py-2 text-white sj_width_mobil"
                               />
@@ -1318,7 +1323,7 @@ const Counter_finalP = () => {
                             Total
                           </p>
                           <span className="text-white bj-delivery-text-153">
-                            ${(lastTotal + tipAmount).toFixed(2)}
+                            ${(lastTotal).toFixed(2)}
                           </span>
                         </div>
                         <div className="btn w-100 j-btn-primary text-white">
@@ -1356,6 +1361,7 @@ const Counter_finalP = () => {
                               paymentAmt={customerData}
                               paymentType={selectedCheckboxes}
                               creditTotal={creditId && creditData.creditTotal}
+                              tipAmount={tipAmount || 0}
                             />
                           </Modal.Body>
                           <Modal.Footer className="sjmodenone">

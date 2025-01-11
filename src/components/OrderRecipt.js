@@ -73,7 +73,7 @@ const OrderRecipt = ({ paymentData, orderData }) => {
   );
   console.log(itemsTotal, receiptData.items);
 
-  const price = parseFloat(itemsTotal) - parseFloat(orderData.discount ? orderData.discount : 0);
+  const price = parseFloat(itemsTotal) - parseFloat(orderData.discount ? orderData.discount : 1.0);
 
   console.log(price);
 
@@ -82,7 +82,7 @@ const OrderRecipt = ({ paymentData, orderData }) => {
   receiptData.totals = {
     subtotalIva: itemsTotal,
     subtotal0: 0.0,
-    discount: orderData.discount ? orderData.discount : 0,
+    discount: orderData.discount ? orderData.discount : 1.0,
     iva: iva,
     total: total,
     received: total, // Assuming the exact amount is received

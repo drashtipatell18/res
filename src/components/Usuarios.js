@@ -684,7 +684,7 @@ const Usuarios = () => {
                       <FaFilter /> &nbsp; <span className="b_ttt">Filtro</span>
                     </Dropdown.Toggle>
                     <Dropdown.Menu className="m14 m_filter">
-                      {roles?.filter(role => role.id !== 1 && role.id !== 5).map((role) => (
+                      {roles?.filter(role => role.id !== 5).map((role) => (
                         <div
                           className="px-3 py-1 d-flex gap-2 align-items-center fw-500"
                           key={role.id}
@@ -790,7 +790,7 @@ const Usuarios = () => {
                                       console.log(role);
 
                                       if (
-                                        role.name !== "admin" &&
+                                        // role.name !== "admin" &&
                                         role.name !== "superadmin"
                                       ) {
                                         return (
@@ -1117,7 +1117,7 @@ const Usuarios = () => {
                   </thead>
                   <tbody className="text-white b_btnn ">
                     {currentUsers
-                      .filter((user) => user.role_id !== 1)
+                      // .filter((user) => user.role_id !== 1)
                       .map((user) => (
                         <tr key={user.id} className="b_row">
                           <td className="b_text_w">{user.name}</td>
@@ -1132,6 +1132,7 @@ const Usuarios = () => {
                                 className="btn btn-success"
                                 onClick={() => handleShowEditFam(user.id)}
                                 style={{ minWidth: "120px" }}
+                                disabled={user.role_id === 1}
                               >
                                 Activo
                               </button>
@@ -1140,6 +1141,7 @@ const Usuarios = () => {
                                 className="btn btn-danger"
                                 onClick={() => handleShowEditFam2(user.id)}
                                 style={{ minWidth: "120px" }}
+                                disabled={user.role_id === 1}
                               >
                                 Suspender
                               </button>
@@ -1244,18 +1246,32 @@ const Usuarios = () => {
                             name="role_id"
                             defaultValue={formData.role_id}
                             onChange={handleChange}
+                            disabled={formData.role_id === 1}
                           >
                             {roles?.map((role) => {
-                              if (
-                                role.name !== "admin" &&
-                                role.name !== "superadmin"
-                              ) {
-                                return (
-                                  <option key={role.id} value={role.id}>
-                                    {roleNamesInSpanish[role.id] || role.name}
-                                  </option>
-                                );
+                              if(formData.role_id === 1){
+                                if (
+                                  role.name !== "superadmin"
+                                ) {
+                                  return (
+                                    <option key={role.id} value={role.id}>
+                                      {roleNamesInSpanish[role.id] || role.name}
+                                    </option>
+                                  );
+                                }
+                              }else{
+                                if (
+                                  role.name !== "admin" &&
+                                  role.name !== "superadmin"
+                                ) {
+                                  return (
+                                    <option key={role.id} value={role.id}>
+                                      {roleNamesInSpanish[role.id] || role.name}
+                                    </option>
+                                  );
+                                }
                               }
+                              
                               return null; // Skip rendering admin role if user is not superadmin@gmail.com
                             })}
                           </select>
