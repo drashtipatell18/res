@@ -11,7 +11,7 @@ import { useOrderPrinting } from "../hooks/useOrderPrinting";
 import { useDispatch, useSelector } from "react-redux";
 import { getboxs } from "../redux/slice/box.slice";
 import { getProduction } from "../redux/slice/Items.slice";
-import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
+import { getAllOrders, getAllPayments, getCredit } from "../redux/slice/order.slice";
 import { getAllKds } from "../redux/slice/kds.slice";
 
 const Counter_finalP = () => {
@@ -411,51 +411,47 @@ const Counter_finalP = () => {
   };
 
   //===Get CreditData======-
+    const { credit} = useSelector(state => state.orders);
+    const dispatch = useDispatch();
+
+
+    // const dispatch = useDispatch();
+    useEffect(() => {
+      if (credit?.length === 0) {
+        dispatch(getCredit({admin_id}))
+      }
+    }, [credit])
+
 
   useEffect(() => {
     if (creditId) {
       fetchCredit()
     }
-  }, [creditId])
+
+  }, [creditId,credit])
 
   const fetchCredit = async () => {
     setIsProcessing(true);
     try {
-      const response = await axios.post(`${apiUrl}/order/getCredit`, { admin_id: admin_id }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      // console.log(response.data.data);
-
-      const credit = response.data.data?.find((v) => v.id == creditId);
-      // console.log(credit);
-
-      const Total = credit.return_items?.reduce((acc, v) => acc + v.amount * v.quantity, 0) - 1.0;
+      const credit1 = credit?.find((v) => v.id == creditId);
+      const Total = credit1.return_items?.reduce((acc, v) => acc + v.amount * v.quantity, 0) - 1.0;
       const creditTotal = parseFloat((Total + Total * 0.19).toFixed(2))
-      setCreditData({ ...credit, creditTotal: creditTotal });
-      // console.log(credit);
+      setCreditData({ ...credit1, creditTotal: creditTotal });
 
     } catch (error) {
       console.error(
         "Error fetching allOrder:",
-        error.response ? error.response.data : error.message
+        error ? error.data : error.message
       );
     }
     setIsProcessing(false);
   }
-
-  // console.log(creditData);
-
-
   // ==== Get BOX Data =====
 
   // const [boxId, setBoxId] = useState(0)
-  const dispatch = useDispatch();
+ 
   const [selectedBoxId] = useState(parseInt(localStorage.getItem('boxId')));
   const boxId = useSelector(state => state.boxs.box)?.find((v) => v.user_id == userId);
-
 
   useEffect(()=>{
     if(boxId){

@@ -29,7 +29,6 @@ export default function Header() {
     }
   }, [token, navigate, location]);
 
-
   if (!token) {
     return null;
   }

@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableColor, selectedCards, getUserName, status, setTableStatus, onShowAvailableModal, handleData, onShowOcupadoModal, isModalOpen, isOffcanvasOpen, setTabledelay, tabledelay,isSelected }) => {
+const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableColor, selectedCards, getUserName, status, setTableStatus, onShowAvailableModal, handleData, onShowOcupadoModal, isModalOpen, isOffcanvasOpen, setTabledelay, tabledelay,isSelected,role, boxclosed,boxId}) => {
   // const [isSelected, setSelected] = useState(false);
   // const tableRef = useRef(null);
-
-  // console.log("isSelected",isSelected,no);
-  
+// console.log("isSelected",isSelected,no);
 
   // useEffect(() => {
   //   const selectedTable = localStorage.getItem('selectedTable');
@@ -59,8 +57,21 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
     marginTop: status === "available" ? "40px" : "20px",
   };
  
+// console.log(boxclosed,role);
 
   const handleClick = () => {
+
+    if(role == "admin" || role == "cashier"){
+      if (role === "admin" && !boxId) {
+        alert("Por favor, seleccione una caja para el pedido.");
+        return;
+      }
+  
+      if (role === "cashier" && boxclosed) {
+        alert("Por favor abra la caja.");
+        return;
+      }
+    }
     if (!isSelected) {
       setTableStatus(status);
       // localStorage.setItem('selectedTable', no); 

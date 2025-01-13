@@ -103,10 +103,18 @@ const Login = () => {
           navigate('/enlaceAdmin');
         }
           if ((role == "waitress")) {
-      navigate("/table");
+            setTimeout(() => {
+              setShowSuccessModal(false);
+              const redirectPath = location?.state?.from || '/table';
+              navigate(redirectPath);
+            }, 2000);
     }
     if ((role == "kitchen")) {
-      navigate("/kds");
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        const redirectPath = location?.state?.from || '/kds';
+        navigate(redirectPath);
+      }, 2000);
     }
 
         setTimeout(() => {

@@ -283,7 +283,7 @@ const Caja = () => {
         
         return matchingBoxes[matchingBoxes.length - 1]; // Get the last item
     };
-    console.log(localStorage.getItem("boxId"))
+    // console.log(localStorage.getItem("boxId"))
 
     const [selectedBoxId, setSelectedBoxId] = useState(parseInt(localStorage.getItem("boxId")) || 0);
 

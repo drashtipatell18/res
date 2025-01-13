@@ -14,6 +14,8 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import img1 from '../Image/check-circle.png'
 import { Nav, Tab, Container, Row, Col, Accordion, Modal, Spinner, Button } from 'react-bootstrap';
 import axios from 'axios';
+import { getCredit } from '../redux/slice/order.slice';
+import { useDispatch } from 'react-redux';
 
 
 export default function Home_crear({ item }) {
@@ -24,11 +26,12 @@ export default function Home_crear({ item }) {
 
     const token = localStorage.getItem("token");
     const [isProcessing, setIsProcessing] = useState(false);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { state } = useLocation();
-    console.log(state);
+    // console.log(state);
     const [orderUser, setOrderUser] = useState([]);
-    console.log(id);
+    // console.log(id);
     // const [counts, setCounts] = useState(item ? { [item.id]: 0 } : {});
     // const [counts, setCounts] = useState(item ? { [item.id]: 0 } : {});
     const [customerData, setCustomerData] = useState();
@@ -128,21 +131,21 @@ export default function Home_crear({ item }) {
     // }, {});
 
     // const [counts, setCounts] = useState(item ? { [item.id]: 0 } : initialCounts);
-    const [cartt, setCart] = useState([
-        {
-            image1: pic1,
-            disc: 'Pollo frito crujiente',
-            quantity: 1,
-            price: '$10.00',
-        },
-    ]);
+    // const [cartt, setCart] = useState([
+    //     {
+    //         image1: pic1,
+    //         disc: 'Pollo frito crujiente',
+    //         quantity: 1,
+    //         price: '$10.00',
+    //     },
+    // ]);
 
-    const [date, setDate] = useState("03/17/2024");
-    const [time, setTime] = useState("08:00 am");
-    const [name, setName] = useState("Damian Gonzales");
-    const [order1, setOrder1] = useState("01234");
-    const [order2, setOrder2] = useState("0123456789");
-    const [email, setEmail] = useState("ejemplo@gmail.com");
+    // const [date, setDate] = useState("03/17/2024");
+    // const [time, setTime] = useState("08:00 am");
+    // const [name, setName] = useState("Damian Gonzales");
+    // const [order1, setOrder1] = useState("01234");
+    // const [order2, setOrder2] = useState("0123456789");
+    // const [email, setEmail] = useState("ejemplo@gmail.com");
 
     // Event handlers
     // const increment = (id) => {
@@ -417,7 +420,7 @@ export default function Home_crear({ item }) {
                 },
                 {
                     headers: {
-                        Authorization: `Bearer 2816|ojbPri4TvtQKBLMDfMp3wnCaYrpUf5tpEv1UZ3dp07d9f3e0`,
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
@@ -645,7 +648,7 @@ export default function Home_crear({ item }) {
 
             };
 
-            console.log(creditNote);
+            // console.log(creditNote);
 
             try {
                 const response = await axios.post(`${apiUrl}/order/creditNote`, creditNote, {
@@ -656,6 +659,7 @@ export default function Home_crear({ item }) {
 
                 if (response.data.success) {
                     setShowcreditfinal(true);
+                    dispatch(getCredit({admin_id}))
                     setTimeout(() => {
                         setShowcreditfinal(false);
                         let use = { user: { ...orderUser } }; // if you need to modify user later

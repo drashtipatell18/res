@@ -27,6 +27,7 @@ import {
 } from "../redux/slice/table.slice";
 import { getAllitems } from "../redux/slice/Items.slice";
 import { getUser } from "../redux/slice/user.slice";
+import { getboxs, getboxsLogs } from "../redux/slice/box.slice";
 //import { enqueueSnackbar  } from "notistack";
 
 const Tables = () => {
@@ -54,6 +55,36 @@ const Tables = () => {
   );
   const { items, loadingItem } = useSelector((state) => state.items);
   const { user, loadingUser } = useSelector((state) => state.user);
+
+  const userId = localStorage.getItem("userId");
+  const [selectedBoxId] = useState(parseInt(localStorage.getItem('boxId')));
+  const boxId = useSelector(state => state.boxs.box)?.find((v) => v.user_id == userId);
+  const {boxLogs} = useSelector(state => state.boxs);
+
+  const [boxclosed ,setBoxclosed] = useState(false);
+
+    useEffect(()=>{
+      if(!boxId){
+          dispatch(getboxs({admin_id}))
+      }
+      if(boxLogs?.length == 0){
+        dispatch(getboxsLogs({admin_id}))
+      }
+    },[admin_id])
+    
+    useEffect(()=>{
+        if(boxLogs.length>0){
+          const matchingBoxes = boxLogs?.filter(box => box.box_id == boxId?.id);
+          // console.log(matchingBoxes,boxId);
+          
+          if(matchingBoxes.length > 0){
+
+          const data =  matchingBoxes?.[matchingBoxes.length - 1];
+          // console.log(data);
+          setBoxclosed(data.close_amount != null)
+          }
+        }
+    },[boxLogs,boxId])
 
   useEffect(() => {
     if (tablewithSector.length == 0) {
@@ -1592,6 +1623,9 @@ const Tables = () => {
                         setTabledelay={setTabledelay}
                         tabledelay={tabledelay}
                         isSelected={selectedTable === ele.id || false}
+                        boxId = {selectedBoxId}
+                        boxclosed = {boxclosed}
+                        role= {role}
                       />
                     </div>
                   ))}
