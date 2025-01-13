@@ -102,6 +102,12 @@ const Login = () => {
           setShowSuccessModal(false);
           navigate('/enlaceAdmin');
         }
+          if ((role == "waitress")) {
+      navigate("/table");
+    }
+    if ((role == "kitchen")) {
+      navigate("/kds");
+    }
 
         setTimeout(() => {
           setShowSuccessModal(false);

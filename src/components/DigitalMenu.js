@@ -947,18 +947,22 @@ export default function Articles() {
                         </div>
                         <div>
                           <div>
-                            <button
-                              className="btn mb-3 text-white m12 j-btn-primary"
-                              onClick={()=>{
-                                if(showRetirar){
-                                  alert( "Por favor, guarda los cambios antes de continuar."); 
-                                }else{
-                                  handleShow()
-                                }
-                              }}
-                            >
-                              + Crear menú
-                            </button>
+                            {(role == "admin" || role == "cashier") && (
+                              <button
+                                className="btn mb-3 text-white m12 j-btn-primary"
+                                onClick={() => {
+                                  if (showRetirar) {
+                                    alert(
+                                      "Por favor, guarda los cambios antes de continuar."
+                                    );
+                                  } else {
+                                    handleShow();
+                                  }
+                                }}
+                              >
+                                + Crear menú
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -976,13 +980,15 @@ export default function Articles() {
                               checked={selectedMenus.includes(item)}
                               onChange={() => {
                                 if (showRetirar) {
-                                  alert( "Por favor, guarda los cambios antes de continuar."); 
+                                  alert(
+                                    "Por favor, guarda los cambios antes de continuar."
+                                  );
                                 } else {
                                   handleChangeData(item);
                                   setMenuId(item.id);
                                 }
                               }}
-                              disabled={showRetirar} 
+                              disabled={showRetirar}
                             />
                             <p className="text-white mb-0 text-wrap">
                               {item.name}
@@ -992,11 +998,13 @@ export default function Articles() {
                             <div
                               className="text-white ms-3"
                               style={{ cursor: "pointer" }}
-                              onClick={() =>{
+                              onClick={() => {
                                 if (showRetirar) {
-                                  alert("Por favor, guarda los cambios antes de continuar."); 
+                                  alert(
+                                    "Por favor, guarda los cambios antes de continuar."
+                                  );
                                 } else {
-                                  handleShowEditFam(item)
+                                  handleShowEditFam(item);
                                 }
                               }}
                             >

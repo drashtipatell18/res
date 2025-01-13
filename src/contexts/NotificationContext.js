@@ -14,11 +14,16 @@ export const NotificationProvider = ({ children }) => {
   const [notificationCount, setNotificationCount] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
   const echo = useSocket();
-  const { playNotificationSound } = useAudioManager();
+  // const { playNotificationSound } = useAudioManager();
   const [prevNotificationCount, setPrevNotificationCount] = useState(() => {
     const storedData = JSON.parse(localStorage.getItem('prevNotificationCount')) || [];
     return storedData;
   });
+
+      // Add refs for managing socket connection and debouncing
+      const socketInitialized = useRef(false);
+      const debounceFetchNotifications = useRef(null);
+
   const fetchNotifications = useCallback(async () => {
     if (isFetching) return;
     // console.log("ddv",prevNotificationCount);    
@@ -51,7 +56,9 @@ export const NotificationProvider = ({ children }) => {
       setIsFetching(false);
     }
   }, [prevNotificationCount,token,user_id]);
-  const debounceFetchNotifications = useRef(null);
+
+
+  // const debounceFetchNotifications = useRef(null);
   if (echo) {
     echo.channel('notifications')
       .listen('NotificationMessage', (event) => {
@@ -59,6 +66,38 @@ export const NotificationProvider = ({ children }) => {
         debounceFetchNotifications.current = setTimeout(fetchNotifications, 1000);
       });
   }
+
+   // Setup socket listener only once
+//    useEffect(() => {
+//     if (echo && !socketInitialized.current) {
+//         const channel = echo.channel('notifications');
+        
+//         // Remove any existing listeners
+//         channel.stopListening('NotificationMessage');
+        
+//         // Setup new listener with debouncing
+//         channel.listen('NotificationMessage', (event) => {
+//             if (debounceFetchNotifications.current) {
+//                 clearTimeout(debounceFetchNotifications.current);
+//             }
+//             debounceFetchNotifications.current = setTimeout(() => {
+//                 fetchNotifications();
+//             }, 1000); // 1 second debounce
+//         });
+
+//         socketInitialized.current = true;
+
+//         // Cleanup function
+//         return () => {
+//             if (debounceFetchNotifications.current) {
+//                 clearTimeout(debounceFetchNotifications.current);
+//             }
+//             channel.stopListening('NotificationMessage');
+//             socketInitialized.current = false;
+//         };
+//     }
+// }, [echo]);
+
    const updateToken = useCallback((newToken) => {
     // console.log(token,newToken);
     if(!token){

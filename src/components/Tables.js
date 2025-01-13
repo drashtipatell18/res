@@ -662,7 +662,7 @@ const Tables = () => {
 
   const [tableColor, setTableColor] = useState("");
   const [cardSelect, setCardSelect] = useState([]);
-  const [selectedCards, setSelectedCards] = useState("");
+  const [selectedCards, setSelectedCards] = useState([]);
 
   // const handleCloseAvailableModal = async (tid) => {
   //   setShowAvailableModal(false);
@@ -1591,7 +1591,7 @@ const Tables = () => {
                         tableColor={tableColor}
                         setTabledelay={setTabledelay}
                         tabledelay={tabledelay}
-                        isSelected={selectedTable === ele.id}
+                        isSelected={selectedTable === ele.id || false}
                       />
                     </div>
                   ))}
