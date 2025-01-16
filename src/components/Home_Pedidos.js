@@ -26,81 +26,81 @@ const Home_Pedidos = () => {
     const [orderData, setOrderData] = useState([]);
     const admin_id = localStorage.getItem("admin_id");
     const [users, setUsers] = useState([]);
-  const [allpayments, setAllpayments] = useState([]);
+    const [allpayments, setAllpayments] = useState([]);
 
-  const dispatch = useDispatch();
-  const {box,loadingBox} = useSelector(state => state.boxs);
-  const {user,roles ,loadingUser} = useSelector(state => state.user);
-  const {orders,payments, loadingOrder} = useSelector(state => state.orders);
-  const {tablewithSector, loadingTable} = useSelector(state => state.tables);
+    const dispatch = useDispatch();
+    const { box, loadingBox } = useSelector(state => state.boxs);
+    const { user, roles, loadingUser } = useSelector(state => state.user);
+    const { orders, payments, loadingOrder } = useSelector(state => state.orders);
+    const { tablewithSector, loadingTable } = useSelector(state => state.tables);
 
-  useEffect(()=>{
-    if(box?.length == 0){
-        dispatch(getboxs({admin_id}))
-    }
-  },[admin_id])
+    useEffect(() => {
+        if (box?.length == 0) {
+            dispatch(getboxs({ admin_id }))
+        }
+    }, [admin_id])
 
-    useEffect(()=>{
-        if(user?.length == 0){
+    useEffect(() => {
+        if (user?.length == 0) {
             dispatch(getUser())
         }
-    },[admin_id])
+    }, [admin_id])
 
-    useEffect(()=>{
-        if(roles?.length == 0){
+    useEffect(() => {
+        if (roles?.length == 0) {
             dispatch(getRols())
         }
-    },[admin_id])
-    
-    useEffect(()=>{
-        if(tablewithSector?.length == 0){
-            dispatch(getAllTableswithSector({admin_id}))
+    }, [admin_id])
+
+    useEffect(() => {
+        if (tablewithSector?.length == 0) {
+            dispatch(getAllTableswithSector({ admin_id }))
         }
-    },[admin_id])
+    }, [admin_id])
 
-    
 
-    useEffect(()=>{
-        if(orders?.length == 0){
-            dispatch(getAllOrders({admin_id}))
-        }
-    },[admin_id])
 
-    useEffect(()=>{
-        if(tablewithSector){
+    useEffect(() => {
+
+        dispatch(getAllOrders({ admin_id }))
+
+    }, [admin_id])
+
+    useEffect(() => {
+        if (tablewithSector) {
             setSectordata(tablewithSector)
         }
-    },[tablewithSector])
+    }, [tablewithSector])
 
-    useEffect(()=>{
-        if(payments?.length == 0){
-            dispatch(getAllPayments({admin_id}))
+    useEffect(() => {
+        if (payments?.length == 0) {
+            dispatch(getAllPayments({ admin_id }))
         }
-    },[admin_id])
+    }, [admin_id])
 
-    useEffect(()=>{
-        if(box){
+    useEffect(() => {
+        if (box) {
             setboxes(box)
         }
-    },[box])
+    }, [box])
 
-    useEffect(()=>{
-        if(user){
+    useEffect(() => {
+        if (user) {
             setUsers(user)
         }
-    },[user])
+    }, [user])
 
-    useEffect(()=>{
-        if(orders){
+    useEffect(() => {
+        if (orders) {
             setOrderAlldata(orders)
         }
-    },[orders])
+    }, [orders])
 
-    useEffect(()=>{
-        if(payments){
+    useEffect(() => {
+        if (payments) {
             setAllpayments(payments)
         }
-    },[payments])
+    }, [payments])
 
     const [selectedFilters, setSelectedFilters] = useState({
         Todo: false,
@@ -110,13 +110,13 @@ const Home_Pedidos = () => {
         Finalizado: false,
     });
 
-// 
+    // 
     // useEffect(() => {
-        // getBox();
-        // getAllorder();
-        // getSector();
-        // getUser();
-        // fetchAllpayment();
+    // getBox();
+    // getAllorder();
+    // getSector();
+    // getUser();
+    // fetchAllpayment();
     // }, [])
 
     useEffect(() => {
@@ -139,7 +139,7 @@ const Home_Pedidos = () => {
     //         }
     //       );
     //       setAllpayments(response.data.result);
-    
+
     //     } catch (error) {
     //       console.error("Error fetching boxes:", error);
     //     }
@@ -240,7 +240,7 @@ const Home_Pedidos = () => {
                 let flageb = 0;
                 sectordata.map(s => s.tables.map((a) => {
 
-                    if (a.id === v.table_id) { 
+                    if (a.id === v.table_id) {
                         obj.sector = s.name;
                         obj.table = a.name;
                         obj.table_status = a.status;
@@ -248,7 +248,7 @@ const Home_Pedidos = () => {
 
                     }
                 }));
-          
+
                 users.map((b) => {
                     if (b.id == v.user_id) {
                         obj.box = b.name;
@@ -281,7 +281,7 @@ const Home_Pedidos = () => {
 
     // =========end=========
 
-  
+
 
 
 
@@ -624,29 +624,29 @@ const Home_Pedidos = () => {
                                     {/* new========== */}
                                     {/* {console.log(currentItems)} */}
                                     {currentItems.length > 0 ?
-                                         currentItems.map((order) => (
-                                             <tr key={order.id} className='b_row'>
+                                        currentItems.map((order) => (
+                                            <tr key={order.id} className='b_row'>
                                                 {/* <Link to={"/home_Pedidos/paymet"}> */}
                                                 <Link to={`/home_Pedidos/paymet/${order.id}`}>
                                                     <td className='b_idbtn bj-delivery-text-2 ms-3' style={{ borderRadius: "10px" }}>{order.id}</td>
                                                 </Link>
                                                 <td>{order.sector}</td>
                                                 {/* {console.log(order.sector)} */}
-                                             
+
                                                 <td className='b_text_w  bj-delivery-text-2'>{order.table}</td>
                                                 <td className='b_text_w  bj-delivery-text-2'>{order.box}</td>
                                                 {/* <td className={`bj-delivery-text-2  b_btn1 mb-3 ms-3  p-0 text-nowrap d-flex  align-items-center justify-content-center ${order.estado === 'Recibido' ? 'b_indigo' : order.estado === 'Preparado' ? 'b_ora ' : order.estado === 'Entregado' ? 'b_blue' : order.estado === 'Finalizado' ? 'b_green' : order.estado === 'Retirar' ? 'b_indigo' : order.estado === 'Local' ? 'b_purple' : 'text-danger'}`}>{order.estado}</td> */}
                                                 <td className={`bj-delivery-text-2  b_btn1 mb-3 ms-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                                                        ${allpayments.some(payment => payment.order_master_id === order.id)&& order?.status.toLowerCase() === 'delivered' ? 'b_blue' : 
+                                                        ${allpayments.some(payment => payment.order_master_id === order.id) && order?.status.toLowerCase() === 'delivered' ? 'b_blue' :
                                                         order.status.toLowerCase() === 'received' ? 'b_indigo' : order.status.toLowerCase() === 'prepared' ? 'b_ora' : order.status.toLowerCase() === 'delivered' ? 'b_blue' : order.status.toLowerCase() === 'finalized' ? 'b_green' : order.status.toLowerCase() === 'withdraw' ? 'b_indigo' : order.status.toLowerCase() === 'local' ? 'b_purple' : 'text-danger'}`}>
-                                                    {allpayments.some(payment => payment.order_master_id === order.id)&& order.status.toLowerCase() === 'delivered' ? 'Pagado' : 
-                                                    order.status.toLowerCase() === 'received' ? 'Recibido' : order.status.toLowerCase() === 'prepared' ? 'Preparado ' : order.status.toLowerCase() === 'delivered' ? 'Entregado' : order.status.toLowerCase() === 'finalized' ? 'Finalizado' : order.status.toLowerCase() === 'withdraw' ? 'Retirar' : order.status.toLowerCase() === 'local' ? 'Local' : ' '}
+                                                    {allpayments.some(payment => payment.order_master_id === order.id) && order.status.toLowerCase() === 'delivered' ? 'Pagado' :
+                                                        order.status.toLowerCase() === 'received' ? 'Recibido' : order.status.toLowerCase() === 'prepared' ? 'Preparado ' : order.status.toLowerCase() === 'delivered' ? 'Entregado' : order.status.toLowerCase() === 'finalized' ? 'Finalizado' : order.status.toLowerCase() === 'withdraw' ? 'Retirar' : order.status.toLowerCase() === 'local' ? 'Local' : ' '}
                                                 </td>
                                                 <td className=' bj-delivery-text-2'>{new Date(order.created_at).toLocaleDateString('en-GB')}</td>
                                                 <td className=' bj-delivery-text-2'>{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                                                <td className=' bj-delivery-text-2'> 
-                                                {order.order_type.toLowerCase() === 'local' ? 'Local' : order.order_type.toLowerCase().includes("with") ? 'Retiro ' : order.order_type.toLowerCase() === 'delivery' ? 'Entrega' : order.order_type.toLowerCase() === 'uber' ? 'Uber' : order.order_type.toLowerCase().includes("plat") ? "Plataforma" : order.order_type}
-                                                    </td>
+                                                <td className=' bj-delivery-text-2'>
+                                                    {order.order_type.toLowerCase() === 'local' ? 'Local' : order.order_type.toLowerCase().includes("with") ? 'Retiro ' : order.order_type.toLowerCase() === 'delivery' ? 'Entrega' : order.order_type.toLowerCase() === 'uber' ? 'Uber' : order.order_type.toLowerCase().includes("plat") ? "Plataforma" : order.order_type}
+                                                </td>
                                                 <Link to={`/home_Pedidos/paymet/${order.id}`}>
                                                     <td className='b_text_w ' onClick={() => handlerout(order.id)}>
                                                         <button className='b_edit bj-delivery-text-2'>Ver detalles</button>

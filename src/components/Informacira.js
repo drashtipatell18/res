@@ -52,6 +52,7 @@ const Informacira = () => {
   const [errorCashPrice, setErrorCashPrice] = useState("");
   const [allOrder, setAllOrder] = useState([]);
   const [allTable, setAllTable] = useState([]);
+  const [montoAmount, setMontoAmount] = useState(0)
   const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
     const date = new Date();
     date.setMonth(date.getMonth() - 1);
@@ -247,6 +248,7 @@ const Informacira = () => {
     (state) => state.tables
   );
 
+
   const handleEdit = (box) => {
     if (!box || !box[0]) return;
 
@@ -294,10 +296,10 @@ const Informacira = () => {
           prev.map((box) =>
             box.id === selectedBox.id
               ? {
-                  ...box,
-                  name: boxNameRef.current,
-                  user_id: cashierIdRef.current,
-                }
+                ...box,
+                name: boxNameRef.current,
+                user_id: cashierIdRef.current,
+              }
               : box
           )
         );
@@ -365,7 +367,7 @@ const Informacira = () => {
   const [credits, setCredits] = useState(0);
 
   useEffect(() => {
-    if(amount == 0){
+    if (amount == 0) {
       finalamount();
     }
   }, []);
@@ -392,9 +394,9 @@ const Informacira = () => {
 
         const total = credit.return_items
           ? credit.return_items.reduce(
-              (acc, v) => acc + v.amount * v.quantity,
-              0
-            )
+            (acc, v) => acc + v.amount * v.quantity,
+            0
+          )
           : 0;
         // console.log(total,discount);
 
@@ -552,25 +554,26 @@ const Informacira = () => {
   const fetchAllBox = () => {
 
     setIsProcessing(true);
-      const data = boxLogs.filter((v)=>v.box_id ==bId)
-        .map((box) => ({
-          ...box,
-          createdAt: new Date(box.created_at).toLocaleString(), // Assuming the API returns a 'created_at' field
-        }))
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      setData(data);
+    const data = boxLogs.filter((v) => v.box_id == bId)
+      .map((box) => ({
+        ...box,
+        createdAt: new Date(box.created_at).toLocaleString(), // Assuming the API returns a 'created_at' field
+      }))
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    setData(data);
 
       // console.log(selectedHastaMonth,selectedDesdeMonth);
       
 
-      const pdata = boxLogs.filter((v)=>v.box_id ==bId && new Date(selectedHastaMonth) >= new Date(v.created_at) && new Date(selectedDesdeMonth) <= new Date(v.created_at))
+
+    const pdata = boxLogs.filter((v) => v.box_id == bId && new Date(selectedHastaMonth) >= new Date(v.created_at) && new Date(selectedDesdeMonth) <= new Date(v.created_at))
       .map((box) => ({
         ...box,
         createdAt: new Date(box.created_at).toLocaleString(), // Assuming the API returns a 'created_at' field
       }))
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-      setPrData(pdata);
+    setPrData(pdata);
 
     setIsProcessing(false);
   };
@@ -679,10 +682,10 @@ const Informacira = () => {
     if (payments) {
       setAllpayments(payments);
     }
-    if(boxLogs?.length>0){
-      fetchAllBox();
-    }
-  }, [tablewithSector,box,boxLogs,payments,orders]);
+
+    fetchAllBox();
+
+  }, [tablewithSector, box, boxLogs, payments, orders]);
 
   // // get box
   // const getBox = async () => {
@@ -776,9 +779,13 @@ const Informacira = () => {
         handleShow18(); // Show success modal
          // Refresh box data
         console.log("open box successfully")
+
+        // console.log("open box successfully")
         handleClose16();
+        // fetchAllBox(); // Refresh box data
         dispatch(getboxsLogs({ admin_id }));
         fetchAllBox();
+
       } else {
         console.error("Failed to open box");
         //enqueueSnackbar (response.data?.alert, { variant: 'error' })
@@ -804,7 +811,7 @@ const Informacira = () => {
         `${apiUrl}/box/statusChange`, // Replace with the correct endpoint
         {
           box_id: bId, // Pass the box ID
-          close_amount: (amount - credits)?.toFixed(2), // Pass the close amount
+          close_amount: (amount - credits + parseFloat(data[0]?.open_amount))?.toFixed(2), // Pass the close amount including open amount
           cash_amount: pricesecond,
           admin_id: admin_id,
         },
@@ -872,34 +879,34 @@ const Informacira = () => {
     }
     setIsProcessing(true);
     try {
-    //   const desd = selectedDesdeMonthReport.toLocaleString('default', { month: '2-digit', year: 'numeric' })
-    //   const hast = selectedHastaMonthReport.toLocaleString('default', { month: '2-digit', year: 'numeric' })
-    //   // Fetch box report details from the API
-    //   const responseB = await axios.get(
-    //     `${apiUrl}/get-boxlogs-all/${bId}?from_month=${desd}&to_month=${hast}`,
-    //     {
-    //       // const response = await axios.get(`${API_URL}/getAllboxes`, {
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     }
-    //   );
+      //   const desd = selectedDesdeMonthReport.toLocaleString('default', { month: '2-digit', year: 'numeric' })
+      //   const hast = selectedHastaMonthReport.toLocaleString('default', { month: '2-digit', year: 'numeric' })
+      //   // Fetch box report details from the API
+      //   const responseB = await axios.get(
+      //     `${apiUrl}/get-boxlogs-all/${bId}?from_month=${desd}&to_month=${hast}`,
+      //     {
+      //       // const response = await axios.get(`${API_URL}/getAllboxes`, {
+      //       headers: {
+      //         Authorization: `Bearer ${token}`,
+      //       },
+      //     }
+      //   );
 
-    //   console.log(responseB.data);
+      //   console.log(responseB.data);
 
-      
 
-      const boxData =  boxLogs.filter((v)=>v.box_id == bId && new Date(selectedHastaMonthReport) >= new Date(v.created_at) && new Date(selectedDesdeMonthReport) <= new Date(v.created_at))
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      .map((box) => {
-        return {
-          Horario_de_apertura: new Date(box.created_at).toLocaleString(), // Corrected to format date and time
-          Horario_de_cierre: box.close_time || "N/A", // Handle potential null values
-          Monto_inicial: "$" + box.open_amount,
-          Monto_final: "$" + box.close_amount || "N/A", // Handle potential null values
-          Estado: box.close_amount === null ? "Abierta" : "Cerrada",
-        };
-      });
+
+      const boxData = boxLogs.filter((v) => v.box_id == bId && new Date(selectedHastaMonthReport) >= new Date(v.created_at) && new Date(selectedDesdeMonthReport) <= new Date(v.created_at))
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .map((box) => {
+          return {
+            Horario_de_apertura: new Date(box.created_at).toLocaleString(), // Corrected to format date and time
+            Horario_de_cierre: box.close_time || "N/A", // Handle potential null values
+            Monto_inicial: "$" + box.open_amount,
+            Monto_final: "$" + box.close_amount || "N/A", // Handle potential null values
+            Estado: box.close_amount === null ? "Abierta" : "Cerrada",
+          };
+        });
 
       // console.log(boxData);
 
@@ -953,10 +960,10 @@ const Informacira = () => {
         Nombre_caja: boxName[0]?.name,
         Fecha_creación: boxName[0]?.created_at
           ? new Date(boxName[0]?.created_at).toLocaleDateString("es-ES", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
           : "",
         Cuantas_aperturas: data.filter((item) => item.open_amount !== null)
           .length,
@@ -1020,18 +1027,18 @@ const Informacira = () => {
             user.status === "received"
               ? "Recibido"
               : user.status === "prepared"
-              ? "Preparado"
-              : user.status === "delivered"
-              ? "Entregado"
-              : user.status === "finalized"
-              ? "Finalizado"
-              : user.status === "withdraw"
-              ? "Retirar"
-              : user.status === "local"
-              ? "Local"
-              : user.status === "cancelled"
-              ? "Cancelada"
-              : "Unknown",
+                ? "Preparado"
+                : user.status === "delivered"
+                  ? "Entregado"
+                  : user.status === "finalized"
+                    ? "Finalizado"
+                    : user.status === "withdraw"
+                      ? "Retirar"
+                      : user.status === "local"
+                        ? "Local"
+                        : user.status === "cancelled"
+                          ? "Cancelada"
+                          : "Unknown",
         };
       });
 
@@ -1087,7 +1094,7 @@ const Informacira = () => {
 
       const Ddate = new Date(selectedDesdeMonthReport);
       const Hdate = new Date(selectedHastaMonthReport)
-      
+
       const desdeMonthName = `${String(Ddate.getMonth() + 1).padStart(2, '0')}/${Ddate.getFullYear()}`;
       const hastaMonthName = `${String(Hdate.getMonth() + 1).padStart(2, '0')}/${Hdate.getFullYear()}`;
       XLSX.writeFile(
@@ -1264,10 +1271,10 @@ const Informacira = () => {
     const discountData = results.find((result) => result.id === boxId);
     return discountData
       ? {
-          discount: discountData.totalDiscount,
-          tax: discountData.totalTax,
-          type: discountData.totalPaymentByType,
-        }
+        discount: discountData.totalDiscount,
+        tax: discountData.totalTax,
+        type: discountData.totalPaymentByType,
+      }
       : { discount: 0, tax: 0 }; // Return discount and tax or 0 if not found
   };
   const [showpay, setShowpay] = useState(false);
@@ -1542,20 +1549,20 @@ const Informacira = () => {
                                 Hasta
                               </label>
                               <div className="position-relative">
-                              <DatePicker
+                                <DatePicker
                                   showPopperArrow={false}
                                   selected={selectedHastaMonthReport} onChange={(date) => {
                                     const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
                                     setSelectedHastaMonthReport(lastDay);
                                   }}
                                   dateFormat="MMMM-yyyy"
-                                  locale={es} 
+                                  locale={es}
                                   showMonthYearPicker
                                   showFullMonthYearPicker
                                   showTwoColumnMonthYearPicker
                                   className="form-select  b_select border-0 py-2 w-100"
                                 />
-                                </div>
+                              </div>
                               {/* <select
                                 className="form-select  b_select border-0 py-2  "
                                 style={{ borderRadius: "8px" }}
@@ -1892,7 +1899,7 @@ const Informacira = () => {
                               type="text"
                               id="final"
                               className="sj_modelinput j-tbl-information-input py-2 px-3 opacity-75"
-                              value={`$${(amount - credits).toFixed(2)}`}
+                              value={`$${(amount - credits + parseFloat(data[0]?.open_amount)).toFixed(2)} `}
                               onChange={handleprice}
                               disabled
                             />
@@ -1978,7 +1985,7 @@ const Informacira = () => {
                             />
                             <p className="mb-0 mt-2 h6 j-tbl-pop-1">Caja</p>
                             <p className="opacity-75 j-tbl-pop-2">
-                              Informe generado exitosamente
+                              Caja cerrada exitosamente
                             </p>
                           </div>
                         </Modal.Body>
@@ -2025,23 +2032,23 @@ const Informacira = () => {
                       <div>
                         <label className="mb-1 j-caja-text-1">Desde</label>
                         <div className="position-relative">
-                        <DatePicker
-                          showPopperArrow={false}
-                          selected={selectedDesdeMonth}
-                          onChange={(date) => {
-                            const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
-                            setSelectedDesdeMonth(aa);
-                          }}
-                          dateFormat="MMMM-yyyy"
-                          locale={es} 
-                          showMonthYearPicker
-                          showFullMonthYearPicker
-                          showTwoColumnMonthYearPicker
-                          className="form-select  b_select border-0 py-2"
-                          style={{ borderRadius: "8px", cursor: "pointer" }}
-                          // disabledKeyboardNavigation
-                          shouldCloseOnSelect={false}
-                        />
+                          <DatePicker
+                            showPopperArrow={false}
+                            selected={selectedDesdeMonth}
+                            onChange={(date) => {
+                              const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
+                              setSelectedDesdeMonth(aa);
+                            }}
+                            dateFormat="MMMM-yyyy"
+                            locale={es}
+                            showMonthYearPicker
+                            showFullMonthYearPicker
+                            showTwoColumnMonthYearPicker
+                            className="form-select  b_select border-0 py-2"
+                            style={{ borderRadius: "8px", cursor: "pointer" }}
+                            // disabledKeyboardNavigation
+                            shouldCloseOnSelect={false}
+                          />
                         </div>
 
                         {/* <select
@@ -2072,21 +2079,21 @@ const Informacira = () => {
                       <div>
                         <label className="mb-1 j-caja-text-1">Hasta</label>
                         <div className="position-relative">
-                        <DatePicker
-                          showPopperArrow={false}
-                          selected={selectedHastaMonth}
-                          onChange={(date) => {
-                            const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
-                            setSelectedHastaMonth(lastDay);
-                          }}
-                          dateFormat="MMMM-yyyy"
-                          locale={es} 
-                          showMonthYearPicker
-                          showFullMonthYearPicker
-                          showTwoColumnMonthYearPicker
-                          className="form-select  b_select border-0 py-2"
-                          style={{ borderRadius: "8px", cursor: "pointer", width:'100px !important' }}
-                        />
+                          <DatePicker
+                            showPopperArrow={false}
+                            selected={selectedHastaMonth}
+                            onChange={(date) => {
+                              const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+                              setSelectedHastaMonth(lastDay);
+                            }}
+                            dateFormat="MMMM-yyyy"
+                            locale={es}
+                            showMonthYearPicker
+                            showFullMonthYearPicker
+                            showTwoColumnMonthYearPicker
+                            className="form-select  b_select border-0 py-2"
+                            style={{ borderRadius: "8px", cursor: "pointer", width: '100px !important' }}
+                          />
                         </div>
                         {/* <select
                           className="form-select  b_select border-0 py-2  "
@@ -2175,17 +2182,17 @@ const Informacira = () => {
                               <td className="ps-0">
                                 {box.close_time
                                   ? new Date(box.close_time).toLocaleDateString(
-                                      "en-GB"
-                                    )
+                                    "en-GB"
+                                  )
                                   : ""}
                                 <span className="ms-3">
                                   {box.close_time
                                     ? new Date(
-                                        box.close_time
-                                      ).toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })
+                                      box.close_time
+                                    ).toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })
                                     : "-"}
                                 </span>
                               </td>
@@ -2194,11 +2201,10 @@ const Informacira = () => {
                               <td>{box.close_amount || "N/A"}</td>
                               <td>
                                 <button
-                                  className={`j-tbl-font-3 ${
-                                    box.close_amount === null
-                                      ? "sj_lightsky"
-                                      : "j-bgcolor-caja"
-                                  }`}
+                                  className={`j-tbl-font-3 ${box.close_amount === null
+                                    ? "sj_lightsky"
+                                    : "j-bgcolor-caja"
+                                    }`}
                                   onClick={() => handleShow(box)}
                                 >
                                   {box.close_amount === null
@@ -2394,8 +2400,8 @@ const Informacira = () => {
                                   value={
                                     selectedBox?.close_time
                                       ? new Date(
-                                          selectedBox.close_time
-                                        ).toLocaleDateString()
+                                        selectedBox.close_time
+                                      ).toLocaleDateString()
                                       : ""
                                   }
                                 />
@@ -2412,8 +2418,8 @@ const Informacira = () => {
                                   value={
                                     selectedBox?.close_time
                                       ? new Date(
-                                          selectedBox.close_time
-                                        ).toLocaleTimeString()
+                                        selectedBox.close_time
+                                      ).toLocaleTimeString()
                                       : ""
                                   }
                                 />
@@ -2444,9 +2450,8 @@ const Informacira = () => {
                                   id="monto final"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="$"
-                                  value={`$${
-                                    selectedBox?.close_amount || "0.00"
-                                  }`}
+                                  value={`$${selectedBox?.close_amount || "0.00"
+                                    }`}
                                 />
                               </div>
                             </div>
@@ -2460,15 +2465,14 @@ const Informacira = () => {
                                   id="ingreso"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="$"
-                                  value={`$${
-                                    selectedBox?.close_amount &&
+                                  value={`$${selectedBox?.close_amount &&
                                     selectedBox?.open_amount
-                                      ? (
-                                          selectedBox.close_amount -
-                                          selectedBox.open_amount
-                                        ).toFixed(2)
-                                      : "0.00"
-                                  }`}
+                                    ? (
+                                      selectedBox.close_amount -
+                                      selectedBox.open_amount
+                                    ).toFixed(2)
+                                    : "0.00"
+                                    }`}
                                 />
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
@@ -2611,8 +2615,8 @@ const Informacira = () => {
                                   value={
                                     selectedBox?.close_time
                                       ? new Date(
-                                          selectedBox.close_time
-                                        ).toLocaleDateString()
+                                        selectedBox.close_time
+                                      ).toLocaleDateString()
                                       : ""
                                   }
                                 />
@@ -2629,8 +2633,8 @@ const Informacira = () => {
                                   value={
                                     selectedBox?.close_time
                                       ? new Date(
-                                          selectedBox.close_time
-                                        ).toLocaleTimeString()
+                                        selectedBox.close_time
+                                      ).toLocaleTimeString()
                                       : ""
                                   }
                                 />
@@ -2661,9 +2665,8 @@ const Informacira = () => {
                                   id="monto final"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="$"
-                                  value={`$${
-                                    selectedBox?.close_amount || "0.00"
-                                  }`}
+                                  value={`$${selectedBox?.close_amount || "0.00"
+                                    }`}
                                 />
                               </div>
                             </div>
@@ -2677,15 +2680,14 @@ const Informacira = () => {
                                   id="ingreso"
                                   className="sj_modelinput mt-2 w-100"
                                   placeholder="$"
-                                  value={`$${
-                                    selectedBox?.close_amount &&
+                                  value={`$${selectedBox?.close_amount &&
                                     selectedBox?.open_amount
-                                      ? (
-                                          selectedBox.close_amount -
-                                          selectedBox.open_amount
-                                        ).toFixed(2)
-                                      : "0.00"
-                                  }`}
+                                    ? (
+                                      selectedBox.close_amount -
+                                      selectedBox.open_amount
+                                    ).toFixed(2)
+                                    : "0.00"
+                                    }`}
                                 />
                               </div>
                               <div className="col-12 col-md-6 mb-3 pe-0">
@@ -2726,7 +2728,7 @@ const Informacira = () => {
                               setShowModal(true);
                               handleClose17();
                             }}
-                            // onClick={handleClose17}
+                          // onClick={handleClose17}
                           >
                             Imprimir reporte
                           </button>
@@ -2873,12 +2875,12 @@ const Informacira = () => {
                             value={
                               boxName[0]?.created_at
                                 ? new Date(
-                                    boxName[0]?.created_at
-                                  ).toLocaleDateString("es-ES", {
-                                    day: "2-digit",
-                                    month: "2-digit",
-                                    year: "numeric",
-                                  })
+                                  boxName[0]?.created_at
+                                ).toLocaleDateString("es-ES", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                })
                                 : ""
                             }
                             readOnly
@@ -2988,37 +2990,36 @@ const Informacira = () => {
                                 </td>
                                 <td>
                                   <button
-                                    className={`j-btn-caja-final j-tbl-font-3  ${
-                                      user.status === "received"
-                                        ? "b_indigo"
-                                        : user.status === "prepared"
+                                    className={`j-btn-caja-final j-tbl-font-3  ${user.status === "received"
+                                      ? "b_indigo"
+                                      : user.status === "prepared"
                                         ? "b_ora "
                                         : user.status === "delivered"
-                                        ? "b_blue"
-                                        : user.status === "finalized"
-                                        ? "b_green"
-                                        : user.status === "withdraw"
-                                        ? "b_indigo"
-                                        : user.status === "local"
-                                        ? "b_purple"
-                                        : "text-danger"
-                                    }`}
+                                          ? "b_blue"
+                                          : user.status === "finalized"
+                                            ? "b_green"
+                                            : user.status === "withdraw"
+                                              ? "b_indigo"
+                                              : user.status === "local"
+                                                ? "b_purple"
+                                                : "text-danger"
+                                      }`}
                                   >
                                     {user.status === "received"
                                       ? "Recibido"
                                       : user.status === "prepared"
-                                      ? "Preparado"
-                                      : user.status === "delivered"
-                                      ? "Entregado"
-                                      : user.status === "finalized"
-                                      ? "Finalizado"
-                                      : user.status === "withdraw"
-                                      ? "Retirar"
-                                      : user.status === "local"
-                                      ? "Local"
-                                      : user.status === "cancelled"
-                                      ? "Cancelada"
-                                      : "Unknown"}
+                                        ? "Preparado"
+                                        : user.status === "delivered"
+                                          ? "Entregado"
+                                          : user.status === "finalized"
+                                            ? "Finalizado"
+                                            : user.status === "withdraw"
+                                              ? "Retirar"
+                                              : user.status === "local"
+                                                ? "Local"
+                                                : user.status === "cancelled"
+                                                  ? "Cancelada"
+                                                  : "Unknown"}
                                   </button>
                                 </td>
                                 <td>

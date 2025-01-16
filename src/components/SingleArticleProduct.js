@@ -1529,7 +1529,7 @@ export default function SingleArticleProduct() {
                         className="m_modal jay-modal"
                       >
                         <Modal.Header closeButton className="border-0" />
-                        <Modal.Body>
+                        <Modal.Body className="pt-0">
                           <div className="text-center">
                             <img
                               src={require("../Image/check-circle.png")}
@@ -1537,7 +1537,7 @@ export default function SingleArticleProduct() {
                             />
 
                             <p className="opacity-75 j-tbl-pop-2">
-                              generar informe descargar con éxito
+                              Reporte generado con éxito
                             </p>
                           </div>
                         </Modal.Body>

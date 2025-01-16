@@ -15,7 +15,7 @@ import { getAllOrders, getAllPayments } from '../redux/slice/order.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import es from "date-fns/locale/es"; 
+import es from "date-fns/locale/es";
 import { registerLocale } from "react-datepicker";
 registerLocale("es", es);
 
@@ -121,10 +121,10 @@ function Home_Usuarios() {
     const generateExcelReport = async () => {
         setIsProcessing(true);
         try {
-            const filteredOrderData = orderAlldata.filter((v) => 
-                new Date(selectedHastaMonthReport) >= new Date(v.created_at) && 
+            const filteredOrderData = orderAlldata.filter((v) =>
+                new Date(selectedHastaMonthReport) >= new Date(v.created_at) &&
                 new Date(selectedDesdeMonthReport) <= new Date(v.created_at)
-              ).map((order) => {
+            ).map((order) => {
                 const date = new Date(order.created_at);
                 const formattedDate = date.toLocaleDateString('en-GB'); // Format date
                 const formattedTime = date.toLocaleTimeString([], {
@@ -898,9 +898,9 @@ function Home_Usuarios() {
                                             src={require("../Image/trash-outline.png")}
                                             alt=""
                                         />
-                                        <p className="mb-0 mt-3 h6 j-tbl-pop-1">eliminado</p>
+                                        <p className="mb-0 mt-3 h6 j-tbl-pop-1">Eliminado</p>
                                         <p className="opacity-75 j-tbl-pop-2">
-                                            eliminado correctamente
+                                            Pedido eliminado correctamente
                                         </p>
                                     </div>
                                 </Modal.Body>
@@ -930,24 +930,24 @@ function Home_Usuarios() {
                                             </label>
 
                                             <div className="position-relative">
-                                                              <DatePicker
-                                                                showPopperArrow={false}
-                                                                // selected={new Date(selectedDesdeMonthReport)}
-                                                                // onChange={(date) => setSelectedDesdeMonthReport(date.getMonth() + 1)} // Adjust as needed
-                                                                selected={selectedDesdeMonthReport}
-                                                                onChange={(date) => {
-                                                                  const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
-                                                                  setSelectedDesdeMonthReport(aa);
-                                                                }}
-                                                                dateFormat="MMMM-yyyy"
-                                                                locale={es} // Changed to Spanish locale
-                                                                showMonthYearPicker
-                                                                showFullMonthYearPicker
-                                                                showTwoColumnMonthYearPicker
-                                                                className="form-select  b_select border-0 py-2 w-100" // Add Bootstrap class and custom class
-                                                                shouldCloseOnSelect={true}
-                                                              />
-                                                            </div>
+                                                <DatePicker
+                                                    showPopperArrow={false}
+                                                    // selected={new Date(selectedDesdeMonthReport)}
+                                                    // onChange={(date) => setSelectedDesdeMonthReport(date.getMonth() + 1)} // Adjust as needed
+                                                    selected={selectedDesdeMonthReport}
+                                                    onChange={(date) => {
+                                                        const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
+                                                        setSelectedDesdeMonthReport(aa);
+                                                    }}
+                                                    dateFormat="MMMM-yyyy"
+                                                    locale={es} // Changed to Spanish locale
+                                                    showMonthYearPicker
+                                                    showFullMonthYearPicker
+                                                    showTwoColumnMonthYearPicker
+                                                    className="form-select  b_select border-0 py-2 w-100" // Add Bootstrap class and custom class
+                                                    shouldCloseOnSelect={true}
+                                                />
+                                            </div>
 
                                             {/* <select
                                                 className="form-select  b_select border-0 py-2  "
@@ -976,20 +976,20 @@ function Home_Usuarios() {
                                                 Hasta
                                             </label>
                                             <div className="position-relative">
-                                                            <DatePicker
-                                                                showPopperArrow={false}
-                                                                selected={selectedHastaMonthReport} onChange={(date) => {
-                                                                  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
-                                                                  setSelectedHastaMonthReport(lastDay);
-                                                                }}
-                                                                dateFormat="MMMM-yyyy"
-                                                                locale={es} 
-                                                                showMonthYearPicker
-                                                                showFullMonthYearPicker
-                                                                showTwoColumnMonthYearPicker
-                                                                className="form-select  b_select border-0 py-2 w-100"
-                                                              />
-                                                              </div>
+                                                <DatePicker
+                                                    showPopperArrow={false}
+                                                    selected={selectedHastaMonthReport} onChange={(date) => {
+                                                        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+                                                        setSelectedHastaMonthReport(lastDay);
+                                                    }}
+                                                    dateFormat="MMMM-yyyy"
+                                                    locale={es}
+                                                    showMonthYearPicker
+                                                    showFullMonthYearPicker
+                                                    showTwoColumnMonthYearPicker
+                                                    className="form-select  b_select border-0 py-2 w-100"
+                                                />
+                                            </div>
                                             {/* <select
                                                 className="form-select  b_select border-0 py-2  "
                                                 style={{ borderRadius: "8px" }}
@@ -1059,7 +1059,7 @@ function Home_Usuarios() {
                                 className="m_modal jay-modal"
                             >
                                 <Modal.Header closeButton className="border-0" />
-                                <Modal.Body>
+                                <Modal.Body className='pt-0'>
                                     <div className="text-center">
                                         <img
                                             src={require("../Image/check-circle.png")}
@@ -1067,7 +1067,7 @@ function Home_Usuarios() {
                                         />
 
                                         <p className="opacity-75 j-tbl-pop-2">
-                                            generar informe descargar con éxito
+                                            Reporte generado con éxito
                                         </p>
                                     </div>
                                 </Modal.Body>
