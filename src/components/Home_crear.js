@@ -60,12 +60,19 @@ export default function Home_crear({ item }) {
         if (selectedCheckbox === value) {
             setSelectedCheckbox(null);
             setActiveKey(null);
+            setSelectedPaytype(null)
             setCustomerData();
         } else {
+            if(value == '1'){
+                setSelectedPaytype(null)
+            }
             setSelectedCheckbox(value);
-            setActiveKey(value === "2" ? "1" : null); // Open second accordion if "Pago de caja" is selected
+            setActiveKey(value === "2" ? "1" : null);  
         }
     };
+
+    console.log(selectedCheckbox,selectedPaytype);
+    
 
     const handleradiobox = (data) => {
         setSelectedPaytype(data)
@@ -615,7 +622,7 @@ export default function Home_crear({ item }) {
 
         // Check if selectedCheckbox is 2 and selectedPaytype is null
         if (selectedCheckbox == 2 && selectedPaytype == null) {
-            console.log("vascas");
+            // console.log("vascas");
 
             setPayError('Seleccione el tipo de pago'); // Set error message
             return; // Exit the function
@@ -935,9 +942,11 @@ export default function Home_crear({ item }) {
                                                                                     <input
                                                                                         type="radio"
                                                                                         name="receiptType"
-                                                                                        value="4"
+                                                                                        value="Efectivo"
                                                                                         className="me-2 j-radio-checkbox"
                                                                                         onClick={() => handleradiobox("Efectivo")}
+                                                                                        checked={selectedPaytype === "Efectivo"}
+                                                                                        
                                                                                     />
                                                                                     <p className="d-inline px-3 ps-0">Efectivo</p>
                                                                                 </div>
@@ -945,9 +954,10 @@ export default function Home_crear({ item }) {
                                                                                     <input
                                                                                         type="radio"
                                                                                         name="receiptType"
-                                                                                        value="5"
+                                                                                        value="Tarjeta de debito"
                                                                                         className="me-2 j-radio-checkbox"
                                                                                         onClick={() => handleradiobox("Tarjeta de debito")}
+                                                                                        checked={selectedPaytype === "Tarjeta de debito"}
                                                                                     />
                                                                                     <p className="d-inline px-3 ps-0">Tarjeta de debito</p>
                                                                                 </div>
@@ -955,9 +965,10 @@ export default function Home_crear({ item }) {
                                                                                     <input
                                                                                         type="radio"
                                                                                         name="receiptType"
-                                                                                        value="6"
+                                                                                        value="Tarjeta de credito"
                                                                                         className="me-2 j-radio-checkbox"
                                                                                         onClick={() => handleradiobox("Tarjeta de credito")}
+                                                                                        checked={selectedPaytype === "Tarjeta de credito"}
                                                                                     />
                                                                                     <p className="d-inline px-3 ps-0">Tarjeta de credito</p>
                                                                                 </div>

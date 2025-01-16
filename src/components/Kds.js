@@ -32,18 +32,18 @@ const Kds = () => {
     const { tablewithSector, loadingTable } = useSelector(state => state.tables);
 
     useEffect(() => {
-        if (tablewithSector.length == 0) {
+        // if (tablewithSector.length == 0) {
             dispatch(getAllTableswithSector({ admin_id }));
-        }
+        // }
         if (items.length == 0) {
             dispatch(getAllitems());
         }
         if (user.length == 0) {
             dispatch(getUser())
         }
-        if (kds.length == 0) {
+        // if (kds.length == 0) {
             dispatch(getAllKds({ admin_id }))
-        }
+        // }
         if (production.length == 0) {
             dispatch(getProduction({ admin_id }))
         }

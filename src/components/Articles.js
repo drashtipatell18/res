@@ -418,7 +418,7 @@ export default function Articles() {
           error.response ? error.response.data : error.message
         );
         setFamilyError(
-          "Error al crear la familia. Por favor, inténtelo de nuevo."
+          "Error al Crear la familia. Por favor, inténtelo de nuevo."
         );
         //enqueueSnackbar (error?.response?.data?.alert || errorMessage, { variant: 'error' })
         // playNotificationSound();;
@@ -470,7 +470,7 @@ export default function Articles() {
           error.response ? error.response.data : error.message
         );
         setSubFamilyError(
-          "Error al crear la subfamilia. Por favor, inténtelo de nuevo."
+          "Error al Crear la subfamilia. Por favor, inténtelo de nuevo."
         );
 
       })
@@ -888,7 +888,7 @@ export default function Articles() {
                             variant="primary"
                             style={{ fontSize: "12px" }}
                           >
-                            + crear
+                            + Crear
                           </Dropdown.Toggle>
 
                           <Dropdown.Menu
@@ -1062,7 +1062,7 @@ export default function Articles() {
                           alt=""
                         />
                         <p className="mb-0 mt-2 h6">Subfamilia</p>
-                        <p className="opacity-75">creada exitosamente</p>
+                        <p className="opacity-75">Creada exitosamente</p>
                       </div>
                     </Modal.Body>
                   </Modal>
@@ -1083,7 +1083,7 @@ export default function Articles() {
                           alt=""
                         />
                         <p className="mb-0 mt-2 h6">Familia</p>
-                        <p className="opacity-75">creada exitosamente</p>
+                        <p className="opacity-75">Creada exitosamente</p>
                       </div>
                     </Modal.Body>
                   </Modal>

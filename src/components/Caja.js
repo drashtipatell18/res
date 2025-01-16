@@ -111,12 +111,12 @@ const Caja = () => {
     }, [apiUrl, token, role]);
 
     useEffect(()=>{
-        if(box.length == 0){
+        // if(box.length == 0){
             dispatch(getboxs({admin_id}))
-        }
-        if(boxLogs.length == 0){
+        // }
+        // if(boxLogs.length == 0){
             dispatch(getboxsLogs({admin_id}))
-        }
+        // }
         if(user.length == 0){
             dispatch(getUser())
         }
@@ -304,11 +304,11 @@ const Caja = () => {
                 const lastBoxRecord = getLastBoxRecord(box.id);                    
                 return lastBoxRecord && lastBoxRecord.close_amount === null;
             });            
-            // Check if boxId is null before selecting the first open box
-            if (localStorage.getItem('boxId') === null && openBox) {
-                setSelectedBoxId(openBox.id); // Select the first open box
-                localStorage.setItem('boxId', openBox.id); // Store the selected box ID
-            }
+         
+            // if (localStorage.getItem('boxId') === null && openBox) {
+            //     setSelectedBoxId(openBox.id); 
+            //     localStorage.setItem('boxId', openBox.id); 
+            // }
         }
     }, [data, dataBox]);
 

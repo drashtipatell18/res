@@ -635,7 +635,7 @@ const TableCounter1 = () => {
 
   //   place order
 
-  const { printOrder, printStatus } = useOrderPrinting( productionCenters, cartItems)
+  // const { printOrder, printStatus } = useOrderPrinting( productionCenters, cartItems)
 
   const handleCreateOrder = async () => {
     // Reset error states
@@ -728,12 +728,12 @@ const TableCounter1 = () => {
             }
           );
           // =======nodeprint===========
-          try {
-            await  printOrder(cartItems,tId)
-           console.log(printStatus);
-          } catch (error) {
-            console.error("Order printing failed", error);
-          }
+          // try {
+          //   await  printOrder(cartItems,tId)
+          //  console.log(printStatus);
+          // } catch (error) {
+          //   console.error("Order printing failed", error);
+          // }
 
           // =======nodeprint===========
 

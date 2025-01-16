@@ -61,19 +61,19 @@ const Counter = () => {
       navigate('/dashboard')
       return
     } 
-    if(items.length == 0){
+    // if(items.length == 0){
       dispatch(getAllitems());
-    }
-    if(subFamily.length == 0){
+    // }
+    // if(subFamily.length == 0){
       dispatch(getSubFamily());
-    }
-    if(family.length == 0){
+    // }
+    // if(family.length == 0){
       dispatch(getFamily());
-    }
-    if(lastOrder == ''){
+    // }
+    // if(lastOrder == ''){
       dispatch(getLastOrder({admin_id}));
-    }
-  }, []);
+    // }
+  }, [admin_id]);
 
   useEffect(()=>{
     if(family){

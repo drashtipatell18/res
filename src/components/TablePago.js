@@ -23,6 +23,7 @@ import { getUser } from "../redux/slice/user.slice";
 import { getboxs } from "../redux/slice/box.slice";
 import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
 import { getAllTableswithSector } from "../redux/slice/table.slice";
+import { useOrderPrinting } from "../hooks/useOrderPrinting";
 
 const TablePago = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -81,9 +82,9 @@ const TablePago = () => {
     if(user.length === 0){
       dispatch(getUser({admin_id}));
     }
-    if(production.length === 0){
+    // if(production.length === 0){
       dispatch(getProduction({admin_id}))
-  }
+  // }
 }, [admin_id]);
 
 
@@ -521,6 +522,9 @@ const TablePago = () => {
 
   const [paymentInfo, setPaymentInfo] = useState({});
 
+console.log("ygt",tableData);
+
+  const { printOrder, printStatus } = useOrderPrinting( productionCenters,tableData.length>0 ? tableData?.[0].items : [])
 
   const handleSubmit = async () => {
     const errors = validateForm();
@@ -585,9 +589,21 @@ const TablePago = () => {
           )
           
           // console.log(responsePayment.status == 200);
-          console.log("Payment", responsePayment);
+       
           if (responsePayment.data.success) {
+            console.log("Payment", responsePayment);
             dispatch(getAllPayments({ admin_id }));
+
+             // =======nodeprint===========
+              try {
+                await  printOrder(tableData?.[0].items,tId,paymentData)
+              console.log(printStatus);
+              } catch (error) {
+                console.error("Order printing failed", error);
+              }
+
+          // =======nodeprint===========
+
             try {
               const resStatus = await axios.post(`${apiUrl}/table/updateStatus`, {
                 table_id: tableData[0].table_id,
@@ -690,6 +706,11 @@ const TablePago = () => {
       return 'Unknown User';
     }
   };
+
+  const total = tableData?.[0] ? parseFloat(tableData[0].order_total) - parseFloat(tableData[0].discount) : 0;
+  const tax = total ? parseFloat((total * 0.19).toFixed(2)) : 0;
+  const ftotal = parseFloat((total + tax).toFixed(2));
+
   return (
     <div className="s_bg_dark">
       <Header />
@@ -1325,9 +1346,11 @@ const TablePago = () => {
                     <div className="j-border-bottom-counter">
                       <div className="j-total-discount d-flex justify-content-between">
                         <p className="j-counter-text-2">IVA 19.00%</p>
-                        <span className="text-white">$ {
-                          ((tableData?.[0]?.order_total - parseFloat(tableData?.[0]?.discount)) * 0.19).toFixed(2)
-                        }
+                        <span className="text-white">$ 
+                          {
+                          // ((tableData?.[0]?.order_total - parseFloat(tableData?.[0]?.discount)) * 0.19).toFixed(2)
+                         tax
+                         }
                           {/* {tableData.map((item) => (
                           <span key={item.id}>
                             ${(item.order_total * 0.19).toFixed(2)}
@@ -1339,7 +1362,8 @@ const TablePago = () => {
                     <div className="j-total-discount my-2 d-flex justify-content-between">
                       <p className="text-white bj-delivery-text-153 ">Total</p>
                       <span className="text-white bj-delivery-text-153 ">
-                        $ {(tableData?.[0]?.order_total) + parseFloat(((tableData?.[0]?.order_total - parseFloat(tableData?.[0]?.discount)) * 0.19).toFixed(2)) + tipAmount}
+                        $ {ftotal}
+                        {/* {(tableData?.[0]?.order_total) + parseFloat(((tableData?.[0]?.order_total - parseFloat(tableData?.[0]?.discount)) * 0.19).toFixed(2)) + tipAmount} */}
                         {/* {tableData.map((item) => (
                           <span key={item.id}>
                             ${" "}

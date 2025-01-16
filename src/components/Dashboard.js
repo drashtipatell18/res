@@ -2414,8 +2414,8 @@ const Dashboard = () => {
                           setSelectDeliveryMonth(selectedValue);
                           setDeliveryDay("month");
                           if (selectedValue === "12") {
-                            const currentMonth = new Date().getMonth() + 1;
-                            setSelectDeliveryMonth(currentMonth); // Set to current month
+                            // const currentMonth = new Date().getMonth() + 1;
+                            // setSelectDeliveryMonth(currentMonth); // Set to current month
                             fetchData(); // Call fetchData to get current month data
                           }
                         }}

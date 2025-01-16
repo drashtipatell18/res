@@ -58,7 +58,7 @@ const Informacira = () => {
     return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
   });
   const [selectedHastaMonth, setSelectedHastaMonth] = useState(
-    new Date()
+    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
   );
   const [errorReport, setErrorReport] = useState("");
   const [selectedDesdeMonthReport, setSelectedDesdeMonthReport] = useState(() => {
@@ -67,10 +67,13 @@ const Informacira = () => {
     return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
   });
   const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
-    new Date()
+    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
   );
   const [boxnameError, setBoxnameError] = useState();
   const [boxcashError, setBoxcashError] = useState();
+
+  console.log(selectedHastaMonth);
+  
 
   useEffect(() => {
     if (selectedDesdeMonth > selectedHastaMonth) {
@@ -299,8 +302,10 @@ const Informacira = () => {
           )
         );
 
-        fetchAllBox();
+       
         dispatch(getboxs({ admin_id }));
+
+        fetchAllBox();
         // getBox();
         setBoxcashError("");
         setBoxnameError("");
@@ -327,8 +332,9 @@ const Informacira = () => {
 
       if (response.status === 200) {
         // Deletion was successful
-        fetchAllBox(); // Refresh the box data
+        // Refresh the box data
         dispatch(getboxs({ admin_id }));
+        fetchAllBox();
         setShowDelModal(true);
         setTimeout(() => {
           setShowDelModal(false); // Hide success modal
@@ -362,7 +368,7 @@ const Informacira = () => {
     if(amount == 0){
       finalamount();
     }
-  }, [data]);
+  }, []);
 
   useEffect(() => {
     if (finaldata?.orderId.length > 0) {
@@ -427,9 +433,9 @@ const Informacira = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
+      );  
 
-      if (response.data) {
+      if (response.data.success) {
         setFinalData({
           orderId: response.data.order.split(","),
           paymentId: response.data.payment.split(","),
@@ -543,7 +549,7 @@ const Informacira = () => {
   //   }
   //   setIsProcessing(false);
   // };
-  const fetchAllBox = async () => {
+  const fetchAllBox = () => {
 
     setIsProcessing(true);
       const data = boxLogs.filter((v)=>v.box_id ==bId)
@@ -554,7 +560,7 @@ const Informacira = () => {
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setData(data);
 
-      console.log(selectedHastaMonth,selectedDesdeMonth);
+      // console.log(selectedHastaMonth,selectedDesdeMonth);
       
 
       const pdata = boxLogs.filter((v)=>v.box_id ==bId && new Date(selectedHastaMonth) >= new Date(v.created_at) && new Date(selectedDesdeMonth) <= new Date(v.created_at))
@@ -569,6 +575,9 @@ const Informacira = () => {
     setIsProcessing(false);
   };
 
+
+  // console.log(prData);
+  
   // setIsProcessing(false);
   // const fetchAllBoxReport = async () => {
   //   setIsProcessing(true);
@@ -623,12 +632,12 @@ const Informacira = () => {
   ]);
 
   useEffect(() => {
-    if (box?.length == 0) {
+    // if (box?.length == 0) {
       dispatch(getboxs({ admin_id }));
-    }
-    if (boxLogs?.length == 0) {
+    // }
+    // if (boxLogs?.length == 0) {
       dispatch(getboxsLogs({ admin_id }));
-    }
+    // }
     if (user?.length == 0) {
       dispatch(getUser());
     }
@@ -638,15 +647,15 @@ const Informacira = () => {
     if (tablewithSector?.length == 0) {
       dispatch(getAllTableswithSector({ admin_id }));
     }
-    if (orders?.length == 0) {
+    // if (orders?.length == 0) {
       dispatch(getAllOrders({ admin_id }));
-    }
-    if (payments?.length == 0) {
+    // }
+    // if (payments?.length == 0) {
       dispatch(getAllPayments({ admin_id }));
-    }
-    if(credit?.length == 0){
+    // }
+    // if(credit?.length == 0){
       dispatch(getCredit({admin_id}));
-    }
+    // }
   }, [admin_id]);
 
   useEffect(() => {
@@ -744,7 +753,7 @@ const Informacira = () => {
         return; // Exit the function
       }
     }
-    handleClose16();
+    // handleClose16();
     // setIsProcessing(true);
     try {
       const response = await axios.post(
@@ -765,15 +774,11 @@ const Informacira = () => {
 
       if (response.status === 200) {
         handleShow18(); // Show success modal
-        fetchAllBox(); // Refresh box data
-        // console.log("open box successfully")
+         // Refresh box data
+        console.log("open box successfully")
         handleClose16();
         dispatch(getboxsLogs({ admin_id }));
-        if (response.data && response.data.notification) {
-          //enqueueSnackbar (response.data.notification, { variant: 'success' });
-          // playNotificationSound();;
-        }
-        // playNotificationSound();;
+        fetchAllBox();
       } else {
         console.error("Failed to open box");
         //enqueueSnackbar (response.data?.alert, { variant: 'error' })
@@ -813,21 +818,15 @@ const Informacira = () => {
       if (response.status === 200) {
         handleShow12(); // Show success modal
         handleClose11();
-        fetchAllBox(); // Refresh box data
+      
         dispatch(getboxsLogs({ admin_id }));
-
+        fetchAllBox(); 
         const bid = localStorage.getItem("boxId");
         if (bid) {
           if (bid == bId) {
             localStorage.removeItem("boxId");
           }
         }
-        // console.log("Box closed successfully");
-        if (response.data && response.data.notification) {
-          //enqueueSnackbar (response.data.notification, { variant: 'success' });
-          // playNotificationSound();;
-        }
-        // playNotificationSound();;
       } else {
         console.error("Failed to close box");
         //enqueueSnackbar (response.data?.alert, { variant: 'error' })

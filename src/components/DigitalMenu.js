@@ -1653,7 +1653,7 @@ export default function Articles() {
                   <Modal.Body>
                     <div className="text-center">
                       <img src={require("../Image/check-circle.png")} alt="" />
-                      <p className="mb-0 mt-2 h6">Familia</p>
+                      <p className="mb-0 mt-2 h6">Menú</p>
                       <p className="opacity-75">
                         Ha sido modificada exitosamente
                       </p>

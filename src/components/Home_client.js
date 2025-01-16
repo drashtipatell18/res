@@ -39,7 +39,7 @@ function Home_client() {
     return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
   });
   const [selectedHastaMonth, setSelectedHastaMonth] = useState(
-        new Date()
+    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
       );
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");

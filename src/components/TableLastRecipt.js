@@ -49,7 +49,7 @@ console.log(data,itemInfo,payment);
         description:itemInfo[index]?.name,
         quantity: i.quantity,
         unitPrice: i.amount,
-        total: i.quantity * parseFloat(i.amount)
+        total: parseFloat(i.quantity) * parseFloat(i.amount)
     })),
    
     footer:
@@ -59,8 +59,8 @@ console.log(data,itemInfo,payment);
     (sum, item) => sum + item.total,
     0
   );
-  const price =  itemsTotal - data[0].discount;
-  const iva = itemsTotal * 0.19; // 12% tax
+  const price =  parseFloat(itemsTotal) - parseFloat(data[0].discount);
+  const iva = parseFloat((itemsTotal * 0.19).toFixed(2)); // 12% tax
   const total = price + iva;
   receiptData.totals = {
     subtotalIva: itemsTotal,

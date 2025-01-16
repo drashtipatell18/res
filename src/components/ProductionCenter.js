@@ -1255,9 +1255,9 @@ export default function ProductionCenter() {
                             alt=""
                           />
                           <p className="mb-0 mt-2 h6">
-                            Cambios centro de producción
+                            Centro de producción
                           </p>
-                          <p className="opacity-75">
+                          <p className="opacity-75 mb-3">
                             Sus cambios han sido modificados exitosamente
                           </p>
                         </div>
@@ -1279,9 +1279,9 @@ export default function ProductionCenter() {
                             alt=""
                           />
                           <p className="mb-0 mt-2 h6">
-                            Cambios centro de producción
+                            Centro de producción
                           </p>
-                          <p className="opacity-75">
+                          <p className="opacity-75 mb-3">
                             Centro de producción eliminado exitosamente
                           </p>
                         </div>

@@ -44,7 +44,7 @@ const TableInformation = () => {
     return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0); 
   });
     const [selectedHastaMonth, setSelectedHastaMonth] = useState(
-      new Date()
+      new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
     );
 
   // console.log(selectedDesdeMonth,selectedHastaMonth);
@@ -80,7 +80,7 @@ const TableInformation = () => {
     return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
     });
     const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
-      new Date()
+      new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
     );
 
   const [isProcessing, setIsProcessing] = useState(false);

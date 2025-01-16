@@ -161,6 +161,7 @@ const downloadPDF = (pdfBase64, filename = 'order-receipt.pdf') => {
 
 const generateOrderReceipt =  ( cartItems, tableId = '', payment = {} ) => {
 
+// console.log(cartItems,Array.isArray(cartItems));
 
     // Initialize PDF
     const doc = new jsPDF({
@@ -236,29 +237,32 @@ const generateOrderReceipt =  ( cartItems, tableId = '', payment = {} ) => {
     yPos += 2;
     doc.line(leftMargin, yPos, 190, yPos);
     yPos += 6;
+    // console.log("-1");
+
 
     // Add items
     doc.setFont("helvetica", "normal");
     if (Array.isArray(cartItems)) {
       cartItems.forEach(item => {
-        doc.text(item.name, leftMargin, yPos);
+        doc.text(item?.name || " ", leftMargin, yPos);
         yPos += 6; // Move down for the note
-        doc.text(`Note: ${item.note || 'N/A'}`, leftMargin, yPos); // Add note below the name
-        doc.text(item.count.toString(), 100, yPos);
-        doc.text(`$ ${parseFloat(item.price).toFixed(2)}`, 130, yPos);
-        doc.text(`$ ${(parseFloat(item.price) * item.count).toFixed(2)}`, 160, yPos);
+        doc.text(`Note: ${item.note || item.notes || 'N/A'}`, leftMargin, yPos); // Add note below the name
+        doc.text((item.count || item.quantity).toString(), 100, yPos);
+        doc.text(`$ ${parseFloat(item.price || item.amount).toFixed(2)}`, 130, yPos);
+        doc.text(`$ ${(parseFloat(item.price || item.amount) * (item.count || item.quantity)).toFixed(2)}`, 160, yPos);
         yPos += 6;
       });
     }
+    // console.log("-0");
 
     // Calculate totals
     const subtotal = Array.isArray(cartItems)
-      ? cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.count), 0)
+      ? cartItems.reduce((sum, item) => sum + (parseFloat(item.price || item.amount) * (item.count||item.quantity)), 0)
       : 0
     
     const iva = subtotal * 0.19;
     const total = subtotal + iva + 1; // Adding $1 for Dcto
-
+    // console.log("0");
     // Add totals
     yPos += 4;
     doc.line(leftMargin, yPos, 190, yPos);
@@ -286,11 +290,13 @@ const generateOrderReceipt =  ( cartItems, tableId = '', payment = {} ) => {
     yPos += 6;
     doc.text("Efectivo", leftMargin, yPos);
     yPos += 8;
+// console.log("1");
 
     if (payment) {
       doc.text(`Recibido: ${payment.received}    Cambio: ${payment.change}`, leftMargin, yPos);
     }
     yPos += 12;
+    // console.log("2")
 
     // Footer
     doc.setFontSize(8);
@@ -301,7 +307,10 @@ const generateOrderReceipt =  ( cartItems, tableId = '', payment = {} ) => {
     doc.text(footerText2, pageWidth / 2, yPos, { align: "center" });
 
     // Convert to base64
+
     const base64String = doc.output('datauristring');
+    // console.log(base64String);
+    
    return base64String// Remove the data URI prefix
 };
 
@@ -367,6 +376,8 @@ export const printViaPrintNode = async (content,printerId) => {
 
 // order printing
 export const useOrderPrinting = (productionCenters, cartItems) => {
+  // console.log(cartItems,productionCenters);
+  
   const [printStatus, setPrintStatus] = useState({});
 
   const getPrinter = useCallback(() => {
@@ -401,19 +412,19 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
 
       const {printers, updatedItems} = getPrinter();
 
-      console.log(printers);
+      // console.log(printers,updatedItems);
       
     
       const printJobs = printers.map(async (printers) => {
 
 
-        console.log(printers);
+        // console.log(printers);
+        // console.log(updatedItems.filter((item) => item.printerId === printers));
         
         const cartdata = updatedItems.filter((item) => item.printerId === printers);
+        // console.log(cartdata,tableId,payment);
         const pdfBase64 = generateOrderReceipt(cartdata, tableId, payment);
-        // console.log(printers);
         // console.log(pdfBase64);
-        // console.log(cartdata);
         // 
         // downloadPDF(pdfBase64, `order-receipt-${printers}.pdf`);
 

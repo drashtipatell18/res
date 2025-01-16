@@ -63,6 +63,8 @@ export default function SingleArticleProduct() {
   const [errorMessages, setErrorMessages] = useState({});
 
   const location = useLocation(); // Get the current location
+  console.log(location);
+  
   const previousPath = location.state?.from || "/articles"; // Default to /articles if no previous path
   // console.log("previous Path: ", location);
 
@@ -80,7 +82,7 @@ export default function SingleArticleProduct() {
   return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
   });
   const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
-    new Date()
+    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
   );
 
   const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
@@ -89,7 +91,7 @@ export default function SingleArticleProduct() {
     return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
   });
   const [selectedHastaMonth, setSelectedHastaMonth] = useState(
-    new Date()
+    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
   );
 
 

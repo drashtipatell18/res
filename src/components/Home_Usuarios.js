@@ -73,7 +73,7 @@ function Home_Usuarios() {
         return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
       });
       const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
-        new Date()
+        new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
       );
 
     //  const [payments, setPayments] = useState([]);

@@ -87,18 +87,18 @@ const Tables = () => {
     },[boxLogs,boxId])
 
   useEffect(() => {
-    if (tablewithSector.length == 0) {
+    // if (tablewithSector.length == 0) {
       dispatch(getAllTableswithSector({ admin_id }));
-    }
-    if (sector.length == 0) {
+    // }
+    // if (sector.length == 0) {
       dispatch(getAllSector({ admin_id }));
-    }
-    if (items.length == 0) {
+    // }
+    // if (items.length == 0) {
       dispatch(getAllitems());
-    }
-    if (user.length == 0) {
+    // }
+    // if (user.length == 0) {
       dispatch(getUser());
-    }
+    // }
   }, []);
 
   useEffect(() => {
@@ -1103,7 +1103,7 @@ const Tables = () => {
 
 
   // console.log(selectedCards);
-  console.log(selectedTable);
+  // console.log(selectedTable);
   // console.log(tabledelay);
 
   useEffect(() => {
