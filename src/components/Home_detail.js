@@ -509,7 +509,7 @@ function Home_detail() {
 
                                                     <td >
                                                         <div style={{ borderRadius: "10px" }} className={`b_idbtn bj-delivery-text-2 b_idbtn_s m-0 ${order.status.toLowerCase() === 'received' ? 'b_indigo' : order.status.toLowerCase() === 'prepared' ? 'b_ora ' : order.status.toLowerCase() === 'delivered' ? 'b_blue' : order.status.toLowerCase() === 'finalized' ? 'b_green' : order.status.toLowerCase() === 'withdraw' ? 'b_indigo' : order.status.toLowerCase() === 'local' ? 'b_purple' : 'text-danger'}`}>
-                                                            {order.status.toLowerCase() === 'received' ? 'Recibido' : order.status.toLowerCase() === 'prepared' ? 'Preparado ' : order.status.toLowerCase() === 'Entregado' ? 'b_blue' : order.status.toLowerCase() === 'finalized' ? 'Finalizado' : order.status.toLowerCase() === 'withdraw' ? 'Retirar' : order.status.toLowerCase() === 'local' ? 'Local' : order.status.toLowerCase() === 'delivered' ? 'Entregar' : order.status.toLowerCase() === 'cancelled' ? 'Cancelar' : ' '}</div></td>
+                                                            {order.status.toLowerCase() === 'received' ? 'Recibido' : order.status.toLowerCase() === 'prepared' ? 'Preparado ' : order.status.toLowerCase() === 'Entregado' ? 'b_blue' : order.status.toLowerCase() === 'finalized' ? 'Finalizado' : order.status.toLowerCase() === 'withdraw' ? 'Retirar' : order.status.toLowerCase() === 'local' ? 'Local' : order.status.toLowerCase() === 'delivered' ? 'Entregar' : order.status.toLowerCase() === 'cancelled' ? 'Cancelado' : ' '}</div></td>
 
                                                     <td>
                                                         {credits && credits?.some(v => v.order_id === order.id) ? (
@@ -554,7 +554,7 @@ function Home_detail() {
                         </Tab>
                         <Tab eventKey="profile" title="Información" style={{ backgroundColor: "#1F2A37" }} className='py-2 mt-2'>
                             <div className='text-white ms-4 pt-2'>
-                                <h4 className='j-kds-body-text-1000'>informacion cliente</h4>
+                                <h4 className='j-kds-body-text-1000'>Información del cliente</h4>
                             </div>
                             <div>
                                 <form action="">

@@ -53,6 +53,9 @@ const Dashboard = () => {
   const [selectedHastaMonth, setSelectedHastaMonth] = useState(
     new Date().getMonth() + 1
   );
+  const [selectedHastaYear, setSelectedHastaYear] = useState(
+    new Date().getFullYear()
+  );
 
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -139,17 +142,32 @@ const Dashboard = () => {
   const [seleceCancelMonth, setSelectCencelMonth] = useState(
     new Date().getMonth() + 1
   );
+  const [seleceCancelYear, setSelectCencelYear] = useState(
+    new Date().getFullYear()
+  );
   const [selectedRevMonth, setSelectedRevtaMonth] = useState(
     new Date().getMonth() + 1
+  );
+  const [selectedRevYear, setSelectedRevtaYear] = useState(
+    new Date().getFullYear()
   );
   const [selectBoxMonth, setselectBoxMonth] = useState(
     new Date().getMonth() + 1
   );
+  const [selectBoxYear, setselectBoxYear] = useState(
+    new Date().getFullYear()
+  );
   const [selectPopMonth, setSelectPopMonth] = useState(
     new Date().getMonth() + 1
   );
+  const [selectPopYear, setSelectPopYear] = useState(
+    new Date().getFullYear()
+  );
   const [selectDeliveryMonth, setSelectDeliveryMonth] = useState(
     new Date().getMonth() + 1
+  );
+  const [selectDeliveryYear, setSelectDeliveryYear] = useState(
+    new Date().getFullYear()
   );
 
   const [cancelOrder, setCancelOrder] = useState([]);
@@ -177,7 +195,7 @@ const Dashboard = () => {
     if ((role == "kitchen")) {
       navigate("/kds");
     }
-    
+
   }, [role]);
 
   const [socketConnected, setSocketConnected] = useState(false);
@@ -243,7 +261,7 @@ const Dashboard = () => {
           },
         }
       );
-      
+
       // Only setup listeners if not already connected
       if (!socketConnected) {
         setupEchoListeners(userId);
@@ -257,23 +275,23 @@ const Dashboard = () => {
   const setupEchoListeners = (userId) => {
     if (echo) {
       const channel = echo.channel(`online-users`);
-      
+
       // Remove any existing listeners first
       channel.stopListening('Chat');
-      
+
       // Setup new listener
       channel.listen("Chat", () => {
         console.log(`User ${userId} is online`);
         // Only fetch users if needed, consider debouncing this
         fetchAllUsers();
       });
-      
+
       console.log("Socket connection established for user online");
     }
   };
 
-   // Cleanup on unmount
-   useEffect(() => {
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
       if (echo) {
         echo.channel(`online-users`).stopListening('Chat');
@@ -309,11 +327,11 @@ const Dashboard = () => {
   useEffect(() => {
     fetchPaymentMethos();
     fetchPayment();
-  }, [selectedHastaMonth, paymentsData]);
+  }, [selectedHastaMonth, paymentsData, selectedHastaYear]);
 
   useEffect(() => {
     fetchTotalRevenue();
-  }, [revData, selectedRevMonth]);
+  }, [revData, selectedRevMonth, selectedRevYear]);
 
   useEffect(() => {
     fetchSummry();
@@ -321,19 +339,19 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchPopular();
-  }, [selectPopMonth, popData]);
+  }, [selectPopMonth, selectPopYear, popData]);
 
   useEffect(() => {
     fetchBoxEntry();
-  }, [selectBoxMonth, boxDay]);
+  }, [selectBoxMonth, selectBoxYear, boxDay]);
 
   useEffect(() => {
     fetchCancelOrder();
-  }, [cancelOrderDay, seleceCancelMonth]);
+  }, [cancelOrderDay, seleceCancelYear, seleceCancelMonth]);
 
   useEffect(() => {
     fetchDelivery();
-  }, [deliveryDay, selectDeliveryMonth]);
+  }, [deliveryDay, selectDeliveryMonth, selectDeliveryYear]);
 
   useEffect(() => {
     fetchBox();
@@ -441,7 +459,7 @@ const Dashboard = () => {
       setIsProcessing(true);
       const response = await axios.post(
         `${apiUrl}/getPaymentMethods`,
-        { ...durationData, admin_id },
+        { ...durationData, admin_id, year: selectedHastaYear },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -485,7 +503,7 @@ const Dashboard = () => {
       setIsProcessing(true);
       const response = await axios.post(
         `${apiUrl}/getTotalRevenue`,
-        { ...durationData, admin_id },
+        { ...durationData, admin_id, year: selectedRevYear },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -552,7 +570,7 @@ const Dashboard = () => {
 
       const response = await axios.post(
         `${apiUrl}/getPopularProducts`,
-        { ...durationData, admin_id },
+        { ...durationData, admin_id, year: selectPopYear },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -593,7 +611,7 @@ const Dashboard = () => {
       }
       const response = await axios.post(
         `${apiUrl}/getBoxEntry`,
-        { ...durationData, admin_id },
+        { ...durationData, admin_id, year: selectBoxYear },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -630,7 +648,7 @@ const Dashboard = () => {
       setIsProcessing(true);
       const response = await axios.post(
         `${apiUrl}/getdelivery`,
-        { ...durationData, admin_id },
+        { ...durationData, admin_id, year: selectDeliveryYear },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -669,7 +687,7 @@ const Dashboard = () => {
       setIsProcessing(true);
       const response = await axios.post(
         `${apiUrl}/cancelOrders`,
-        { ...durationData, admin_id },
+        { ...durationData, admin_id, year: seleceCancelYear },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -926,9 +944,9 @@ const Dashboard = () => {
   const chartDataWithDummy =
     chartData.length === 1
       ? [
-          ...chartData,
-          { ...chartData[0], date: new Date().toLocaleDateString("en-US") },
-        ]
+        ...chartData,
+        { ...chartData[0], date: new Date().toLocaleDateString("en-US") },
+      ]
       : chartData;
 
   const paymentMethodsReport = async () => {
@@ -946,8 +964,8 @@ const Dashboard = () => {
           key == "Tarjeta_de_debito"
             ? "Tarjeta de debito"
             : key == "Tarjeta_de_crédito"
-            ? "Tarjeta de crédito"
-            : key,
+              ? "Tarjeta de crédito"
+              : key,
         Valor: value,
       }));
 
@@ -982,32 +1000,31 @@ const Dashboard = () => {
 
       XLSX.writeFile(
         wb,
-        `Métodos pago ${paymentsData}-${
-          selectedHastaMonth == "1"
-            ? "Enero"
-            : selectedHastaMonth == "2"
+        `Métodos pago ${paymentsData}-${selectedHastaMonth == "1"
+          ? "Enero"
+          : selectedHastaMonth == "2"
             ? "Febrero"
             : selectedHastaMonth == "3"
-            ? "Marzo"
-            : selectedHastaMonth == "4"
-            ? "Abril"
-            : selectedHastaMonth == "5"
-            ? "Mayo"
-            : selectedHastaMonth == "6"
-            ? "Junio"
-            : selectedHastaMonth == "7"
-            ? "Julio"
-            : selectedHastaMonth == "8"
-            ? "Agosto"
-            : selectedHastaMonth == "9"
-            ? "Septiembre"
-            : selectedHastaMonth == "10"
-            ? "Octubre"
-            : selectedHastaMonth == "11"
-            ? "Noviembre"
-            : selectedHastaMonth == "12"
-            ? "Diciembre"
-            : " "
+              ? "Marzo"
+              : selectedHastaMonth == "4"
+                ? "Abril"
+                : selectedHastaMonth == "5"
+                  ? "Mayo"
+                  : selectedHastaMonth == "6"
+                    ? "Junio"
+                    : selectedHastaMonth == "7"
+                      ? "Julio"
+                      : selectedHastaMonth == "8"
+                        ? "Agosto"
+                        : selectedHastaMonth == "9"
+                          ? "Septiembre"
+                          : selectedHastaMonth == "10"
+                            ? "Octubre"
+                            : selectedHastaMonth == "11"
+                              ? "Noviembre"
+                              : selectedHastaMonth == "12"
+                                ? "Diciembre"
+                                : " "
         }.xlsx`
       );
       // console.log(selectedHastaMonth, paymentsData);
@@ -1076,32 +1093,31 @@ const Dashboard = () => {
 
     XLSX.writeFile(
       wb,
-      `Reporte de Ingresos totales ${revData}-${
-        selectedRevMonth == "1"
-          ? "Enero"
-          : selectedRevMonth == "2"
+      `Reporte de Ingresos totales ${revData}-${selectedRevMonth == "1"
+        ? "Enero"
+        : selectedRevMonth == "2"
           ? "Febrero"
           : selectedRevMonth == "3"
-          ? "Marzo"
-          : selectedRevMonth == "4"
-          ? "Abril"
-          : selectedRevMonth == "5"
-          ? "Mayo"
-          : selectedRevMonth == "6"
-          ? "Junio"
-          : selectedRevMonth == "7"
-          ? "Julio"
-          : selectedRevMonth == "8"
-          ? "Agosto"
-          : selectedRevMonth == "9"
-          ? "Septiembre"
-          : selectedRevMonth == "10"
-          ? "Octubre"
-          : selectedRevMonth == "11"
-          ? "Noviembre"
-          : selectedRevMonth == "12"
-          ? "Diciembre"
-          : " "
+            ? "Marzo"
+            : selectedRevMonth == "4"
+              ? "Abril"
+              : selectedRevMonth == "5"
+                ? "Mayo"
+                : selectedRevMonth == "6"
+                  ? "Junio"
+                  : selectedRevMonth == "7"
+                    ? "Julio"
+                    : selectedRevMonth == "8"
+                      ? "Agosto"
+                      : selectedRevMonth == "9"
+                        ? "Septiembre"
+                        : selectedRevMonth == "10"
+                          ? "Octubre"
+                          : selectedRevMonth == "11"
+                            ? "Noviembre"
+                            : selectedRevMonth == "12"
+                              ? "Diciembre"
+                              : " "
       }.xlsx`
     );
   };
@@ -1215,32 +1231,31 @@ const Dashboard = () => {
 
     XLSX.writeFile(
       wb,
-      `Reporte de Ingresos totales ${popData}-${
-        selectPopMonth == "1"
-          ? "Enero"
-          : selectPopMonth == "2"
+      `Reporte de Ingresos totales ${popData}-${selectPopMonth == "1"
+        ? "Enero"
+        : selectPopMonth == "2"
           ? "Febrero"
           : selectPopMonth == "3"
-          ? "Marzo"
-          : selectPopMonth == "4"
-          ? "Abril"
-          : selectPopMonth == "5"
-          ? "Mayo"
-          : selectPopMonth == "6"
-          ? "Junio"
-          : selectPopMonth == "7"
-          ? "Julio"
-          : selectPopMonth == "8"
-          ? "Agosto"
-          : selectPopMonth == "9"
-          ? "Septiembre"
-          : selectPopMonth == "10"
-          ? "Octubre"
-          : selectPopMonth == "11"
-          ? "Noviembre"
-          : selectPopMonth == "12"
-          ? "Diciembre"
-          : " "
+            ? "Marzo"
+            : selectPopMonth == "4"
+              ? "Abril"
+              : selectPopMonth == "5"
+                ? "Mayo"
+                : selectPopMonth == "6"
+                  ? "Junio"
+                  : selectPopMonth == "7"
+                    ? "Julio"
+                    : selectPopMonth == "8"
+                      ? "Agosto"
+                      : selectPopMonth == "9"
+                        ? "Septiembre"
+                        : selectPopMonth == "10"
+                          ? "Octubre"
+                          : selectPopMonth == "11"
+                            ? "Noviembre"
+                            : selectPopMonth == "12"
+                              ? "Diciembre"
+                              : " "
       }.xlsx`
     );
   };
@@ -1311,32 +1326,31 @@ const Dashboard = () => {
 
     XLSX.writeFile(
       wb,
-      `Reporte de Ingreso de cajas ${boxDay}-${
-        selectBoxMonth == "1"
-          ? "Enero"
-          : selectBoxMonth == "2"
+      `Reporte de Ingreso de cajas ${boxDay}-${selectBoxMonth == "1"
+        ? "Enero"
+        : selectBoxMonth == "2"
           ? "Febrero"
           : selectBoxMonth == "3"
-          ? "Marzo"
-          : selectBoxMonth == "4"
-          ? "Abril"
-          : selectBoxMonth == "5"
-          ? "Mayo"
-          : selectBoxMonth == "6"
-          ? "Junio"
-          : selectBoxMonth == "7"
-          ? "Julio"
-          : selectBoxMonth == "8"
-          ? "Agosto"
-          : selectBoxMonth == "9"
-          ? "Septiembre"
-          : selectBoxMonth == "10"
-          ? "Octubre"
-          : selectBoxMonth == "11"
-          ? "Noviembre"
-          : selectBoxMonth == "12"
-          ? "Diciembre"
-          : " "
+            ? "Marzo"
+            : selectBoxMonth == "4"
+              ? "Abril"
+              : selectBoxMonth == "5"
+                ? "Mayo"
+                : selectBoxMonth == "6"
+                  ? "Junio"
+                  : selectBoxMonth == "7"
+                    ? "Julio"
+                    : selectBoxMonth == "8"
+                      ? "Agosto"
+                      : selectBoxMonth == "9"
+                        ? "Septiembre"
+                        : selectBoxMonth == "10"
+                          ? "Octubre"
+                          : selectBoxMonth == "11"
+                            ? "Noviembre"
+                            : selectBoxMonth == "12"
+                              ? "Diciembre"
+                              : " "
       }.xlsx`
     );
   };
@@ -1417,32 +1431,31 @@ const Dashboard = () => {
 
     XLSX.writeFile(
       wb,
-      `Reporte de Anulación pedidos ${cancelOrderDay}-${
-        seleceCancelMonth == "1"
-          ? "Enero"
-          : seleceCancelMonth == "2"
+      `Reporte de Anulación pedidos ${cancelOrderDay}-${seleceCancelMonth == "1"
+        ? "Enero"
+        : seleceCancelMonth == "2"
           ? "Febrero"
           : seleceCancelMonth == "3"
-          ? "Marzo"
-          : seleceCancelMonth == "4"
-          ? "Abril"
-          : seleceCancelMonth == "5"
-          ? "Mayo"
-          : seleceCancelMonth == "6"
-          ? "Junio"
-          : seleceCancelMonth == "7"
-          ? "Julio"
-          : seleceCancelMonth == "8"
-          ? "Agosto"
-          : seleceCancelMonth == "9"
-          ? "Septiembre"
-          : seleceCancelMonth == "10"
-          ? "Octubre"
-          : seleceCancelMonth == "11"
-          ? "Noviembre"
-          : seleceCancelMonth == "12"
-          ? "Diciembre"
-          : " "
+            ? "Marzo"
+            : seleceCancelMonth == "4"
+              ? "Abril"
+              : seleceCancelMonth == "5"
+                ? "Mayo"
+                : seleceCancelMonth == "6"
+                  ? "Junio"
+                  : seleceCancelMonth == "7"
+                    ? "Julio"
+                    : seleceCancelMonth == "8"
+                      ? "Agosto"
+                      : seleceCancelMonth == "9"
+                        ? "Septiembre"
+                        : seleceCancelMonth == "10"
+                          ? "Octubre"
+                          : seleceCancelMonth == "11"
+                            ? "Noviembre"
+                            : seleceCancelMonth == "12"
+                              ? "Diciembre"
+                              : " "
       }.xlsx`
     );
   };
@@ -1731,7 +1744,24 @@ const Dashboard = () => {
                 <div className="s_dashboard-head">
                   <div className="d-flex justify-content-between text-white">
                     <h2 className="text-white sjfs-2">Métodos pago</h2>
-                    <div>
+                    <div className="d-flex ">
+
+                      <select
+                        id="year-select"
+                        className="form-select sjfs-14"
+                        // onChange={(e) => setSelectedHastaMonth(e.target.value)}
+                        onChange={(e) => {
+                          const selectedValue = e.target.value;
+                          setSelectedHastaYear(selectedValue);
+                        }}
+
+                        value={selectedHastaYear}
+                        style={{ fontWeight: "500", lineHeight: "21px" }}
+                      >
+                        <option value={new Date().getFullYear() - 2}>{new Date().getFullYear() - 2}</option>
+                        <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
+                        <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                      </select>
                       <select
                         id="month-select"
                         className="form-select sjfs-14"
@@ -1954,7 +1984,25 @@ const Dashboard = () => {
                       </p>
                     </div>
                     <div className="s_dashboard-right-head">
-                      <div className="mb-2">
+                      <div className="mb-2 d-flex">
+
+
+                        <select
+                          id="year-select"
+                          className="form-select sjfs-14"
+                          // onChange={(e) => setSelectedHastaMonth(e.target.value)}
+                          onChange={(e) => {
+                            const selectedValue = e.target.value;
+                            setSelectedRevtaYear(selectedValue);
+                          }}
+
+                          value={selectedRevYear}
+                          style={{ fontWeight: "500", lineHeight: "21px" }}
+                        >
+                          <option value={new Date().getFullYear() - 2}>{new Date().getFullYear() - 2}</option>
+                          <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
+                          <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                        </select>
                         <select
                           id="month-select"
                           className="form-select sjfs-14"
@@ -2159,167 +2207,183 @@ const Dashboard = () => {
             </div>
           </div>
 
-{(role == "admin") && 
-<>
-<div className="j-dashboard-summary">
-            <div className="row">
-              <div className="col-6 j-payment-color">
-                <div className="j_dashboard-head">
-                  <h2 className="text-white  sjfs-2">Resumen estados</h2>
-                  <p className="sjfs-16">En tiempo real</p>
-                </div>
+          {(role == "admin") &&
+            <>
+              <div className="j-dashboard-summary">
+                <div className="row">
+                  <div className="col-6 j-payment-color">
+                    <div className="j_dashboard-head">
+                      <h2 className="text-white  sjfs-2">Resumen estados</h2>
+                      <p className="sjfs-16">En tiempo real</p>
+                    </div>
 
-                <div className="j-text-dta  position-relative">
-                  <div>
-                    {loadingSummary ? ( // Check loading state
-                      <p>Loading...</p> // Show loading message
-                    ) : (
-                      <Sa data={summaryState} />
-                    )}
-                    {/* <Sa data={data.statusSummary} /> */}
-                    {/* <Aa /> */}
+                    <div className="j-text-dta  position-relative">
+                      <div>
+                        {loadingSummary ? ( // Check loading state
+                          <p>Loading...</p> // Show loading message
+                        ) : (
+                          <Sa data={summaryState} />
+                        )}
+                        {/* <Sa data={data.statusSummary} /> */}
+                        {/* <Aa /> */}
+                      </div>
+                      <div className="j-summary-data2 mb-3">
+                        <div className="d-flex align-items-center j-margin ak-Dstate">
+                          <img src={chart4} className="jj_img me-2 ak-me1" />
+                          <p
+                            className="ss_fontsize mb-0 sjfs-14"
+                            style={{ lineHeight: "21px" }}
+                          >
+                            Recibido
+                          </p>
+                        </div>
+                        <div className="d-flex align-items-center j-margin ak-Dstate">
+                          <img src={chart2} className="jj_img me-2 ak-me1" />
+                          <p
+                            className="ss_fontsize mb-0 sjfs-14"
+                            style={{ lineHeight: "21px" }}
+                          >
+                            Preparado
+                          </p>
+                        </div>
+                        <div className="d-flex align-items-center j-margin ak-Dstate">
+                          <img src={chart1} className="jj_img me-2 ak-me1" />
+                          <p
+                            className="ss_fontsize mb-0 sjfs-14"
+                            style={{ lineHeight: "21px" }}
+                          >
+                            Finalizado
+                          </p>
+                        </div>
+                        <div className="d-flex align-items-center">
+                          <img src={chart3} className="jj_img me-2 ak-me1" />
+                          <p
+                            className="ss_fontsize mb-0 sjfs-14"
+                            style={{ lineHeight: "21px" }}
+                          >
+                            Entregado
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className="j-foot-text text-end"
+                      onClick={summaryStatesReport}
+                    >
+                      <button className="sjfs-14">
+                        Ver reporte <FaAngleRight />
+                      </button>
+                    </div>
                   </div>
-                  <div className="j-summary-data2 mb-3">
-                    <div className="d-flex align-items-center j-margin ak-Dstate">
-                      <img src={chart4} className="jj_img me-2 ak-me1" />
-                      <p
-                        className="ss_fontsize mb-0 sjfs-14"
-                        style={{ lineHeight: "21px" }}
-                      >
-                        Recibido
-                      </p>
-                    </div>
-                    <div className="d-flex align-items-center j-margin ak-Dstate">
-                      <img src={chart2} className="jj_img me-2 ak-me1" />
-                      <p
-                        className="ss_fontsize mb-0 sjfs-14"
-                        style={{ lineHeight: "21px" }}
-                      >
-                        Preparado
-                      </p>
-                    </div>
-                    <div className="d-flex align-items-center j-margin ak-Dstate">
-                      <img src={chart1} className="jj_img me-2 ak-me1" />
-                      <p
-                        className="ss_fontsize mb-0 sjfs-14"
-                        style={{ lineHeight: "21px" }}
-                      >
-                        Finalizado
-                      </p>
-                    </div>
-                    <div className="d-flex align-items-center">
-                      <img src={chart3} className="jj_img me-2 ak-me1" />
-                      <p
-                        className="ss_fontsize mb-0 sjfs-14"
-                        style={{ lineHeight: "21px" }}
-                      >
-                        Entregado
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="j-foot-text text-end"
-                  onClick={summaryStatesReport}
-                >
-                  <button className="sjfs-14">
-                    Ver reporte <FaAngleRight />
-                  </button>
-                </div>
-              </div>
-              <div className="col-6 j-payment-color2">
-                <div className="j_dashboard-head">
-                  <div className="d-flex justify-content-between text-white">
-                    <h2 className="text-white sjfs-2 mb-0">Popular</h2>
-                    <div>
-                      <select
-                        id="month-select"
-                        className="form-select sjfs-14"
-                        onChange={(e) => {
-                          const selectedValue = e.target.value;
-                          setSelectPopMonth(selectedValue);
-                          setPopData("month");
-                          if (selectedValue === "12") {
-                            const currentMonth = new Date().getMonth() + 1;
-                            setSelectPopMonth(currentMonth); // Set to current month
+                  <div className="col-6 j-payment-color2">
+                    <div className="j_dashboard-head">
+                      <div className="d-flex justify-content-between text-white">
+                        <h2 className="text-white sjfs-2 mb-0">Popular</h2>
+                        <div className="d-flex ">
+                          <select
+                            id="year-select"
+                            className="form-select sjfs-14"
+                            // onChange={(e) => setSelectedHastaMonth(e.target.value)}
+                            onChange={(e) => {
+                              const selectedValue = e.target.value;
+                              setSelectPopYear(selectedValue);
+                            }}
+
+                            value={selectPopYear}
+                            style={{ fontWeight: "500", lineHeight: "21px" }}
+                          >
+                            <option value={new Date().getFullYear() - 2}>{new Date().getFullYear() - 2}</option>
+                            <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
+                            <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                          </select>
+                          <select
+                            id="month-select"
+                            className="form-select sjfs-14"
+                            onChange={(e) => {
+                              const selectedValue = e.target.value;
+                              setSelectPopMonth(selectedValue);
+                              setPopData("month");
+                              if (selectedValue === "12") {
+                                const currentMonth = new Date().getMonth() + 1;
+                                setSelectPopMonth(currentMonth); // Set to current month
+                                fetchData(); // Call fetchData to get current month data
+                              }
+                            }}
+                            value={selectPopMonth}
+                            style={{ fontWeight: "500", lineHeight: "21px" }}
+                          >
+                            <option value="1">Mes Enero</option>
+                            <option value="2">Mes Febrero</option>
+                            <option value="3">Mes Marzo</option>
+                            <option value="4">Mes Abril</option>
+                            <option value="5">Mes Mayo</option>
+                            <option value="6">Mes Junio</option>
+                            <option value="7">Mes Julio</option>
+                            <option value="8">Mes Agosto</option>
+                            <option value="9">Mes Septiembre</option>
+                            <option value="10">Mes Octubre </option>
+                            <option value="11">Mes Noviembre</option>
+                            <option value="12">Mes Diciembre</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="text-end">
+                        <input
+                          type="radio"
+                          className="btn-check"
+                          name="options-base3"
+                          id="option10"
+                          autoComplete="off"
+                          disabled={selectPopMonth != new Date().getMonth() + 1}
+                        />
+                        <label
+                          className="btn btn-outline-primary j-custom-label sjfs-12"
+                          htmlFor="option10"
+                          onClick={() => setPopData("day")}
+                        >
+                          Día
+                        </label>
+                        <input
+                          type="radio"
+                          className="btn-check"
+                          name="options-base3"
+                          id="option11"
+                          autoComplete="off"
+                          disabled={selectPopMonth != new Date().getMonth() + 1}
+                        />
+                        <label
+                          className="btn btn-outline-primary j-custom-label sjfs-12"
+                          htmlFor="option11"
+                          onClick={() => setPopData("week")}
+                        >
+                          Semana
+                        </label>
+                        <input
+                          type="radio"
+                          className="btn-check"
+                          name="options-base3"
+                          id="option12"
+                          autoComplete="off"
+                          defaultChecked
+                          checked={popData == "month"}
+                          disabled={selectPopMonth > new Date().getMonth() + 1}
+                        />
+                        <label
+                          className="btn btn-outline-primary j-custom-label sjfs-12"
+                          htmlFor="option12"
+                          onClick={() => {
+                            setPopData("month");
                             fetchData(); // Call fetchData to get current month data
-                          }
-                        }}
-                        value={selectPopMonth}
-                        style={{ fontWeight: "500", lineHeight: "21px" }}
-                      >
-                        <option value="1">Mes Enero</option>
-                        <option value="2">Mes Febrero</option>
-                        <option value="3">Mes Marzo</option>
-                        <option value="4">Mes Abril</option>
-                        <option value="5">Mes Mayo</option>
-                        <option value="6">Mes Junio</option>
-                        <option value="7">Mes Julio</option>
-                        <option value="8">Mes Agosto</option>
-                        <option value="9">Mes Septiembre</option>
-                        <option value="10">Mes Octubre </option>
-                        <option value="11">Mes Noviembre</option>
-                        <option value="12">Mes Diciembre</option>
-                      </select>
+                          }}
+                        >
+                          Mes
+                        </label>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="text-end">
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="options-base3"
-                      id="option10"
-                      autoComplete="off"
-                      disabled={selectPopMonth != new Date().getMonth() + 1}
-                    />
-                    <label
-                      className="btn btn-outline-primary j-custom-label sjfs-12"
-                      htmlFor="option10"
-                      onClick={() => setPopData("day")}
-                    >
-                      Día
-                    </label>
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="options-base3"
-                      id="option11"
-                      autoComplete="off"
-                      disabled={selectPopMonth != new Date().getMonth() + 1}
-                    />
-                    <label
-                      className="btn btn-outline-primary j-custom-label sjfs-12"
-                      htmlFor="option11"
-                      onClick={() => setPopData("week")}
-                    >
-                      Semana
-                    </label>
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="options-base3"
-                      id="option12"
-                      autoComplete="off"
-                      defaultChecked
-                      checked={popData == "month"}
-                      disabled={selectPopMonth > new Date().getMonth() + 1}
-                    />
-                    <label
-                      className="btn btn-outline-primary j-custom-label sjfs-12"
-                      htmlFor="option12"
-                      onClick={() => {
-                        setPopData("month");
-                        fetchData(); // Call fetchData to get current month data
-                      }}
-                    >
-                      Mes
-                    </label>
-                  </div>
-                </div>
-
-                <div className="j-summary-body j-example">
-                  {/* {popularData.map((item, index) => (
+                    <div className="j-summary-body j-example">
+                      {/* {popularData.map((item, index) => (
                     <div
                       key={item.id}
                       className="j-summary-body-data scrollbox d-flex align-items-center justify-content-between"
@@ -2339,472 +2403,521 @@ const Dashboard = () => {
                       </div>
                     </div>
                   ))} */}
-                  {popularData?.map((item, index) => (
-                    <div
-                      key={item.id} // Ensure each item has a unique key
-                      className="j-summary-body-data scrollbox d-flex align-items-center justify-content-between"
-                    >
-                      <div className="d-flex align-items-center">
-                        <div className="j-order-no" style={{ width: "30px" }}>
-                          #{index + 1}
-                        </div>
-                        <div className="j-order-img">
-                          {item.image ? (
-                            <img
-                              src={`${API}/images/${item.image}`}
-                              alt={item.name}
-                              style={{ borderRadius: "8px" }}
-                            />
-                          ) : (
-                            <div
-                              className="d-flex justify-content-center align-items-center rounded text-truncate overflow-hidden ps-2"
-                              style={{
-                                borderRadius: "8px",
-                                width: "100%",
-                                height: "100%",
-                                backgroundColor: "rgb(55 65 81 / 34%)",
-                                color: "white",
-                                fontSize: "12px",
-                                fontWeight: "500",
-                                lineHeight: "21px",
-                                textJustify: "center",
-                                textAlign: "center",
-                              }}
-                            >
-                              <p className="mb-0 text-truncate w-100">
-                                {item.name}
-                              </p>
+                      {popularData?.map((item, index) => (
+                        <div
+                          key={item.id} // Ensure each item has a unique key
+                          className="j-summary-body-data scrollbox d-flex align-items-center justify-content-between"
+                        >
+                          <div className="d-flex align-items-center">
+                            <div className="j-order-no" style={{ width: "30px" }}>
+                              #{index + 1}
                             </div>
-                          )}
+                            <div className="j-order-img">
+                              {item.image ? (
+                                <img
+                                  src={`${API}/images/${item.image}`}
+                                  alt={item.name}
+                                  style={{ borderRadius: "8px" }}
+                                />
+                              ) : (
+                                <div
+                                  className="d-flex justify-content-center align-items-center rounded text-truncate overflow-hidden ps-2"
+                                  style={{
+                                    borderRadius: "8px",
+                                    width: "100%",
+                                    height: "100%",
+                                    backgroundColor: "rgb(55 65 81 / 34%)",
+                                    color: "white",
+                                    fontSize: "12px",
+                                    fontWeight: "500",
+                                    lineHeight: "21px",
+                                    textJustify: "center",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  <p className="mb-0 text-truncate w-100">
+                                    {item.name}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                            <div className="j-order-data">
+                              <h4 className="sjfs-16 ak-dash-font">{item.name}</h4>
+                              <p className="sjfs-12">Pedido {item.order_count}</p>
+                            </div>
+                          </div>
+                          <div className="j-order-price sjfs-16 me-2 ak-dash-font">
+                            {parseFloat(item.amount) % 1 === 0
+                              ? `${parseFloat(item.amount).toFixed(0)}$`
+                              : `${parseFloat(item.amount)}$`}
+                          </div>
                         </div>
-                        <div className="j-order-data">
-                          <h4 className="sjfs-16 ak-dash-font">{item.name}</h4>
-                          <p className="sjfs-12">Pedido {item.order_count}</p>
-                        </div>
-                      </div>
-                      <div className="j-order-price sjfs-16 me-2 ak-dash-font">
-                        {parseFloat(item.amount) % 1 === 0
-                          ? `${parseFloat(item.amount).toFixed(0)}$`
-                          : `${parseFloat(item.amount)}$`}
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                <div className="j-foot-text text-end" onClick={PopularReport}>
-                  <button className="sjfs-14">
-                    Ver reporte <FaAngleRight />
-                  </button>
+                    <div className="j-foot-text text-end" onClick={PopularReport}>
+                      <button className="sjfs-14">
+                        Ver reporte <FaAngleRight />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="j-dashboard-delivery">
-            <div className="row">
-              <div className="col-6 j-payment-color">
-                <div className="j_dashboard-head">
-                  <div className="d-flex justify-content-between text-white">
-                    <h2 className="text-white sjfs-2">Delivery</h2>
-                    <div>
-                      <select
-                        id="month-select"
-                        className="form-select sjfs-14"
-                        onChange={(e) => {
-                          const selectedValue = e.target.value;
-                          setSelectDeliveryMonth(selectedValue);
-                          setDeliveryDay("month");
-                          if (selectedValue === "12") {
-                            const currentMonth = new Date().getMonth() + 1;
-                            setSelectDeliveryMonth(currentMonth); // Set to current month
-                            fetchData(); // Call fetchData to get current month data
+              <div className="j-dashboard-delivery">
+                <div className="row">
+                  <div className="col-6 j-payment-color">
+                    <div className="j_dashboard-head">
+                      <div className="d-flex justify-content-between text-white">
+                        <h2 className="text-white sjfs-2">Delivery</h2>
+                        <div className="d-flex ">
+
+                          <select
+                            id="year-select"
+                            className="form-select sjfs-14"
+                            // onChange={(e) => setSelectedHastaMonth(e.target.value)}
+                            onChange={(e) => {
+                              const selectedValue = e.target.value;
+                              setSelectDeliveryYear(selectedValue);
+                            }}
+
+                            value={selectDeliveryYear}
+                            style={{ fontWeight: "500", lineHeight: "21px" }}
+                          >
+                            <option value={new Date().getFullYear() - 2}>{new Date().getFullYear() - 2}</option>
+                            <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
+                            <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                          </select>
+                          <select
+                            id="month-select"
+                            className="form-select sjfs-14"
+                            onChange={(e) => {
+                              const selectedValue = e.target.value;
+                              setSelectDeliveryMonth(selectedValue);
+                              setDeliveryDay("month");
+                              if (selectedValue === "12") {
+                                const currentMonth = new Date().getMonth() + 1;
+                                setSelectDeliveryMonth(currentMonth); // Set to current month
+                                fetchData(); // Call fetchData to get current month data
+                              }
+                            }}
+                            value={selectDeliveryMonth}
+                            style={{ fontWeight: "500", lineHeight: "21px" }}
+                          >
+                            <option value="1">Mes Enero</option>
+                            <option value="2">Mes Febrero</option>
+                            <option value="3">Mes Marzo</option>
+                            <option value="4">Mes Abril</option>
+                            <option value="5">Mes Mayo</option>
+                            <option value="6">Mes Junio</option>
+                            <option value="7">Mes Julio</option>
+                            <option value="8">Mes Agosto</option>
+                            <option value="9">Mes Septiembre</option>
+                            <option value="10">Mes Octubre </option>
+                            <option value="11">Mes Noviembre</option>
+                            <option value="12">Mes Diciembre</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="text-end">
+                        <input
+                          type="radio"
+                          className="btn-check"
+                          name="options-base4"
+                          id="option13"
+                          autoComplete="off"
+                          disabled={
+                            selectDeliveryMonth != new Date().getMonth() + 1
                           }
-                        }}
-                        value={selectDeliveryMonth}
-                        style={{ fontWeight: "500", lineHeight: "21px" }}
-                      >
-                        <option value="1">Mes Enero</option>
-                        <option value="2">Mes Febrero</option>
-                        <option value="3">Mes Marzo</option>
-                        <option value="4">Mes Abril</option>
-                        <option value="5">Mes Mayo</option>
-                        <option value="6">Mes Junio</option>
-                        <option value="7">Mes Julio</option>
-                        <option value="8">Mes Agosto</option>
-                        <option value="9">Mes Septiembre</option>
-                        <option value="10">Mes Octubre </option>
-                        <option value="11">Mes Noviembre</option>
-                        <option value="12">Mes Diciembre</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="text-end">
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="options-base4"
-                      id="option13"
-                      autoComplete="off"
-                      disabled={
-                        selectDeliveryMonth != new Date().getMonth() + 1
-                      }
-                    />
-                    <label
-                      className="btn btn-outline-primary j-custom-label sjfs-12"
-                      htmlFor="option13"
-                      onClick={() => setDeliveryDay("day")}
-                    >
-                      Día
-                    </label>
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="options-base4"
-                      id="option14"
-                      autoComplete="off"
-                      disabled={
-                        selectDeliveryMonth != new Date().getMonth() + 1
-                      }
-                    />
-                    <label
-                      className="btn btn-outline-primary j-custom-label sjfs-12"
-                      htmlFor="option14"
-                      onClick={() => setDeliveryDay("week")}
-                    >
-                      Semana
-                    </label>
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="options-base4"
-                      id="option15"
-                      autoComplete="off"
-                      defaultChecked
-                      checked={deliveryDay == "month"}
-                      disabled={selectDeliveryMonth > new Date().getMonth() + 1}
-                    />
-                    <label
-                      className="btn btn-outline-primary j-custom-label sjfs-12"
-                      htmlFor="option15"
-                      onClick={() => {
-                        setDeliveryDay("month");
-                        fetchData(); // Call fetchData to get current month data
-                      }}
-                    >
-                      Mes
-                    </label>
-                  </div>
-                </div>
-
-                <div className="j-delivery-body">
-                  <div className="row align-items-center mt-4">
-                    <div className="col-4">
-                      <div className="j-delivery-data">
-                        <p
-                          className="sjfs-16"
-                          style={{ fontWeight: "500", lineHeight: "21px" }}
+                        />
+                        <label
+                          className="btn btn-outline-primary j-custom-label sjfs-12"
+                          htmlFor="option13"
+                          onClick={() => setDeliveryDay("day")}
                         >
-                          Delivery
-                        </p>
-                        <h5 className="sjfs-2">{deliveryData.delivery}</h5>
-                      </div>
-                    </div>
-                    <div className="col-4 text-center">
-                      <div className="j-delivery-data">
-                        <p
-                          className="sjfs-16"
-                          style={{ fontWeight: "500", lineHeight: "21px" }}
+                          Día
+                        </label>
+                        <input
+                          type="radio"
+                          className="btn-check"
+                          name="options-base4"
+                          id="option14"
+                          autoComplete="off"
+                          disabled={
+                            selectDeliveryMonth != new Date().getMonth() + 1
+                          }
+                        />
+                        <label
+                          className="btn btn-outline-primary j-custom-label sjfs-12"
+                          htmlFor="option14"
+                          onClick={() => setDeliveryDay("week")}
                         >
-                          Retiro
-                        </p>
-                        <h5 className="sjfs-2">{deliveryData.withdrawal}</h5>
-                      </div>
-                    </div>
-                    <div className="col-4 text-end">
-                      <div className="j-delivery-data">
-                        <p
-                          className="sjfs-16"
-                          style={{ fontWeight: "500", lineHeight: "21px" }}
+                          Semana
+                        </label>
+                        <input
+                          type="radio"
+                          className="btn-check"
+                          name="options-base4"
+                          id="option15"
+                          autoComplete="off"
+                          defaultChecked
+                          checked={deliveryDay == "month"}
+                          disabled={selectDeliveryMonth > new Date().getMonth() + 1}
+                        />
+                        <label
+                          className="btn btn-outline-primary j-custom-label sjfs-12"
+                          htmlFor="option15"
+                          onClick={() => {
+                            setDeliveryDay("month");
+                            fetchData(); // Call fetchData to get current month data
+                          }}
                         >
-                          Local
-                        </p>
-                        <h5 className="sjfs-2">{deliveryData.local}</h5>
+                          Mes
+                        </label>
                       </div>
                     </div>
 
-                    {/* <div className="col-6">
+                    <div className="j-delivery-body">
+                      <div className="row align-items-center mt-4">
+                        <div className="col-4">
+                          <div className="j-delivery-data">
+                            <p
+                              className="sjfs-16"
+                              style={{ fontWeight: "500", lineHeight: "21px" }}
+                            >
+                              Delivery
+                            </p>
+                            <h5 className="sjfs-2">{deliveryData.delivery}</h5>
+                          </div>
+                        </div>
+                        <div className="col-4 text-center">
+                          <div className="j-delivery-data">
+                            <p
+                              className="sjfs-16"
+                              style={{ fontWeight: "500", lineHeight: "21px" }}
+                            >
+                              Retiro
+                            </p>
+                            <h5 className="sjfs-2">{deliveryData.withdrawal}</h5>
+                          </div>
+                        </div>
+                        <div className="col-4 text-end">
+                          <div className="j-delivery-data">
+                            <p
+                              className="sjfs-16"
+                              style={{ fontWeight: "500", lineHeight: "21px" }}
+                            >
+                              Local
+                            </p>
+                            <h5 className="sjfs-2">{deliveryData.local}</h5>
+                          </div>
+                        </div>
+
+                        {/* <div className="col-6">
                       <div className="j-delivery-data">
                         <p className="sjfs-16"style={{fontWeight:"500", lineHeight:'21px'}}>Plataforma</p>
                         <h5 className="sjfs-2">{deliveryData.platform}</h5>
                       </div>
                     </div> */}
-                  </div>
-                  <div>&nbsp;</div>
-                  <div>&nbsp;</div>
-                  <div>&nbsp;</div>
+                      </div>
+                      <div>&nbsp;</div>
+                      <div>&nbsp;</div>
+                      <div>&nbsp;</div>
 
-                  <div className="j-delivery-chart">
-                    <div id="chart">
-                      <Chart
-                        options={delivery}
-                        // series={delivery.series}
-                        series={[
-                          {
-                            name: "Delivery",
-                            // data: [deliveryData.delivery],
-                            data: deliveryData.delivery
-                              ? [deliveryData.delivery]
-                              : [0], // Provide default value
-                            color: "#147bde",
-                          },
-                          {
-                            name: "Retiro",
-                            // data: [deliveryData.withdrawal],
-                            data: deliveryData.withdrawal
-                              ? [deliveryData.withdrawal]
-                              : [0], // Provide default value
-                            color: "#16bdca",
-                          },
-                          {
-                            name: "Local",
-                            // data: [deliveryData.local],
-                            data: deliveryData.local
-                              ? [deliveryData.local]
-                              : [0], // Provide default value
-                            color: "#fdba8c",
-                          },
-                          // {
-                          //   name: 'Plataforma',
-                          //   // data: [deliveryData.platform],
-                          //   data: deliveryData.platform ? [deliveryData.platform] : [0], // Provide default value
-                          //   color: "#31c48d"
-                          // },
-                        ]}
-                        type="bar"
-                        height={75}
-                      />
-                    </div>
-                  </div>
+                      <div className="j-delivery-chart">
+                        <div id="chart">
+                          <Chart
+                            options={delivery}
+                            // series={delivery.series}
+                            series={[
+                              {
+                                name: "Delivery",
+                                // data: [deliveryData.delivery],
+                                data: deliveryData.delivery
+                                  ? [deliveryData.delivery]
+                                  : [0], // Provide default value
+                                color: "#147bde",
+                              },
+                              {
+                                name: "Retiro",
+                                // data: [deliveryData.withdrawal],
+                                data: deliveryData.withdrawal
+                                  ? [deliveryData.withdrawal]
+                                  : [0], // Provide default value
+                                color: "#16bdca",
+                              },
+                              {
+                                name: "Local",
+                                // data: [deliveryData.local],
+                                data: deliveryData.local
+                                  ? [deliveryData.local]
+                                  : [0], // Provide default value
+                                color: "#fdba8c",
+                              },
+                              // {
+                              //   name: 'Plataforma',
+                              //   // data: [deliveryData.platform],
+                              //   data: deliveryData.platform ? [deliveryData.platform] : [0], // Provide default value
+                              //   color: "#31c48d"
+                              // },
+                            ]}
+                            type="bar"
+                            height={75}
+                          />
+                        </div>
+                      </div>
 
-                  <div className="j-delivery-foot">
-                    <div className="j-summary-data2 mb-3">
-                      <div className="d-flex align-items-center me-4">
-                        <img src={chart1} className="jj_img me-2" />
-                        <p className="ss_fontsize mb-0 sjfs-12">Delivery</p>
-                      </div>
-                      <div className="d-flex align-items-center me-4">
-                        <img src={chart3} className="jj_img me-2" />
-                        <p className="ss_fontsize mb-0 sjfs-12">Retiro</p>
-                      </div>
-                      <div className="d-flex align-items-center me-4">
-                        <img src={chart2} className="jj_img me-2" />
-                        <p className="ss_fontsize mb-0 sjfs-12">Local</p>
-                      </div>
-                      {/* <div className="d-flex align-items-center">
+                      <div className="j-delivery-foot">
+                        <div className="j-summary-data2 mb-3">
+                          <div className="d-flex align-items-center me-4">
+                            <img src={chart1} className="jj_img me-2" />
+                            <p className="ss_fontsize mb-0 sjfs-12">Delivery</p>
+                          </div>
+                          <div className="d-flex align-items-center me-4">
+                            <img src={chart3} className="jj_img me-2" />
+                            <p className="ss_fontsize mb-0 sjfs-12">Retiro</p>
+                          </div>
+                          <div className="d-flex align-items-center me-4">
+                            <img src={chart2} className="jj_img me-2" />
+                            <p className="ss_fontsize mb-0 sjfs-12">Local</p>
+                          </div>
+                          {/* <div className="d-flex align-items-center">
                         <img src={green} className="jj_img me-2" />
                         <p className="ss_fontsize mb-0 sjfs-12">Plataforma</p>
                       </div> */}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-6 j-payment-color2">
-                <div className="j_dashboard-head">
-                  <div className="d-flex justify-content-between text-white">
-                    <h2 className="text-white sjfs-2">Ingreso de cajas</h2>
-                    <div>
-                      <select
-                        id="month-select"
-                        className="form-select sjfs-14"
-                        onChange={(e) => {
-                          const selectedValue = e.target.value;
-                          setselectBoxMonth(selectedValue);
-                          setBoxDay("month");
-                          if (selectedValue === "12") {
-                            const currentMonth = new Date().getMonth() + 1;
-                            setselectBoxMonth(currentMonth); // Set to current month
-                            fetchData(); // Call fetchData to get current month data
-                          }
-                        }}
-                        value={selectBoxMonth}
-                        style={{ fontWeight: "500", lineHeight: "21px" }}
-                      >
-                        <option value="1">Mes Enero</option>
-                        <option value="2">Mes Febrero</option>
-                        <option value="3">Mes Marzo</option>
-                        <option value="4">Mes Abril</option>
-                        <option value="5">Mes Mayo</option>
-                        <option value="6">Mes Junio</option>
-                        <option value="7">Mes Julio</option>
-                        <option value="8">Mes Agosto</option>
-                        <option value="9">Mes Septiembre</option>
-                        <option value="10">Mes Octubre </option>
-                        <option value="11">Mes Noviembre</option>
-                        <option value="12">Mes Diciembre</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="text-end">
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="options-base5"
-                      id="option16"
-                      autoComplete="off"
-                      disabled={selectBoxMonth != new Date().getMonth() + 1}
-                    />
-                    <label
-                      className="btn btn-outline-primary j-custom-label sjfs-12"
-                      htmlFor="option16"
-                      onClick={() => setBoxDay("day")}
-                    >
-                      Día
-                    </label>
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="options-base5"
-                      id="option17"
-                      autoComplete="off"
-                      disabled={selectBoxMonth != new Date().getMonth() + 1}
-                    />
-                    <label
-                      className="btn btn-outline-primary j-custom-label sjfs-12"
-                      htmlFor="option17"
-                      onClick={() => setBoxDay("week")}
-                    >
-                      Semana
-                    </label>
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="options-base5"
-                      id="option18"
-                      autoComplete="off"
-                      defaultChecked
-                      checked={boxDay == "month"}
-                      disabled={selectBoxMonth > new Date().getMonth() + 1}
-                    />
-                    <label
-                      className="btn btn-outline-primary j-custom-label sjfs-12"
-                      htmlFor="option18"
-                      onClick={() => {
-                        setBoxDay("month");
-                        fetchData(); // Call fetchData to get current month data
-                      }}
-                    >
-                      Mes
-                    </label>
-                  </div>
-                </div>
-
-                <div
-                  className="j-chart-entry"
-                  style={{ height: "300px", overflowY: "auto" }}
-                >
-                  {console.log(boxDetails)}
-
-                  {boxDetails.map((ele, index) => {
-                    const totalAmount = ele.logs.reduce((sum, log) => {
-                      const closeAmount = parseFloat(log.close_amount) || 0;
-                      const openAmount = parseFloat(log.open_amount) || 0;
-                      return closeAmount
-                        ? sum + (closeAmount - openAmount)
-                        : sum;
-                    }, 0);
-
-                    console.log(ele.logs);
-
-                    // Prepare data for the chart
-                    const chartData = [
-                      { name: "", Order: 0 }, // Start with 0 value
-                      ...ele.logs.map((log) => ({
-                        name: log.open_time, // Use open_time as the x-axis label
-                        Order: log.close_amount
-                          ? parseFloat(log.close_amount) -
-                            parseFloat(log.open_amount)
-                          : 0, // Calculate the order value
-                      })),
-                    ];
-
-                    // console.log(chartData,ele.box_name,totalAmount,ele);
-                    // console.log(chartData);
-
-                    return (
-                      <div
-                        className="j-chart-entry-1 d-flex align-items-center"
-                        key={ele.id}
-                      >
-                        <ResponsiveContainer width={100} height={100}>
-                          {/* {console.log(chartData)} */}
-
-                          {chartData && chartData?.[1].Order != 0 ? (
-                            <LineChart data={chartData}>
-                              <Tooltip cursor={false} />
-                              <Line
-                                type="monotoneX"
-                                dataKey="Order"
-                                stroke="#0e9f6e"
-                                dot={false}
-                                strokeWidth={2}
-                              />
-                            </LineChart>
-                          ) : (
-                            <div
-                              className="d-flex justify-content-center align-items-center rounded text-truncate overflow-hidden ps-2"
-                              style={{
-                                borderRadius: "8px",
-                                width: "100%",
-                                height: "100%",
-                                color: "white",
-                                fontSize: "12px",
-                                fontWeight: "500",
-                                lineHeight: "21px",
-                                textJustify: "center",
-                                textAlign: "center",
-                              }}
-                            >
-                              <p className="mb-0 text-truncate w-100">
-                                Sin datos
-                              </p>
-                            </div>
-                          )}
-                        </ResponsiveContainer>
-                        <div className="j-chart-entry-data ps-3">
-                          <p className="sjfs-14">{ele.box_name}</p>
-                          <h5 className="sjfs-2">
-                            {" "}
-                            {parseFloat(totalAmount) % 1 === 0
-                              ? `${parseFloat(totalAmount).toFixed(2)}$`
-                              : `${parseFloat(totalAmount).toFixed(2)}$`}
-                          </h5>{" "}
-                          {/* Display total amount */}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  </div>
+                  <div className="col-6 j-payment-color2">
+                    <div className="j_dashboard-head">
+                      <div className="d-flex justify-content-between text-white">
+                        <h2 className="text-white sjfs-2">Ingreso de cajas</h2>
+                        <div className="d-flex ">
+                          <select
+                            id="year-select"
+                            className="form-select sjfs-14"
+                            // onChange={(e) => setSelectedHastaMonth(e.target.value)}
+                            onChange={(e) => {
+                              const selectedValue = e.target.value;
+                              setselectBoxYear(selectedValue);
+                            }}
 
-                <div className="j-foot-text text-end" onClick={boxEntryReport}>
-                  <button className="sjfs-14">
-                    Ver reporte <FaAngleRight />
-                  </button>
+                            value={selectBoxYear}
+                            style={{ fontWeight: "500", lineHeight: "21px" }}
+                          >
+                            <option value={new Date().getFullYear() - 2}>{new Date().getFullYear() - 2}</option>
+                            <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
+                            <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                          </select>
+                          <select
+                            id="month-select"
+                            className="form-select sjfs-14"
+                            onChange={(e) => {
+                              const selectedValue = e.target.value;
+                              setselectBoxMonth(selectedValue);
+                              setBoxDay("month");
+                              if (selectedValue === "12") {
+                                const currentMonth = new Date().getMonth() + 1;
+                                setselectBoxMonth(currentMonth); // Set to current month
+                                fetchData(); // Call fetchData to get current month data
+                              }
+                            }}
+                            value={selectBoxMonth}
+                            style={{ fontWeight: "500", lineHeight: "21px" }}
+                          >
+                            <option value="1">Mes Enero</option>
+                            <option value="2">Mes Febrero</option>
+                            <option value="3">Mes Marzo</option>
+                            <option value="4">Mes Abril</option>
+                            <option value="5">Mes Mayo</option>
+                            <option value="6">Mes Junio</option>
+                            <option value="7">Mes Julio</option>
+                            <option value="8">Mes Agosto</option>
+                            <option value="9">Mes Septiembre</option>
+                            <option value="10">Mes Octubre </option>
+                            <option value="11">Mes Noviembre</option>
+                            <option value="12">Mes Diciembre</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="text-end">
+                        <input
+                          type="radio"
+                          className="btn-check"
+                          name="options-base5"
+                          id="option16"
+                          autoComplete="off"
+                          disabled={selectBoxMonth != new Date().getMonth() + 1}
+                        />
+                        <label
+                          className="btn btn-outline-primary j-custom-label sjfs-12"
+                          htmlFor="option16"
+                          onClick={() => setBoxDay("day")}
+                        >
+                          Día
+                        </label>
+                        <input
+                          type="radio"
+                          className="btn-check"
+                          name="options-base5"
+                          id="option17"
+                          autoComplete="off"
+                          disabled={selectBoxMonth != new Date().getMonth() + 1}
+                        />
+                        <label
+                          className="btn btn-outline-primary j-custom-label sjfs-12"
+                          htmlFor="option17"
+                          onClick={() => setBoxDay("week")}
+                        >
+                          Semana
+                        </label>
+                        <input
+                          type="radio"
+                          className="btn-check"
+                          name="options-base5"
+                          id="option18"
+                          autoComplete="off"
+                          defaultChecked
+                          checked={boxDay == "month"}
+                          disabled={selectBoxMonth > new Date().getMonth() + 1}
+                        />
+                        <label
+                          className="btn btn-outline-primary j-custom-label sjfs-12"
+                          htmlFor="option18"
+                          onClick={() => {
+                            setBoxDay("month");
+                            fetchData(); // Call fetchData to get current month data
+                          }}
+                        >
+                          Mes
+                        </label>
+                      </div>
+                    </div>
+
+                    <div
+                      className="j-chart-entry"
+                      style={{ height: "300px", overflowY: "auto" }}
+                    >
+                      {console.log(boxDetails)}
+
+                      {boxDetails.map((ele, index) => {
+                        const totalAmount = ele.logs.reduce((sum, log) => {
+                          const closeAmount = parseFloat(log.close_amount) || 0;
+                          const openAmount = parseFloat(log.open_amount) || 0;
+                          return closeAmount
+                            ? sum + (closeAmount - openAmount)
+                            : sum;
+                        }, 0);
+
+                        console.log(ele.logs);
+
+                        // Prepare data for the chart
+                        const chartData = [
+                          { name: "", Order: 0 }, // Start with 0 value
+                          ...ele.logs.map((log) => ({
+                            name: log.open_time, // Use open_time as the x-axis label
+                            Order: log.close_amount
+                              ? parseFloat(log.close_amount) -
+                              parseFloat(log.open_amount)
+                              : 0, // Calculate the order value
+                          })),
+                        ];
+
+                        // console.log(chartData,ele.box_name,totalAmount,ele);
+                        // console.log(chartData);
+
+                        return (
+                          <div
+                            className="j-chart-entry-1 d-flex align-items-center"
+                            key={ele.id}
+                          >
+                            <ResponsiveContainer width={100} height={100}>
+                              {/* {console.log(chartData)} */}
+
+                              {chartData && chartData?.[1].Order != 0 ? (
+                                <LineChart data={chartData}>
+                                  <Tooltip cursor={false} />
+                                  <Line
+                                    type="monotoneX"
+                                    dataKey="Order"
+                                    stroke="#0e9f6e"
+                                    dot={false}
+                                    strokeWidth={2}
+                                  />
+                                </LineChart>
+                              ) : (
+                                <div
+                                  className="d-flex justify-content-center align-items-center rounded text-truncate overflow-hidden ps-2"
+                                  style={{
+                                    borderRadius: "8px",
+                                    width: "100%",
+                                    height: "100%",
+                                    color: "white",
+                                    fontSize: "12px",
+                                    fontWeight: "500",
+                                    lineHeight: "21px",
+                                    textJustify: "center",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  <p className="mb-0 text-truncate w-100">
+                                    Sin datos
+                                  </p>
+                                </div>
+                              )}
+                            </ResponsiveContainer>
+                            <div className="j-chart-entry-data ps-3">
+                              <p className="sjfs-14">{ele.box_name}</p>
+                              <h5 className="sjfs-2">
+                                {" "}
+                                {parseFloat(totalAmount) % 1 === 0
+                                  ? `${parseFloat(totalAmount).toFixed(2)}$`
+                                  : `${parseFloat(totalAmount).toFixed(2)}$`}
+                              </h5>{" "}
+                              {/* Display total amount */}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="j-foot-text text-end" onClick={boxEntryReport}>
+                      <button className="sjfs-14">
+                        Ver reporte <FaAngleRight />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-</>
-}
-        
+            </>
+          }
+
           <div className="j-dashboard-cancel">
             <div className="row">
               <div className="col-12 j-cancel-color">
                 <div className="j_dashboard-head">
                   <div className="d-flex justify-content-between text-white">
                     <h2 className="text-white sjfs-2">Anulación pedidos</h2>
-                    <div>
+                    <div className="d-flex ">
+                      <select
+                        id="year-select"
+                        className="form-select sjfs-14"
+                        // onChange={(e) => setSelectedHastaMonth(e.target.value)}
+                        onChange={(e) => {
+                          const selectedValue = e.target.value;
+                          setSelectCencelYear(selectedValue);
+                        }}
+
+                        value={seleceCancelYear}
+                        style={{ fontWeight: "500", lineHeight: "21px" }}
+                      >
+                        <option value={new Date().getFullYear() - 2}>{new Date().getFullYear() - 2}</option>
+                        <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
+                        <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                      </select>
                       <select
                         id="month-select"
                         className="form-select sjfs-14"

@@ -17,7 +17,7 @@ import {
 } from "../redux/slice/table.slice";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import es from "date-fns/locale/es"; 
+import es from "date-fns/locale/es";
 import { registerLocale } from "react-datepicker";
 registerLocale("es", es);
 
@@ -34,21 +34,20 @@ const TableInformation = () => {
   const { tableState } = useSelector((state) => state.tables);
 
   const [tId, setTId] = useState(location.state?.selectedTable);
-  console.log(tId);
 
   const [userData, setUserData] = useState({});
   const [userTableData, setUserTableData] = useState({});
   const [selectedDesdeMonth, setSelectedDesdeMonth] = useState(() => {
     const date = new Date();
     date.setMonth(date.getMonth() - 1);
-    return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0); 
+    return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
   });
-    const [selectedHastaMonth, setSelectedHastaMonth] = useState(
-      new Date()
-    );
+  const [selectedHastaMonth, setSelectedHastaMonth] = useState(
+    new Date()
+  );
 
-  // console.log(selectedDesdeMonth,selectedHastaMonth);
-    
+  // console.log("aa",selectedDesdeMonth,selectedHastaMonth);
+
   const [datatab, setDatatab] = useState([]);
   const [error, setError] = useState("");
 
@@ -78,10 +77,10 @@ const TableInformation = () => {
     const date = new Date();
     date.setMonth(date.getMonth() - 4);
     return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
-    });
-    const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
-      new Date()
-    );
+  });
+  const [selectedHastaMonthReport, setSelectedHastaMonthReport] = useState(
+    new Date()
+  );
 
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
@@ -305,6 +304,7 @@ const TableInformation = () => {
       //     },
       //   }
       // );
+      console.log("table", tableState)
       const data = tableState.filter(
         (v) =>
           new Date(selectedHastaMonth) >= new Date(v.created_at) &&
@@ -335,7 +335,7 @@ const TableInformation = () => {
       fetchtTableData(tableId);
       fetchData(tableId);
     }
-  }, [tableData, selectedDesdeMonth, selectedHastaMonth]);
+  }, [tableData, selectedDesdeMonth, selectedHastaMonth,tableid]);
   const fetchUserData = async (userIds) => {
     try {
       const response = await axios.get(`${apiUrl}/get-user/${userIds}`, {
@@ -422,10 +422,10 @@ const TableInformation = () => {
           key == "Creador_mesa"
             ? "Creador mesa"
             : key == "Fecha_creación"
-            ? "Fecha creación"
-            : key == "Número_mesa"
-            ? "Número mesa"
-            : key,
+              ? "Fecha creación"
+              : key == "Número_mesa"
+                ? "Número mesa"
+                : key,
         Valor: value,
       }));
 
@@ -483,18 +483,18 @@ const TableInformation = () => {
             table.status.toLowerCase() === "received"
               ? "Recibido"
               : table.status.toLowerCase() === "prepared"
-              ? "Preparado"
-              : table.status.toLowerCase() === "delivered"
-              ? "Entregado"
-              : table.status.toLowerCase() === "finalized"
-              ? "Finalizado"
-              : table.status.toLowerCase() === "withdraw"
-              ? "Retirar"
-              : table.status.toLowerCase() === "local"
-              ? "Local"
-              : table.status.toLowerCase() === "cancelled"
-              ? "Cancelado"
-              : table.status,
+                ? "Preparado"
+                : table.status.toLowerCase() === "delivered"
+                  ? "Entregado"
+                  : table.status.toLowerCase() === "finalized"
+                    ? "Finalizado"
+                    : table.status.toLowerCase() === "withdraw"
+                      ? "Retirar"
+                      : table.status.toLowerCase() === "local"
+                        ? "Local"
+                        : table.status.toLowerCase() === "cancelled"
+                          ? "Cancelado"
+                          : table.status,
         };
       });
 
@@ -549,7 +549,7 @@ const TableInformation = () => {
 
       const Ddate = new Date(selectedDesdeMonthReport);
       const Hdate = new Date(selectedHastaMonthReport)
-      
+
       const desdeMonthName = `${String(Ddate.getMonth() + 1).padStart(2, '0')}/${Ddate.getFullYear()}`;
       const hastaMonthName = `${String(Hdate.getMonth() + 1).padStart(2, '0')}/${Hdate.getFullYear()}`;
       XLSX.writeFile(
@@ -902,24 +902,24 @@ const TableInformation = () => {
                               Desde
                             </label>
                             <div className="position-relative">
-                                                    <DatePicker
-                                                      showPopperArrow={false}
-                                                      selected={selectedDesdeMonth}
-                                                      onChange={(date) => {
-                                                        const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
-                                                        setSelectedDesdeMonth(aa);
-                                                      }}
-                                                      dateFormat="MMMM-yyyy"
-                                                      locale={es} 
-                                                      showMonthYearPicker
-                                                      showFullMonthYearPicker
-                                                      showTwoColumnMonthYearPicker
-                                                      className="form-select  b_select border-0 py-2"
-                                                      style={{ borderRadius: "8px", cursor: "pointer" }}
-                                                      // disabledKeyboardNavigation
-                                                      shouldCloseOnSelect={false}
-                                                    />
-                                                    </div>
+                              <DatePicker
+                                showPopperArrow={false}
+                                selected={selectedDesdeMonth}
+                                onChange={(date) => {
+                                  const aa = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 1);
+                                  setSelectedDesdeMonth(aa);
+                                }}
+                                dateFormat="MMMM-yyyy"
+                                locale={es}
+                                showMonthYearPicker
+                                showFullMonthYearPicker
+                                showTwoColumnMonthYearPicker
+                                className="form-select  b_select border-0 py-2"
+                                style={{ borderRadius: "8px", cursor: "pointer" }}
+                                // disabledKeyboardNavigation
+                                shouldCloseOnSelect={false}
+                              />
+                            </div>
                             {/* <select
                               className="form-select  b_select border-0 py-2  "
                               style={{ borderRadius: "8px" }}
@@ -952,23 +952,23 @@ const TableInformation = () => {
                             >
                               Hasta
                             </label>
-                             <div className="position-relative">
-                                                    <DatePicker
-                                                      showPopperArrow={false}
-                                                      selected={selectedHastaMonth}
-                                                      onChange={(date) => {
-                                                        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
-                                                        setSelectedHastaMonth(lastDay);
-                                                      }}
-                                                      dateFormat="MMMM-yyyy"
-                                                      locale={es} 
-                                                      showMonthYearPicker
-                                                      showFullMonthYearPicker
-                                                      showTwoColumnMonthYearPicker
-                                                      className="form-select  b_select border-0 py-2"
-                                                      style={{ borderRadius: "8px", cursor: "pointer", width:'100px !important' }}
-                                                    />
-                                                    </div>
+                            <div className="position-relative">
+                              <DatePicker
+                                showPopperArrow={false}
+                                selected={selectedHastaMonth}
+                                onChange={(date) => {
+                                  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+                                  setSelectedHastaMonth(lastDay);
+                                }}
+                                dateFormat="MMMM-yyyy"
+                                locale={es}
+                                showMonthYearPicker
+                                showFullMonthYearPicker
+                                showTwoColumnMonthYearPicker
+                                className="form-select  b_select border-0 py-2"
+                                style={{ borderRadius: "8px", cursor: "pointer", width: '100px !important' }}
+                              />
+                            </div>
                             {/* <select
                               className="form-select  b_select border-0 py-2  "
                               style={{ borderRadius: "8px" }}
@@ -1027,6 +1027,7 @@ const TableInformation = () => {
                         </thead>
 
                         <tbody className="text-white b_btnn ">
+                          {console.log("sdsds",datatab)}
                           {datatab.length > 0 ? (
                             datatab.map(
                               (order) => (
@@ -1073,48 +1074,47 @@ const TableInformation = () => {
                                 </td> */}
                                     <td
                                       className={`bj-delivery-text-2  b_btn1 mb-3 ms-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                                                        ${
-                                                          order.status.toLowerCase() ===
-                                                          "received"
-                                                            ? "b_indigo"
-                                                            : order.status.toLowerCase() ===
-                                                              "prepared"
-                                                            ? "b_ora"
-                                                            : order.status.toLowerCase() ===
-                                                              "delivered"
-                                                            ? "b_blue"
-                                                            : order.status.toLowerCase() ===
-                                                              "finalized"
-                                                            ? "b_green"
-                                                            : order.status.toLowerCase() ===
-                                                              "withdraw"
-                                                            ? "b_indigo"
-                                                            : order.status.toLowerCase() ===
-                                                              "local"
-                                                            ? "b_purple"
-                                                            : "b_ora text-danger"
-                                                        }`}
+                                                        ${order.status.toLowerCase() ===
+                                          "received"
+                                          ? "b_indigo"
+                                          : order.status.toLowerCase() ===
+                                            "prepared"
+                                            ? "b_ora"
+                                            : order.status.toLowerCase() ===
+                                              "delivered"
+                                              ? "b_blue"
+                                              : order.status.toLowerCase() ===
+                                                "finalized"
+                                                ? "b_green"
+                                                : order.status.toLowerCase() ===
+                                                  "withdraw"
+                                                  ? "b_indigo"
+                                                  : order.status.toLowerCase() ===
+                                                    "local"
+                                                    ? "b_purple"
+                                                    : "b_ora text-danger"
+                                        }`}
                                     >
                                       {order.status.toLowerCase() === "received"
                                         ? "Recibido"
                                         : order.status.toLowerCase() ===
                                           "prepared"
-                                        ? "Preparado "
-                                        : order.status.toLowerCase() ===
-                                          "delivered"
-                                        ? "Entregado"
-                                        : order.status.toLowerCase() ===
-                                          "finalized"
-                                        ? "Finalizado"
-                                        : order.status.toLowerCase() ===
-                                          "withdraw"
-                                        ? "Retirar"
-                                        : order.status.toLowerCase() === "local"
-                                        ? "Local"
-                                        : order.status.toLowerCase() ===
-                                          "cancelled"
-                                        ? "cancelado"
-                                        : " "}
+                                          ? "Preparado "
+                                          : order.status.toLowerCase() ===
+                                            "delivered"
+                                            ? "Entregado"
+                                            : order.status.toLowerCase() ===
+                                              "finalized"
+                                              ? "Finalizado"
+                                              : order.status.toLowerCase() ===
+                                                "withdraw"
+                                                ? "Retirar"
+                                                : order.status.toLowerCase() === "local"
+                                                  ? "Local"
+                                                  : order.status.toLowerCase() ===
+                                                    "cancelled"
+                                                    ? "cancelado"
+                                                    : " "}
                                     </td>
                                     <td>
                                       <Link

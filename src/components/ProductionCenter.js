@@ -172,6 +172,9 @@ export default function ProductionCenter() {
   const [show1Prod, setShow1Prod] = useState(false);
   const handleClose1Prod = () => {
     setShow1Prod(false);
+    setCheckedParents([]);
+    setFilteredItemsMenu(obj1);
+    setSelectedParentNames([]);
     setCount(0);
     setSelectedItemsCount(0);
   };
@@ -1255,7 +1258,7 @@ export default function ProductionCenter() {
                             alt=""
                           />
                           <p className="mb-0 mt-2 h6">
-                            Cambios centro de producción
+                             Centro de producción
                           </p>
                           <p className="opacity-75">
                             Sus cambios han sido modificados exitosamente
@@ -1279,7 +1282,7 @@ export default function ProductionCenter() {
                             alt=""
                           />
                           <p className="mb-0 mt-2 h6">
-                            Cambios centro de producción
+                            Centro de producción
                           </p>
                           <p className="opacity-75">
                             Centro de producción eliminado exitosamente

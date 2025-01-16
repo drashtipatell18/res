@@ -126,12 +126,12 @@ export default function Home_Pedidos_paymet() {
   const [filteredItemsMenu, setFilteredItemsMenu] = useState(obj1);
 
   const dispatch = useDispatch();
-  const { box , loadingBox} = useSelector((state) => state.boxs);
-  const {roles} = useSelector((state) => state.user);
+  const { box, loadingBox } = useSelector((state) => state.boxs);
+  const { roles } = useSelector((state) => state.user);
   const allusers = useSelector((state) => state.user.user);
-  const {payments, loadingOrder,orders ,credit} = useSelector((state) => state.orders);
-  const { tablewithSector , loadingTable} = useSelector((state) => state.tables);
-  const {deletedAllItems,subFamily,family,loadingItem} = useSelector((state) => state.items);
+  const { payments, loadingOrder, orders, credit } = useSelector((state) => state.orders);
+  const { tablewithSector, loadingTable } = useSelector((state) => state.tables);
+  const { deletedAllItems, subFamily, family, loadingItem } = useSelector((state) => state.items);
 
 
   // const [filteredMenuItems, setFilteredMenuItems] = useState([]); // State to hold filtered items
@@ -180,59 +180,59 @@ export default function Home_Pedidos_paymet() {
       dispatch(getAllTableswithSector({ admin_id }));
     }
 
-    if(deletedAllItems?.length == 0){
-        dispatch(getAllDeleteditems());
+    if (deletedAllItems?.length == 0) {
+      dispatch(getAllDeleteditems());
     }
-   if(subFamily.length == 0){
-       dispatch(getSubFamily());
+    if (subFamily.length == 0) {
+      dispatch(getSubFamily());
     }
-    if(family.length == 0){
-       dispatch(getFamily());
+    if (family.length == 0) {
+      dispatch(getFamily());
     }
-    if(orders?.length == 0){
+    if (orders?.length == 0) {
       dispatch(getAllOrders({ admin_id }));
     }
-    if(credit?.length == 0){
-      dispatch(getCredit({ admin_id }));
-    }
+
+    dispatch(getCredit({ admin_id }));
+
   }, [admin_id]);
 
   useEffect(() => {
     if (payments) {
       console.log(payments);
       const payment = payments?.find((v) => v.order_master_id == id);
-      if(payment){
+      if (payment) {
         setPaymentDone(true);
       }
     }
-    if(family){
+    if (family) {
       setParentCheck(family);
     }
-    if(deletedAllItems){
+    if (deletedAllItems) {
       // console.log(deletedAllItems);
-      
+
       setItems(deletedAllItems);
       setObj1(deletedAllItems?.filter((v) => v.deleted_at == null));
       setFilteredItemsMenu(deletedAllItems.filter((v) => v.deleted_at == null));
     }
-    if(subFamily){
+    if (subFamily) {
       setChildCheck(subFamily)
     }
-    if(orders){
+    if (orders) {
       const order = orders?.find((v) => v.id == id);
-      if(order){
+      if (order) {
         setOrderData(order);
       }
     }
-    if(credit){
+    if (credit) {
       const creditdata = credit?.some((v) => v.order_id == id);
       setCreditNote(creditdata);
-    } 
-  }, [credit,orders,payments,deletedAllItems,subFamily,family]);
+    }
+  }, [credit, orders, payments, deletedAllItems, subFamily, family]);
 
   // console.log(orderData,items);
   useEffect(() => {
-  
+
     if (orderData && items.length > 0) {
       handleOrderDetails();
       getSector();
@@ -252,7 +252,7 @@ export default function Home_Pedidos_paymet() {
   //   fetchCredit();
   // }, [admin_id, id]);
 
-  
+
 
   // const fetchCredit = async () => {
   //   setIsProcessing(true);
@@ -282,7 +282,7 @@ export default function Home_Pedidos_paymet() {
   //   setIsProcessing(false);
   // };
 
-  
+
 
   // const getPaymentsData = async () => {
   //   // console.log(admin_id, admin_id);
@@ -352,16 +352,16 @@ export default function Home_Pedidos_paymet() {
   // };
 
   const getSector = async () => {
-      const sectorWithTable = tablewithSector?.find((v) =>
-        v.tables.some((a) => a.id == orderData.table_id)
-      );
+    const sectorWithTable = tablewithSector?.find((v) =>
+      v.tables.some((a) => a.id == orderData.table_id)
+    );
 
-      if (sectorWithTable) {
-        setSector(sectorWithTable);
-        setTable(
-          sectorWithTable.tables.find((a) => a.id == orderData.table_id)
-        );
-      }
+    if (sectorWithTable) {
+      setSector(sectorWithTable);
+      setTable(
+        sectorWithTable.tables.find((a) => a.id == orderData.table_id)
+      );
+    }
   };
 
   const getOrderStatus = async () => {
@@ -383,10 +383,10 @@ export default function Home_Pedidos_paymet() {
   };
 
   const getUserdata = () => {
-  const user = allusers?.find((v) => v.id == orderData.user_id);
-    if(user){
+    const user = allusers?.find((v) => v.id == orderData.user_id);
+    if (user) {
       setUser(user);
-    }else{
+    } else {
       setUser(null); // Set user to null if there's an error
     }
   };
@@ -443,20 +443,20 @@ export default function Home_Pedidos_paymet() {
   const handleOrderDetails = () => {
     // Check if orderData is not null before accessing its properties
     // if (orderData) {
-      // console.log("Orderdata ", orderData);
-      const details = orderData.order_details.map((orderItem) => {
-        const matchingItem = items.find(
-          (item) => item.id === orderItem.item_id
-        );
-        return {
-          ...orderItem,
-          image: matchingItem ? matchingItem.image : orderItem.image,
-          description: matchingItem
-            ? matchingItem.description
-            : orderItem.description,
-        };
-      });  
-      setOrderDetails(details);
+    // console.log("Orderdata ", orderData);
+    const details = orderData.order_details.map((orderItem) => {
+      const matchingItem = items.find(
+        (item) => item.id === orderItem.item_id
+      );
+      return {
+        ...orderItem,
+        image: matchingItem ? matchingItem.image : orderItem.image,
+        description: matchingItem
+          ? matchingItem.description
+          : orderItem.description,
+      };
+    });
+    setOrderDetails(details);
   };
 
   // ----resons section -----
@@ -795,52 +795,52 @@ export default function Home_Pedidos_paymet() {
                 <div className="d-flex flex-wrap me-4">
                   {showCancelOrderButton
                     ? !(
-                        orderData?.status == "delivered" ||
-                        orderData?.status == "finalized" ||
-                        orderData?.status == "cancelled"
-                      ) && (
-                        <div
-                          onClick={handleShow}
-                          className="btn btn-danger me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center"
-                          style={{
-                            backgroundColor: "#F05252",
-                            borderRadius: "10px",
-                          }}
-                        >
-                          {" "}
-                          <IoMdCloseCircle className="me-2" />
-                          Anular pedido
-                        </div>
-                      )
+                      orderData?.status == "delivered" ||
+                      orderData?.status == "finalized" ||
+                      orderData?.status == "cancelled"
+                    ) && (
+                      <div
+                        onClick={handleShow}
+                        className="btn btn-danger me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center"
+                        style={{
+                          backgroundColor: "#F05252",
+                          borderRadius: "10px",
+                        }}
+                      >
+                        {" "}
+                        <IoMdCloseCircle className="me-2" />
+                        Anular pedido
+                      </div>
+                    )
                     : !(orderData?.status == "cancelled" || pamentDone) && (
-                        <>
-                          <Link
-                            className="text-decoration-none"
-                            to={`/home_Pedidos/payment_edit/${id}`}
-                          >
-                            <div
-                              className="btn btn-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center"
-                              style={{
-                                backgroundColor: "#147BDE",
-                                borderRadius: "10px",
-                              }}
-                            >
-                              {" "}
-                              <MdEditSquare className="me-2" />
-                              Editar Pedido
-                            </div>
-                          </Link>
+                      <>
+                        <Link
+                          className="text-decoration-none"
+                          to={`/home_Pedidos/payment_edit/${id}`}
+                        >
                           <div
-                            className="btn btn-outline-primary b_mar_lef ms-2 py-2 text-nowrap d-flex align-item-center justify-content-center"
-                            style={{ borderRadius: "10px" }}
-                            onClick={handleShow1Prod}
+                            className="btn btn-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center"
+                            style={{
+                              backgroundColor: "#147BDE",
+                              borderRadius: "10px",
+                            }}
                           >
                             {" "}
-                            <FiPlus className="me-2 mt-1" />
-                            Agregar Producto
+                            <MdEditSquare className="me-2" />
+                            Editar Pedido
                           </div>
-                        </>
-                      )}
+                        </Link>
+                        <div
+                          className="btn btn-outline-primary b_mar_lef ms-2 py-2 text-nowrap d-flex align-item-center justify-content-center"
+                          style={{ borderRadius: "10px" }}
+                          onClick={handleShow1Prod}
+                        >
+                          {" "}
+                          <FiPlus className="me-2 mt-1" />
+                          Agregar Producto
+                        </div>
+                      </>
+                    )}
 
                   {showCancelOrderButton && !creditNote && (
                     <div
@@ -886,6 +886,8 @@ export default function Home_Pedidos_paymet() {
                         id="exampleFormControlInput1"
                         // placeholder="01234"
                         placeholder={id}
+                        value={id}
+                        disabled
                       />
                     </div>
                     <div className="mb-3">
@@ -965,7 +967,7 @@ export default function Home_Pedidos_paymet() {
                         {
                           // product.map((item, index) => {
                           orderDetails?.map((v, index) => {
-                            console.log("asasAS",v)
+                            console.log("asasAS", v)
                             return (
                               <div>
                                 <div className=" py-3 ">
@@ -1177,84 +1179,82 @@ export default function Home_Pedidos_paymet() {
                         {/* <div className='btn a_btn_lightjamun my-3 bj-delivery-text-2 ' style={{ borderRadius: "10px" }}><span style={{ fontWeight: "600" }}>{orderData?.order_type}</span></div><br /> */}
                         <div
                           className={`bj-delivery-text-2  b_btn1 mb-2 mt-3 p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                              ${
-                                pamentDone &&
-                                orderData?.status.toLowerCase() === "delivered"
-                                  ? "b_blue "
-                                  : orderData?.status.toLowerCase() ===
-                                    "received"
-                                  ? "b_indigo"
-                                  : orderData?.status.toLowerCase() ===
-                                    "prepared"
+                              ${pamentDone &&
+                              orderData?.status.toLowerCase() === "delivered"
+                              ? "b_blue "
+                              : orderData?.status.toLowerCase() ===
+                                "received"
+                                ? "b_indigo"
+                                : orderData?.status.toLowerCase() ===
+                                  "prepared"
                                   ? "b_ora "
                                   : orderData?.status.toLowerCase() ===
                                     "delivered"
-                                  ? "b_blue"
-                                  : orderData?.status.toLowerCase() ===
-                                    "finalized"
-                                  ? "b_green"
-                                  : orderData?.status.toLowerCase() ===
-                                    "withdraw"
-                                  ? "b_indigo"
-                                  : orderData?.status.toLowerCase() === "local"
-                                  ? "b_purple"
-                                  : orderData?.status.toLowerCase() ===
-                                    "cancelled"
-                                  ? "b_ora text-danger"
-                                  : "b_ora text-danger"
-                              }`}
+                                    ? "b_blue"
+                                    : orderData?.status.toLowerCase() ===
+                                      "finalized"
+                                      ? "b_green"
+                                      : orderData?.status.toLowerCase() ===
+                                        "withdraw"
+                                        ? "b_indigo"
+                                        : orderData?.status.toLowerCase() === "local"
+                                          ? "b_purple"
+                                          : orderData?.status.toLowerCase() ===
+                                            "cancelled"
+                                            ? "b_ora text-danger"
+                                            : "b_ora text-danger"
+                            }`}
                         >
                           {pamentDone &&
-                          orderData?.status.toLowerCase() === "delivered"
+                            orderData?.status.toLowerCase() === "delivered"
                             ? "Pagado"
                             : orderData?.status.toLowerCase() === "received"
-                            ? "Recibido"
-                            : orderData?.status.toLowerCase() === "prepared"
-                            ? "Preparado "
-                            : orderData?.status.toLowerCase() === "delivered"
-                            ? "Entregado"
-                            : orderData?.status.toLowerCase() === "finalized"
-                            ? "Finalizado"
-                            : orderData?.status.toLowerCase() === "withdraw"
-                            ? "Retirar"
-                            : orderData?.status.toLowerCase() === "local"
-                            ? "Local"
-                            : orderData?.status.toLowerCase() === "cancelled"
-                            ? "Cancelar"
-                            : " "}
+                              ? "Recibido"
+                              : orderData?.status.toLowerCase() === "prepared"
+                                ? "Preparado "
+                                : orderData?.status.toLowerCase() === "delivered"
+                                  ? "Entregado"
+                                  : orderData?.status.toLowerCase() === "finalized"
+                                    ? "Finalizado"
+                                    : orderData?.status.toLowerCase() === "withdraw"
+                                      ? "Retirar"
+                                      : orderData?.status.toLowerCase() === "local"
+                                        ? "Local"
+                                        : orderData?.status.toLowerCase() === "cancelled"
+                                          ? "Cancelado"
+                                          : " "}
                         </div>
 
                         <div
                           style={{ fontWeight: "600", borderRadius: "10px" }}
                           className={`bj-delivery-text-2  b_btn1 mb-3  p-0 text-nowrap d-flex  align-items-center justify-content-center 
-                        ${
-                          orderData?.order_type.toLowerCase() === "local"
-                            ? "b_indigo"
-                            : orderData?.order_type.toLowerCase() ===
-                              "order now"
-                            ? "b_ora "
-                            : orderData?.order_type.toLowerCase() === "delivery"
-                            ? "b_blue"
-                            : orderData?.order_type.toLowerCase() === "uber"
-                            ? "b_ora text-danger"
-                            : orderData?.order_type
-                                .toLowerCase()
-                                .includes("with")
-                            ? "b_purple"
-                            : "b_ora text-danger"
-                        }`}
+                        ${orderData?.order_type.toLowerCase() === "local"
+                              ? "b_indigo"
+                              : orderData?.order_type.toLowerCase() ===
+                                "order now"
+                                ? "b_ora "
+                                : orderData?.order_type.toLowerCase() === "delivery"
+                                  ? "b_blue"
+                                  : orderData?.order_type.toLowerCase() === "uber"
+                                    ? "b_ora text-danger"
+                                    : orderData?.order_type
+                                      .toLowerCase()
+                                      .includes("with")
+                                      ? "b_purple"
+                                      : "b_ora text-danger"
+                            }`}
                         >
                           {orderData?.order_type.toLowerCase() === "local"
                             ? "Local"
                             : orderData?.order_type
-                                .toLowerCase()
-                                .includes("with")
-                            ? "Retiro "
-                            : orderData?.order_type.toLowerCase() === "delivery"
-                            ? "Entrega"
-                            : orderData?.order_type.toLowerCase() === "uber"
-                            ? "Uber"
-                            : orderData?.order_type}
+                              .toLowerCase()
+                              .includes("with")
+                              ? "Retiro "
+                              : orderData?.order_type.toLowerCase() === "delivery"
+                                ? "Entrega"
+                                : orderData?.order_type.toLowerCase() === "uber"
+                                  ? "Uber"
+                                  : orderData?.order_type}
                         </div>
 
                         <div className="d-flex justify-content-end align-items-center mb-4 mt-3">
@@ -1314,8 +1314,8 @@ export default function Home_Pedidos_paymet() {
                         {!orderData?.reason && (
                           <div className="mx-auto text-center mt-3">
                             {!pamentDone ||
-                            (orderData?.status.toLowerCase() !== "finalized" &&
-                              orderData?.status.toLowerCase() !==
+                              (orderData?.status.toLowerCase() !== "finalized" &&
+                                orderData?.status.toLowerCase() !==
                                 "delivered") ? (
                               <button
                                 className="btn text-white j-btn-primary w-100"
@@ -1482,37 +1482,36 @@ export default function Home_Pedidos_paymet() {
                             <td
                               style={{ fontWeight: "500", padding: "8px 12px" }}
                               className={`bj-delivery-text-2 mt-3  mb-3 b_text_w b_btn1 d-flex align-items-center justify-content-center mt-0 
-                               ${
-                                 order.status.toLowerCase() === "received"
-                                   ? "b_indigo"
-                                   : order.status.toLowerCase() === "prepared"
-                                   ? "b_ora "
-                                   : order.status.toLowerCase() === "delivered"
-                                   ? "b_blue"
-                                   : order.status.toLowerCase() === "finalized"
-                                   ? "b_green"
-                                   : order.status.toLowerCase() === "withdraw"
-                                   ? "b_indigo"
-                                   : order.status.toLowerCase() === "local"
-                                   ? "b_purple"
-                                   : "b_ora text-danger"
-                               }`}
+                               ${order.status.toLowerCase() === "received"
+                                  ? "b_indigo"
+                                  : order.status.toLowerCase() === "prepared"
+                                    ? "b_ora "
+                                    : order.status.toLowerCase() === "delivered"
+                                      ? "b_blue"
+                                      : order.status.toLowerCase() === "finalized"
+                                        ? "b_green"
+                                        : order.status.toLowerCase() === "withdraw"
+                                          ? "b_indigo"
+                                          : order.status.toLowerCase() === "local"
+                                            ? "b_purple"
+                                            : "b_ora text-danger"
+                                }`}
                             >
                               {order.status.toLowerCase() === "received"
                                 ? "Recibido"
                                 : order.status.toLowerCase() === "prepared"
-                                ? "Preparado "
-                                : order.status.toLowerCase() === "delivered"
-                                ? "Entregado"
-                                : order.status.toLowerCase() === "finalized"
-                                ? "Finalizado"
-                                : order.status.toLowerCase() === "withdraw"
-                                ? "Retirar"
-                                : order.status.toLowerCase() === "local"
-                                ? "Local"
-                                : order.status.toLowerCase() === "cancelled"
-                                ? "Cancelar"
-                                : " "}
+                                  ? "Preparado "
+                                  : order.status.toLowerCase() === "delivered"
+                                    ? "Entregado"
+                                    : order.status.toLowerCase() === "finalized"
+                                      ? "Finalizado"
+                                      : order.status.toLowerCase() === "withdraw"
+                                        ? "Retirar"
+                                        : order.status.toLowerCase() === "local"
+                                          ? "Local"
+                                          : order.status.toLowerCase() === "cancelled"
+                                            ? "Cancelado"
+                                            : " "}
                             </td>
                           </tr>
                         ))}

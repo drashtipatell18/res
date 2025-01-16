@@ -69,6 +69,9 @@ export default function Articles() {
     // console.log("close");
     setSelectedItemsCount(0);
     setItemId([]);
+    setCheckedParents([]);
+    setFilteredItemsMenu(obj1);
+    setSelectedParentNames([]);
     setSelectedMenus([]);
     setItemId([]);
     setMenuId(null);
@@ -1257,7 +1260,7 @@ export default function Articles() {
                                               <div
                                                 className="d-flex justify-content-center align-items-center rounded"
                                                 style={{
-                                                  height: "200px",
+                                                  height: "162px",
                                                   backgroundColor:
                                                     "rgb(55 65 81 / 34%)",
                                                   color: "white",

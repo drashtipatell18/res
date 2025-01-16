@@ -1277,7 +1277,7 @@ export default function Homeinformation() {
                             : orderData?.status?.toLowerCase() === "local"
                             ? "Local"
                             : orderData?.status?.toLowerCase() === "cancelled"
-                            ? "Cancelar"
+                            ? "Cancelado"
                             : " "}
                         </div>
                         {/* <div style={{ fontWeight: "600", borderRadius: "10px" }} className={`bj-delivery-text-2  b_btn1 mb-3   p-0 text-nowrap d-flex  align-items-center justify-content-center 
@@ -1463,9 +1463,9 @@ export default function Homeinformation() {
                       <thead>
                         <tr className="b_thcolor">
                           <th>Fecha</th>
-                          <th>hora </th>
-                          <th>usuarios</th>
-                          <th>estado</th>
+                          <th>Hora </th>
+                          <th>Usuarios</th>
+                          <th>Estado</th>
                         </tr>
                       </thead>
                       <tbody className="text-white b_btnn ">
@@ -1514,7 +1514,7 @@ export default function Homeinformation() {
                                 : order.status.toLowerCase() === "local"
                                 ? "Local"
                                 : order.status.toLowerCase() === "cancelled"
-                                ? "Cancelar"
+                                ? "Cancelado"
                                 : " "}
                             </td>
                             {/* <td className='b_text_w'>
