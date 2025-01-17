@@ -59,15 +59,15 @@ function Home_client() {
   }, [apiUrl, token, role]);
 
   useEffect(() => {
-    if (payments?.length == 0) {
+    // if (payments?.length == 0) {
       dispatch(getAllPayments({ admin_id }))
-    }
+    // }
   }, [admin_id])
 
   useEffect(() => {
-    if (user?.length == 0) {
+    // if (user?.length == 0) {
       dispatch(getUser())
-    }
+    // }
   }, [admin_id])
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -430,7 +430,9 @@ function Home_client() {
                         style={{ cursor: "pointer" }}
                         onClick={(e) => {
                           setError("");
-                          setSelectedDesdeMonth(1);
+                          const date = new Date();
+                            date.setMonth(date.getMonth() - 2);
+                            setSelectedDesdeMonth(new Date(date));
                         }}
                       >
                         <RiCloseLargeFill />{" "}

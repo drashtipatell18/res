@@ -47,12 +47,12 @@ const KdsRecibido = () => {
          if(user.length == 0){
             dispatch(getUser())
          }
-         if(kds.length == 0){
+        //  if(kds.length == 0){
             dispatch(getAllKds({admin_id}))
-         }
-         if(production.length == 0){
+        //  }
+        //  if(production.length == 0){
             dispatch(getProduction({admin_id}))
-         }
+        //  }
       }, [admin_id]);
     
       useEffect(()=>{

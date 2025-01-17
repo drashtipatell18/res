@@ -1247,7 +1247,9 @@ const Informacira = () => {
                                     style={{ cursor: "pointer" }}
                                     onClick={(e) => {
                                       setErrorReport("");
-                                      setSelectedDesdeMonthReport(1);
+                                      const date = new Date();
+                                      date.setMonth(date.getMonth() - 2);
+                                      setSelectedDesdeMonthReport(new Date(date));
                                     }}
                                   >
                                     <RiCloseLargeFill />{" "}
@@ -1706,7 +1708,9 @@ const Informacira = () => {
                           style={{ cursor: "pointer" }}
                           onClick={(e) => {
                             setError("");
-                            setSelectedDesdeMonth(1);
+                            const date = new Date();
+                            date.setMonth(date.getMonth() - 2);
+                            setSelectedDesdeMonth(new Date(date));
                           }}
                         >
                           <RiCloseLargeFill />{" "}

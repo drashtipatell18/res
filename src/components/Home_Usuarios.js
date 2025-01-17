@@ -214,12 +214,12 @@ function Home_Usuarios() {
 
     const dispatch = useDispatch();
     useEffect(() => {
-        if (orders.length == 0) {
+        // if (orders.length == 0) {
             dispatch(getAllOrders({ admin_id }))
-        }
-        if (payments.length == 0) {
+        // }
+        // if (payments.length == 0) {
             dispatch(getAllPayments({ admin_id }))
-        }
+        // }
     }, [admin_id]);
 
     useEffect(() => {
@@ -1022,7 +1022,9 @@ function Home_Usuarios() {
                                                     style={{ cursor: "pointer" }}
                                                     onClick={(e) => {
                                                         setErrorReport("");
-                                                        setSelectedDesdeMonthReport(1);
+                                                        const date = new Date();
+                                                        date.setMonth(date.getMonth() - 2);
+                                                        setSelectedDesdeMonthReport(new Date(date));
                                                     }}
                                                 >
                                                     <RiCloseLargeFill />{" "}

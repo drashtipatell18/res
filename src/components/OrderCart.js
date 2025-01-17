@@ -41,7 +41,7 @@ const OrderCart = ({ image, name, price, code, addItemToCart ,id,production_cent
         </div>
 
         <div className="position-absolute " style={{ cursor: "pointer" }}>
-        <Link to={`/articles/singleatricleproduct/${id}`} state={{ from: location.pathname }} className="text-white text-decoration-none" >
+        <Link to={`/articles/singleatricleproduct/${id}`} state={{ from: location.pathname + location.search }} className="text-white text-decoration-none" >
 
           <p className="m_bgblack j-var-padd d-flex align-items-center rounded m-2 j-tbl-font-3">
             <IoMdInformationCircle className="me-1 fs-5 j-card-j-width" />{" "}

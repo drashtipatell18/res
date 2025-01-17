@@ -53,9 +53,9 @@ const Home_Pedidos = () => {
     }, [admin_id])
 
     useEffect(() => {
-        if (tablewithSector?.length == 0) {
+        // if (tablewithSector?.length == 0) {
             dispatch(getAllTableswithSector({ admin_id }))
-        }
+        // }
     }, [admin_id])
 
 
@@ -67,15 +67,15 @@ const Home_Pedidos = () => {
     }, [admin_id])
 
     useEffect(() => {
-        if (tablewithSector) {
+        // if (tablewithSector) {
             setSectordata(tablewithSector)
-        }
+        // }
     }, [tablewithSector])
 
     useEffect(() => {
-        if (payments?.length == 0) {
+        // if (payments?.length == 0) {
             dispatch(getAllPayments({ admin_id }))
-        }
+        // }
     }, [admin_id])
 
     useEffect(() => {

@@ -130,22 +130,22 @@ export default function SingleArticleProduct() {
       // if (roles?.length == 0) {
       //   dispatch(getRols());
       // }
-      if (payments?.length == 0) {
+      // if (payments?.length == 0) {
         dispatch(getAllPayments({ admin_id }));
-      }
-      if (tablewithSector?.length == 0) {
+      // }
+      // if (tablewithSector?.length == 0) {
         dispatch(getAllTableswithSector({ admin_id }));
-      }
+      // }
   
-      if(deletedAllItems?.length == 0){
+      // if(deletedAllItems?.length == 0){
           dispatch(getAllDeleteditems());
-      }
-     if(subFamily.length == 0){
+      // }
+    //  if(subFamily.length == 0){
          dispatch(getSubFamily());
-       }
-       if(family.length == 0){
+      //  }
+      //  if(family.length == 0){
          dispatch(getFamily());
-       }
+      //  }
         if(production.length == 0){
            dispatch(getProduction({admin_id}))
            }
@@ -1492,7 +1492,9 @@ export default function SingleArticleProduct() {
                                   style={{ cursor: "pointer" }}
                                   onClick={(e) => {
                                     setErrorReport("");
-                                    setSelectedDesdeMonthReport(1);
+                                    const date = new Date();
+                                    date.setMonth(date.getMonth() - 2);
+                                    setSelectedDesdeMonthReport(new Date(date));
                                   }}
                                 >
                                   <RiCloseLargeFill />{" "}
@@ -1874,7 +1876,9 @@ export default function SingleArticleProduct() {
                             style={{ cursor: "pointer" }}
                             onClick={(e) => {
                               setError("");
-                              setSelectedDesdeMonth(1);
+                              const date = new Date();
+                              date.setMonth(date.getMonth() - 2);
+                              setSelectedDesdeMonth(new Date(date));
                             }}
                           >
                             <RiCloseLargeFill />{" "}
@@ -2088,7 +2092,9 @@ export default function SingleArticleProduct() {
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {
                                   setError("");
-                                  setSelectedDesdeMonth(1);
+                                  const date = new Date();
+                                  date.setMonth(date.getMonth() - 2);
+                                  setSelectedDesdeMonth(new Date(date));
                                 }}
                               >
                                 <RiCloseLargeFill />{" "}

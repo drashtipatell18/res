@@ -92,14 +92,14 @@ const Usuarios = () => {
   }, [token]);
 
   useEffect(() => {
-    if (user.length == 0) {
+    // if (user.length == 0) {
       dispatch(getUser());
-    }
-    if (roles?.length == 0) {
+    // }
+    // if (roles?.length == 0) {
       // console.log("roles");
       
       dispatch(getRols());
-    }
+    // }
   }, [admin_id]);
 
   useEffect(() => {
@@ -790,7 +790,7 @@ const Usuarios = () => {
                                       console.log(role);
 
                                       if (
-                                        // role.name !== "admin" &&
+                                        role.name !== "admin" &&
                                         role.name !== "superadmin"
                                       ) {
                                         return (

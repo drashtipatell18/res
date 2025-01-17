@@ -202,9 +202,9 @@ export default function Homeinformation() {
     if (roles?.length == 0) {
       dispatch(getRols());
     }
-    if (payments?.length == 0) {
+    // if (payments?.length == 0) {
       dispatch(getAllPayments({ admin_id }));
-    }
+    // }
     if (tablewithSector?.length == 0) {
       dispatch(getAllTableswithSector({ admin_id }));
     }
@@ -218,12 +218,12 @@ export default function Homeinformation() {
     if (family?.length == 0) {
       dispatch(getFamily());
     }
-    if(orders?.length == 0){
+    // if(orders?.length == 0){
       dispatch(getAllOrders({ admin_id }));
-    }
-    if(credit?.length == 0){
+    // }
+    // if(credit?.length == 0){
       dispatch(getCredit({ admin_id }));
-    }
+    // }
   }, [admin_id]);
 
   useEffect(() => {

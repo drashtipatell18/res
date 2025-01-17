@@ -83,6 +83,7 @@ const Informacira = () => {
       setPrData([]);
     }
   }, [selectedDesdeMonth, selectedHastaMonth]);
+  
   useEffect(() => {
     if (selectedDesdeMonthReport > selectedHastaMonthReport) {
       setErrorReport("Hasta debe ser mayor o igual que Desde.");
@@ -1598,7 +1599,7 @@ const Informacira = () => {
                                     onClick={(e) => {
                                       setErrorReport("");
                                       const date = new Date();
-                                      date.setMonth(date.getMonth() - 1);
+                                      date.setMonth(date.getMonth() - 2);
                                       setSelectedDesdeMonthReport(new Date(date));
                                     }}
                                   >
@@ -2132,7 +2133,7 @@ const Informacira = () => {
                           onClick={(e) => {
                             setError("");
                             const date = new Date();
-                            date.setMonth(date.getMonth() - 1);
+                            date.setMonth(date.getMonth() - 2);
                             setSelectedDesdeMonth(new Date(date));
                           }}
                         >

@@ -341,18 +341,18 @@ export default function ProductionCenter() {
 
   useEffect(()=>{
         
-    if(items.length == 0){
+    // if(items.length == 0){
       dispatch(getAllitems());
-    }
-    if(subFamily.length == 0){
+    // }
+    // if(subFamily.length == 0){
       dispatch(getSubFamily());
-    }
-    if(family.length == 0){
+    // }
+    // if(family.length == 0){
       dispatch(getFamily());
-    }
-    if(production.length == 0){
+    // }
+    // if(production.length == 0){
       dispatch(getProduction({admin_id}));
-    }
+    // }
     // if(productionData.length == 0){
       dispatch(getProductionData({admin_id}));
     // }

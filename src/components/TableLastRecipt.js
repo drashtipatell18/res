@@ -1,7 +1,7 @@
 import React from "react";
 
 const TableLastRecipt = ({ data ,itemInfo , payment}) => {
-  console.log("recipe",data,itemInfo,payment);
+  // console.log("recipe",data,itemInfo,payment);
   const role = localStorage.getItem("name");
   
 console.log(data,itemInfo,payment);
@@ -59,8 +59,8 @@ console.log(data,itemInfo,payment);
     (sum, item) => sum + item.total,
     0
   );
-  const price =  parseFloat(itemsTotal) - parseFloat(data[0].discount);
-  const iva = parseFloat((itemsTotal * 0.19).toFixed(2)); // 12% tax
+  const price =  parseFloat(itemsTotal) - parseFloat(data[0].discount || 1.0);
+  const iva = parseFloat((price * 0.19).toFixed(2)); // 12% tax
   const total = price + iva;
   receiptData.totals = {
     subtotalIva: itemsTotal,

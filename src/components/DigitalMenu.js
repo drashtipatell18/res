@@ -406,18 +406,18 @@ export default function Articles() {
     setSelectedMenus([]);
     setItemId([]);
     setMenuId(null);
-    if (items.length == 0) {
+    // if (items.length == 0) {
       dispatch(getAllitems());
-    }
-    if (subFamily.length == 0) {
+    // }
+    // if (subFamily.length == 0) {
       dispatch(getSubFamily());
-    }
-    if (family.length == 0) {
+    // }
+    // if (family.length == 0) {
       dispatch(getFamily());
-    }
-    if (menu.length == 0) {
+    // }
+    // if (menu.length == 0) {
       dispatch(getMenu({ admin_id }));
-    }
+    // }
   }, []);
 
   useEffect(() => {

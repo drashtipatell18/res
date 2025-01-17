@@ -97,6 +97,10 @@ const TableInformation = () => {
     } else {
       setErrorReport("");
     }
+    if (tableData) {
+      const tableId = tableData.id;
+      fetchData(tableId)
+    }
   }, [selectedDesdeMonthReport, selectedHastaMonthReport]);
 
   const gettableData = async () => {
@@ -289,6 +293,10 @@ const TableInformation = () => {
       setError("Hasta month must be greater than or equal to Desde month.");
       setDatatab([]);
     }
+    if (tableData) {
+      const tableId = tableData.id;
+      fetchData(tableId)
+    }
   }, [selectedDesdeMonth, selectedHastaMonth]);
 
   const fetchData = async (tableId) => {
@@ -302,7 +310,7 @@ const TableInformation = () => {
       //     },
       //   }
       // );
-      console.log("table", tableState)
+      // console.log("table", tableState)
       const data = tableState.filter(
         (v) =>
           new Date(selectedHastaMonth) >= new Date(v.created_at) &&
@@ -333,7 +341,8 @@ const TableInformation = () => {
       fetchtTableData(tableId);
       fetchData(tableId);
     }
-  }, [tableData, selectedDesdeMonth, selectedHastaMonth,tableid]);
+  }, [tableData,tableid]);
+
   const fetchUserData = async (userIds) => {
     try {
       const response = await axios.get(`${apiUrl}/get-user/${userIds}`, {
@@ -361,6 +370,7 @@ const TableInformation = () => {
       throw error;
     }
   };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
@@ -1002,7 +1012,9 @@ const TableInformation = () => {
                             style={{ cursor: "pointer" }}
                             onClick={(e) => {
                               setError("");
-                              setSelectedDesdeMonth(1);
+                              const date = new Date();
+                              date.setMonth(date.getMonth() - 2);
+                              setSelectedDesdeMonth(new Date(date));
                             }}
                           >
                             <RiCloseLargeFill />{" "}
@@ -1287,7 +1299,9 @@ const TableInformation = () => {
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {
                                   setError("");
-                                  setSelectedDesdeMonth(1);
+                                  const date = new Date();
+                                  date.setMonth(date.getMonth() - 2);
+                                  setSelectedDesdeMonth(new Date(date));
                                 }}
                               >
                                 <RiCloseLargeFill />{" "}
@@ -1467,7 +1481,9 @@ const TableInformation = () => {
                         style={{ cursor: "pointer" }}
                         onClick={(e) => {
                           setErrorReport("");
-                          setSelectedDesdeMonthReport(1);
+                          const date = new Date();
+                          date.setMonth(date.getMonth() - 2);
+                          setSelectedDesdeMonthReport(new Date(date));
                         }}
                       >
                         <RiCloseLargeFill />{" "}

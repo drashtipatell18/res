@@ -655,8 +655,12 @@ const TableInformation = () => {
                           </div>
                         </div>
                       </div>
-                      {error && <div className="alert alert-danger d-flex justify-content-between pointer">{error} <div className="text-black d-flex align-items-center" style={{cursor:'pointer'}}  onClick={(e) => {setError(''); setSelectedDesdeMonth(1)}}><RiCloseLargeFill   />  </div></div>}
-
+                      {error && <div className="alert alert-danger d-flex justify-content-between pointer">{error} <div className="text-black d-flex align-items-center" style={{cursor:'pointer'}}  
+                      onClick={(e) => {setError('');  
+                            const date = new Date();
+                            date.setMonth(date.getMonth() - 2);
+                            setSelectedDesdeMonth(new Date(date))}}>
+                        <RiCloseLargeFill   />  </div></div>}
                     </form>
 
                     <div className="b_table1">
@@ -801,7 +805,12 @@ const TableInformation = () => {
                               </select>
                             </div>
                           </div>
-                          {error && <div className="alert alert-danger d-flex justify-content-between pointer">{error} <div className="text-black d-flex align-items-center" style={{cursor:'pointer'}}  onClick={(e) => {setError(''); setSelectedDesdeMonth(1)}}><RiCloseLargeFill   />  </div></div>}
+                          {error && <div className="alert alert-danger d-flex justify-content-between pointer">{error} <div className="text-black d-flex align-items-center" style={{cursor:'pointer'}}  
+                          onClick={(e) => {setError(''); 
+                            const date = new Date();
+                            date.setMonth(date.getMonth() - 2);
+                            setSelectedDesdeMonth(new Date(date));}}>
+                              <RiCloseLargeFill   />  </div></div>}
                         </div>
                       </div>
                       <div className="col-6">
@@ -1088,7 +1097,12 @@ const TableInformation = () => {
 
                       </div>
                     </div>
-                    {error && <div className="alert alert-danger d-flex justify-content-between pointer">{error} <div className="text-black d-flex align-items-center" style={{cursor:'pointer'}}  onClick={(e) => {setError(''); setSelectedDesdeMonth(1)}}><RiCloseLargeFill   />  </div></div>}
+                    {error && <div className="alert alert-danger d-flex justify-content-between pointer">{error} <div className="text-black d-flex align-items-center" style={{cursor:'pointer'}}  
+                    onClick={(e) => {setError(''); 
+                      const date = new Date();
+                      date.setMonth(date.getMonth() - 2);
+                      setSelectedDesdeMonth(new Date(date));}}>
+                        <RiCloseLargeFill   />  </div></div>}
 
                   </form>
 
@@ -1229,7 +1243,11 @@ const TableInformation = () => {
                         </select>
                           </div>
                         </div>
-                        {error && <div className="alert alert-danger d-flex justify-content-between pointer">{error} <div className="text-black d-flex align-items-center" style={{cursor:'pointer'}}  onClick={(e) => {setError(''); setSelectedDesdeMonth(1)}}><RiCloseLargeFill   />  </div></div>}
+                        {error && <div className="alert alert-danger d-flex justify-content-between pointer">{error} <div className="text-black d-flex align-items-center" style={{cursor:'pointer'}}  
+                        onClick={(e) => {setError(''); 
+                          const date = new Date();
+                          date.setMonth(date.getMonth() - 2);
+                          setSelectedDesdeMonth(new Date(date));}}><RiCloseLargeFill   />  </div></div>}
 
                       </div>
 
