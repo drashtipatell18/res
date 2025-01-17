@@ -43,11 +43,7 @@ export const getTableState = createAsyncThunk(
       const response = await axiosInstance.post(
         `/table/getStats/${tid}`,
         {admin_id}
-      );
-
-      console.log(response.data);
-      
-
+      );   
       return response.data; // Assuming the API returns an array of users
     } catch (error) {
       return handleErrors(error, null, rejectWithValue);

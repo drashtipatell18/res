@@ -513,7 +513,7 @@ function Home_detail() {
 
                                                     <td>
                                                         {credits && credits?.some(v => v.order_id === order.id) ? (
-                                                            <div className='b_text_w bj-delivery-text-2 b_idbtn b_idbtn_c m-0' style={{ borderRadius: "10px", width: "145px", background:"#2f5dadbd"}}>  crédito generado   </div>
+                                                            <div className='b_text_w bj-delivery-text-2 b_idbtn b_idbtn_c m-0' style={{ borderRadius: "10px", width: "145px", background:"#2f5dadbd"}}>  Crédito generado   </div>
                                                         ) : (
                                                             <div
                                                                 onClick={() => handleCredit(order.id, order.status)}

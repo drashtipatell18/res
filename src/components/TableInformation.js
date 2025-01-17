@@ -302,7 +302,6 @@ const TableInformation = () => {
       //     },
       //   }
       // );
-      console.log("table", tableState)
       const data = tableState.filter(
         (v) =>
           new Date(selectedHastaMonth) >= new Date(v.created_at) &&
@@ -349,6 +348,7 @@ const TableInformation = () => {
   };
   const fetchtTableData = async (tableId) => {
     try {
+      setIsProcessing(true);
       const response = await axios.get(`${apiUrl}/sector/by-table/${tableId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -356,8 +356,11 @@ const TableInformation = () => {
       });
 
       setUserTableData(response.data.sector);
+      setIsProcessing(false);
     } catch (error) {
       console.error("Error fetching user data:", error);
+      setIsProcessing(false);
+
       throw error;
     }
   };
