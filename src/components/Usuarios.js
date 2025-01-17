@@ -540,8 +540,16 @@ const Usuarios = () => {
       //enqueueSnackbar (error?.response?.data?.alert, { variant: 'error' })
       // playNotificationSound();;
       // Handle API errors here
-      if (error.response && error.response.data && error.response.data.errors) {
-        setErrors(error.response.data.errors);
+      console.log(error)
+      if (error.response && error.response.data && error.response.data.alert) {
+        setErrors(error.response.data.alert);
+        if(error.response.data.error){
+          if (error.response.data.error.email[0] === 'The email has already been taken.') {
+            alert('El correo electrónico ya ha sido utilizado. Utilice un correo electrónico diferente.');
+          }
+        }else{
+          alert(error.response.data.alert)
+        }
       } else {
         setErrors({ general: "An error occurred. Please try again." });
       }
@@ -787,11 +795,12 @@ const Usuarios = () => {
                                       </option>
                                     ))} */}
                                     {roles?.map((role) => {
-                                      console.log(role);
+                                     
 
                                       if (
-                                        role.name !== "admin" &&
-                                        role.name !== "superadmin"
+                                        // role.name !== "admin" &&
+                                        role.name !== "superadmin" &&
+                                        role.name !== "admin" 
                                       ) {
                                         return (
                                           <option key={role.id} value={role.id}>

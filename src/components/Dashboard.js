@@ -413,7 +413,7 @@ const Dashboard = () => {
 
       const response = await axios.post(
         `${apiUrl}/getStatisticalData`,
-        { ...durationData, admin_id },
+        { ...durationData, admin_id, year:new Date().getFullYear() },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -1771,8 +1771,8 @@ const Dashboard = () => {
                           setSelectedHastaMonth(selectedValue);
                           setPaymentData("month");
                           if (selectedValue === "12") {
-                            const currentMonth = new Date().getMonth() + 1;
-                            setSelectedHastaMonth(currentMonth); // Set to current month
+                            // const currentMonth = new Date().getMonth() + 1;
+                            // setSelectedHastaMonth(currentMonth); // Set to current month
                             fetchData(); // Call fetchData to get current month data
                           }
                         }}
@@ -2011,8 +2011,8 @@ const Dashboard = () => {
                             setSelectedRevtaMonth(selectedValue);
                             // setRevData('month')
                             if (selectedValue === "12") {
-                              const currentMonth = new Date().getMonth() + 1;
-                              setSelectedRevtaMonth(currentMonth); // Set to current month
+                              // const currentMonth = new Date().getMonth() + 1;
+                              // setSelectedRevtaMonth(currentMonth); // Set to current month
                               fetchData(); // Call fetchData to get current month data
                             }
                           }}
@@ -2304,8 +2304,8 @@ const Dashboard = () => {
                               setSelectPopMonth(selectedValue);
                               setPopData("month");
                               if (selectedValue === "12") {
-                                const currentMonth = new Date().getMonth() + 1;
-                                setSelectPopMonth(currentMonth); // Set to current month
+                                // const currentMonth = new Date().getMonth() + 1;
+                                // setSelectPopMonth(currentMonth); // Set to current month
                                 fetchData(); // Call fetchData to get current month data
                               }
                             }}
@@ -2495,8 +2495,8 @@ const Dashboard = () => {
                               setSelectDeliveryMonth(selectedValue);
                               setDeliveryDay("month");
                               if (selectedValue === "12") {
-                                const currentMonth = new Date().getMonth() + 1;
-                                setSelectDeliveryMonth(currentMonth); // Set to current month
+                                // const currentMonth = new Date().getMonth() + 1;
+                                // setSelectDeliveryMonth(currentMonth); // Set to current month
                                 fetchData(); // Call fetchData to get current month data
                               }
                             }}
@@ -2718,8 +2718,8 @@ const Dashboard = () => {
                               setselectBoxMonth(selectedValue);
                               setBoxDay("month");
                               if (selectedValue === "12") {
-                                const currentMonth = new Date().getMonth() + 1;
-                                setselectBoxMonth(currentMonth); // Set to current month
+                                // const currentMonth = new Date().getMonth() + 1;
+                                // setselectBoxMonth(currentMonth); // Set to current month
                                 fetchData(); // Call fetchData to get current month data
                               }
                             }}
@@ -2926,8 +2926,8 @@ const Dashboard = () => {
                           setSelectCencelMonth(selectedValue);
                           setCancelOrderDay("month");
                           if (selectedValue === "12") {
-                            const currentMonth = new Date().getMonth() + 1;
-                            setSelectCencelMonth(currentMonth); // Set to current month
+                            // const currentMonth = new Date().getMonth() + 1;
+                            // setSelectCencelMonth(currentMonth); // Set to current month
                             fetchData(); // Call fetchData to get current month data
                           }
                         }}

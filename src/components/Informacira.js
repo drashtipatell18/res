@@ -74,7 +74,7 @@ const Informacira = () => {
   const [boxcashError, setBoxcashError] = useState();
 
   console.log(selectedHastaMonth);
-  
+
 
   useEffect(() => {
     if (selectedDesdeMonth > selectedHastaMonth) {
@@ -305,7 +305,7 @@ const Informacira = () => {
           )
         );
 
-       
+
         dispatch(getboxs({ admin_id }));
 
         fetchAllBox();
@@ -436,7 +436,7 @@ const Informacira = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-      );  
+      );
 
       if (response.data.success) {
         setFinalData({
@@ -563,8 +563,8 @@ const Informacira = () => {
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     setData(data);
 
-      // console.log(selectedHastaMonth,selectedDesdeMonth);
-      
+    // console.log(selectedHastaMonth,selectedDesdeMonth);
+
 
 
     const pdata = boxLogs.filter((v) => v.box_id == bId && new Date(selectedHastaMonth) >= new Date(v.created_at) && new Date(selectedDesdeMonth) <= new Date(v.created_at))
@@ -581,7 +581,7 @@ const Informacira = () => {
 
 
   // console.log(prData);
-  
+
   // setIsProcessing(false);
   // const fetchAllBoxReport = async () => {
   //   setIsProcessing(true);
@@ -637,10 +637,10 @@ const Informacira = () => {
 
   useEffect(() => {
     // if (box?.length == 0) {
-      dispatch(getboxs({ admin_id }));
+    dispatch(getboxs({ admin_id }));
     // }
     // if (boxLogs?.length == 0) {
-      dispatch(getboxsLogs({ admin_id }));
+    dispatch(getboxsLogs({ admin_id }));
     // }
     if (user?.length == 0) {
       dispatch(getUser());
@@ -652,13 +652,13 @@ const Informacira = () => {
       dispatch(getAllTableswithSector({ admin_id }));
     }
     // if (orders?.length == 0) {
-      dispatch(getAllOrders({ admin_id }));
+    dispatch(getAllOrders({ admin_id }));
     // }
     // if (payments?.length == 0) {
-      dispatch(getAllPayments({ admin_id }));
+    dispatch(getAllPayments({ admin_id }));
     // }
     // if(credit?.length == 0){
-      dispatch(getCredit({admin_id}));
+    dispatch(getCredit({ admin_id }));
     // }
   }, [admin_id]);
 
@@ -778,7 +778,7 @@ const Informacira = () => {
 
       if (response.status === 200) {
         handleShow18(); // Show success modal
-         // Refresh box data
+        // Refresh box data
         console.log("open box successfully")
 
         // console.log("open box successfully")
@@ -826,9 +826,9 @@ const Informacira = () => {
       if (response.status === 200) {
         handleShow12(); // Show success modal
         handleClose11();
-      
+
         dispatch(getboxsLogs({ admin_id }));
-        fetchAllBox(); 
+        fetchAllBox();
         const bid = localStorage.getItem("boxId");
         if (bid) {
           if (bid == bId) {
@@ -1896,6 +1896,7 @@ const Informacira = () => {
                             >
                               Monto final
                             </label>
+                            {/* {console.log(amount)} */}
                             <input
                               type="text"
                               id="final"
@@ -1986,7 +1987,7 @@ const Informacira = () => {
                             />
                             <p className="mb-0 mt-2 h6 j-tbl-pop-1">Caja</p>
                             <p className="opacity-75 j-tbl-pop-2">
-                              Caja cerrada exitosamente
+                              Reporte generado con éxito
                             </p>
                           </div>
                         </Modal.Body>
