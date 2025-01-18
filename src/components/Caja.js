@@ -478,10 +478,10 @@ const Caja = () => {
                                                             {role === 'admin' && (
                                                                 <button 
                                                                     onClick={() => handleBoxSelection(order.id)}
-                                                                    className={`sj_lightsky j-caja-text-3 w-50 ms-2 ${selectedBoxId === order.id ? 'sj_lightsky' : 'j-bgcolor-caja'}`}
+                                                                    className={`sj_lightsky j-caja-text-3 w-50 ms-2 ${selectedBoxId === order.id && isClosed ? 'sj_lightsky' : 'j-bgcolor-caja'}`}
                                                                     disabled={!isClosed}
                                                                 >
-                                                                {selectedBoxId === order.id ? 'Seleccionado' : 'Seleccionar'}
+                                                                {(selectedBoxId === order.id && isClosed) ? 'Seleccionado' : 'Seleccionar'}
                                                                 </button>
                                                             )}
                                                         </div>

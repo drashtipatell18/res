@@ -229,7 +229,7 @@ const Mostrador = () => {
     );
   };
   const totalCost = getTotalCost();
-  const discount = 1.0;
+  const discount = 0.0;
   const finalTotal = totalCost - discount;
 
   const [rut1, setRut1] = useState("");
@@ -370,7 +370,7 @@ const Mostrador = () => {
 
       // Tour validation
       if (!data.tour || data.tour.trim() === "") {
-        newErrors.tour = "Se requiere tour";
+        newErrors.tour = "Se requiere giro";
       }
 
       // Address validation

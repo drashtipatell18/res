@@ -141,7 +141,7 @@ const Counter = () => {
   };
 
   const calculateDiscount = () => {
-    return cartItems.length > 0 ? 1.0 : 0;
+    return cartItems.length > 0 ? 0.0 : 0;
   };
   const [showEditFamDel, setShowEditFamDel] = useState(false);
   const handleCloseEditFamDel = () => setShowEditFamDel(false);
@@ -284,7 +284,7 @@ const Counter = () => {
     );
   };
   const totalCost = getTotalCost();
-  const discount = 1.0;
+  const discount = 0.0;
   const finalTotal = totalCost - discount;
   // category drag
 

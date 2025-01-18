@@ -174,7 +174,7 @@ function Home_detail_no2() {
     }
 
     const  total = returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0);
-    const final = parseFloat(total) - parseFloat(orderAlldata?.discount);
+    const final = parseFloat(total) - parseFloat(orderAlldata?.discount)||0.00;
     const tax = parseFloat(final * 0.19).toFixed(2);
     const finalTotal = (parseFloat(final) + parseFloat(tax)).toFixed(2);
 
@@ -274,7 +274,7 @@ function Home_detail_no2() {
                                         </div>
                                         <div className='d-flex justify-content-between'>
                                             <div>Descuentos</div>
-                                            <div className='me-5'>${orderAlldata?.discount}</div>
+                                            <div className='me-5'>${orderAlldata?.discount || 0.00}</div>
                                         </div>
                                         <div className='d-flex justify-content-between mt-2'>
                                             <div>IVA 19.00%</div>

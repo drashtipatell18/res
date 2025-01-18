@@ -59,13 +59,13 @@ console.log(data,itemInfo,payment);
     (sum, item) => sum + item.total,
     0
   );
-  const price =  parseFloat(itemsTotal) - parseFloat(data[0].discount || 1.0);
+  const price =  parseFloat(itemsTotal);
   const iva = parseFloat((price * 0.19).toFixed(2)); // 12% tax
   const total = price + iva;
   receiptData.totals = {
     subtotalIva: itemsTotal,
     subtotal0: 0.0,
-    discount: data[0].discount,
+    discount: 0.0,
     iva: iva,
     total: total,
     received: total, // Assuming the exact amount is received

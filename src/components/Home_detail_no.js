@@ -218,27 +218,27 @@ function Home_detail_no() {
             phone:paymentData?.phone || "",
             business_name:paymentData?.business_name || "",
             ltda:paymentData?.ltda,
-            receiptType: paymentData?.firstname? "1" : "3"
+            receiptType: paymentData?.firstname? "1" : paymentData?.business_name ?   "3" : "4"
         }
         localStorage.setItem("payment", JSON.stringify(payment));
         navigate("/counter");
         setError(null)
     }
 
-    const obj1 = {
-        name: "Damian Gonzales",
-        credCode: "01234",
-        id: "01234",
-        email: "ejemplo@gmail.com",
-        image: img1,
-        pName: "Pollo frito crujiente",
-        note: "Nota: Sin salsa de tomate",
-        pPrice: "5.00",
-        pQty: "1",
-        totalPrice: "5.00",
-        sCode: "0012",
-        destination: "-"
-    }
+    // const obj1 = {
+    //     name: "Damian Gonzales",
+    //     credCode: "01234",
+    //     id: "01234",
+    //     email: "ejemplo@gmail.com",
+    //     image: img1,
+    //     pName: "Pollo frito crujiente",
+    //     note: "Nota: Sin salsa de tomate",
+    //     pPrice: "5.00",
+    //     pQty: "1",
+    //     totalPrice: "5.00",
+    //     sCode: "0012",
+    //     destination: "-"
+    // }
 
     const handleNavigate = () => {
 
@@ -276,7 +276,7 @@ function Home_detail_no() {
     }
 
     const  total = returnDetails?.reduce((acc, v) => acc + v.amount * v.quantity, 0);
-    const final = parseFloat(total) - parseFloat(orderAlldata?.discount);
+    const final = parseFloat(total) - parseFloat(orderAlldata?.discount) || 0.00;
     const tax = parseFloat(final * 0.19).toFixed(2);
     const finalTotal = (parseFloat(final) + parseFloat(tax)).toFixed(2);
     return (
@@ -397,7 +397,7 @@ function Home_detail_no() {
                                         </div>
                                         <div className='d-flex justify-content-between'>
                                             <div>Descuentos</div>
-                                            <div className='me-5'>${orderAlldata?.discount}</div>
+                                            <div className='me-5'>${orderAlldata?.discount || 0.00}</div>
                                         </div>
                                         <div className='d-flex justify-content-between mt-2'>
                                             <div>IVA 19.00%</div>

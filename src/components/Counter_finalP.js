@@ -264,7 +264,7 @@ const Counter_finalP = () => {
   };
 
   const totalCost = getTotalCost();
-  const discount = 1.0;
+  const discount = 0.0;
   const finalTotal = totalCost - discount;
   const taxAmount = finalTotal * 0.19;
   const lastTotal = parseFloat(finalTotal.toFixed(2)) + parseFloat(taxAmount.toFixed(2)) + parseFloat(tipAmount.toFixed(2)) -(creditId ? creditData?.creditTotal : 0)
@@ -434,7 +434,7 @@ const Counter_finalP = () => {
     setIsProcessing(true);
     try {
       const credit1 = credit?.find((v) => v.id == creditId);
-      const Total = credit1.return_items?.reduce((acc, v) => acc + v.amount * v.quantity, 0) - 1.0;
+      const Total = credit1.return_items?.reduce((acc, v) => acc + v.amount * v.quantity, 0) - 0.0;
       const creditTotal = parseFloat((Total + Total * 0.19).toFixed(2))
       setCreditData({ ...credit1, creditTotal: creditTotal });
 
@@ -587,11 +587,11 @@ const Counter_finalP = () => {
         order_type: orderType.orderType,
         payment_type: selectedCheckboxes[0],
         status: "received",
-        discount: discount, // Use the discount value from your state
+        discount: discount || 0.0, // Use the discount value from your state
         user_id: userId, // You might want to dynamically set this
         delivery_cost: 0, // You might want to dynamically set this
         customer_name:
-          payment.firstname && payment.firstname.trim() !== ""
+          payment.firstname && payment.firstname.trim() !== ""  
             ? payment.firstname
             : payment.business_name || "",
         reason: "",

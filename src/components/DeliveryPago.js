@@ -255,7 +255,7 @@ const DeliveryPago = () => {
     );
   };
   const totalCost = getTotalCost();
-  const discount = 1.0;
+  const discount = 0.0;
   const finalTotal = totalCost - discount;
   const taxAmount = finalTotal * 0.19;
 
@@ -540,7 +540,7 @@ const DeliveryPago = () => {
           order_type: orderType.orderType,
           payment_type: selectedCheckboxes[0],
           status: "received",
-          discount: discount,
+          discount: discount || 0.00,
           user_id: userId,
           delivery_cost: 0,
           customer_name:

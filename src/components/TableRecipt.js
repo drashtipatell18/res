@@ -49,15 +49,15 @@ const TableRecipt = ({payment,tableData,productData}) => {
         (sum, item) => sum + item.total,
         0
       );
-const discount = parseFloat(tableData[0].discount) || 0; // Ensure discount is a number
+const discount = 0.00; // Ensure discount is a number
 
- const price = itemsTotal - tableData[0].discount;
+ const price = itemsTotal ;
   const iva = price * 0.19; // 12% tax
   const total = price + iva;
   receiptData.totals = {
     subtotalIva: itemsTotal,
     subtotal0: 0.0,
-    discount: discount,
+    discount: discount || 0.00,
     iva: iva,
     total: total,
     received: total, // Assuming the exact amount is received

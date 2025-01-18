@@ -454,6 +454,11 @@ const Dashboard = () => {
           };
         }
       } else {
+
+        durationData = {
+          duration: "month",
+          month: selectedHastaMonth, // Current month (1-12)
+        };
       }
 
       setIsProcessing(true);
@@ -701,7 +706,6 @@ const Dashboard = () => {
       // Handle error appropriately, e.g., setting an error state or displaying a message
     }
   };
-
   // get payment
   const fetchPayment = async () => {
     setIsProcessing(true);

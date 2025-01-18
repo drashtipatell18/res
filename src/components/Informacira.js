@@ -110,6 +110,7 @@ const Informacira = () => {
   };
 
   const [showModal12, setShowModal12] = useState(false);
+  const [showModal13, setShowModal13] = useState(false);
 
   const handleClose12 = () => setShowModal12(false);
   const handleShow12 = () => {
@@ -117,6 +118,14 @@ const Informacira = () => {
     setTimeout(() => {
       setShowModal12(false);
       handleClose15();
+    }, 2000);
+  };
+  const handleShow13 = () => {
+    handleClose11();
+    setShowModal13(true);
+    setTimeout(() => {
+      setShowModal13(false);
+      // handleClose15();
     }, 2000);
   };
 
@@ -805,7 +814,6 @@ const Informacira = () => {
     if (!bId) return; // Ensure a box is selected
     // console.log("close Price", closePrice)
     // console.log("cashier Price", pricesecond)
-    handleClose11();
     // setIsProcessing(true);
     try {
       const response = await axios.post(
@@ -824,7 +832,7 @@ const Informacira = () => {
       );
       // console.log(response);
       if (response.status === 200) {
-        handleShow12(); // Show success modal
+        handleShow13(); // Show success modal
         handleClose11();
 
         dispatch(getboxsLogs({ admin_id }));
@@ -1416,7 +1424,7 @@ const Informacira = () => {
                               Caja abierta
                             </p>
                             <p className="opacity-75 j-tbl-pop-2">
-                              exitosamente
+                              Exitosamente
                             </p>
                           </div>
                         </Modal.Body>
@@ -1988,6 +1996,27 @@ const Informacira = () => {
                             <p className="mb-0 mt-2 h6 j-tbl-pop-1">Caja</p>
                             <p className="opacity-75 j-tbl-pop-2">
                               Reporte generado con éxito
+                            </p>
+                          </div>
+                        </Modal.Body>
+                      </Modal>
+                      {/* close success */}
+                      <Modal
+                        show={showModal13}
+                        backdrop={true}
+                        keyboard={false}
+                        className="m_modal jay-modal"
+                      >
+                        <Modal.Header closeButton className="border-0" />
+                        <Modal.Body>
+                          <div className="text-center">
+                            <img
+                              src={require("../Image/check-circle.png")}
+                              alt=""
+                            />
+                            <p className="mb-0 mt-2 h6 j-tbl-pop-1">Caja</p>
+                            <p className="opacity-75 j-tbl-pop-2">
+                                Caja cerrada con exito
                             </p>
                           </div>
                         </Modal.Body>

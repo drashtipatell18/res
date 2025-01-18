@@ -342,6 +342,10 @@ const TableInformation = () => {
     }
   }, [tableData,tableid]);
 
+  useEffect(() => {
+      fetchData()
+  }, [selectedDesdeMonth, selectedHastaMonth,tableState]);
+
   const fetchUserData = async (userIds) => {
     try {
       const response = await axios.get(`${apiUrl}/get-user/${userIds}`, {

@@ -449,7 +449,7 @@ const TableDatos = () => {
 
       // Tour validation
       if (!data.tour || data.tour.trim() === "") {
-        errors.tour = "Se requiere tour";
+        errors.tour = "Se requiere giro";
       }
 
       // Address validation

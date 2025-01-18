@@ -505,7 +505,7 @@ export default function Home_crear({ item }) {
     console.log(selectedItems);
 
     const total = selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0);
-    const final = parseInt(total) - parseFloat(orderAlldata.discount).toFixed(2)
+    const final = parseInt(total) - parseFloat(orderAlldata.discount).toFixed(2) || 0.00
     const tax = parseFloat(final*0.19.toFixed(2))
     const finaltotal = final + tax
 
@@ -1051,7 +1051,7 @@ export default function Home_crear({ item }) {
                                                                     </div>
                                                                     <div className="d-flex justify-content-between align-items-center my-1">
                                                                         <div>Descuentos</div>
-                                                                        <div>${orderAlldata?.discount}</div>
+                                                                        <div>${orderAlldata?.discount || 0.00}</div>
                                                                     </div>
                                                                     <div className="d-flex justify-content-between align-items-center my-1">
                                                                         <div>IVA 19.00%</div>
@@ -1133,7 +1133,7 @@ export default function Home_crear({ item }) {
                                                                     </div>
                                                                     <div className="d-flex justify-content-between align-items-center my-1">
                                                                         <div>Descuentos</div>
-                                                                        <div>${orderAlldata?.discount}</div>
+                                                                        <div>${orderAlldata?.discount || 0.00}</div>
                                                                     </div>
                                                                     <div className="d-flex justify-content-between align-items-center my-1">
                                                                         <div>IVA 19.00%</div>

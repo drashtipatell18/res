@@ -68,7 +68,7 @@ const Recipt = ({ payment, item, discount, paymentAmt, paymentType, creditTotal,
   };
 
   const totalCost = getTotalCost();
-  const discounta = discount;
+  const discounta = discount || 0.00;
   const finalTotal = totalCost - discounta;
   const iva = finalTotal * 0.19;
   const total = parseFloat(finalTotal.toFixed(2)) + parseFloat(iva.toFixed(2)) + parseFloat(tipAmount.toFixed(2)) - parseFloat(creditTotal || 0)
@@ -79,7 +79,7 @@ const Recipt = ({ payment, item, discount, paymentAmt, paymentType, creditTotal,
   receiptData.totals = {
     subtotalIva: itemsTotal,
     subtotal0: 0.0,
-    discount: discounta,
+    discount: discounta || 0.00,
     iva: iva,
     total: total,
     received: total, 

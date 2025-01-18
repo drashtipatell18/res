@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
-import box from "../Image/Ellipse 20.png";
-import box4 from "../Image/box5.png";
 import { FaCircleCheck, FaMinus, FaPlus } from "react-icons/fa6";
 import { Accordion, Button, Modal, Spinner } from "react-bootstrap";
-import check from "../Image/Checkbox.png";
-import check5 from "../Image/Checkbox6.png";
+
 import Sidenav from "./Sidenav";
-import { RiDeleteBin6Fill } from "react-icons/ri";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import img2 from "../Image/crispy-fry-chicken.png";
 import img3 from "../Image/Strawberry-gelatin.png";
 import pic2 from "../img/Image(1).jpg";
 import axios from "axios";
-import Recipt from "./Recipt";
 import TableLastRecipt from "./TableLastRecipt";
 import ElapsedTimeDisplay from "./ElapsedTimeDisplay";
 import { useDispatch, useSelector } from "react-redux";
@@ -261,13 +256,12 @@ const TablePago = () => {
     setCartItems(newCartItems);
   };
 
-  const totalCost = getTotalCost();
+  // const totalCost = getTotalCost();
   // console.log(totalCost);
 
-  const discount = 1.0;
-  const propina = 5.0;
-  const finalTotal = totalCost - discount;
-
+  // const discount = 0.0;
+  // const propina = 5.0;
+  // const finalTotal = totalCost - discount;
 
   useEffect(
     () => {
@@ -335,7 +329,7 @@ const TablePago = () => {
     let { name, value } = event.target;
     value = value.replace(/[^0-9.]/g, ""); // Allow only numbers and decimal points
 
-    console.log(name);
+    // console.log(name);
     const otherbox = selectedCheckboxes.filter(item => !name.includes(item))
 
     setCustomerData((prevState) => {
@@ -344,7 +338,7 @@ const TablePago = () => {
         [name]: value, // Update the specific payment type amount
       };
 
-      const taxAmount = parseFloat(((tableData[0].order_total - parseFloat(tableData[0].discount)) * 0.19).toFixed(2))
+      const taxAmount = parseFloat(((tableData[0].order_total) * 0.19).toFixed(2))
       const currentValue = parseFloat(value) || 0;
       const finalTotal = tableData[0].order_total
       const totalDue = finalTotal + taxAmount + tipAmount;
@@ -355,10 +349,10 @@ const TablePago = () => {
         const otherPaymentType = otherbox[0] + 'Amount';
         updatedState[otherPaymentType] = otherAmount.toFixed(2);
       }
-      console.log(updatedState);
+      // console.log(updatedState);
 
       // New calculation for turn
-      console.log(tableData);
+      // console.log(tableData);
       
       const totalAmount = parseFloat(updatedState.cashAmount || 0) + parseFloat(updatedState.debitAmount || 0) + parseFloat(updatedState.creditAmount || 0) + parseFloat(updatedState.transferAmount || 0);
 
@@ -495,7 +489,7 @@ const TablePago = () => {
       errors.paymentType = "Por favor seleccione un tipo de pago";
     }
 
-    const totalWithTax = tableData[0].order_total + (tableData[0].order_total * 0.19) + tipAmount - tableData[0].discount;
+    const totalWithTax = tableData[0].order_total + (tableData[0].order_total * 0.19) + tipAmount;
     const totalPaymentAmount = parseFloat(customerData.cashAmount || 0) + parseFloat(customerData.debitAmount || 0) + parseFloat(customerData.creditAmount || 0) + parseFloat(customerData.transferAmount || 0);
     // console.log(totalPaymentAmount < totalWithTax, totalPaymentAmount <= 0)
     // Validate payment amount
@@ -522,7 +516,7 @@ const TablePago = () => {
 
   const [paymentInfo, setPaymentInfo] = useState({});
 
-console.log("ygt",tableData);
+// console.log("ygt",tableData);
 
   const { printOrder, printStatus } = useOrderPrinting( productionCenters,tableData.length>0 ? tableData?.[0].items : [])
 
@@ -536,7 +530,7 @@ console.log("ygt",tableData);
 
     const totalPaymentAmount = parseFloat(customerData.cashAmount || 0) + parseFloat(customerData.debitAmount || 0) + parseFloat(customerData.creditAmount || 0) + parseFloat(customerData.transferAmount || 0);
 
-    const taxAmount = ((tableData[0].order_total - parseFloat(tableData[0].discount)) * 0.19).toFixed(2) // Calculate tax (12%)
+    const taxAmount = ((tableData[0].order_total) * 0.19).toFixed(2) // Calculate tax (12%)
     const paymentData = {
       ...payment,
       amount: totalPaymentAmount,
@@ -707,7 +701,7 @@ console.log("ygt",tableData);
     }
   };
 
-  const total = tableData?.[0] ? parseFloat(tableData[0].order_total) - parseFloat(tableData[0].discount) : 0;
+  const total = tableData?.[0] ? parseFloat(tableData[0].order_total) : 0;
   const tax = total ? parseFloat((total * 0.19).toFixed(2)) : 0;
   const ftotal = parseFloat((total + tax).toFixed(2));
 
@@ -1335,11 +1329,7 @@ console.log("ygt",tableData);
                       <div className="j-total-discount d-flex justify-content-between">
                         <p className="j-counter-text-2">Descuentos</p>
                         <span className="text-white">
-                          {tableData.map((item) => (
-                            <span key={item.id}>
-                              ${parseFloat(item.discount).toFixed(2)}
-                            </span>
-                          ))}
+                        $ 0.00
                         </span>
                       </div>
                     </div>

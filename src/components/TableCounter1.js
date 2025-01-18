@@ -334,7 +334,7 @@ const TableCounter1 = () => {
               (total, item) => total + item.price * item.count,
               0
             ),
-            discount: discount,
+            discount:  0.00 ,
             customer_name: customerName,
             person: person,
           },
@@ -377,7 +377,7 @@ const TableCounter1 = () => {
             (total, item) => total + item.amount,
             0
           ),
-          discount: discount,
+          discount: 0.00,
           customer_name: customerName,
           person: person,
         },
@@ -417,7 +417,7 @@ const TableCounter1 = () => {
   };
 
   const totalCost = getTotalCost();
-  const discount = 1.0;
+  const discount = 0.0;
   const finalTotal = totalCost - discount;
 
   /* api */
@@ -684,7 +684,7 @@ const TableCounter1 = () => {
         order_type: "local",
         payment_type: "debit",
         status: "received",
-        discount: discount, // Use the discount value from your state
+        discount: discount || 0.00, // Use the discount value from your state
         table_id: parseInt(tId),
         user_id: userId, // You might want to dynamically set this
         delivery_cost: 0, // You might want to dynamically set this
@@ -1557,7 +1557,7 @@ const TableCounter1 = () => {
                                   <span key={item.id}>
                                     ${" "}
                                     {parseFloat(
-                                      item.order_total - item.discount
+                                      item.order_total 
                                     ).toFixed(2)}
                                   </span>
                                 ))}
