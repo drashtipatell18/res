@@ -380,7 +380,7 @@ const Informacira = () => {
     if (amount == 0) {
       finalamount();
     }
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     if (finaldata?.orderId.length > 0) {
@@ -400,7 +400,7 @@ const Informacira = () => {
       const totalCredit = filterecredit.reduce((sum, credit) => {
         // console.log(credit);
         const discount =
-          orders.find((v) => v.id == credit.order_id)?.discount || 1.0;
+          orders.find((v) => v.id == credit.order_id)?.discount || 0.0;
 
         const total = credit.return_items
           ? credit.return_items.reduce(
@@ -456,11 +456,9 @@ const Informacira = () => {
       if (response.data.total_amount > 0) {
         setAmount(
           (
-            response.data.total_amount + parseFloat(data[0].open_amount)
+            response.data.total_amount
           ).toFixed(2)
         );
-      } else {
-        setAmount(data[0]?.open_amount);
       }
     } catch (error) {
       console.log(error);
@@ -1904,12 +1902,13 @@ const Informacira = () => {
                             >
                               Monto final
                             </label>
-                            {/* {console.log(amount)} */}
+                            {console.log(amount, parseFloat(data[0]?.open_amount),credits)}
                             <input
                               type="text"
                               id="final"
                               className="sj_modelinput j-tbl-information-input py-2 px-3 opacity-75"
-                              value={`$${(amount - credits + parseFloat(data[0]?.open_amount)).toFixed(2)} `}
+
+                              value={`$${(parseFloat(amount)  + parseFloat(data[0]?.open_amount) - credits).toFixed(2)} `}
                               onChange={handleprice}
                               disabled
                             />

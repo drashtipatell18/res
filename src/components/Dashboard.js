@@ -326,7 +326,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchPaymentMethos();
-    fetchPayment();
+    // fetchPayment();
   }, [selectedHastaMonth, paymentsData, selectedHastaYear]);
 
   useEffect(() => {
