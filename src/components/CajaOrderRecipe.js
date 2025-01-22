@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 const CajaOrderRecipe = ({ data }) => {
+  // console.log(data)
     const apiUrl = process.env.REACT_APP_API_URL;
     const token = localStorage.getItem("token");
     const [user,setUser] = useState([]);
@@ -21,7 +22,7 @@ const CajaOrderRecipe = ({ data }) => {
         };
         fetchData();
     }, [data]);
-    console.log("user",user)
+    // console.log("user",user)
 
   const role = localStorage.getItem("name");
 
@@ -233,6 +234,13 @@ const CajaOrderRecipe = ({ data }) => {
             <div>IVA 19.00%:</div>
             <div>
               $ {receiptData.totals.iva.toFixed(2)}
+              <br />
+            </div>
+          </div>
+          <div className="d-flex justify-content-between mx-1" style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div>Credito:</div>
+            <div>
+              $ {user?.credit_amount || 0.00}
               <br />
             </div>
           </div>

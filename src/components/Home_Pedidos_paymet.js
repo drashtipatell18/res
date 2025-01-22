@@ -23,6 +23,7 @@ export default function Home_Pedidos_paymet() {
   const apiUrl = process.env.REACT_APP_API_URL; // Laravel API URL
   const API = process.env.REACT_APP_IMAGE_URL;
   const [token] = useState(localStorage.getItem("token"));
+  const [role] = useState(localStorage.getItem("role"));
   const admin_id = localStorage.getItem("admin_id");
   const { id } = useParams();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -1311,7 +1312,7 @@ export default function Home_Pedidos_paymet() {
                             </div>
                           </div>
                         </div>
-                        {!orderData?.reason && (
+                        {!orderData?.reason && (role == "admin" || role == "cashier") && (
                           <div className="mx-auto text-center mt-3">
                             {!pamentDone ||
                               (orderData?.status.toLowerCase() !== "finalized" &&

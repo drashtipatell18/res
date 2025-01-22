@@ -5,6 +5,10 @@ import PDF417Barcode from './PDF417Barcode';
 const CreditRecipt = forwardRef(({ paymentData, creditData }, ref) => {
     console.log(paymentData, creditData);
 
+    const total = parseFloat(creditData?.return_items.reduce((acc, v) => acc + parseFloat(v.quantity) * parseFloat(v.amount), 0))
+    const tax = parseFloat((total * 19 / 100).toFixed(2))
+    const totalWithTax = parseFloat((total + tax).toFixed(2))
+
     const receiptData = {
         storeCenter: "S.I.I. - SANTIAGO CENTRO",
         rut: paymentData.rut,
@@ -19,9 +23,9 @@ const CreditRecipt = forwardRef(({ paymentData, creditData }, ref) => {
             name: creditData.name,
             add: paymentData.address
         },
-        subtotal: creditData.return_items.reduce((acc, v) => acc + v.quantity * v.amount, 0),
-        tax: ((creditData.return_items.reduce((acc, v) => acc + v.quantity * v.amount, 0)-1.0) * 19 / 100).toFixed(2),
-        total: ((creditData.return_items.reduce((acc, v) => acc + v.quantity * v.amount, 0)-1.0) * 19 / 100 + creditData.return_items.reduce((acc, v) => acc + v.quantity * v.amount, 0)).toFixed(2),
+        subtotal: total,
+        tax: tax,
+        total: totalWithTax,
     };
     const barcodeData = JSON.stringify({
         code: creditData.code,
@@ -124,6 +128,10 @@ const CreditRecipt = forwardRef(({ paymentData, creditData }, ref) => {
                         <div style={{ fontSize: "14px", display: "flex", justifyContent: "space-between" }}>
                             <div style={{ fontWeight: "800" }}>Neto</div>
                             <div>${receiptData.subtotal}<br /></div>
+                        </div>
+                        <div style={{ fontSize: "14px", display: "flex", justifyContent: "space-between" }}>
+                            <div style={{ fontWeight: "800" }}>Dcto:</div>
+                            <div>0.00<br /></div>
                         </div>
                         <div style={{ fontSize: "14px", display: "flex", justifyContent: "space-between" }}>
                             <div style={{ fontWeight: "800" }}>IVA (19%)</div>
@@ -277,7 +285,7 @@ const CreditRecipt = forwardRef(({ paymentData, creditData }, ref) => {
                         </div>
                         <div style={{ fontSize: "14px", display: "flex", justifyContent: "space-between" }}>
                             <div style={{ fontWeight: "800" }}>Dcto:</div>
-                            <div>1.00<br /></div>
+                            <div>0.00<br /></div>
                         </div>
                         <div style={{ fontSize: "14px", display: "flex", justifyContent: "space-between" }}>
                             <div style={{ fontWeight: "800" }}>IVA (19%)</div>

@@ -246,6 +246,13 @@ const translatedPayments = paymentList
                 <br />
               </div>
             </div>
+            <div className="d-flex justify-content-between mx-1" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div>Credito:</div>
+              <div>
+                $ {paymentData?.credit_amount || 0.00}
+                <br />
+              </div>
+            </div>
             <div
               style={{ borderBottom: "1px dashed #000", marginTop: "1px" }}
             />

@@ -472,6 +472,7 @@ const Dashboard = () => {
           },
         }
       );
+      console.log("response", response.data.payment_methods);
       setIsProcessing(false);
       setPayMethodData(response.data.payment_methods);
       setLoading(false);
@@ -957,10 +958,10 @@ const Dashboard = () => {
     // setIsProcessing(true);
     try {
       const infomation = {
-        Efectivo: payMethodData?.cash,
-        Tarjeta_de_debito: payMethodData?.debit,
-        Tarjeta_de_crédito: payMethodData?.credit,
-        Transferencias: payMethodData?.transfer,
+        Efectivo: payMethodData?.cash?.total_amount,
+        Tarjeta_de_debito: payMethodData?.debit?.total_amount,
+        Tarjeta_de_crédito: payMethodData?.credit?.total_amount,
+        Transferencias: payMethodData?.transfer?.total_amount,
       };
 
       const formattedData = Object.entries(infomation).map(([key, value]) => ({
@@ -1870,13 +1871,13 @@ const Dashboard = () => {
                       <div className="s_dashboard-body">
                         <div className="j-border px-2">
                           <h5 className="mb-1 text-white sjfs-2">
-                            Total: {payMethodData?.cash}
+                            Total: {payMethodData?.cash?.count}
                           </h5>
                           <p className="s_fontsize mb-2 sjfs-14">Efectivo</p>
                         </div>
                         <div className="j-border px-2 py-1">
                           <h5 className="mb-1 text-white sjfs-2">
-                            Total: {payMethodData?.debit}
+                              Total: {payMethodData?.debit?.count}
                           </h5>
                           <p className="s_fontsize mb-2 sjfs-14">
                             Tarjeta de debito
@@ -1884,7 +1885,7 @@ const Dashboard = () => {
                         </div>
                         <div className="j-border px-2 py-1">
                           <h5 className="mb-1 text-white sjfs-2">
-                            Total: {payMethodData?.credit}
+                            Total: {payMethodData?.credit?.count}
                           </h5>
                           <p className="s_fontsize mb-2 sjfs-14">
                             Tarjeta de crédito
@@ -1892,7 +1893,7 @@ const Dashboard = () => {
                         </div>
                         <div className="px-2 py-1">
                           <h5 className="mb-1 text-white sjfs-2">
-                            Total: {payMethodData?.transfer}
+                            Total: {payMethodData?.transfer?.count}
                           </h5>
                           <p className="s_fontsize sjfs-14">Transferencias</p>
                         </div>
@@ -1924,7 +1925,7 @@ const Dashboard = () => {
                       <p className="ss_fontsize mb-0 sjfs-14">
                         Efectivo:{" "}
                         <span className="text-white me-4 sjfs-14">
-                          {payMethodData?.cash}$ CLP
+                          {payMethodData?.cash?.total_amount}$ CLP
                         </span>
                       </p>
                     </div>
@@ -1933,7 +1934,7 @@ const Dashboard = () => {
                       <p className="ss_fontsize mb-0 sjfs-14">
                         Tarjeta debito:{" "}
                         <span className="text-white sjfs-14">
-                          {payMethodData?.debit}$ CLP
+                          {payMethodData?.debit?.total_amount}$ CLP
                         </span>
                       </p>
                     </div>
@@ -1944,7 +1945,7 @@ const Dashboard = () => {
                       <p className="ss_fontsize mb-0 sjfs-14">
                         Tarjeta crédito:{" "}
                         <span className="text-white me-4 sjfs-14">
-                          {payMethodData?.credit}$ CLP
+                          {payMethodData?.credit?.total_amount}$ CLP
                         </span>
                       </p>
                     </div>
@@ -1953,7 +1954,7 @@ const Dashboard = () => {
                       <p className="ss_fontsize mb-0 sjfs-14">
                         Transferencias:{" "}
                         <span className="text-white sjfs-14">
-                          {payMethodData?.transfer}$ CLP
+                          {payMethodData?.transfer?.total_amount}$ CLP
                         </span>
                       </p>
                     </div>

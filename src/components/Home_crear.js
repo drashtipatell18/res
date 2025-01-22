@@ -805,14 +805,14 @@ export default function Home_crear({ item }) {
                                                                                     <div className="d-flex align-content-center">
                                                                                         <input type="checkbox"
                                                                                             className="me-4  custom-checkbox"
-                                                                                            style={{ marginTop: "22px" }}
+                                                                                            style={{ marginTop: "22px",width:"20px !important",height:"20px !important",flexShrink:"0"}}
                                                                                             onClick={() => handleReturnItems(item)}
                                                                                             checked={selectedItems.some((v) => v.id == item.id)}
                                                                                         />
                                                                                         <img src={`${API}/images/${item.image}`} alt="pic" height={60} width={60} />
                                                                                         <div className="ms-4">
                                                                                             <div className="text-nowrap">{item.name}</div>
-                                                                                            <div className="mt-3 a_mar_new">{item.description}</div>
+                                                                                            <div className="mt-2 a_mar_new">{item.description}</div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>

@@ -16,10 +16,10 @@ import { RiDeleteBin5Fill } from "react-icons/ri";
 import { IoIosSend, IoMdLock } from "react-icons/io";
 import axios from "axios";
 import Loader from "./Loader";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAudioManager from "./audioManager";
 import { useDispatch, useSelector } from "react-redux";
-import {getRols, getUser } from "../redux/slice/user.slice";
+import { getRols, getUser } from "../redux/slice/user.slice";
 //import { enqueueSnackbar  } from "notistack";
 
 const Usuarios = () => {
@@ -44,12 +44,15 @@ const Usuarios = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [userToDelete, setUserToDelete] = useState(null);
   const [userActive, setUserActive] = useState(null);
+  const [showPrint, setShowPrint] = useState(false);
+  const [showEditPrintSuc, setShowEditPrintSuc] = useState(false);
 
   const dispatch = useDispatch();
-  const { user, roles, loadingUser} = useSelector((state) => state.user);
+  const { user, roles, loadingUser } = useSelector((state) => state.user);
+
+
 
   // console.log(user, roles);
-  
 
   const roleNamesInSpanish = {
     1: "Admin",
@@ -86,19 +89,19 @@ const Usuarios = () => {
     // else if (token) {
     //   setIsProcessing(true);
     //   fetchUser();
-      // fetchRole();
+    // fetchRole();
     //   setIsProcessing(false);
     // }
   }, [token]);
 
   useEffect(() => {
     // if (user.length == 0) {
-      dispatch(getUser());
+    dispatch(getUser());
     // }
     // if (roles?.length == 0) {
-      // console.log("roles");
-      
-      dispatch(getRols());
+    // console.log("roles");
+
+    dispatch(getRols());
     // }
   }, [admin_id]);
 
@@ -540,15 +543,20 @@ const Usuarios = () => {
       //enqueueSnackbar (error?.response?.data?.alert, { variant: 'error' })
       // playNotificationSound();;
       // Handle API errors here
-      console.log(error)
+      console.log(error);
       if (error.response && error.response.data && error.response.data.alert) {
         setErrors(error.response.data.alert);
-        if(error.response.data.error){
-          if (error.response.data.error.email[0] === 'The email has already been taken.') {
-            alert('El correo electrónico ya ha sido utilizado. Utilice un correo electrónico diferente.');
+        if (error.response.data.error) {
+          if (
+            error.response.data.error.email[0] ===
+            "The email has already been taken."
+          ) {
+            alert(
+              "El correo electrónico ya ha sido utilizado. Utilice un correo electrónico diferente."
+            );
           }
-        }else{
-          alert(error.response.data.alert)
+        } else {
+          alert(error.response.data.alert);
         }
       } else {
         setErrors({ general: "An error occurred. Please try again." });
@@ -643,6 +651,67 @@ const Usuarios = () => {
     setUserActive(userId);
     setShowEditFam2(true);
   };
+  
+
+  // ===printer=====
+  const [printerCode, setPrinterCode] = useState(null);
+  const [printerCodeError, setPrinterCodeError] = useState("");
+  const [userid, setUserId] = useState(null);
+
+  const handlePrinterCodeChange = (e) => {
+    setPrinterCode(e.target.value);
+    if (e.target.value.trim()) {
+      setPrinterCodeError("");
+    }
+  };
+
+  const handleShowEditPrintSuc = () => {
+    setShowEditPrintSuc(true);
+    setTimeout(() => {
+      setShowEditPrintSuc(false);
+    }, 2000);
+  };
+
+  const handleClosePrint = () => {
+    setShowPrint(false);
+  };
+
+  const handlePrintDetails = async () => {
+
+    // setShowPrint(true);
+
+    if(!printerCode){
+      setPrinterCodeError("El código de impresora es requerido");
+      return;
+    }
+    if(isNaN(printerCode)){
+      setPrinterCodeError("El código de impresora debe ser un número");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const response = await axios.post(
+        `${apiUrl}/user/update-printercode/${userid}`,
+        {
+          printer_code: printerCode,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      console.log(response.data); 
+      dispatch(getUser());
+      setIsProcessing(false);
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+    setIsProcessing(false);
+    setPrinterCodeError("");
+    setShowPrint(false);
+    handleShowEditPrintSuc();
+  };
 
   return (
     <div>
@@ -692,27 +761,29 @@ const Usuarios = () => {
                       <FaFilter /> &nbsp; <span className="b_ttt">Filtro</span>
                     </Dropdown.Toggle>
                     <Dropdown.Menu className="m14 m_filter">
-                      {roles?.filter(role => role.id !== 5).map((role) => (
-                        <div
-                          className="px-3 py-1 d-flex gap-2 align-items-center fw-500"
-                          key={role.id}
-                          style={{
-                            opacity: selectedFilters[role.id] ? 1 : 0.5,
-                          }}
-                        >
-                          <input
-                            className="j-change-checkbox j_check_white"
-                            type="checkbox"
-                            name={role.id.toString()}
-                            checked={selectedFilters[role.id] || false}
-                            onChange={handleCheckboxChange}
-                          />
-                          <span className="fw-500">
-                            {roleNamesInSpanish[role.id] || role.name}{" "}
-                            {/* Display name in Spanish */}
-                          </span>
-                        </div>
-                      ))}
+                      {roles
+                        ?.filter((role) => role.id !== 5)
+                        .map((role) => (
+                          <div
+                            className="px-3 py-1 d-flex gap-2 align-items-center fw-500"
+                            key={role.id}
+                            style={{
+                              opacity: selectedFilters[role.id] ? 1 : 0.5,
+                            }}
+                          >
+                            <input
+                              className="j-change-checkbox j_check_white"
+                              type="checkbox"
+                              name={role.id.toString()}
+                              checked={selectedFilters[role.id] || false}
+                              onChange={handleCheckboxChange}
+                            />
+                            <span className="fw-500">
+                              {roleNamesInSpanish[role.id] || role.name}{" "}
+                              {/* Display name in Spanish */}
+                            </span>
+                          </div>
+                        ))}
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
@@ -795,12 +866,10 @@ const Usuarios = () => {
                                       </option>
                                     ))} */}
                                     {roles?.map((role) => {
-                                     
-
                                       if (
                                         // role.name !== "admin" &&
                                         role.name !== "superadmin" &&
-                                        role.name !== "admin" 
+                                        role.name !== "admin"
                                       ) {
                                         return (
                                           <option key={role.id} value={role.id}>
@@ -1120,6 +1189,7 @@ const Usuarios = () => {
                       <th>Nombre</th>
                       <th>Rol</th>
                       <th>Correo</th>
+                      <th>Impresión</th>
                       <th>Estado</th>
                       <th>Acciones</th>
                     </tr>
@@ -1135,6 +1205,36 @@ const Usuarios = () => {
                               "Rol Desconocido"}
                           </td>
                           <td className="b_text_w">{user.email}</td>
+                          <td>
+                            <div className="d-flex align-items-center gap-2 btn btn-outline-primary b_togllle b_border_out b_ttt" style={{ width:"220px"}}>
+                              <svg
+                                className="b_ttt"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M8 3a2 2 0 0 0-2 2v3h12V5a2 2 0 0 0-2-2H8Zm-3 7a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h1v-4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v4h1a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2H5Zm4 11a1 1 0 0 1-1-1v-4h8v4a1 1 0 0 1-1 1H9Z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              <div
+                                className="b_ttt"
+                                onClick={() =>{
+                                  // handlePrintDetails(user.id)
+                                  setPrinterCode(user?.printer_code || null)
+                                  setShowPrint(true)
+                                  setUserId(user.id)
+                                }}
+                              >
+                                Ajustes de impresión
+                              </div>
+                            </div>
+                          </td>
                           <td>
                             {user.status === "Activa" ? (
                               <button
@@ -1258,17 +1358,15 @@ const Usuarios = () => {
                             disabled={formData.role_id === 1}
                           >
                             {roles?.map((role) => {
-                              if(formData.role_id === 1){
-                                if (
-                                  role.name !== "superadmin"
-                                ) {
+                              if (formData.role_id === 1) {
+                                if (role.name !== "superadmin") {
                                   return (
                                     <option key={role.id} value={role.id}>
                                       {roleNamesInSpanish[role.id] || role.name}
                                     </option>
                                   );
                                 }
-                              }else{
+                              } else {
                                 if (
                                   role.name !== "admin" &&
                                   role.name !== "superadmin"
@@ -1280,7 +1378,7 @@ const Usuarios = () => {
                                   );
                                 }
                               }
-                              
+
                               return null; // Skip rendering admin role if user is not superadmin@gmail.com
                             })}
                           </select>
@@ -1557,6 +1655,82 @@ const Usuarios = () => {
                   style={{ height: "85px", width: "85px", borderWidth: "6px" }}
                 />
                 <p className="mt-2">Procesando solicitud...</p>
+              </Modal.Body>
+            </Modal>
+            {/* print settings */}
+            <Modal
+                    show={showPrint}
+                    onHide={handleClosePrint}
+                    backdrop={true}
+                    keyboard={false}
+                    className="m_modal  ps-0"
+                  >
+                    <Modal.Header
+                      closeButton
+                      className="m_borbot b_border_bb mx-3 ps-0"
+                    >
+                      <Modal.Title>
+                        <Link
+                          className="text-white text-decoration-none "
+                        >
+                          <span className="p-0">
+                          Ajustes de impresión
+                          </span>
+                        </Link>{" "}
+                      </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body className="border-0 m14 pt-4 pb-0 ">
+                      <div className="mb-3">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="form-label"
+                        >
+                          Código impresora
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control m_input ps-3"
+                          id="exampleFormControlInput1"
+                          placeholder="045 "
+                          value={printerCode}
+                          onChange={handlePrinterCodeChange}
+                        />
+                        {printerCodeError && (
+                          <div className="text-danger errormessage">
+                            {printerCodeError}
+                          </div>
+                        )}
+                      </div>
+                    </Modal.Body>
+                    <Modal.Footer className="border-0 pt-0">
+                      <Button
+                        variant="primary"
+                        className="b_btn_pop"
+                        style={{ borderRadius: "10px" }}
+                        onClick={() => {
+                          handlePrintDetails();
+                        }}
+                      >
+                        Guardar cambios
+                      </Button>
+                    </Modal.Footer>
+            </Modal>
+            {/* edit production success  */}
+            <Modal
+              show={showEditPrintSuc}
+              backdrop={true}
+              keyboard={false}
+              className="m_modal  m_user"
+            >
+              <Modal.Header closeButton className="border-0" />
+              <Modal.Body>
+                <div className="text-center">
+                  <img src={require("../Image/check-circle.png")} alt="" />
+                  <p className="mb-0 mt-2 h6">Ajustes de impresión</p>
+                  <p className="opacity-75 mb-5">
+                    Ajustes de impresión guardados exitosamente
+                  </p>
+                </div>
               </Modal.Body>
             </Modal>
           </div>

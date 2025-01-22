@@ -3,15 +3,15 @@ import ApexCharts from "apexcharts"; // Make sure to install ApexCharts
 // import "bootstrap/dist/css/bootstrap.min.css"; // Ensure you have bootstrap installed
 
 export default function Aa({ data }) {
-  // console.log(data);
+  console.log( data?.cash?.count);
   
   const getChartOptions = () => {
     return {
       series: [
-        data?.cash || 0,
-        data?.debit || 0,
-        data?.credit || 0,
-        data?.transfer || 0
+        data?.cash?.count || 0,
+        data?.debit?.count || 0,
+        data?.credit?.count || 0,
+        data?.transfer?.count || 0
       ],
       colors: ["#147BDE", "#16BDCA", "#9061F9", "#FDBA8C"],
       chart: {
@@ -36,7 +36,7 @@ export default function Aa({ data }) {
               total: {
                 showAlways: true,
                 show: true,
-                label: (data?.cash == 0 &&  data?.debit == 0 && data?.credit == 0 && data?.transfer == 0) ? "Sin Datos" : "Datos",
+                label: (data?.cash?.count == 0 &&  data?.debit?.count == 0 && data?.credit?.count == 0 && data?.transfer?.count == 0) ? "Sin Datos" : "Datos",
                 fontSize: 22,
                 color: "white",
                 fontFamily: "Inter, sans-serif",

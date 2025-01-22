@@ -31,6 +31,9 @@ const Kds = () => {
     const { items, production, loadingItem } = useSelector(state => state.items);
     const { tablewithSector, loadingTable } = useSelector(state => state.tables);
 
+    console.log(kds,tablewithSector);
+    
+
     useEffect(() => {
         // if (tablewithSector.length == 0) {
             dispatch(getAllTableswithSector({ admin_id }));

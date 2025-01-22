@@ -632,6 +632,7 @@ const Counter_finalP = () => {
           order_master_id: order_master_id,
           return: customerData.turn,
           admin_id: admin_id,
+          credit_amount: creditId ? creditData.creditTotal : null
         };
         try {
           const responsePayment = await axios.post(

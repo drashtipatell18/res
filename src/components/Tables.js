@@ -2466,12 +2466,14 @@ const Tables = () => {
                           ))}
                         </span>
                       </div>
-                      <div
-                        className="btn w-100 j-btn-primary text-white j-tbl-btn-font-1 mb-3"
-                        onClick={handleCobrarClcik}
+                      {role == "admin" || role == "cashier" && 
+                        <div
+                          className="btn w-100 j-btn-primary text-white j-tbl-btn-font-1 mb-3"
+                          onClick={handleCobrarClcik}
                       >
                         Cobrar
                       </div>
+                      }
                       <div
                         onClick={handleShow250}
                         className="btn j_table_print w-100 j-tbl-btn-font-1"
