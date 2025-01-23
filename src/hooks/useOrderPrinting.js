@@ -382,7 +382,7 @@ export const printViaPrintNode = async (content,printerId) => {
   const PRINTNODE_API_KEY = process.env.REACT_APP_PRINTNODE_API_KEY;
   const PRINTNODE_API_URL = "https://api.printnode.com/";
 
-  console.log(printerId);
+  // console.log(printerId);
 
   const defaultOptions = {
     // printerId,
@@ -396,17 +396,20 @@ export const printViaPrintNode = async (content,printerId) => {
   const mergedOptions = { ...defaultOptions };
 
   const base64Content = content.replace(
-    /^data:application\/pdf;filename=.*?;base64,/,
+    /^data:application\/pdf;.*?base64,/,
     ""
   );
+
+  console.log(base64Content);
 
   const printJob = {
     printerId: mergedOptions.printerId,
     title: mergedOptions.title,
     contentType: "pdf_base64",
     content: base64Content,
-    source: "React App",
+    source: "Comanda",
     options: {
+
       copies: mergedOptions.copies,
       paper: mergedOptions.paper,
       dpi: mergedOptions.dpi,

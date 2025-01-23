@@ -19,11 +19,14 @@ import { getRols, getUser } from "../redux/slice/user.slice";
 import { getAllTableswithSector } from "../redux/slice/table.slice";
 import { getAllOrders, getAllPayments, getCredit } from "../redux/slice/order.slice";
 //import { enqueueSnackbar  } from "notistack";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import es from "date-fns/locale/es"; // Added import for Spanish locale
 import { registerLocale } from "react-datepicker";
+import { usePrintNode } from "../hooks/usePrintNode";
 registerLocale("es", es); // Register the Spanish locale
 
 const Informacira = () => {
@@ -1128,40 +1131,93 @@ const Informacira = () => {
   //   printWindow.print();
   //   printWindow.close();
   // }
-  const handlePrint = () => {
+
+  const { printViaPrintNode, isPrinting, print_Status } = usePrintNode();
+  const [showPrintSuc, setShowPrintSuc] = useState(false);
+  const handleShowPrintSuc = () => {
+      setShowPrintSuc(true);
+      setTimeout(() => {
+          setShowPrintSuc(false);
+      }, 2000);
+  };
+
+  const handlePrint = async() => {
     const printContent = document.getElementById("printable");
     if (printContent) {
-      // Create a new iframe
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      document.body.appendChild(iframe);
 
-      // Write the receipt content into the iframe
-      iframe.contentWindow.document.open();
-      iframe.contentWindow.document.write(
-        "<html><head><title>Print Receipt</title>"
-      );
-      iframe.contentWindow.document.write(
-        "<style>body { font-family: Arial, sans-serif; }</style>"
-      );
-      iframe.contentWindow.document.write("</head><body>");
-      iframe.contentWindow.document.write(printContent.innerHTML);
-      iframe.contentWindow.document.write("</body></html>");
-      iframe.contentWindow.document.close();
+    //   const generateBase64PDF = async (element) => {
+    //     if (element) {
+    //       const canvas = await html2canvas(element, {
+    //         scale: 1,
+    //         backgroundColor: '#FFFFFF' // Set the background color to white
+    //       });
+    //       const imgData = canvas.toDataURL("image/png");
+    //       const pdf = new jsPDF({
+    //         orientation: "portrait",
+    //         unit: "px",
+    //         format: [canvas.width, canvas.height],
+    //       });
+      
+    //       pdf.addImage(imgData, "JPEG", 0, 0, canvas.width, canvas.height);
+    //       const base64PDF = pdf.output("datauristring"); // Base64 string of the PDF
+      
+    //       console.log(base64PDF);
+    //       return base64PDF;
+    //     } else {
+    //       console.error("Element with id 'printable' not found!");
+    //     }
+    //   };
 
-      // Wait for the iframe to load before printing
-      iframe.onload = function () {
-        try {
-          iframe.contentWindow.focus();
-          iframe.contentWindow.print();
-        } catch (e) {
-          console.error("Printing failed", e);
-        }
-        // Remove the iframe after printing (or if printing fails)
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-        }, 500);
-      };
+    // const base64 = await generateBase64PDF(printContent);
+    //   printViaPrintNode(base64);
+
+    const pdf = new jsPDF();
+    pdf.html(printContent, {
+      callback: function (doc) {
+          const pdfBase64 = btoa(doc.output());
+          // Send the base64 encoded PDF to the printer
+          printViaPrintNode(pdfBase64);
+      },
+      x: 10,
+      y: 10
+  });
+
+      if (print_Status && print_Status?.status === "success") {
+        console.log("Print job submitted successfully");
+        handleShowPrintSuc();
+      }
+      
+      // // Create a new iframe
+      // const iframe = document.createElement("iframe");
+      // iframe.style.display = "none";
+      // document.body.appendChild(iframe);
+
+      // // Write the receipt content into the iframe
+      // iframe.contentWindow.document.open();
+      // iframe.contentWindow.document.write(
+      //   "<html><head><title>Print Receipt</title>"
+      // );
+      // iframe.contentWindow.document.write(
+      //   "<style>body { font-family: Arial, sans-serif; }</style>"
+      // );
+      // iframe.contentWindow.document.write("</head><body>");
+      // iframe.contentWindow.document.write(printContent.innerHTML);
+      // iframe.contentWindow.document.write("</body></html>");
+      // iframe.contentWindow.document.close();
+
+      // // Wait for the iframe to load before printing
+      // iframe.onload = function () {
+      //   try {
+      //     iframe.contentWindow.focus();
+      //     iframe.contentWindow.print();
+      //   } catch (e) {
+      //     console.error("Printing failed", e);
+      //   }
+      //   // Remove the iframe after printing (or if printing fails)
+      //   setTimeout(() => {
+      //     document.body.removeChild(iframe);
+      //   }, 500);
+      // };
     } else {
       console.error("Receipt content not found");
     }
@@ -3129,7 +3185,7 @@ const Informacira = () => {
                       {/* Add modal component */}
                       <Modal.Header closeButton className="border-0" />
                       <Modal.Body>
-                        <CajaOrderRecipe data={selectedOrder} />
+                        <CajaOrderRecipe data={selectedOrder} payment={allpayments}/>
                       </Modal.Body>
                       <Modal.Footer className="border-0">
                         <Button
@@ -3161,8 +3217,8 @@ const Informacira = () => {
                     </Modal>
 
                     {/* Proccesing */}
-                    {/* <Modal
-                      show={isProcessing || loadingBox || loadingTable || loadingOrder || loadingUser}
+                    <Modal
+                      show={isProcessing || loadingBox || loadingTable || loadingOrder || loadingUser || isPrinting}
                       keyboard={false}
                       backdrop={true}
                       className="m_modal  m_user "
@@ -3180,7 +3236,31 @@ const Informacira = () => {
                         />
                         <p className="mt-2">Procesando solicitud...</p>
                       </Modal.Body>
-                    </Modal> */}
+                    </Modal>
+
+                     {/* print success  */}
+                     <Modal
+                          show={showPrintSuc}
+                          backdrop={true}
+                          keyboard={false}
+                          className="m_modal  m_user"
+                        >
+                          <Modal.Header closeButton className="border-0" />
+                          <Modal.Body>
+                            <div className="text-center">
+                              <img
+                                src={require("../Image/check-circle.png")}
+                                alt=""
+                              />
+                              <p className="mb-0 mt-2 h6">
+                                Trabajo de impresión
+                              </p>
+                              <p className="opacity-75 mb-5">
+                                Trabajo de impresión enviado exitosamente
+                              </p>
+                            </div>
+                          </Modal.Body>
+                        </Modal>
                   </div>
                 </Tab>
               </Tabs>

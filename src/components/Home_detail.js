@@ -13,6 +13,7 @@ import OrderRecipt from './OrderRecipt';
 import CreditRecipt from './CreditRecipt';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { usePrintNode } from '../hooks/usePrintNode';
 
 function Home_detail() {
 
@@ -326,6 +327,16 @@ function Home_detail() {
     };
     const handleShow11 = () => setShow11(true);
     const qrCodeRef = useRef()
+
+    const { printViaPrintNode, isPrinting, print_Status } = usePrintNode();
+    const [showPrintSuc, setShowPrintSuc] = useState(false);
+    const handleShowPrintSuc = () => {
+        setShowPrintSuc(true);
+        setTimeout(() => {
+            setShowPrintSuc(false);
+        }, 2000);
+    };
+
     const handlePrint = async () => {
         const printContent = document.getElementById("receipt-content") || document.getElementById("printCredit");
         // const qrCodeCanvas = qrCodeRef?.current?.toDataURL();
@@ -336,53 +347,72 @@ function Home_detail() {
 
             if (printContent) {
                 // Use html2canvas to capture the content
-                const canvas = await html2canvas(printContent, { backgroundColor: null }); // Set backgroundColor to null for transparency
-                const imgData = canvas.toDataURL("image/png");
-                const iframe = document.createElement("iframe");
-                iframe.style.display = "none";
-                document.body.appendChild(iframe);
-                // Open the print dialog
-                iframe.contentWindow.document.open();
-                iframe.contentWindow.document.write(`
-                    <html>
-                        <head>
-                            <title>Print Receipt</title>
-                            <style>
-                                body {
-                                    margin: 0;
-                                    padding: 0;
-                                    background: transparent;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    // height: 100vh;
-                                }
-                                img {
-                                    display: block;
-                                    // max-width: 100%;
-                                    // max-height: 100%;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <img src="${imgData}" />
-                        </body>
-                    </html>
-                `);
-                iframe.contentWindow.document.close();
-                iframe.onload = function () {
-                    try {
-                        iframe.contentWindow.focus();
-                        iframe.contentWindow.print();
-                    } catch (e) {
-                        console.error("Printing failed", e);
-                    }
 
-                    // Remove the iframe after printing
-                    setTimeout(() => {
-                        document.body.removeChild(iframe);
-                    }, 500);
-                };
+                // const base64Content = btoa(unescape(encodeURIComponent(printContent.innerHTML)));
+
+                // printViaPrintNode(base64Content);
+                const pdf = new jsPDF();
+                pdf.html(printContent, {
+                  callback: function (doc) {
+                      const pdfBase64 = btoa(doc.output());
+                      // Send the base64 encoded PDF to the printer
+                      printViaPrintNode(pdfBase64);
+                  },
+                  x: 10,
+                  y: 10
+              });
+    
+                if (print_Status && print_Status?.status === "success") {
+                    console.log("Print job submitted successfully");
+                    handleShowPrintSuc();
+                } 
+                // const canvas = await html2canvas(printContent, { backgroundColor: null }); // Set backgroundColor to null for transparency
+                // const imgData = canvas.toDataURL("image/png");
+                // const iframe = document.createElement("iframe");
+                // iframe.style.display = "none";
+                // document.body.appendChild(iframe);
+                // // Open the print dialog
+                // iframe.contentWindow.document.open();
+                // iframe.contentWindow.document.write(`
+                //     <html>
+                //         <head>
+                //             <title>Print Receipt</title>
+                //             <style>
+                //                 body {
+                //                     margin: 0;
+                //                     padding: 0;
+                //                     background: transparent;
+                //                     display: flex;
+                //                     justify-content: center;
+                //                     align-items: center;
+                //                     // height: 100vh;
+                //                 }
+                //                 img {
+                //                     display: block;
+                //                     // max-width: 100%;
+                //                     // max-height: 100%;
+                //                 }
+                //             </style>
+                //         </head>
+                //         <body>
+                //             <img src="${imgData}" />
+                //         </body>
+                //     </html>
+                // `);
+                // iframe.contentWindow.document.close();
+                // iframe.onload = function () {
+                //     try {
+                //         iframe.contentWindow.focus();
+                //         iframe.contentWindow.print();
+                //     } catch (e) {
+                //         console.error("Printing failed", e);
+                //     }
+
+                //     // Remove the iframe after printing
+                //     setTimeout(() => {
+                //         document.body.removeChild(iframe);
+                //     }, 500);
+                // };
             } else {
                 console.error("Receipt content not found");
             }
@@ -390,38 +420,58 @@ function Home_detail() {
             // Existing print logic for other content
             if (printContent) {
                 // Create a new iframe
-                const iframe = document.createElement("iframe");
-                iframe.style.display = "none";
-                document.body.appendChild(iframe);
 
-                // Write the receipt content into the iframe
-                iframe.contentWindow.document.open();
-                iframe.contentWindow.document.write("<html><head><title>Print Receipt</title>");
-                iframe.contentWindow.document.write("<style>body { font-family: Arial, sans-serif; }</style>");
-                iframe.contentWindow.document.write("</head><body>");
-                iframe.contentWindow.document.write(printContent.innerHTML);
+                // const base64Content = btoa(unescape(encodeURIComponent(printContent.innerHTML)));
 
-                // if (qrCodeCanvas) {
-                //     iframe.contentWindow.document.write(`<img src="${qrCodeCanvas}" />`);
-                // }
+                // printViaPrintNode(base64Content);
+                const pdf = new jsPDF();
+                pdf.html(printContent, {
+                  callback: function (doc) {
+                      const pdfBase64 = btoa(doc.output());
+                      // Send the base64 encoded PDF to the printer
+                      printViaPrintNode(pdfBase64);
+                  },
+                  x: 10,
+                  y: 10
+              });
+    
+                if (print_Status && print_Status?.status === "success") {
+                    console.log("Print job submitted successfully");
+                    handleShowPrintSuc();
+                } 
 
-                iframe.contentWindow.document.write("</body></html>");
-                iframe.contentWindow.document.close();
+                // const iframe = document.createElement("iframe");
+                // iframe.style.display = "none";
+                // document.body.appendChild(iframe);
 
-                // Wait for the iframe to load before printing
-                iframe.onload = function () {
-                    try {
-                        iframe.contentWindow.focus();
-                        iframe.contentWindow.print();
-                    } catch (e) {
-                        console.error("Printing failed", e);
-                    }
+                // // Write the receipt content into the iframe
+                // iframe.contentWindow.document.open();
+                // iframe.contentWindow.document.write("<html><head><title>Print Receipt</title>");
+                // iframe.contentWindow.document.write("<style>body { font-family: Arial, sans-serif; }</style>");
+                // iframe.contentWindow.document.write("</head><body>");
+                // iframe.contentWindow.document.write(printContent.innerHTML);
 
-                    // Remove the iframe after printing
-                    setTimeout(() => {
-                        document.body.removeChild(iframe);
-                    }, 500);
-                };
+                // // if (qrCodeCanvas) {
+                // //     iframe.contentWindow.document.write(`<img src="${qrCodeCanvas}" />`);
+                // // }
+
+                // iframe.contentWindow.document.write("</body></html>");
+                // iframe.contentWindow.document.close();
+
+                // // Wait for the iframe to load before printing
+                // iframe.onload = function () {
+                //     try {
+                //         iframe.contentWindow.focus();
+                //         iframe.contentWindow.print();
+                //     } catch (e) {
+                //         console.error("Printing failed", e);
+                //     }
+
+                //     // Remove the iframe after printing
+                //     setTimeout(() => {
+                //         document.body.removeChild(iframe);
+                //     }, 500);
+                // };
             } else {
                 console.error("Receipt content not found");
             }
@@ -773,7 +823,7 @@ function Home_detail() {
 
             {/* processing */}
             <Modal
-                show={isProcessing}
+                show={isProcessing || isPrinting}
                 keyboard={false}
                 backdrop={true}
                 className="m_modal  m_user "
@@ -908,6 +958,26 @@ function Home_detail() {
                         </p>
                     </div>
                 </Modal.Body>
+            </Modal>
+
+
+            {/* print success  */}
+            <Modal
+              show={showPrintSuc}
+              backdrop={true}
+              keyboard={false}
+              className="m_modal  m_user"
+            >
+              <Modal.Header closeButton className="border-0" />
+              <Modal.Body>
+                <div className="text-center">
+                  <img src={require("../Image/check-circle.png")} alt="" />
+                  <p className="mb-0 mt-2 h6">Trabajo de impresión</p>
+                  <p className="opacity-75 mb-5">
+                  Trabajo de impresión enviado exitosamente
+                  </p>
+                </div>
+              </Modal.Body>
             </Modal>
 
 

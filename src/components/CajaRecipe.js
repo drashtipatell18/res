@@ -81,9 +81,6 @@ const CajaRecipe = ({ box, user, boxDetails }) => {
                     <span style={{ fontWeight: "bold", fontSize: "12px" }}>Tel: {receiptData.storeInfo.tel}</span>
                 </p>
 
-
-
-
                 <div className='mx-1 mb-0' style={{ fontSize: "12px", textAlign: 'left' }}>
                     <div style={{ fontSize: "12px", display: "flex", justifyContent: "space-between" }}>
                         <div>Punto de Venta</div>

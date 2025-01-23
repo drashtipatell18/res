@@ -75,7 +75,7 @@ const OrderRecipt = ({ paymentData, orderData }) => {
 
   const price = parseFloat(itemsTotal) - parseFloat(orderData.discount ? orderData.discount : 1.0);
 
-  console.log(price);
+  // console.log(price);
 
   const iva = itemsTotal * 0.19; // 12% tax
   const total = price + iva;

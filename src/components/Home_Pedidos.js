@@ -12,6 +12,8 @@ import { getboxs } from '../redux/slice/box.slice';
 import { getAllOrders, getAllPayments } from '../redux/slice/order.slice';
 import { getAllTableswithSector } from '../redux/slice/table.slice';
 import { getRols, getUser } from '../redux/slice/user.slice';
+import { usePrintNode } from '../hooks/usePrintNode';
+import jsPDF from 'jspdf';
 
 const Home_Pedidos = () => {
 
@@ -377,26 +379,25 @@ const Home_Pedidos = () => {
 
         setIsProcessing(true);
         try {
-            const response = await axios.get(`${apiUrl}/getsinglepayments/${order.id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            // const response = await axios.get(`${apiUrl}/getsinglepayments/${order.id}`, {
+            //     headers: {
+            //         Authorization: `Bearer ${token}`,
+            //     },
+            // });
+            const data = allpayments.find(payment => payment.order_master_id === order.id);
             // console.log(response);
             setIsProcessing(false);
-            if (response.data.success) {
-                setPaymentData(response.data.data);
+            if (data) {
+                setPaymentData(data);
                 setPrintOrderData(order);
                 handleShow11();
             } else {
                 setIsProcessing(false);
                 alert("El pago está pendiente")
-                console.error('Error fetching payment data:', response.data.message);
             }
-
         } catch (error) {
             console.error(
-                "Error fetching allOrders:",
+                "Error fetching payments:",
                 error.response ? error.response.data : error.message
             );
             setIsProcessing(false);
@@ -406,36 +407,56 @@ const Home_Pedidos = () => {
             setIsProcessing(false);
         }
     };
+
+    const { printViaPrintNode, isPrinting, print_Status } = usePrintNode();
+    const [showPrintSuc, setShowPrintSuc] = useState(false);
+    const handleShowPrintSuc = () => {
+        setShowPrintSuc(true);
+        setTimeout(() => {
+            setShowPrintSuc(false);
+        }, 2000);
+    };
+
     const handlePrint = async () => {
         const printContent = document.getElementById("receipt-content");
         if (printContent) {
+            const pdf = new jsPDF();
+              pdf.html(printContent, {
+                callback: function (doc) {
+                    const pdfBase64 = btoa(doc.output());
+                    // Send the base64 encoded PDF to the printer
+                    printViaPrintNode(pdfBase64);
+                },
+                x: 10,
+                y: 10
+            });
 
-            const iframe = document.createElement("iframe");
-            iframe.style.display = "none";
-            document.body.appendChild(iframe);
-
-
-            iframe.contentWindow.document.open();
-            iframe.contentWindow.document.write("<html><head><title>Print Receipt</title>");
-            iframe.contentWindow.document.write("<style>body { font-family: Arial, sans-serif; }</style>");
-            iframe.contentWindow.document.write("</head><body>");
-            iframe.contentWindow.document.write(printContent.innerHTML);
-
-            iframe.contentWindow.document.write("</body></html>");
-            iframe.contentWindow.document.close();
-
-
-            iframe.onload = function () {
-                try {
-                    iframe.contentWindow.focus();
-                    iframe.contentWindow.print();
-                } catch (e) {
-                    console.error("Printing failed", e);
-                }
-                setTimeout(() => {
-                    document.body.removeChild(iframe);
-                }, 500);
-            };
+            if (print_Status && print_Status?.status === "success") {
+                console.log("Print job submitted successfully");
+                handleShowPrintSuc();
+            } 
+            // const iframe = document.createElement("iframe");
+            // iframe.style.display = "none";
+            // document.body.appendChild(iframe);
+            // iframe.contentWindow.document.open();
+            // iframe.contentWindow.document.write("<html><head><title>Print Receipt</title>");
+            // iframe.contentWindow.document.write("<style>body { font-family: Arial, sans-serif; }</style>");
+            // iframe.contentWindow.document.write("</head><body>");
+            // iframe.contentWindow.document.write(atob(base64Content)); // Decode the base64 string before writing
+            // iframe.contentWindow.document.write("</body></html>");
+            // iframe.contentWindow.document.close();
+    
+            // iframe.onload = function () {
+            //     try {
+            //         iframe.contentWindow.focus();
+            //         iframe.contentWindow.print();
+            //     } catch (e) {
+            //         console.error("Printing failed", e);
+            //     }
+            //     setTimeout(() => {
+            //         document.body.removeChild(iframe);
+            //     }, 500);
+            // };
         } else {
             console.error("Receipt content not found");
         }
@@ -740,7 +761,7 @@ const Home_Pedidos = () => {
 
             {/* processing */}
             <Modal
-                show={isProcessing || loadingOrder || loadingTable || loadingBox || loadingUser}
+                show={isProcessing || loadingOrder || loadingTable || loadingBox || loadingUser || isPrinting}
                 keyboard={false}
                 backdrop={true}
                 className="m_modal  m_user "
@@ -750,6 +771,25 @@ const Home_Pedidos = () => {
                     <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
                     <p className="mt-2">Procesando solicitud...</p>
                 </Modal.Body>
+            </Modal>
+
+            {/* print success  */}
+            <Modal
+              show={showPrintSuc}
+              backdrop={true}
+              keyboard={false}
+              className="m_modal  m_user"
+            >
+              <Modal.Header closeButton className="border-0" />
+              <Modal.Body>
+                <div className="text-center">
+                  <img src={require("../Image/check-circle.png")} alt="" />
+                  <p className="mb-0 mt-2 h6">Trabajo de impresión</p>
+                  <p className="opacity-75 mb-5">
+                  Trabajo de impresión enviado exitosamente
+                  </p>
+                </div>
+              </Modal.Body>
             </Modal>
         </div>
     );

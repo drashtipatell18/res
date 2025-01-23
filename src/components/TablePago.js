@@ -19,6 +19,8 @@ import { getboxs } from "../redux/slice/box.slice";
 import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
 import { getAllTableswithSector } from "../redux/slice/table.slice";
 import { useOrderPrinting } from "../hooks/useOrderPrinting";
+import { usePrintNode } from "../hooks/usePrintNode";
+import jsPDF from "jspdf";
 
 const TablePago = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -52,8 +54,6 @@ const TablePago = () => {
   const dispatch = useDispatch()
   const {items,production, loadingItem} = useSelector((state) => state.items);
    const { user ,loadingUser} = useSelector((state) => state.user);
-
-
 
   /* get table data */
   useEffect(
@@ -649,42 +649,73 @@ const TablePago = () => {
     navigate("/table"); // Navigate to the desired page after closing the modal
   };
   const handleShow11 = () => setShow11(true);
+
+  const { printViaPrintNode, isPrinting, print_Status } = usePrintNode();
+  const [showPrintSuc, setShowPrintSuc] = useState(false);
+  const handleShowPrintSuc = () => {
+      setShowPrintSuc(true);
+      setTimeout(() => {
+          setShowPrintSuc(false);
+          navigate("/table");
+      }, 2000);
+  };
+
   const handlePrint = () => {
     const printContent = document.getElementById("receipt-content");
     if (printContent) {
-      // Create a new iframe
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      document.body.appendChild(iframe);
 
-      // Write the receipt content into the iframe
-      iframe.contentWindow.document.open();
-      iframe.contentWindow.document.write(
-        "<html><head><title>Print Receipt</title>"
-      );
-      iframe.contentWindow.document.write(
-        "<style>body { font-family: Arial, sans-serif; }</style>"
-      );
-      iframe.contentWindow.document.write("</head><body>");
-      iframe.contentWindow.document.write(printContent.innerHTML);
-      iframe.contentWindow.document.write("</body></html>");
-      iframe.contentWindow.document.close();
+      // const base64Content = btoa(unescape(encodeURIComponent(printContent.innerHTML)));
 
-      // Wait for the iframe to load before printing
-      iframe.onload = function () {
-        try {
-          iframe.contentWindow.focus();
-          iframe.contentWindow.print();
-        } catch (e) {
-          console.error("Printing failed", e);
-        }
+      // printViaPrintNode(base64Content);
+      const pdf = new jsPDF();
+      pdf.html(printContent, {
+        callback: function (doc) {
+            const pdfBase64 = btoa(doc.output());
+            // Send the base64 encoded PDF to the printer
+            printViaPrintNode(pdfBase64);
+        },
+        x: 10,
+        y: 10
+    });
 
-        // Remove the iframe after printing (or if printing fails)
-        setTimeout(() => {
-          document.body.removeChild(iframe);
+      if (print_Status && print_Status?.status === "success") {
+        console.log("Print job submitted successfully");
+        handleShowPrintSuc();
+      }
 
-        }, 500);
-      };
+      // // Create a new iframe
+      // const iframe = document.createElement("iframe");
+      // iframe.style.display = "none";
+      // document.body.appendChild(iframe);
+
+      // // Write the receipt content into the iframe
+      // iframe.contentWindow.document.open();
+      // iframe.contentWindow.document.write(
+      //   "<html><head><title>Print Receipt</title>"
+      // );
+      // iframe.contentWindow.document.write(
+      //   "<style>body { font-family: Arial, sans-serif; }</style>"
+      // );
+      // iframe.contentWindow.document.write("</head><body>");
+      // iframe.contentWindow.document.write(printContent.innerHTML);
+      // iframe.contentWindow.document.write("</body></html>");
+      // iframe.contentWindow.document.close();
+
+      // // Wait for the iframe to load before printing
+      // iframe.onload = function () {
+      //   try {
+      //     iframe.contentWindow.focus();
+      //     iframe.contentWindow.print();
+      //   } catch (e) {
+      //     console.error("Printing failed", e);
+      //   }
+
+      //   // Remove the iframe after printing (or if printing fails)
+      //   setTimeout(() => {
+      //     document.body.removeChild(iframe);
+
+      //   }, 500);
+      // };
     } else {
       console.error("Receipt content not found");
     }
@@ -881,7 +912,7 @@ const TablePago = () => {
                 </Modal>
                 {/* processing */}
                 <Modal
-                  show={isProcessing || loadingItem || loadingUser}
+                  show={isProcessing || loadingItem || loadingUser || isPrinting}
                   keyboard={false}
                   backdrop={true}
                   className="m_modal  m_user "
@@ -1428,6 +1459,29 @@ const TablePago = () => {
                     </Button>
                   </Modal.Footer>
                 </Modal>
+                 {/* print success  */}
+                 <Modal
+                          show={showPrintSuc}
+                          backdrop={true}
+                          keyboard={false}
+                          className="m_modal  m_user"
+                        >
+                          <Modal.Header closeButton className="border-0" />
+                          <Modal.Body>
+                            <div className="text-center">
+                              <img
+                                src={require("../Image/check-circle.png")}
+                                alt=""
+                              />
+                              <p className="mb-0 mt-2 h6">
+                                Trabajo de impresión
+                              </p>
+                              <p className="opacity-75 mb-5">
+                                Trabajo de impresión enviado exitosamente
+                              </p>
+                            </div>
+                          </Modal.Body>
+                        </Modal>
               </div>
             </div>
           </div>

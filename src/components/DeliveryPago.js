@@ -20,6 +20,8 @@ import { getAllTableswithSector } from "../redux/slice/table.slice";
 import { getAllOrders, getAllPayments } from "../redux/slice/order.slice";
 import { getProduction } from "../redux/slice/Items.slice";
 import { getAllKds } from "../redux/slice/kds.slice";
+import { usePrintNode } from "../hooks/usePrintNode";
+import jsPDF from "jspdf";
 //import { enqueueSnackbar  } from "notistack";
 
 const DeliveryPago = () => {
@@ -667,43 +669,74 @@ const DeliveryPago = () => {
     // localStorage.removeItem("payment");
     // handleShow11();
   };
+
+  
+  const { printViaPrintNode, isPrinting, print_Status } = usePrintNode();
+  const [showPrintSuc, setShowPrintSuc] = useState(false);
+  const handleShowPrintSuc = () => {
+      setShowPrintSuc(true);
+      setTimeout(() => {
+          setShowPrintSuc(false);
+          navigate("/home/usa")
+      }, 2000);
+  };
+
   // print recipt
   const handlePrint = () => {
     const printContent = document.getElementById("receipt-content");
     if (printContent) {
-      // Create a new iframe
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      document.body.appendChild(iframe);
 
-      // Write the receipt content into the iframe
-      iframe.contentWindow.document.open();
-      iframe.contentWindow.document.write(
-        "<html><head><title>Print Receipt</title>"
-      );
-      iframe.contentWindow.document.write(
-        "<style>body { font-family: Arial, sans-serif; }</style>"
-      );
-      iframe.contentWindow.document.write("</head><body>");
-      iframe.contentWindow.document.write(printContent.innerHTML);
-      iframe.contentWindow.document.write("</body></html>");
-      iframe.contentWindow.document.close();
+      // const base64Content = btoa(unescape(encodeURIComponent(printContent.innerHTML)));
 
-      // Wait for the iframe to load before printing
-      iframe.onload = function () {
-        try {
-          iframe.contentWindow.focus();
-          iframe.contentWindow.print();
-        } catch (e) {
-          console.error("Printing failed", e);
-        }
+      // printViaPrintNode(base64Content);
+      const pdf = new jsPDF();
+      pdf.html(printContent, {
+        callback: function (doc) {
+            const pdfBase64 = btoa(doc.output());
+            // Send the base64 encoded PDF to the printer
+            printViaPrintNode(pdfBase64);
+        },
+        x: 10,
+        y: 10
+    });
 
-        // Remove the iframe after printing (or if printing fails)
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-          navigate("/home/usa");
-        }, 500);
-      };
+      if (print_Status && print_Status?.status === "success") {
+        console.log("Print job submitted successfully");
+        handleShowPrintSuc();
+      }
+      // // Create a new iframe
+      // const iframe = document.createElement("iframe");
+      // iframe.style.display = "none";
+      // document.body.appendChild(iframe);
+
+      // // Write the receipt content into the iframe
+      // iframe.contentWindow.document.open();
+      // iframe.contentWindow.document.write(
+      //   "<html><head><title>Print Receipt</title>"
+      // );
+      // iframe.contentWindow.document.write(
+      //   "<style>body { font-family: Arial, sans-serif; }</style>"
+      // );
+      // iframe.contentWindow.document.write("</head><body>");
+      // iframe.contentWindow.document.write(printContent.innerHTML);
+      // iframe.contentWindow.document.write("</body></html>");
+      // iframe.contentWindow.document.close();
+
+      // // Wait for the iframe to load before printing
+      // iframe.onload = function () {
+      //   try {
+      //     iframe.contentWindow.focus();
+      //     iframe.contentWindow.print();
+      //   } catch (e) {
+      //     console.error("Printing failed", e);
+      //   }
+
+      //   // Remove the iframe after printing (or if printing fails)
+      //   setTimeout(() => {
+      //     document.body.removeChild(iframe);
+      //     navigate("/home/usa");
+      //   }, 500);
+      // };
     } else {
       console.error("Receipt content not found");
     }
@@ -1401,7 +1434,7 @@ const DeliveryPago = () => {
 
                         {/* processing */}
                         <Modal
-                          show={isProcessing}
+                          show={isProcessing || isPrinting}
                           keyboard={false}
                           backdrop={true}
                           className="m_modal  m_user "

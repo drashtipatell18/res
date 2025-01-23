@@ -29,6 +29,7 @@ const Usuarios = () => {
   const [email] = useState(localStorage.getItem("email"));
   const navigate = useNavigate();
   const admin_id = localStorage.getItem("admin_id");
+  const user_Id = localStorage.getItem("userId");
   const [showPassword, setShowPassword] = useState(false);
   const [showcomfirmPassword, setShowcomfirmPassword] = useState(false);
   const [editshowPassword, seteditShowPassword] = useState(false);
@@ -701,16 +702,24 @@ const Usuarios = () => {
         }
       );
 
-      console.log(response.data); 
+      if(userid == user_Id){
+        localStorage.setItem("printer_code", printerCode);
+        // handleShowPrintSuc();
+      }
+
+      // console.log(response.data); 
       dispatch(getUser());
       setIsProcessing(false);
-    } catch (error) {
+      setPrinterCodeError("");
+      setPrinterCode(null);
+      setShowPrint(false);
+      handleShowEditPrintSuc();} 
+      catch (error) {
       console.error("Error deleting user:", error);
+      alert("Error al enviar el trabajo de impresión");
     }
     setIsProcessing(false);
-    setPrinterCodeError("");
-    setShowPrint(false);
-    handleShowEditPrintSuc();
+   
   };
 
   return (

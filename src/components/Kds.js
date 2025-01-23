@@ -201,23 +201,43 @@ const Kds = () => {
     // },[orderType,allOrder])
 
     const [selectedCategory, setSelectedCategory] = useState('Todo');
-
     const filterOrdersByCategory = (orders, category) => {
         if (category === 'Todo') {
-            return orders;
+            return orders.map(order => ({
+                ...order,
+                order_details: order.order_details.map(detail => {
+                    const item = allItems.find(item => item.id === detail.item_id);
+                    const matchingCenter = centerProduction.find(center => center.id === item?.production_center_id);
+                    return {
+                        ...detail,
+                        production_center_id: item?.production_center_id,
+                        production_name: matchingCenter?.name
+                    };
+                })
+            }));
         }
         return orders.filter(order => {
             return order.order_details.some(detail => {
                 const item = allItems.find(item => item.id === detail.item_id);
-                if (item) {
-                    const matchingCenter = centerProduction.find(center => center.id === item.production_center_id);
-                    return matchingCenter && matchingCenter.name === category;
-                }
-                return false;
+                const matchingCenter = centerProduction.find(center => center.id === item?.production_center_id);
+                return matchingCenter && matchingCenter.name === category;
             });
-        });
-
+        }).map(order => ({
+            ...order,
+            order_details: order.order_details.map(detail => {
+                const item = allItems.find(item => item.id === detail.item_id);
+                const matchingCenter = centerProduction.find(center => center.id === item?.production_center_id);
+                return {
+                    ...detail,
+                    production_center_id: item?.production_center_id,
+                    production_name: matchingCenter?.name
+                };
+            })
+        }));
     };
+
+    console.log(filterOrdersByCategory(allOrder, selectedCategory));
+    
 
     return (
         <>

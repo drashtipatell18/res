@@ -11,8 +11,14 @@ import { useOrderPrinting } from "../hooks/useOrderPrinting";
 import { useDispatch, useSelector } from "react-redux";
 import { getboxs } from "../redux/slice/box.slice";
 import { getProduction } from "../redux/slice/Items.slice";
-import { getAllOrders, getAllPayments, getCredit } from "../redux/slice/order.slice";
+import {
+  getAllOrders,
+  getAllPayments,
+  getCredit,
+} from "../redux/slice/order.slice";
 import { getAllKds } from "../redux/slice/kds.slice";
+import { usePrintNode } from "../hooks/usePrintNode";
+import jsPDF from "jspdf";
 
 const Counter_finalP = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -40,23 +46,23 @@ const Counter_finalP = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [tipAmount, setTipAmount] = useState(0);
   const [show11, setShow11] = useState(false);
-  const [creditData, setCreditData] = useState({})
+  const [creditData, setCreditData] = useState({});
   const handleClose11 = () => {
-    setShow11(false)
+    setShow11(false);
     if (creditId) {
       localStorage.removeItem("credit");
       localStorage.removeItem("payment");
       localStorage.removeItem("cartItems");
       localStorage.removeItem("currentOrder");
-      
+
       navigate(`/home/client/detail_no2/${creditData?.order_id}`);
     }
-    navigate('/counter');
+    navigate("/counter");
     // setTimeout(() => {
     //   setShow11(false)
     //   navigate('/counter')
     // }, 2000);
-  }
+  };
   const handleShow11 = () => setShow11(true);
 
   const [price, setPrice] = useState("");
@@ -95,13 +101,12 @@ const Counter_finalP = () => {
   const [show, setShow] = useState(false);
   const [tipError, setTipError] = useState("");
 
-
   const handleClose = () => {
     setShow(false);
     setTipError("");
   };
   const handleShow = () => setShow(true);
-  const [lastOrder, setLastOrder] = useState('');
+  const [lastOrder, setLastOrder] = useState("");
 
   const [showCreSubSuc, setShowCreSubSuc] = useState(false);
   const handleCloseCreSubSuc = () => setShowCreSubSuc(false);
@@ -128,7 +133,7 @@ const Counter_finalP = () => {
 
     // Debounce the state update to reduce re-renders
     const timeoutId = setTimeout(() => {
-      setCartItems(prevItems => {
+      setCartItems((prevItems) => {
         const updatedItems = [...prevItems];
         updatedItems[index] = { ...updatedItems[index], note: newNote };
         return updatedItems;
@@ -178,10 +183,10 @@ const Counter_finalP = () => {
             className="j-note-input"
             type="text"
             defaultValue={item.note}
-            ref={el => noteInputRefs.current[index] = el}
-            onChange={e => handleNoteChange(index, e.target.value)}
+            ref={(el) => (noteInputRefs.current[index] = el)}
+            onChange={(e) => handleNoteChange(index, e.target.value)}
             onBlur={() => handleFinishEditing(index)}
-            onKeyDown={e => {
+            onKeyDown={(e) => {
               if (e.key === "Enter") handleFinishEditing(index);
             }}
           />
@@ -213,9 +218,9 @@ const Counter_finalP = () => {
 
   useEffect(() => {
     if (!(role == "admin" || role == "cashier")) {
-      navigate('/dashboard')
+      navigate("/dashboard");
     }
-  }, [role])
+  }, [role]);
 
   useEffect(() => {
     // Load cart items from localStorage
@@ -233,33 +238,28 @@ const Counter_finalP = () => {
     setIsProcessing(false);
   }, []); // Empty dependency array to run once on component mount
 
-  useEffect(
-    () => {
-      // Save cart items to localStorage whenever cartItems or countsoup change
-      localStorage.setItem("cartItems", JSON.stringify(cartItems));
-      localStorage.setItem("countsoup", JSON.stringify(countsoup));
-    },
-    [cartItems, countsoup]
-  );
+  useEffect(() => {
+    // Save cart items to localStorage whenever cartItems or countsoup change
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    localStorage.setItem("countsoup", JSON.stringify(countsoup));
+  }, [cartItems, countsoup]);
 
   const handleAccordionClick = (value) => {
     setSelectedRadio(value);
   };
 
   const initialCustomerData = {
-    cashAmount: 0,      // Amount for cash payment
-    debitAmount: 0,     // Amount for debit payment
-    creditAmount: 0,    // Amount for credit payment
-    transferAmount: 0,  // Amount for transfer payment
-    turn: 0
+    cashAmount: 0, // Amount for cash payment
+    debitAmount: 0, // Amount for debit payment
+    creditAmount: 0, // Amount for credit payment
+    transferAmount: 0, // Amount for transfer payment
+    turn: 0,
   };
 
   const getTotalCost = () => {
-    return (
-      cartItems.reduce(
-        (total, item, index) => total + parseInt(item.price) * item.count,
-        0
-      )
+    return cartItems.reduce(
+      (total, item, index) => total + parseInt(item.price) * item.count,
+      0
     );
   };
 
@@ -267,63 +267,70 @@ const Counter_finalP = () => {
   const discount = 0.0;
   const finalTotal = totalCost - discount;
   const taxAmount = finalTotal * 0.19;
-  const lastTotal = parseFloat(finalTotal.toFixed(2)) + parseFloat(taxAmount.toFixed(2)) + parseFloat(tipAmount.toFixed(2)) -(creditId ? creditData?.creditTotal : 0)
+  const lastTotal =
+    parseFloat(finalTotal.toFixed(2)) +
+    parseFloat(taxAmount.toFixed(2)) +
+    parseFloat(tipAmount.toFixed(2)) -
+    (creditId ? creditData?.creditTotal : 0);
 
   // console.log(lastTotal,tipAmount);
-  
+
   const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
   const [customerData, setCustomerData] = useState(initialCustomerData);
   // console.log(selectedCheckboxes);
 
   const handleCheckboxChange = (value) => {
-
     if (lastTotal < 0) {
-      alert('Por favor, añada más productos para continuar con el pago');
+      alert("Por favor, añada más productos para continuar con el pago");
       return;
     }
     // console.log(value);
     if (selectedCheckboxes.includes(value)) {
-
       if (customerData?.[value + "Amount"]) {
         setCustomerData((prevData) => ({
           ...prevData,
-          turn: customerData?.[value + "Amount"] ? parseFloat(customerData?.turn || 0) + parseFloat(-customerData?.[value + "Amount"]) : 0
+          turn: customerData?.[value + "Amount"]
+            ? parseFloat(customerData?.turn || 0) +
+              parseFloat(-customerData?.[value + "Amount"])
+            : 0,
         }));
       }
       setSelectedCheckboxes((prev) => prev.filter((item) => item !== value));
 
       setCustomerData((prevData) => ({
         ...prevData,
-        [value + "Amount"]: ""
+        [value + "Amount"]: "",
       }));
     } else {
       setSelectedCheckboxes((prev) => [...prev, value]);
       setCustomerData({
         ...customerData,
-        [value + "Amount"]: customerData?.turn && customerData.turn < 0 ?
-          (Math.abs(customerData.turn.toFixed(2))).toString() : 0,
-        turn: customerData?.turn && customerData.turn > 0 ? customerData.turn : 0
+        [value + "Amount"]:
+          customerData?.turn && customerData.turn < 0
+            ? Math.abs(customerData.turn.toFixed(2)).toString()
+            : 0,
+        turn:
+          customerData?.turn && customerData.turn > 0 ? customerData.turn : 0,
       });
     }
     // Clear the payment type error when a type is selected
     setFormErrors((prevErrors) => ({
       ...prevErrors,
-      paymentType: undefined
+      paymentType: undefined,
     }));
   };
 
   const handleChange = (event) => {
-    if(lastTotal == 0){
+    if (lastTotal == 0) {
       return;
     }
-    
+
     let { name, value } = event.target;
-    value = value.replace(/[^0-9.]/g, ''); // Allow only numbers and decimal points
+    value = value.replace(/[^0-9.]/g, ""); // Allow only numbers and decimal points
     // console.log(name);
-    const otherbox = selectedCheckboxes.filter(item => !name.includes(item))
+    const otherbox = selectedCheckboxes.filter((item) => !name.includes(item));
     // console.log(otherbox);
     setCustomerData((prevState) => {
-
       const currentValue = parseFloat(value) || 0;
       const totalDue = lastTotal;
       const otherAmount = Math.max(totalDue - currentValue, 0);
@@ -337,52 +344,49 @@ const Counter_finalP = () => {
 
       // console.log(updatedState);
       if (otherbox.length > 0) {
-        const otherPaymentType = otherbox[0] + 'Amount';
+        const otherPaymentType = otherbox[0] + "Amount";
         updatedState[otherPaymentType] = otherAmount.toFixed(2);
       }
       // console.log(updatedState);
 
       // New calculation for turn
-      const totalAmount = parseFloat(updatedState.cashAmount || 0) + parseFloat(updatedState.debitAmount || 0) + parseFloat(updatedState.creditAmount || 0) + parseFloat(updatedState.transferAmount || 0);
-      updatedState.turn = totalAmount - (lastTotal); // Update turn based on total amounts
+      const totalAmount =
+        parseFloat(updatedState.cashAmount || 0) +
+        parseFloat(updatedState.debitAmount || 0) +
+        parseFloat(updatedState.creditAmount || 0) +
+        parseFloat(updatedState.transferAmount || 0);
+      updatedState.turn = totalAmount - lastTotal; // Update turn based on total amounts
       return updatedState;
-
     });
     // console.log("Payment", customerData);
     setFormErrors((prevState) => ({
       ...prevState,
-      amount: undefined
+      amount: undefined,
     }));
   };
 
-  useEffect(
-    () => {
-      if (showCreSuc) {
-        setShowLoader(true);
-        const timer = setTimeout(() => {
-          setShowLoader(false);
-          setShowSuccess(true);
-        }, 2000);
+  useEffect(() => {
+    if (showCreSuc) {
+      setShowLoader(true);
+      const timer = setTimeout(() => {
+        setShowLoader(false);
+        setShowSuccess(true);
+      }, 2000);
 
-        return () => clearTimeout(timer);
-      }
-    },
-    [showCreSuc]
-  );
+      return () => clearTimeout(timer);
+    }
+  }, [showCreSuc]);
 
-  useEffect(
-    () => {
-      let successTimer;
-      if (showSuccess) {
-        successTimer = setTimeout(() => {
-          setShowSuccess(false);
-        }, 2000);
-      }
+  useEffect(() => {
+    let successTimer;
+    if (showSuccess) {
+      successTimer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 2000);
+    }
 
-      return () => clearTimeout(successTimer);
-    },
-    [showSuccess]
-  );
+    return () => clearTimeout(successTimer);
+  }, [showSuccess]);
 
   const handleCloseSuccess = () => {
     setShowSuccess(false);
@@ -396,48 +400,45 @@ const Counter_finalP = () => {
     setActiveAccordionItem(eventKey);
     setSelectedRadio("0");
   };
-  useEffect(
-    () => {
-      localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    },
-    [cartItems]
-  );
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
   // cart
   const handleFinishEditing = (index) => {
-    const updatedCartItems = cartItems.map(
-      (item, i) => (i === index ? { ...item, isEditing: false } : item)
+    const updatedCartItems = cartItems.map((item, i) =>
+      i === index ? { ...item, isEditing: false } : item
     );
     setCartItems(updatedCartItems);
   };
 
   //===Get CreditData======-
-    const { credit} = useSelector(state => state.orders);
-    const dispatch = useDispatch();
+  const { credit } = useSelector((state) => state.orders);
+  const dispatch = useDispatch();
 
-
-    // const dispatch = useDispatch();
-    useEffect(() => {
-      if (credit?.length === 0) {
-        dispatch(getCredit({admin_id}))
-      }
-    }, [credit])
-
+  // const dispatch = useDispatch();
+  useEffect(() => {
+    if (credit?.length === 0) {
+      dispatch(getCredit({ admin_id }));
+    }
+  }, [credit]);
 
   useEffect(() => {
     if (creditId) {
-      fetchCredit()
+      fetchCredit();
     }
-
-  }, [creditId,credit])
+  }, [creditId, credit]);
 
   const fetchCredit = async () => {
     setIsProcessing(true);
     try {
       const credit1 = credit?.find((v) => v.id == creditId);
-      const Total = credit1.return_items?.reduce((acc, v) => acc + v.amount * v.quantity, 0) - 0.0;
-      const creditTotal = parseFloat((Total + Total * 0.19).toFixed(2))
+      const Total =
+        credit1.return_items?.reduce(
+          (acc, v) => acc + v.amount * v.quantity,
+          0
+        ) - 0.0;
+      const creditTotal = parseFloat((Total + Total * 0.19).toFixed(2));
       setCreditData({ ...credit1, creditTotal: creditTotal });
-
     } catch (error) {
       console.error(
         "Error fetching allOrder:",
@@ -445,19 +446,21 @@ const Counter_finalP = () => {
       );
     }
     setIsProcessing(false);
-  }
+  };
   // ==== Get BOX Data =====
 
   // const [boxId, setBoxId] = useState(0)
- 
-  const [selectedBoxId] = useState(parseInt(localStorage.getItem('boxId')));
-  const boxId = useSelector(state => state.boxs.box)?.find((v) => v.user_id == userId);
 
-  useEffect(()=>{
-    if(boxId){
-        dispatch(getboxs({admin_id}))
+  const [selectedBoxId] = useState(parseInt(localStorage.getItem("boxId")));
+  const boxId = useSelector((state) => state.boxs.box)?.find(
+    (v) => v.user_id == userId
+  );
+
+  useEffect(() => {
+    if (boxId) {
+      dispatch(getboxs({ admin_id }));
     }
-  },[admin_id])
+  }, [admin_id]);
 
   // data
   useEffect(() => {
@@ -465,7 +468,6 @@ const Counter_finalP = () => {
     setOrderType(storedOrder);
     // fetchBoxData();
   }, []);
-
 
   const handleOrderTypeChange = (e) => {
     const newOrderType = e.target.value;
@@ -480,7 +482,7 @@ const Counter_finalP = () => {
     type: selectedCheckboxes,
     order_master_id: orderType.orderId,
     return: customerData.turn,
-    tax: taxAmount // Added tax amount to payment data
+    tax: taxAmount, // Added tax amount to payment data
   };
 
   const validateForm = () => {
@@ -493,14 +495,17 @@ const Counter_finalP = () => {
 
     const totalWithTax = lastTotal;
 
-    const totalPaymentAmount = parseFloat(customerData.cashAmount || 0) + parseFloat(customerData.debitAmount || 0) + parseFloat(customerData.creditAmount || 0) + parseFloat(customerData.transferAmount || 0);
+    const totalPaymentAmount =
+      parseFloat(customerData.cashAmount || 0) +
+      parseFloat(customerData.debitAmount || 0) +
+      parseFloat(customerData.creditAmount || 0) +
+      parseFloat(customerData.transferAmount || 0);
     // console.log(totalPaymentAmount < totalWithTax, totalPaymentAmount <= 0)
     // Validate payment amount
     // console.log(totalWithTax,totalPaymentAmount,totalWithTax > totalPaymentAmount);
-    if ( totalPaymentAmount < 0) {
+    if (totalPaymentAmount < 0) {
       errors.amount = "Por favor, introduzca un importe de pago válido";
       // } else if (parseFloat(customerData.amount) < totalWithTax.toFixed(2)) {
-
     } else if (totalPaymentAmount < parseFloat(totalWithTax)) {
       errors.amount = "El monto del pago debe cubrir el costo total";
     }
@@ -516,11 +521,11 @@ const Counter_finalP = () => {
   };
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [navigationPath, setNavigationPath] = useState('');
+  const [navigationPath, setNavigationPath] = useState("");
 
   const navigationPage = () => {
     // console.log(navigationPath, "asgaysg ");
-    localStorage.removeItem("credit")
+    localStorage.removeItem("credit");
     if (navigationPath) {
       navigate(navigationPath);
     }
@@ -537,37 +542,39 @@ const Counter_finalP = () => {
     }
   };
 
-
-  const {production, loadingItem} = useSelector(state => state.items);
+  const { production, loadingItem } = useSelector((state) => state.items);
 
   const [productionCenters, setProductionCenters] = useState();
 
-   useEffect(() => {
-      if(production.length == 0){
-      dispatch(getProduction({admin_id}))
-      }
-    }, [admin_id]);
+  useEffect(() => {
+    if (production.length == 0) {
+      dispatch(getProduction({ admin_id }));
+    }
+  }, [admin_id]);
   useEffect(() => {
     if (production.length > 0) {
       setProductionCenters(production);
     }
   }, [production]);
 
-    const { printOrder, printStatus } = useOrderPrinting(productionCenters, cartItems)
+  const { printOrder, printStatus } = useOrderPrinting(
+    productionCenters,
+    cartItems
+  );
 
   // submit
   const handleSubmit = async () => {
     const errors = validateForm();
     console.log(errors);
-    
+
     if (Object.keys(errors).length > 0) {
       // Display errors to user
       setFormErrors(errors);
       return;
     }
 
-    if(lastTotal<0){
-      alert('Por favor, añada más productos para continuar con el pago')
+    if (lastTotal < 0) {
+      alert("Por favor, añada más productos para continuar con el pago");
       return;
     }
 
@@ -575,10 +582,14 @@ const Counter_finalP = () => {
       item_id: item.id,
       quantity: item.count,
       notes: item.note ? item.note.replace(/^Nota:\s*/i, "").trim() : "",
-      admin_id: admin_id
+      admin_id: admin_id,
     }));
 
-    const totalPaymentAmount = parseFloat(customerData.cashAmount || 0) + parseFloat(customerData.debitAmount || 0) + parseFloat(customerData.creditAmount || 0) + parseFloat(customerData.transferAmount || 0);
+    const totalPaymentAmount =
+      parseFloat(customerData.cashAmount || 0) +
+      parseFloat(customerData.debitAmount || 0) +
+      parseFloat(customerData.creditAmount || 0) +
+      parseFloat(customerData.transferAmount || 0);
     // console.log("payment", payment);
     const orderData = {
       order_details: orderDetails,
@@ -591,7 +602,7 @@ const Counter_finalP = () => {
         user_id: userId, // You might want to dynamically set this
         delivery_cost: 0, // You might want to dynamically set this
         customer_name:
-          payment.firstname && payment.firstname.trim() !== ""  
+          payment.firstname && payment.firstname.trim() !== ""
             ? payment.firstname
             : payment.business_name || "",
         reason: "",
@@ -599,27 +610,31 @@ const Counter_finalP = () => {
         tip: tipAmount,
         box_id: boxId ? boxId?.id : selectedBoxId,
         transaction_code: true,
-      }
+      },
     };
     let order_master_id;
 
     setIsProcessing(true);
     try {
-      if(!orderData?.order_master?.box_id && role == "admin" ){
-        setIsProcessing(false)
+      if (!orderData?.order_master?.box_id && role == "admin") {
+        setIsProcessing(false);
         alert("Por favor, seleccione un caja para el pedido.");
         return;
       }
       if (!orderId) {
-        const response = await axios.post(`${apiUrl}/order/place_new`, orderData, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        const response = await axios.post(
+          `${apiUrl}/order/place_new`,
+          orderData,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (!response.data.success) {
-          alert(response.data.message)
+          alert(response.data.message);
         }
         // console.log(response.data);
         order_master_id = response.data.kdsOrder.order_id;
-        sessionStorage.setItem('orderId', order_master_id);
+        sessionStorage.setItem("orderId", order_master_id);
         setOrderId(order_master_id);
       }
       // console.log("order_master_id", response.data.kdsOrder.id);
@@ -632,7 +647,7 @@ const Counter_finalP = () => {
           order_master_id: order_master_id,
           return: customerData.turn,
           admin_id: admin_id,
-          credit_amount: creditId ? creditData.creditTotal : null
+          credit_amount: creditId ? creditData.creditTotal : null,
         };
         try {
           const responsePayment = await axios.post(
@@ -640,40 +655,41 @@ const Counter_finalP = () => {
             paymentData,
             {
               headers: {
-                Authorization: `Bearer ${token}`
-              }
+                Authorization: `Bearer ${token}`,
+              },
             }
-          )
+          );
 
-               // =======nodeprint===========
-               try {
-                  await  printOrder(cartItems, '', paymentData)
-                 console.log(printStatus);
-                } catch (error) {
-                  console.error("Order printing failed", error);
-                }
-      
-                // =======nodeprint===========
+          // =======nodeprint===========
+          try {
+            await printOrder(cartItems, "", paymentData);
+            console.log(printStatus);
+          } catch (error) {
+            console.error("Order printing failed", error);
+          }
 
-
-
+          // =======nodeprint===========
 
           // console.log("payemnt suc", responsePayment.data);
 
           if (creditId) {
             setIsProcessing(true);
-            axios.post(`${apiUrl}/order/getCreditUpdate/${creditId}`,{
+            axios
+              .post(
+                `${apiUrl}/order/getCreditUpdate/${creditId}`,
+                {
                   status: "Completed",
-                  destination: orderType.orderId
-                },{
+                  destination: orderType.orderId,
+                },
+                {
                   headers: {
                     Authorization: `Bearer ${token}`,
                   },
                 }
-              ).then((response) => {
+              )
+              .then((response) => {
                 // console.log(response.data);
                 setIsProcessing(false);
-                
               })
               .catch((error) => {
                 alert(error?.response?.data?.message || error.message);
@@ -683,22 +699,20 @@ const Counter_finalP = () => {
               });
           }
 
-
           dispatch(getAllOrders({ admin_id }));
           dispatch(getAllPayments({ admin_id }));
-          dispatch(getAllKds({ admin_id }))
+          dispatch(getAllKds({ admin_id }));
           localStorage.removeItem("cartItems");
           localStorage.removeItem("currentOrder");
           localStorage.removeItem("payment");
           sessionStorage.removeItem("orderId");
-          localStorage.removeItem("credit")
-          setOrderId('');
+          localStorage.removeItem("credit");
+          setOrderId("");
           setIsSubmitted(true);
           handleShow11();
           // handleClose11();
 
           setIsProcessing(false);
-
         } catch (error) {
           console.log(error, "payment Not Done");
           alert(error?.response?.data?.message || error.message);
@@ -711,53 +725,80 @@ const Counter_finalP = () => {
       setIsSubmitted(false);
       alert(error?.response?.data?.message || error.message);
       //enqueueSnackbar (error?.response?.data?.message, { variant: 'error' })
-      
     }
-
   };
+
+  const { printViaPrintNode, isPrinting, print_Status } = usePrintNode();
+  const [showPrintSuc, setShowPrintSuc] = useState(false);
+  const handleShowPrintSuc = () => {
+    setShowPrintSuc(true);
+    setTimeout(() => {
+      setShowPrintSuc(false);
+      navigate("/counter");
+    }, 2000);
+  };
+
   // print recipt
   const handlePrint = () => {
     setIsProcessing(true);
     const printContent = document.getElementById("receipt-content");
     if (printContent) {
-      // Create a new iframe
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      document.body.appendChild(iframe);
 
-      // Write the receipt content into the iframe
-      iframe.contentWindow.document.open();
-      iframe.contentWindow.document.write(
-        "<html><head><title>Print Receipt</title>"
-      );
-      iframe.contentWindow.document.write(
-        "<style>body { font-family: Arial, sans-serif; }</style>"
-      );
-      iframe.contentWindow.document.write("</head><body>");
-      iframe.contentWindow.document.write(printContent.innerHTML);
-      iframe.contentWindow.document.write("</body></html>");
-      iframe.contentWindow.document.close();
+      const pdf = new jsPDF();
+      pdf.html(printContent, {
+        callback: function (doc) {
+            const pdfBase64 = btoa(doc.output());
+            // Send the base64 encoded PDF to the printer
+            printViaPrintNode(pdfBase64);
+        },
+        x: 10,
+        y: 10
+    });
 
-      // Wait for the iframe to load before printing
-      iframe.onload = function () {
-        try {
-          iframe.contentWindow.focus();
-          iframe.contentWindow.print();
-        } catch (e) {
-          console.error("Printing failed", e);
-        }
+      if (print_Status && print_Status?.status === "success") {
+        console.log("Print job submitted successfully");
+        handleShowPrintSuc();
+      }
 
-        // Remove the iframe after printing (or if printing fails)
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-          navigate("/counter");
-          setIsProcessing(false);
-        }, 500);
-      };
+      // // Create a new iframe
+      // const iframe = document.createElement("iframe");
+      // iframe.style.display = "none";
+      // document.body.appendChild(iframe);
+
+      // // Write the receipt content into the iframe
+      // iframe.contentWindow.document.open();
+      // iframe.contentWindow.document.write(
+      //   "<html><head><title>Print Receipt</title>"
+      // );
+      // iframe.contentWindow.document.write(
+      //   "<style>body { font-family: Arial, sans-serif; }</style>"
+      // );
+      // iframe.contentWindow.document.write("</head><body>");
+      // iframe.contentWindow.document.write(printContent.innerHTML);
+      // iframe.contentWindow.document.write("</body></html>");
+      // iframe.contentWindow.document.close();
+
+      // // Wait for the iframe to load before printing
+      // iframe.onload = function () {
+      //   try {
+      //     iframe.contentWindow.focus();
+      //     iframe.contentWindow.print();
+      //   } catch (e) {
+      //     console.error("Printing failed", e);
+      //   }
+
+      //   // Remove the iframe after printing (or if printing fails)
+      //   setTimeout(() => {
+      //     document.body.removeChild(iframe);
+      //     navigate("/counter");
+      //     setIsProcessing(false);
+      //   }, 500);
+      // };
     } else {
       console.error("Receipt content not found");
     }
   };
+
   return (
     <div>
       <Header />
@@ -767,7 +808,7 @@ const Counter_finalP = () => {
             <Sidenav onNavigate={handleLinkNavigation} />
           </div>
           <div className="flex-grow-1 sidebar j-position-sticky text-white">
-            <div className="j-counter-header j_counter_header_last_change" >
+            <div className="j-counter-header j_counter_header_last_change">
               <h2 className="text-white mb-3 sjfs-18">Mostrador</h2>
               <div className="j-menu-bg-color ">
                 <div className="j-tracker-mar d-flex justify-content-between ">
@@ -835,7 +876,11 @@ const Counter_finalP = () => {
                         value={`$${price}`}
                         onChange={handleprice}
                       />
-                      {tipError && <p className="text-danger mt-2 errormessage">{tipError}</p>}
+                      {tipError && (
+                        <p className="text-danger mt-2 errormessage">
+                          {tipError}
+                        </p>
+                      )}
                     </div>
                   </Modal.Body>
                   <Modal.Footer className="border-0 pt-0">
@@ -844,7 +889,9 @@ const Counter_finalP = () => {
                       variant="primary"
                       onClick={() => {
                         if (!price || parseFloat(price) <= 0) {
-                          setTipError("Por favor, ingrese una cantidad válida para la propina.");
+                          setTipError(
+                            "Por favor, ingrese una cantidad válida para la propina."
+                          );
                         } else {
                           setTipError("");
                           handleShowCreSubSuc();
@@ -893,7 +940,6 @@ const Counter_finalP = () => {
                       /> */}
                       <p className="mb-0 mt-3 h6">
                         {" "}
-
                         ¿Estás segura de que quieres abandonar este pedido?
                       </p>
                     </div>
@@ -904,7 +950,7 @@ const Counter_finalP = () => {
                       variant="danger"
                       onClick={() => {
                         setShowDeleteConfirmation(false);
-                        navigationPage()
+                        navigationPage();
                       }}
                     >
                       Si, seguro
@@ -933,11 +979,9 @@ const Counter_finalP = () => {
                     <Accordion.Header>
                       <div
                         onClick={() => handleCheckboxChange("cash")}
-                        className={`sj_bg_dark px-4 py-2 sj_w-75 ${selectedCheckboxes.includes(
-                          "cash"
-                        )
-                          ? "active"
-                          : ""}`}
+                        className={`sj_bg_dark px-4 py-2 sj_w-75 ${
+                          selectedCheckboxes.includes("cash") ? "active" : ""
+                        }`}
                       >
                         <input
                           type="checkbox"
@@ -962,7 +1006,7 @@ const Counter_finalP = () => {
                                 type="text"
                                 id="cashAmount" // change
                                 name="cashAmount" // change
-                                value={`$${customerData.cashAmount || ''}`} // change
+                                value={`$${customerData.cashAmount || ""}`} // change
                                 onChange={handleChange}
                                 className="input_bg_dark w-full px-4 py-2 text-white sj_width_mobil"
                               />
@@ -979,7 +1023,11 @@ const Counter_finalP = () => {
                                 type="email"
                                 id="email"
                                 name="turn"
-                                value={`$${customerData.turn ? customerData.turn.toFixed(2) : ""}`}
+                                value={`$${
+                                  customerData.turn
+                                    ? customerData.turn.toFixed(2)
+                                    : ""
+                                }`}
                                 onChange={handleChange}
                                 className="input_bg_dark px-4 py-2 text-white sj_width_mobil"
                               />
@@ -993,11 +1041,9 @@ const Counter_finalP = () => {
                     <Accordion.Header>
                       <div
                         onClick={() => handleCheckboxChange("debit")}
-                        className={`sj_bg_dark px-4 py-2 sj_w-75 ${selectedCheckboxes.includes(
-                          "debit"
-                        )
-                          ? "active"
-                          : ""}`}
+                        className={`sj_bg_dark px-4 py-2 sj_w-75 ${
+                          selectedCheckboxes.includes("debit") ? "active" : ""
+                        }`}
                       >
                         <input
                           type="checkbox"
@@ -1062,11 +1108,9 @@ const Counter_finalP = () => {
                     <Accordion.Header>
                       <div
                         onClick={() => handleCheckboxChange("credit")}
-                        className={`sj_bg_dark px-4 py-2 sj_w-75 ${selectedCheckboxes.includes(
-                          "credit"
-                        )
-                          ? "active"
-                          : ""}`}
+                        className={`sj_bg_dark px-4 py-2 sj_w-75 ${
+                          selectedCheckboxes.includes("credit") ? "active" : ""
+                        }`}
                       >
                         <input
                           type="checkbox"
@@ -1109,11 +1153,11 @@ const Counter_finalP = () => {
                     <Accordion.Header>
                       <div
                         onClick={() => handleCheckboxChange("transfer")}
-                        className={`sj_bg_dark px-4 py-2 sj_w-75 ${selectedCheckboxes.includes(
-                          "transfer"
-                        )
-                          ? "active"
-                          : ""}`}
+                        className={`sj_bg_dark px-4 py-2 sj_w-75 ${
+                          selectedCheckboxes.includes("transfer")
+                            ? "active"
+                            : ""
+                        }`}
                       >
                         <input
                           type="checkbox"
@@ -1170,7 +1214,7 @@ const Counter_finalP = () => {
                     <input
                       className="j-input-name j_input_name2 ak-input"
                       type="text"
-                      placeholder={lastOrder ? lastOrder : "01234"}          //change
+                      placeholder={lastOrder ? lastOrder : "01234"} //change
                       value={lastOrder ? lastOrder : orderType.orderId}
                       disabled
                     />
@@ -1179,7 +1223,8 @@ const Counter_finalP = () => {
                     <label
                       htmlFor="exampleFormControlInput1"
                       className="form-label text-white"
-                    >Quién lo registra
+                    >
+                      Quién lo registra
                     </label>
                     <input
                       type="text"
@@ -1217,7 +1262,8 @@ const Counter_finalP = () => {
                         Mesa disponible
                       </h6>
                       <p className="p-product-order j-tbl-btn-font-1 ">
-                        Agregar producto para empezar<br />
+                        Agregar producto para empezar
+                        <br />
                         con el pedido de la mesa
                       </p>
                     </div>
@@ -1227,10 +1273,9 @@ const Counter_finalP = () => {
                     <div className="j-counter-order">
                       <h3 className="text-white j-tbl-font-5">Pedido </h3>
                       <div
-                        className={`j-counter-order-data ${cartItems.length ===
-                          0
-                          ? "empty"
-                          : "filled"}`}
+                        className={`j-counter-order-data ${
+                          cartItems.length === 0 ? "empty" : "filled"
+                        }`}
                       >
                         {cartItems
                           .slice(0, showAllItems ? cartItems.length : 3)
@@ -1293,14 +1338,14 @@ const Counter_finalP = () => {
                             </span>
                           </div>
                         )}
-                        {creditId &&
+                        {creditId && (
                           <div className="j-total-discount d-flex justify-content-between">
                             <p className="j-counter-text-2">credito</p>
                             <span className="text-white">
                               ${creditData.creditTotal}
                             </span>
                           </div>
-                        }
+                        )}
 
                         <div className="j-total-discount d-flex justify-content-between">
                           <p className="j-counter-text-2">Descuentos</p>
@@ -1312,7 +1357,9 @@ const Counter_finalP = () => {
                         <div className="j-border-bottom-counter">
                           <div className="j-total-discount d-flex justify-content-between">
                             <p className="j-counter-text-2">IVA 19.00%</p>
-                            <span className="text-white">${taxAmount.toFixed(2)}</span>
+                            <span className="text-white">
+                              ${taxAmount.toFixed(2)}
+                            </span>
                           </div>
                         </div>
                         <div className="j-total-discount my-2 d-flex justify-content-between">
@@ -1320,7 +1367,7 @@ const Counter_finalP = () => {
                             Total
                           </p>
                           <span className="text-white bj-delivery-text-153">
-                            ${(lastTotal).toFixed(2)}
+                            ${lastTotal.toFixed(2)}
                           </span>
                         </div>
                         <div className="btn w-100 j-btn-primary text-white">
@@ -1428,15 +1475,46 @@ const Counter_finalP = () => {
                         </Modal>
                         {/* processing */}
                         <Modal
-                          show={isProcessing || loadingItem}
+                          show={isProcessing || loadingItem || isPrinting}
                           keyboard={false}
                           backdrop={true}
                           className="m_modal  m_user "
                         >
                           <Modal.Body className="text-center">
                             <p></p>
-                            <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
+                            <Spinner
+                              animation="border"
+                              role="status"
+                              style={{
+                                height: "85px",
+                                width: "85px",
+                                borderWidth: "6px",
+                              }}
+                            />
                             <p className="mt-2">Procesando solicitud...</p>
+                          </Modal.Body>
+                        </Modal>
+                        {/* print success  */}
+                        <Modal
+                          show={showPrintSuc}
+                          backdrop={true}
+                          keyboard={false}
+                          className="m_modal  m_user"
+                        >
+                          <Modal.Header closeButton className="border-0" />
+                          <Modal.Body>
+                            <div className="text-center">
+                              <img
+                                src={require("../Image/check-circle.png")}
+                                alt=""
+                              />
+                              <p className="mb-0 mt-2 h6">
+                                Trabajo de impresión
+                              </p>
+                              <p className="opacity-75 mb-5">
+                                Trabajo de impresión enviado exitosamente
+                              </p>
+                            </div>
                           </Modal.Body>
                         </Modal>
                       </div>
