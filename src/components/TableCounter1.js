@@ -197,6 +197,7 @@ const TableCounter1 = () => {
           price={e.sale_price}
           code={e.code}
           addItemToCart={addItemToCart}
+
           production_center_id={e.production_center_id}
         />
       </div>
@@ -216,15 +217,22 @@ const TableCounter1 = () => {
     }
   };
   const [cartItems, setCartItems] = useState([]);
+  const [cartItemsExist, setCartItemsExist] = useState([]);
   const [countsoup, setCountsoup] = useState([]);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("cartItems");
+    const savedCartExists = localStorage.getItem("cartItemsExists");
     if (savedCart) {
       setCartItems(JSON.parse(savedCart));
       setCountsoup(JSON.parse(savedCart).map((item) => item.count));
     }
+    if (savedCartExists) {
+      setCartItemsExist(JSON.parse(savedCartExists));
+    } 
   }, []);
+
+
 
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -240,7 +248,9 @@ const TableCounter1 = () => {
       const existingItem = tableData[0].items.find(
         (i) => i.item_id === item.id
       );
+      addToCartItemsExists(item);
       if (existingItem) {
+        alert("ds")
         // If the item exists, increment its quantity
         await increment(
           existingItem.id,
@@ -253,10 +263,37 @@ const TableCounter1 = () => {
         addToCartItems(item);
         await updateExistingOrder(item);
       }
+      addItemToCartExist(item)
     } else {
       // If tableData doesn't exist, add to cartItems
       addToCartItems(item);
+      
     }
+
+    // Update URL params and navigate
+    navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
+  };
+  const addItemToCartExist = async (item) => {
+  
+      // If tableData doesn't exist, add to cartItems
+      console.log(item)
+      if(item.item_id )
+      {
+
+        let it =  {
+          id : parseInt(item.item_id),
+          name : item.name,
+          production_center_id:parseInt(item.production_center_id),
+          code:item.code,
+          count:item.count,
+          price:item.amount
+        };
+        addToCartItemsExists(it);
+      }else{
+        addToCartItemsExists(item);
+
+      }
+   
 
     // Update URL params and navigate
     navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
@@ -283,7 +320,6 @@ const TableCounter1 = () => {
           },
         }
       );
-
       console.log("Item added to existing order:", response.data);
       getTableData(tId);
     } catch (error) {
@@ -296,6 +332,26 @@ const TableCounter1 = () => {
     }
   };
 
+  const addToCartItemsExists = (item) => {
+    const existingItemIndex = cartItemsExist.findIndex(
+      (cartItem) => cartItem.id === item.id
+    );
+
+    let updatedCartItems;
+    if (existingItemIndex !== -1) {
+      updatedCartItems = cartItemsExist.map((cartItem, index) =>
+        index === existingItemIndex
+          ? { ...cartItem, count: cartItem.count + 1 }
+          : cartItem
+      );
+    } else {
+      updatedCartItems = [...cartItemsExist, { ...item, count: 1 }];
+    }
+console.log(updatedCartItems)
+    setCartItemsExist(updatedCartItems);
+    localStorage.setItem("cartItemsExists", JSON.stringify(updatedCartItems));
+  };
+ 
   const addToCartItems = (item) => {
     const existingItemIndex = cartItems.findIndex(
       (cartItem) => cartItem.id === item.id
@@ -385,6 +441,23 @@ const TableCounter1 = () => {
     });
   };
 
+  const removeItemFromCartExists = (itemId) => {
+    const updatedCartItems = cartItemsExist
+      .map((item) => {
+        if (item.id === itemId) {
+          return { ...item, count: Math.max(0, item.count - 1) };
+        }
+        return item;
+      })
+      .filter((item) => item.count > 0);
+
+    setCartItemsExist(updatedCartItems);
+    localStorage.setItem("cartItemsExists", JSON.stringify(updatedCartItems));
+
+    // Update countsoup accordingly
+    const updatedCountsoup = updatedCartItems.map((item) => item.count);
+    setCountsoup(updatedCountsoup);
+  };
   const removeItemFromCart = (itemId) => {
     const updatedCartItems = cartItems
       .map((item) => {
@@ -402,6 +475,7 @@ const TableCounter1 = () => {
     const updatedCountsoup = updatedCartItems.map((item) => item.count);
     setCountsoup(updatedCountsoup);
   };
+
 
   const removeAllItemFromCart = (itemId) => {
     const updatedCartItems = cartItems.filter((item) => item.id !== itemId);
@@ -635,7 +709,7 @@ const TableCounter1 = () => {
 
   //   place order
 
-  // const { printOrder, printStatus } = useOrderPrinting( productionCenters, cartItems)
+  const { printOrder, printStatus } = useOrderPrinting( productionCenters, cartItems)
 
   const handleCreateOrder = async () => {
     // Reset error states
@@ -728,12 +802,12 @@ const TableCounter1 = () => {
             }
           );
           // =======nodeprint===========
-          // try {
-          //   await  printOrder(cartItems,tId)
-          //  console.log(printStatus);
-          // } catch (error) {
-          //   console.error("Order printing failed", error);
-          // }
+          try {
+            await  printOrder(cartItems,tId)
+           console.log(printStatus);
+          } catch (error) {
+            console.error("Order printing failed", error);
+          }
 
           // =======nodeprint===========
 
@@ -1038,6 +1112,7 @@ const TableCounter1 = () => {
   //   [tableData]
   // );
 
+
   const increment = async (proid, item_id, quantity, tableId) => {
     // setIsProcessing(true);
     try {
@@ -1158,8 +1233,17 @@ const TableCounter1 = () => {
   };
 
 
-  const handleupdateOrder = () => {
+  const handleupdateOrder = async () => {
     dispatch(getAllOrders({admin_id}));
+    const item = JSON.parse(localStorage.getItem("cartItemsExists"))
+    try {
+      console.log(cartItemsExist)
+      await  printOrder(item,tId)
+     console.log(printStatus);
+     localStorage.removeItem("cartItemsExists");
+    } catch (error) {
+      console.error("Order printing failed", error);
+    }
     navigate("/table");
   }
 
@@ -1371,7 +1455,7 @@ const TableCounter1 = () => {
                           </div>
                         </div>
                         <div className="j-counter-order ">
-                          <h3 className="text-white j-tbl-pop-1">Pedido </h3>
+                          <h3 className="text-white j-tbl-pop-1">Pedido</h3>
                           <div
                             className={
                               "j-counter-order-data j_counter_order_width"
@@ -1414,12 +1498,15 @@ const TableCounter1 = () => {
                                             className="j-minus-count"
                                             onClick={() =>
                                               tableData && tableData.length > 0
-                                                ? decrement(
-                                                    item.id,
-                                                    item.item_id,
-                                                    item.quantity,
-                                                    tId
-                                                  )
+                                                ? (async () => {
+                                                    await decrement(
+                                                      item.id,
+                                                      item.item_id,
+                                                      item.quantity,
+                                                      tId
+                                                    );
+                                                    removeItemFromCartExists(item.id)
+                                                  })()
                                                 : removeItemFromCart(item.id)
                                             }
                                           >
@@ -1433,12 +1520,17 @@ const TableCounter1 = () => {
                                             className="j-plus-count"
                                             onClick={() =>
                                               tableData && tableData.length > 0
-                                                ? increment(
+                                                ?
+                                                (async () => {
+                                                  await increment(
                                                     item.id,
                                                     item.item_id,
                                                     item.quantity,
                                                     tId
-                                                  )
+                                                  );
+                                                  addItemToCartExist(item);
+                                                
+                                                })() 
                                                 : addItemToCart(item)
                                             }
                                           >
