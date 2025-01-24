@@ -76,8 +76,8 @@ const TableCounter1 = () => {
 
 
   const dispatch = useDispatch()
-  const {items,subFamily,family,production,loadingItem} = useSelector((state) => state.items);
-   const { user, roles } = useSelector((state) => state.user);
+  const { items, subFamily, family, production, loadingItem } = useSelector((state) => state.items);
+  const { user, roles } = useSelector((state) => state.user);
 
 
   // Add ref for note inputs
@@ -111,7 +111,7 @@ const TableCounter1 = () => {
       } else {
         console.error("Response data is not a non-empty array:", response.data);
       }
-    } catch(error) {
+    } catch (error) {
       console.error("Error fetching table data:", error);
       setIsProcessing(false);
     }
@@ -150,10 +150,10 @@ const TableCounter1 = () => {
 
   useEffect(() => {
     if (tableStatus === "busy") {
-      if (id){
+      if (id) {
         getTableData(id);
         localStorage.removeItem("cartItems");
-      } 
+      }
     }
     getTable(id);
   }, [id]);
@@ -229,7 +229,7 @@ const TableCounter1 = () => {
     }
     if (savedCartExists) {
       setCartItemsExist(JSON.parse(savedCartExists));
-    } 
+    }
   }, []);
 
 
@@ -267,33 +267,32 @@ const TableCounter1 = () => {
     } else {
       // If tableData doesn't exist, add to cartItems
       addToCartItems(item);
-      
+
     }
 
     // Update URL params and navigate
     navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
   };
   const addItemToCartExist = async (item) => {
-  
-      // If tableData doesn't exist, add to cartItems
-      console.log(item)
-      if(item.item_id )
-      {
 
-        let it =  {
-          id : parseInt(item.item_id),
-          name : item.name,
-          production_center_id:parseInt(item.production_center_id),
-          code:item.code,
-          count:item.count,
-          price:item.amount
-        };
-        addToCartItemsExists(it);
-      }else{
-        addToCartItemsExists(item);
+    // If tableData doesn't exist, add to cartItems
+    console.log(item)
+    if (item.item_id) {
 
-      }
-   
+      let it = {
+        id: parseInt(item.item_id),
+        name: item.name,
+        production_center_id: parseInt(item.production_center_id),
+        code: item.code,
+        count: item.count,
+        price: item.amount
+      };
+      addToCartItemsExists(it);
+    } else {
+      addToCartItemsExists(item);
+
+    }
+
 
     // Update URL params and navigate
     navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
@@ -347,11 +346,11 @@ const TableCounter1 = () => {
     } else {
       updatedCartItems = [...cartItemsExist, { ...item, count: 1 }];
     }
-console.log(updatedCartItems)
+    console.log(updatedCartItems)
     setCartItemsExist(updatedCartItems);
     localStorage.setItem("cartItemsExists", JSON.stringify(updatedCartItems));
   };
- 
+
   const addToCartItems = (item) => {
     const existingItemIndex = cartItems.findIndex(
       (cartItem) => cartItem.id === item.id
@@ -390,7 +389,7 @@ console.log(updatedCartItems)
               (total, item) => total + item.price * item.count,
               0
             ),
-            discount:  0.00 ,
+            discount: 0.00,
             customer_name: customerName,
             person: person,
           },
@@ -511,53 +510,53 @@ console.log(updatedCartItems)
   //   setCurrentSubfamilies(relatedSubfamilies);
   // }, [apiUrl]);
 
-  useEffect(()=>{
-          
-      if(items.length == 0){
-        dispatch(getAllitems());
-      }
-      if(subFamily.length == 0){
-        dispatch(getSubFamily());
-      }
-      if(family.length == 0){
-        dispatch(getFamily());
-      }
-      if(production.length == 0){
-        dispatch(getProduction({admin_id}));
-      }
-      if (user.length == 0) {
-        dispatch(getUser());
-      }
-      if (roles?.length == 0) {
-        dispatch(getRols());
-      }
-    }, []);
-    
-      useEffect(() => {
-        if (user) {
-          setUsers(user);
-        }
-      }, [user]);
-  
-    useEffect(()=>{
-      if(family){
-        const todoCategory = { id: "todo", name: "Todo" };
-        setParentCheck([todoCategory, ...family]);
-        setSelectedCategory(todoCategory);
-      }
-      if(items){
-        setObj1(items);
-        // setFilteredItemsMenu(items);
-        // setItems(items)
-      }
-      if(subFamily){
-        setChildCheck(subFamily)
-      }
-      if(production){
-        setProductionCenters(production)
-      }
-     
-    },[family,items,subFamily,production])
+  useEffect(() => {
+
+    if (items.length == 0) {
+      dispatch(getAllitems());
+    }
+    if (subFamily.length == 0) {
+      dispatch(getSubFamily());
+    }
+    if (family.length == 0) {
+      dispatch(getFamily());
+    }
+    if (production.length == 0) {
+      dispatch(getProduction({ admin_id }));
+    }
+    if (user.length == 0) {
+      dispatch(getUser());
+    }
+    if (roles?.length == 0) {
+      dispatch(getRols());
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      setUsers(user);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (family) {
+      const todoCategory = { id: "todo", name: "Todo" };
+      setParentCheck([todoCategory, ...family]);
+      setSelectedCategory(todoCategory);
+    }
+    if (items) {
+      setObj1(items);
+      // setFilteredItemsMenu(items);
+      // setItems(items)
+    }
+    if (subFamily) {
+      setChildCheck(subFamily)
+    }
+    if (production) {
+      setProductionCenters(production)
+    }
+
+  }, [family, items, subFamily, production])
 
 
   // get family
@@ -708,8 +707,21 @@ console.log(updatedCartItems)
   // }
 
   //   place order
+  console.log("cat", cartItemsExist, );
 
-  const { printOrder, printStatus } = useOrderPrinting( productionCenters, cartItems)
+  let cartData;
+  if (cartItemsExist.length !== 0) {
+    console.log("object")
+    cartData = cartItemsExist;
+  } else if(cartItems) {
+    cartData = cartItems;
+  }
+
+
+  // const cartData = cartItemsExist ||  ; 
+  console.log("cartData", cartData)
+
+  const { printOrder, printStatus } = useOrderPrinting(productionCenters, cartData)
 
   const handleCreateOrder = async () => {
     // Reset error states
@@ -803,16 +815,16 @@ console.log(updatedCartItems)
           );
           // =======nodeprint===========
           try {
-            await  printOrder(cartItems,tId)
-           console.log(printStatus);
+            await printOrder(cartItems, tId)
+            console.log(printStatus);
           } catch (error) {
             console.error("Order printing failed", error);
           }
 
           // =======nodeprint===========
 
-          dispatch(getAllOrders({admin_id}));
-          dispatch(getAllTableswithSector({admin_id}));
+          dispatch(getAllOrders({ admin_id }));
+          dispatch(getAllTableswithSector({ admin_id }));
           dispatch(getAllKds({ admin_id }))
           console.log("Table status updated successfully", resTable.data);
           localStorage.removeItem("cartItems");
@@ -879,7 +891,7 @@ console.log(updatedCartItems)
         }
       };
     }
-    return () => {}; // Return an empty cleanup function if scrollContainer is null
+    return () => { }; // Return an empty cleanup function if scrollContainer is null
   }, []);
 
   // Modified note handling functions
@@ -1234,13 +1246,13 @@ console.log(updatedCartItems)
 
 
   const handleupdateOrder = async () => {
-    dispatch(getAllOrders({admin_id}));
+    dispatch(getAllOrders({ admin_id }));
     const item = JSON.parse(localStorage.getItem("cartItemsExists"))
     try {
       console.log(cartItemsExist)
-      await  printOrder(item,tId)
-     console.log(printStatus);
-     localStorage.removeItem("cartItemsExists");
+      await printOrder(item, tId)
+      console.log(printStatus);
+      localStorage.removeItem("cartItemsExists");
     } catch (error) {
       console.error("Order printing failed", error);
     }
@@ -1318,9 +1330,8 @@ console.log(updatedCartItems)
                 >
                   {parentCheck.map((category, index) => (
                     <li
-                      className={`nav-item ${
-                        selectedCategory === category ? "active" : ""
-                      }`}
+                      className={`nav-item ${selectedCategory === category ? "active" : ""
+                        }`}
                       key={category.id}
                       onClick={() => handleFamilyClick(category)}
                     >
@@ -1336,9 +1347,8 @@ console.log(updatedCartItems)
                 <ul className="nav j-nav-scroll">
                   {currentSubfamilies.map((subcategory, index) => (
                     <li
-                      className={`nav-item ${
-                        selectedSubCategory === subcategory ? "active" : ""
-                      }`}
+                      className={`nav-item ${selectedSubCategory === subcategory ? "active" : ""
+                        }`}
                       key={subcategory.id}
                       onClick={() => handleSubFamilyClick(subcategory)}
                     >
@@ -1499,14 +1509,14 @@ console.log(updatedCartItems)
                                             onClick={() =>
                                               tableData && tableData.length > 0
                                                 ? (async () => {
-                                                    await decrement(
-                                                      item.id,
-                                                      item.item_id,
-                                                      item.quantity,
-                                                      tId
-                                                    );
-                                                    removeItemFromCartExists(item.id)
-                                                  })()
+                                                  await decrement(
+                                                    item.id,
+                                                    item.item_id,
+                                                    item.quantity,
+                                                    tId
+                                                  );
+                                                  removeItemFromCartExists(item.id)
+                                                })()
                                                 : removeItemFromCart(item.id)
                                             }
                                           >
@@ -1529,8 +1539,8 @@ console.log(updatedCartItems)
                                                     tId
                                                   );
                                                   addItemToCartExist(item);
-                                                
-                                                })() 
+
+                                                })()
                                                 : addItemToCart(item)
                                             }
                                           >
@@ -1649,7 +1659,7 @@ console.log(updatedCartItems)
                                   <span key={item.id}>
                                     ${" "}
                                     {parseFloat(
-                                      item.order_total 
+                                      item.order_total
                                     ).toFixed(2)}
                                   </span>
                                 ))}
@@ -1671,300 +1681,300 @@ console.log(updatedCartItems)
                     </div>
                   </div>
                 ) : // If tableData is empty, check cartItems
-                cartItems.length === 0 ? (
-                  <div>
-                    <h4 className="j-table-co4 j-tbl-text-13">Mesa {tabNo}</h4>
-                    <div className="d-flex align-items-center justify-content-between my-3 ak-w-100">
-                      <div className="j-busy-table d-flex align-items-center ak-w-50">
-                        <div className="j-a-table" />
-                        <p className="j-table-color j-tbl-btn-font-1 ak-input">
-                          Disponible
-                        </p>
+                  cartItems.length === 0 ? (
+                    <div>
+                      <h4 className="j-table-co4 j-tbl-text-13">Mesa {tabNo}</h4>
+                      <div className="d-flex align-items-center justify-content-between my-3 ak-w-100">
+                        <div className="j-busy-table d-flex align-items-center ak-w-50">
+                          <div className="j-a-table" />
+                          <p className="j-table-color j-tbl-btn-font-1 ak-input">
+                            Disponible
+                          </p>
+                        </div>
+                        <div className="b-date-time d-flex align-items-center ak-w-50">
+                          <svg
+                            className="j-canvas-svg-i"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          <p className="mb-0 ms-2 me-3 text-white j-tbl-btn-font-1 ak-input">
+                            00 min 00 sg
+                          </p>
+                        </div>
                       </div>
-                      <div className="b-date-time d-flex align-items-center ak-w-50">
-                        <svg
-                          className="j-canvas-svg-i"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <p className="mb-0 ms-2 me-3 text-white j-tbl-btn-font-1 ak-input">
-                          00 min 00 sg
-                        </p>
-                      </div>
-                    </div>
-                    <div className="j-orders-inputs ak-w-100">
-                      <div className="j-orders-code ak-w-50">
-                        <label className="j-label-name text-white j-tbl-btn-font-1 mb-2">
-                          Quién registra
-                        </label>
-                        <input
-                          className="j-input-name ak-input"
-                          type="text"
-                          placeholder="Lucia Lopez"
-                          value={userName}
-                          // onChange={(e) => {
-                          //   setCustomerName(e.target.value);
-                          //   setCustomerNameError("");
-                          // }}
-                          disabled
-                        />
-                        {customerNameError && (
-                          <div className="text-danger errormessage">
-                            {customerNameError}
-                          </div>
-                        )}
-                      </div>
-                      <div className="j-orders-code ak-w-50">
-                        <label className="j-label-name j-tbl-btn-font-1 text-white mb-2">
-                          Personas
-                        </label>
-                        <div>
+                      <div className="j-orders-inputs ak-w-100">
+                        <div className="j-orders-code ak-w-50">
+                          <label className="j-label-name text-white j-tbl-btn-font-1 mb-2">
+                            Quién registra
+                          </label>
                           <input
-                            className="j-input-name630 ak-input"
+                            className="j-input-name ak-input"
                             type="text"
-                            placeholder="-"
-                            value={person}
-                            onChange={(e) => {
-                              setPerson(e.target.value);
-                              setPersonError("");
-                            }}
+                            placeholder="Lucia Lopez"
+                            value={userName}
+                            // onChange={(e) => {
+                            //   setCustomerName(e.target.value);
+                            //   setCustomerNameError("");
+                            // }}
+                            disabled
                           />
-                          {personError && (
+                          {customerNameError && (
                             <div className="text-danger errormessage">
-                              {personError}
+                              {customerNameError}
                             </div>
                           )}
                         </div>
+                        <div className="j-orders-code ak-w-50">
+                          <label className="j-label-name j-tbl-btn-font-1 text-white mb-2">
+                            Personas
+                          </label>
+                          <div>
+                            <input
+                              className="j-input-name630 ak-input"
+                              type="text"
+                              placeholder="-"
+                              value={person}
+                              onChange={(e) => {
+                                setPerson(e.target.value);
+                                setPersonError("");
+                              }}
+                            />
+                            {personError && (
+                              <div className="text-danger errormessage">
+                                {personError}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="b-product-order text-center">
-                      <svg
-                        className="w-6 h-6 text-gray-800 dark:text-white mb-2"
-                        style={{ color: "white" }}
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="28"
-                        height="28"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M4.857 3A1.857 1.857 0 0 0 3 4.857v4.286C3 10.169 3.831 11 4.857 11h4.286A1.857 1.857 0 0 0 11 9.143V4.857A1.857 1.857 0 0 0 9.143 3H4.857Zm10 0A1.857 1.857 0 0 0 13 4.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 9.143V4.857A1.857 1.857 0 0 0 19.143 3h-4.286Zm-10 10A1.857 1.857 0 0 0 3 14.857v4.286C3 20.169 3.831 21 4.857 21h4.286A1.857 1.857 0 0 0 11 19.143v-4.286A1.857 1.857 0 0 0 9.143 13H4.857Zm10 0A1.857 1.857 0 0 0 13 14.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 19.143v-4.286A1.857 1.857 0 0 0 19.143 13h-4.286Z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <h6 className="h6-product-order text-white j-tbl-pop-1">
-                        Empezar Pedido
-                      </h6>
-                      <p className="p-product-order j-tbl-btn-font-1 ">
-                        Agregar producto para comenzar el pedido
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  // If cartItems is not empty, display cart items
-                  <div>
-                    {/* Existing cart items display code */}
-                    <h4 className="j-table-co4 j-tbl-text-13">Mesa {tabNo}</h4>
-                    <div className="d-flex align-items-center justify-content-between my-3 ak-w-100">
-                      <div className="j-busy-table d-flex align-items-center ak-w-50">
-                        <div className="j-a-table" />
-                        <p className="j-table-color j-tbl-btn-font-1 ak-input">
-                          Disponible
-                        </p>
-                      </div>
-                      <div className="b-date-time d-flex align-items-center ak-w-50">
+                      <div className="b-product-order text-center">
                         <svg
-                          className="j-canvas-svg-i"
+                          className="w-6 h-6 text-gray-800 dark:text-white mb-2"
+                          style={{ color: "white" }}
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
+                          width="28"
+                          height="28"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
                           <path
                             fillRule="evenodd"
-                            d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                            d="M4.857 3A1.857 1.857 0 0 0 3 4.857v4.286C3 10.169 3.831 11 4.857 11h4.286A1.857 1.857 0 0 0 11 9.143V4.857A1.857 1.857 0 0 0 9.143 3H4.857Zm10 0A1.857 1.857 0 0 0 13 4.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 9.143V4.857A1.857 1.857 0 0 0 19.143 3h-4.286Zm-10 10A1.857 1.857 0 0 0 3 14.857v4.286C3 20.169 3.831 21 4.857 21h4.286A1.857 1.857 0 0 0 11 19.143v-4.286A1.857 1.857 0 0 0 9.143 13H4.857Zm10 0A1.857 1.857 0 0 0 13 14.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 19.143v-4.286A1.857 1.857 0 0 0 19.143 13h-4.286Z"
                             clipRule="evenodd"
                           />
                         </svg>
-                        <p className="mb-0 ms-2 me-3 text-white j-tbl-btn-font-1 ak-input">
-                          {date}
+                        <h6 className="h6-product-order text-white j-tbl-pop-1">
+                          Empezar Pedido
+                        </h6>
+                        <p className="p-product-order j-tbl-btn-font-1 ">
+                          Agregar producto para comenzar el pedido
                         </p>
                       </div>
                     </div>
-                    <div className="j-orders-inputs ak-w-100">
-                      <div className="w-100">
-                        <div className="j-orders-inputs ak-w-100">
-                          <div className="j-orders-code ak-w-50">
-                            <label className="j-label-name text-white mb-2 j-tbl-btn-font-1">
-                              Quién registra
-                            </label>
-                            <input
-                              className="j-input-name ak-input"
-                              type="text"
-                              placeholder="Lucia Lopez"
-                              value={userName}
-                              // onChange={(e) => {
-                              //   setCustomerName(e.target.value);
-                              //   setCustomerNameError("");
-                              // }}
-                              disabled
+                  ) : (
+                    // If cartItems is not empty, display cart items
+                    <div>
+                      {/* Existing cart items display code */}
+                      <h4 className="j-table-co4 j-tbl-text-13">Mesa {tabNo}</h4>
+                      <div className="d-flex align-items-center justify-content-between my-3 ak-w-100">
+                        <div className="j-busy-table d-flex align-items-center ak-w-50">
+                          <div className="j-a-table" />
+                          <p className="j-table-color j-tbl-btn-font-1 ak-input">
+                            Disponible
+                          </p>
+                        </div>
+                        <div className="b-date-time d-flex align-items-center ak-w-50">
+                          <svg
+                            className="j-canvas-svg-i"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                              clipRule="evenodd"
                             />
-                            {customerNameError && (
-                              <div className="text-danger errormessage">
-                                {customerNameError}
-                              </div>
-                            )}
-                          </div>
-                          <div className="j-orders-code ak-w-50">
-                            <label className="j-label-name j-tbl-btn-font-1 text-white mb-2">
-                              Personas
-                            </label>
-                            <div>
+                          </svg>
+                          <p className="mb-0 ms-2 me-3 text-white j-tbl-btn-font-1 ak-input">
+                            {date}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="j-orders-inputs ak-w-100">
+                        <div className="w-100">
+                          <div className="j-orders-inputs ak-w-100">
+                            <div className="j-orders-code ak-w-50">
+                              <label className="j-label-name text-white mb-2 j-tbl-btn-font-1">
+                                Quién registra
+                              </label>
                               <input
-                                className="j-input-name630 ak-input"
+                                className="j-input-name ak-input"
                                 type="text"
-                                placeholder="-"
-                                value={person}
-                                onChange={(e) => {
-                                  setPerson(e.target.value);
-                                  setPersonError("");
-                                }}
+                                placeholder="Lucia Lopez"
+                                value={userName}
+                                // onChange={(e) => {
+                                //   setCustomerName(e.target.value);
+                                //   setCustomerNameError("");
+                                // }}
+                                disabled
                               />
-                              {personError && (
+                              {customerNameError && (
                                 <div className="text-danger errormessage">
-                                  {personError}
+                                  {customerNameError}
                                 </div>
                               )}
                             </div>
-                          </div>
-                        </div>
-                        <div className="j-counter-order">
-                          <h3 className="text-white j-tbl-pop-1">Pedido </h3>
-                          <div className="j-counter-order-data j_counter_order_width">
-                            {cartItems
-                              .slice(0, showAllItems ? cartItems.length : 3)
-                              .map((item, index) => (
-                                <div
-                                  className="j-counter-order-border-fast j_border_width"
-                                  key={item.id}
-                                >
-                                  <div className="j-counter-order-img j_counter_order_final">
-                                    <div className="j_d_flex_aic">
-                                      <img
-                                        src={`${API}/images/${item.image}`}
-                                        alt=""
-                                      />
-                                      <h5 className="text-white j-tbl-font-5">
-                                        {item.name}
-                                      </h5>
-                                    </div>
-                                    <div className="d-flex align-items-center">
-                                      <div className="j-counter-mix">
-                                        <button
-                                          className="j-minus-count"
-                                          onClick={() =>
-                                            removeItemFromCart(item.id)
-                                          }
-                                        >
-                                          <FaMinus />
-                                        </button>
-                                        <h3> {item.count}</h3>
-                                        <button
-                                          className="j-plus-count"
-                                          onClick={() => addItemToCart(item)}
-                                        >
-                                          <FaPlus />
-                                        </button>
-                                      </div>
-                                      <h4 className="text-white fw-semibold d-flex">
-                                        ${parseInt(item.price) * item.count}
-                                      </h4>
-                                      <button
-                                        className="j-delete-btn me-2"
-                                        onClick={() => {
-                                          setItemToDelete(item.id);
-                                          handleShowEditFam();
-                                        }}
-                                      >
-                                        <RiDeleteBin6Fill />
-                                      </button>
-                                    </div>
+                            <div className="j-orders-code ak-w-50">
+                              <label className="j-label-name j-tbl-btn-font-1 text-white mb-2">
+                                Personas
+                              </label>
+                              <div>
+                                <input
+                                  className="j-input-name630 ak-input"
+                                  type="text"
+                                  placeholder="-"
+                                  value={person}
+                                  onChange={(e) => {
+                                    setPerson(e.target.value);
+                                    setPersonError("");
+                                  }}
+                                />
+                                {personError && (
+                                  <div className="text-danger errormessage">
+                                    {personError}
                                   </div>
-                                  <div className="text-white j-order-count-why">
-                                    {renderNoteInput(item, index)}
-                                  </div>
-                                </div>
-                              ))}
-                            {cartItems.length > 3 && (
-                              <Link
-                                onClick={toggleShowAllItems}
-                                className="sjfs-14"
-                              >
-                                {showAllItems ? "Ver menos" : "Ver más"}
-                              </Link>
-                            )}
-                          </div>
-                          {cartError && (
-                            <div className="text-danger errormessage">
-                              {cartError}
-                            </div>
-                          )}
-                          <div className="j-counter-total ak-counter-total">
-                            <h5 className="text-white j-tbl-text-15">
-                              Costo total
-                            </h5>
-                            <div className="j-total-discount d-flex justify-content-between">
-                              <p className="j-counter-text-2">Artículos</p>
-                              <span className="text-white">
-                                ${totalCost.toFixed(2)}
-                              </span>
-                            </div>
-                            <div className="j-border-bottom-counter">
-                              <div className="j-total-discount d-flex justify-content-between">
-                                <p className="j-counter-text-2">Descuentos</p>
-                                <span className="text-white">
-                                  ${discount.toFixed(2)}
-                                </span>
+                                )}
                               </div>
                             </div>
-                            <div className="j-total-discount my-2 d-flex justify-content-between">
-                              <p className="text-white bj-delivery-text-153 ">
-                                Total
-                              </p>
-                              <span className="text-white bj-delivery-text-153 ">
-                                ${finalTotal.toFixed(2)}
-                              </span>
+                          </div>
+                          <div className="j-counter-order">
+                            <h3 className="text-white j-tbl-pop-1">Pedido </h3>
+                            <div className="j-counter-order-data j_counter_order_width">
+                              {cartItems
+                                .slice(0, showAllItems ? cartItems.length : 3)
+                                .map((item, index) => (
+                                  <div
+                                    className="j-counter-order-border-fast j_border_width"
+                                    key={item.id}
+                                  >
+                                    <div className="j-counter-order-img j_counter_order_final">
+                                      <div className="j_d_flex_aic">
+                                        <img
+                                          src={`${API}/images/${item.image}`}
+                                          alt=""
+                                        />
+                                        <h5 className="text-white j-tbl-font-5">
+                                          {item.name}
+                                        </h5>
+                                      </div>
+                                      <div className="d-flex align-items-center">
+                                        <div className="j-counter-mix">
+                                          <button
+                                            className="j-minus-count"
+                                            onClick={() =>
+                                              removeItemFromCart(item.id)
+                                            }
+                                          >
+                                            <FaMinus />
+                                          </button>
+                                          <h3> {item.count}</h3>
+                                          <button
+                                            className="j-plus-count"
+                                            onClick={() => addItemToCart(item)}
+                                          >
+                                            <FaPlus />
+                                          </button>
+                                        </div>
+                                        <h4 className="text-white fw-semibold d-flex">
+                                          ${parseInt(item.price) * item.count}
+                                        </h4>
+                                        <button
+                                          className="j-delete-btn me-2"
+                                          onClick={() => {
+                                            setItemToDelete(item.id);
+                                            handleShowEditFam();
+                                          }}
+                                        >
+                                          <RiDeleteBin6Fill />
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <div className="text-white j-order-count-why">
+                                      {renderNoteInput(item, index)}
+                                    </div>
+                                  </div>
+                                ))}
+                              {cartItems.length > 3 && (
+                                <Link
+                                  onClick={toggleShowAllItems}
+                                  className="sjfs-14"
+                                >
+                                  {showAllItems ? "Ver menos" : "Ver más"}
+                                </Link>
+                              )}
                             </div>
-                            <Link
-                              to={""}
-                              className="btn w-100 j-btn-primary text-white m-articles-text-2"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleCreateOrder();
-                              }}
-                            >
-                              Enviar a Cocina
-                            </Link>
+                            {cartError && (
+                              <div className="text-danger errormessage">
+                                {cartError}
+                              </div>
+                            )}
+                            <div className="j-counter-total ak-counter-total">
+                              <h5 className="text-white j-tbl-text-15">
+                                Costo total
+                              </h5>
+                              <div className="j-total-discount d-flex justify-content-between">
+                                <p className="j-counter-text-2">Artículos</p>
+                                <span className="text-white">
+                                  ${totalCost.toFixed(2)}
+                                </span>
+                              </div>
+                              <div className="j-border-bottom-counter">
+                                <div className="j-total-discount d-flex justify-content-between">
+                                  <p className="j-counter-text-2">Descuentos</p>
+                                  <span className="text-white">
+                                    ${discount.toFixed(2)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="j-total-discount my-2 d-flex justify-content-between">
+                                <p className="text-white bj-delivery-text-153 ">
+                                  Total
+                                </p>
+                                <span className="text-white bj-delivery-text-153 ">
+                                  ${finalTotal.toFixed(2)}
+                                </span>
+                              </div>
+                              <Link
+                                to={""}
+                                className="btn w-100 j-btn-primary text-white m-articles-text-2"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCreateOrder();
+                                }}
+                              >
+                                Enviar a Cocina
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 <Modal
                   show={showEditFam}
