@@ -589,12 +589,12 @@ const TablePago = () => {
             dispatch(getAllPayments({ admin_id }));
 
              // =======nodeprint===========
-              try {
-                await  printOrder(tableData?.[0].items,tId,paymentData)
-              console.log(printStatus);
-              } catch (error) {
-                console.error("Order printing failed", error);
-              }
+              // try {
+              //   await  printOrder(tableData?.[0].items,tId,paymentData)
+              // console.log(printStatus);
+              // } catch (error) {
+              //   console.error("Order printing failed", error);
+              // }
 
           // =======nodeprint===========
 
