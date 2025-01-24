@@ -60,9 +60,7 @@ const Tables = () => {
   const [selectedBoxId] = useState(parseInt(localStorage.getItem('boxId')));
   const boxId = useSelector(state => state.boxs.box)?.find((v) => v.user_id == userId);
   const {boxLogs} = useSelector(state => state.boxs);
-
   const [boxclosed ,setBoxclosed] = useState(false);
-
     useEffect(()=>{
       if(!boxId){
           dispatch(getboxs({admin_id}))
@@ -2466,7 +2464,7 @@ const Tables = () => {
                           ))}
                         </span>
                       </div>
-                      {role == "admin" || role == "cashier" && 
+                      {(role == "admin" || role == "cashier") && 
                         <div
                           className="btn w-100 j-btn-primary text-white j-tbl-btn-font-1 mb-3"
                           onClick={handleCobrarClcik}

@@ -276,17 +276,7 @@ const Caja = () => {
         // console.log(users)
         return user ? user.name : 'Unknown User';
     };
-
-    const getLastBoxRecord = (boxId) => {
-        const matchingBoxes = dataBox.filter(box => box.box_id === boxId);
-        // console.log(matchingBoxes);
-        
-        return matchingBoxes[matchingBoxes.length - 1]; // Get the last item
-    };
-    // console.log(localStorage.getItem("boxId"))
-
-    const [selectedBoxId, setSelectedBoxId] = useState(parseInt(localStorage.getItem("boxId")) || 0);
-
+    
     // useEffect(()=>{
     //     const boxid = localStorage.getItem("boxId");
     //     console.log(boxid);
@@ -296,6 +286,17 @@ const Caja = () => {
     //         handleBoxSelection(boxid);
     //     }
     // },[data])
+
+    const getLastBoxRecord = (boxId) => {
+        const matchingBoxes = dataBox.filter(box => box.box_id === boxId);
+        // console.log(matchingBoxes);
+        
+        return matchingBoxes[matchingBoxes.length - 1]; 
+    };
+    // console.log(localStorage.getItem("boxId"))
+
+    const [selectedBoxId, setSelectedBoxId] = useState(parseInt(localStorage.getItem("boxId")) || 0);
+
 
     useEffect(() => {
         if (data.length > 0) {            

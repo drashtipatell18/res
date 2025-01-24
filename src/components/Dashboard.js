@@ -46,6 +46,8 @@ import * as XLSX from "xlsx-js-style";
 import { useChat } from "../contexts/ChatContext";
 import { Modal, Spinner } from "react-bootstrap";
 import useSocket from "../hooks/useSocket";
+import { useDispatch, useSelector } from "react-redux";
+import { getboxsLogs } from "../redux/slice/box.slice";
 // import ApexCharts from "apexcharts";
 // import ApexCharts from 'apexcharts';
 
@@ -199,6 +201,34 @@ const Dashboard = () => {
   }, [role]);
 
   const [socketConnected, setSocketConnected] = useState(false);
+
+  const dispatch = useDispatch();
+  const {boxLogs} = useSelector(state => state.boxs);
+
+  useEffect(()=>{
+    if(boxLogs.length == 0 && role == "admin"){
+        dispatch(getboxsLogs({admin_id}))
+    }
+},[admin_id])
+
+  const getLastBoxRecord = (boxId) => {
+    const matchingBoxes = boxLogs.filter(box => box.box_id === boxId);
+    return matchingBoxes[matchingBoxes.length - 1]; 
+};
+const [selectedBoxId, setSelectedBoxId] = useState(parseInt(localStorage.getItem("boxId")) || 0);
+
+useEffect(() => {
+    if (boxName.length > 0 && boxLogs) {            
+        const openBox = boxName.find(box => {
+            const lastBoxRecord = getLastBoxRecord(box.id);                    
+            return lastBoxRecord && lastBoxRecord.close_amount === null;
+        });            
+        if (localStorage.getItem('boxId') === null && openBox) {
+            setSelectedBoxId(openBox.id); 
+            localStorage.setItem('boxId', openBox.id); 
+        }
+    }
+}, [boxName, boxLogs]);
 
   // useEffect(() => {
   //   if (userId) {

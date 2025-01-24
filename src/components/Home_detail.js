@@ -350,17 +350,18 @@ function Home_detail() {
 
                 // const base64Content = btoa(unescape(encodeURIComponent(printContent.innerHTML)));
 
-                // printViaPrintNode(base64Content);
-                const pdf = new jsPDF();
-                pdf.html(printContent, {
-                  callback: function (doc) {
-                      const pdfBase64 = btoa(doc.output());
-                      // Send the base64 encoded PDF to the printer
-                      printViaPrintNode(pdfBase64);
-                  },
-                  x: 10,
-                  y: 10
-              });
+                await printViaPrintNode(printContent);
+
+            //     const pdf = new jsPDF();
+            //     pdf.html(printContent, {
+            //       callback: function (doc) {
+            //           const pdfBase64 = btoa(doc.output());
+            //           // Send the base64 encoded PDF to the printer
+            //           printViaPrintNode(pdfBase64);
+            //       },
+            //       x: 10,
+            //       y: 10
+            //   });
     
                 if (print_Status && print_Status?.status === "success") {
                     console.log("Print job submitted successfully");
@@ -420,20 +421,21 @@ function Home_detail() {
             // Existing print logic for other content
             if (printContent) {
                 // Create a new iframe
+                await printViaPrintNode(printContent);
 
                 // const base64Content = btoa(unescape(encodeURIComponent(printContent.innerHTML)));
 
                 // printViaPrintNode(base64Content);
-                const pdf = new jsPDF();
-                pdf.html(printContent, {
-                  callback: function (doc) {
-                      const pdfBase64 = btoa(doc.output());
-                      // Send the base64 encoded PDF to the printer
-                      printViaPrintNode(pdfBase64);
-                  },
-                  x: 10,
-                  y: 10
-              });
+            //     const pdf = new jsPDF();
+            //     pdf.html(printContent, {
+            //       callback: function (doc) {
+            //           const pdfBase64 = btoa(doc.output());
+            //           // Send the base64 encoded PDF to the printer
+            //           printViaPrintNode(pdfBase64);
+            //       },
+            //       x: 10,
+            //       y: 10
+            //   });
     
                 if (print_Status && print_Status?.status === "success") {
                     console.log("Print job submitted successfully");

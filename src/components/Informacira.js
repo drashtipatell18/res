@@ -1145,6 +1145,8 @@ const Informacira = () => {
     const printContent = document.getElementById("printable");
     if (printContent) {
 
+     await printViaPrintNode(printContent);
+
     //   const generateBase64PDF = async (element) => {
     //     if (element) {
     //       const canvas = await html2canvas(element, {
@@ -1171,16 +1173,16 @@ const Informacira = () => {
     // const base64 = await generateBase64PDF(printContent);
     //   printViaPrintNode(base64);
 
-    const pdf = new jsPDF();
-    pdf.html(printContent, {
-      callback: function (doc) {
-          const pdfBase64 = btoa(doc.output());
-          // Send the base64 encoded PDF to the printer
-          printViaPrintNode(pdfBase64);
-      },
-      x: 10,
-      y: 10
-  });
+  //   const pdf = new jsPDF();
+  //   pdf.html(printContent, {
+  //     callback: function (doc) {
+  //         const pdfBase64 = btoa(doc.output());
+  //         // Send the base64 encoded PDF to the printer
+  //         printViaPrintNode(pdfBase64);
+  //     },
+  //     x: 10,
+  //     y: 10
+  // });
 
       if (print_Status && print_Status?.status === "success") {
         console.log("Print job submitted successfully");

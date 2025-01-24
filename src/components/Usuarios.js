@@ -1215,7 +1215,14 @@ const Usuarios = () => {
                           </td>
                           <td className="b_text_w">{user.email}</td>
                           <td>
-                            <div className="d-flex align-items-center gap-2 btn btn-outline-primary b_togllle b_border_out b_ttt" style={{ width:"220px"}}>
+                          {user.role_id !== 4 && (
+                            <div className="d-flex align-items-center gap-2 btn btn-outline-primary b_togllle b_border_out b_ttt" style={{ width:"220px"}}
+                            onClick={() =>{
+                              // handlePrintDetails(user.id)
+                              setPrinterCode(user?.printer_code || null)
+                              setShowPrint(true)
+                              setUserId(user.id)
+                            }}>
                               <svg
                                 className="b_ttt"
                                 aria-hidden="true"
@@ -1233,16 +1240,16 @@ const Usuarios = () => {
                               </svg>
                               <div
                                 className="b_ttt"
-                                onClick={() =>{
-                                  // handlePrintDetails(user.id)
-                                  setPrinterCode(user?.printer_code || null)
-                                  setShowPrint(true)
-                                  setUserId(user.id)
-                                }}
+                               
                               >
                                 Ajustes de impresión
                               </div>
                             </div>
+                          // ) : (
+                          //   <div className="d-flex align-items-center justify-content-center gap-2" style={{ width:"220px"}}>
+                          //     ---
+                          //   </div>
+                          )}
                           </td>
                           <td>
                             {user.status === "Activa" ? (

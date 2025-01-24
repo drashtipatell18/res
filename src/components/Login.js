@@ -83,8 +83,10 @@ const Login = () => {
         email,
         password
       });
+      // console.log(response.data);
       if (response.data.access_token) {
-        const { email, name, access_token, role, id, admin_id,printer_code } = response.data;
+        const { email, name, access_token, role, id, admin_id, printer_code } = response.data;
+        // console.log(printer_code);
         localStorage.setItem("email", email);
         localStorage.setItem("name", name);
         localStorage.setItem("token", access_token);

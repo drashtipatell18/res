@@ -739,21 +739,23 @@ const Counter_finalP = () => {
   };
 
   // print recipt
-  const handlePrint = () => {
+  const handlePrint = async () => {
     setIsProcessing(true);
     const printContent = document.getElementById("receipt-content");
     if (printContent) {
 
-      const pdf = new jsPDF();
-      pdf.html(printContent, {
-        callback: function (doc) {
-            const pdfBase64 = btoa(doc.output());
-            // Send the base64 encoded PDF to the printer
-            printViaPrintNode(pdfBase64);
-        },
-        x: 10,
-        y: 10
-    });
+      await printViaPrintNode(printContent);
+
+    //   const pdf = new jsPDF();
+    //   pdf.html(printContent, {
+    //     callback: function (doc) {
+    //         const pdfBase64 = btoa(doc.output());
+    //         // Send the base64 encoded PDF to the printer
+    //         printViaPrintNode(pdfBase64);
+    //     },
+    //     x: 10,
+    //     y: 10
+    // });
 
       if (print_Status && print_Status?.status === "success") {
         console.log("Print job submitted successfully");

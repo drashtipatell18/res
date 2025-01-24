@@ -70,7 +70,7 @@ export default function Header() {
       );
       if (response.status == 200) {
         echo.leaveChannel(`chat.${user_id}`);
-        ["email", "role", "token", "name", "admin_id", "userId", "tableId", "lastOrder", "countsoup", "tablePayment", "selectedTable", "removedItems","boxId","cartItems","currentOrder","payment"].forEach((item) =>
+        ["email", "role", "token", "name", "admin_id", "userId", "tableId", "lastOrder", "countsoup", "tablePayment", "selectedTable", "removedItems","boxId","cartItems","currentOrder","payment","printer_code"].forEach((item) =>
           localStorage.removeItem(item)
         );
         window.location.href = "/";

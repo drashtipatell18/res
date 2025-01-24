@@ -327,10 +327,11 @@ const generateOrderReceipt = (cartItems, tableId = '', payment = {}, role,name )
   const roleData = {
     admin: "Admin",
     cashier: "Cajero",
+    waitress: "Garzón	"
   }
 
   let yPos = 2;  // Start closer to the top of the receipt
-  const leftMargin = 2;  // Reduce margin for thermal printers
+  const leftMargin = 1;  // Reduce margin for thermal printers
   const pageWidth = 58;
 
   doc.setFontSize(8);  // Smaller font size for thermal printers
@@ -343,7 +344,7 @@ const generateOrderReceipt = (cartItems, tableId = '', payment = {}, role,name )
   // Table and Order Details
   doc.text(`Mesa: ${tableId || "N/A"}`, leftMargin, yPos);
   yPos += 3;
-  doc.text(`Fecha: ${new Date().toLocaleDateString()} ${"  "} Hora: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`, leftMargin, yPos);
+  doc.text(`Fecha:${new Date().toLocaleDateString()} ${" "} Hora: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`, leftMargin, yPos);
     yPos += 3;
   doc.text(`${roleData[role]} ${name}`, leftMargin, yPos);
   yPos += 4;
@@ -388,8 +389,7 @@ export const printViaPrintNode = async (content,printerId) => {
     // printerId,
     printerId,
     copies: 1,
-    paper: "A4",
-    dpi: "200",
+    dpi: "203", // Standard thermal printer DPI
     title: "Order Receipt",
   };
 

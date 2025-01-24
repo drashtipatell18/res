@@ -660,23 +660,24 @@ const TablePago = () => {
       }, 2000);
   };
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
     const printContent = document.getElementById("receipt-content");
     if (printContent) {
 
+      await printViaPrintNode(printContent);
       // const base64Content = btoa(unescape(encodeURIComponent(printContent.innerHTML)));
 
       // printViaPrintNode(base64Content);
-      const pdf = new jsPDF();
-      pdf.html(printContent, {
-        callback: function (doc) {
-            const pdfBase64 = btoa(doc.output());
-            // Send the base64 encoded PDF to the printer
-            printViaPrintNode(pdfBase64);
-        },
-        x: 10,
-        y: 10
-    });
+    //   const pdf = new jsPDF();
+    //   pdf.html(printContent, {
+    //     callback: function (doc) {
+    //         const pdfBase64 = btoa(doc.output());
+    //         // Send the base64 encoded PDF to the printer
+    //         printViaPrintNode(pdfBase64);
+    //     },
+    //     x: 10,
+    //     y: 10
+    // });
 
       if (print_Status && print_Status?.status === "success") {
         console.log("Print job submitted successfully");

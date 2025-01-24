@@ -63,7 +63,7 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
 
     if(role == "admin" || role == "cashier"){
       if (role === "admin" && !boxId) {
-        alert("Por favor, seleccione una caja para el pedido.");
+        alert("Por favor abra la caja.");
         return;
       }
   
