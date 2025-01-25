@@ -276,7 +276,7 @@ const TableCounter1 = () => {
   const addItemToCartExist = async (item) => {
 
     // If tableData doesn't exist, add to cartItems
-    console.log(item)
+    // console.log(item)
     if (item.item_id) {
 
       let it = {
@@ -707,7 +707,7 @@ const TableCounter1 = () => {
   // }
 
   //   place order
-  console.log("cat", cartItemsExist, );
+  // console.log("cat", cartItemsExist, );
 
   let cartData;
   if (cartItemsExist.length !== 0) {
@@ -719,7 +719,7 @@ const TableCounter1 = () => {
 
 
   // const cartData = cartItemsExist ||  ; 
-  console.log("cartData", cartData)
+  // console.log("cartData", cartData)
 
   const { printOrder, printStatus } = useOrderPrinting(productionCenters, cartData)
 
@@ -1200,7 +1200,7 @@ const TableCounter1 = () => {
       removeAllItemFromCart(itemToDelete);
       handleCloseEditFam();
       if (tableData.length > 0) {
-        console.log("zdvdv");
+        // console.log("zdvdv");
 
         setIsProcessing(true);
         try {
@@ -1249,9 +1249,9 @@ const TableCounter1 = () => {
     dispatch(getAllOrders({ admin_id }));
     const item = JSON.parse(localStorage.getItem("cartItemsExists"))
     try {
-      console.log(cartItemsExist)
+      // console.log(cartItemsExist)
       await printOrder(item, tId)
-      console.log(printStatus);
+      // console.log(printStatus);
       localStorage.removeItem("cartItemsExists");
     } catch (error) {
       console.error("Order printing failed", error);

@@ -400,7 +400,7 @@ export const printViaPrintNode = async (content,printerId) => {
     ""
   );
 
-  console.log(base64Content);
+  // console.log(base64Content);
 
   const printJob = {
     printerId: mergedOptions.printerId,
@@ -443,7 +443,7 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
   const [role] = useState(localStorage.getItem("role"))
   const [name] = useState(localStorage.getItem("name"))
   // console.log(cartItems,productionCenters);
-  console.log("asasas",cartItems)
+  // console.log("asasas",cartItems)
   const [printStatus, setPrintStatus] = useState({});
 
   const getPrinter = useCallback(() => {
@@ -492,7 +492,7 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
         const pdfBase64 = generateOrderReceipt(cartdata, tableId, payment, role,name);
         // console.log(pdfBase64);
         // 
-        downloadPDF(pdfBase64, `order-receipt-${printers}.pdf`);
+        // downloadPDF(pdfBase64, `order-receipt-${printers}.pdf`);
 
         try {
           const result = await printViaPrintNode(pdfBase64,  printers );
