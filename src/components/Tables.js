@@ -28,6 +28,8 @@ import {
 import { getAllitems } from "../redux/slice/Items.slice";
 import { getUser } from "../redux/slice/user.slice";
 import { getboxs, getboxsLogs } from "../redux/slice/box.slice";
+import { printViaPrintNode } from "../hooks/useOrderPrinting";
+import { usePrintNode } from "../hooks/usePrintNode";
 //import { enqueueSnackbar  } from "notistack";
 
 const Tables = () => {
@@ -1142,6 +1144,74 @@ const Tables = () => {
   }, [selectedTable]);
 
   const [cards, setCards] = useState([]);
+
+    const { printViaPrintNode, isPrinting, print_Status } = usePrintNode();
+
+  useEffect(() => {
+    if(show250){
+      handlePrint() ;
+    }
+  }, [show250]);
+
+  const handlePrint = async () => {
+    const printContent = document.getElementById("printeble");
+    if (printContent) {
+
+      // const base64Content = btoa(unescape(encodeURIComponent(printContent.innerHTML)));
+
+      await printViaPrintNode(printContent);
+    //   const pdf = new jsPDF();
+    //   pdf.html(printContent, {
+    //     callback: function (doc) {
+    //         const pdfBase64 = btoa(doc.output());
+    //         // Send the base64 encoded PDF to the printer
+    //         printViaPrintNode(pdfBase64);
+    //     },
+    //     x: 10,
+    //     y: 10
+    // });
+
+      if (print_Status && print_Status?.status === "success") {
+        console.log("Print job submitted successfully");
+        // handleShowPrintSuc();
+      }
+      // // Create a new iframe
+      // const iframe = document.createElement("iframe");
+      // iframe.style.display = "none";
+      // document.body.appendChild(iframe);
+
+      // // Write the receipt content into the iframe
+      // iframe.contentWindow.document.open();
+      // iframe.contentWindow.document.write(
+      //   "<html><head><title>Print Receipt</title>"
+      // );
+      // iframe.contentWindow.document.write(
+      //   "<style>body { font-family: Arial, sans-serif; }</style>"
+      // );
+      // iframe.contentWindow.document.write("</head><body>");
+      // iframe.contentWindow.document.write(printContent.innerHTML);
+      // iframe.contentWindow.document.write("</body></html>");
+      // iframe.contentWindow.document.close();
+
+      // // Wait for the iframe to load before printing
+      // iframe.onload = function () {
+      //   try {
+      //     iframe.contentWindow.focus();
+      //     iframe.contentWindow.print();
+      //   } catch (e) {
+      //     console.error("Printing failed", e);
+      //   }
+
+      //   // Remove the iframe after printing (or if printing fails)
+      //   setTimeout(() => {
+      //     document.body.removeChild(iframe);
+      //     navigate("/home/usa");
+      //   }, 500);
+      // };
+    } else {
+      console.error("Receipt content not found");
+    }
+  };
 
   useEffect(() => {
     // window.Pusher = require('pusher-js');

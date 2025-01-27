@@ -64,8 +64,7 @@ const discount = 0.00; // Ensure discount is a number
     change: 0.0
   };
     return (
-
-        <div className='j-counter-recipt'>
+        <div className='j-counter-recipt' id='printeble'>
             <div style={{ fontFamily: 'monospace', width: '380px', margin: '0 auto', backgroundColor: "white", color: "black", fontWeight: "bold" }}>
                 <h2 style={{ fontSize: "16px", textAlign: 'center', marginTop: "10px" }}>{receiptData.storeName}</h2>
                 <p style={{ fontSize: "12px", textAlign: 'center' }}>
