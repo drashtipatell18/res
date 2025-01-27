@@ -6,9 +6,12 @@ import html2canvas from "html2canvas";
 export  const generatePDFWithHtml2Canvas = async (printContent) => {
   try {
     const canvas = await html2canvas(printContent, {
-      scale: 2, // Increase quality
+      scale: 4, // Increase quality
       useCORS: true, // Handle cross-origin images
-      logging: false
+      logging: false,
+      imageTimeout: 0,
+      removeContainer: true,
+      backgroundColor: '#ffffff'
     });
     
     const imgWidth = 208; // A4 width in mm
@@ -16,20 +19,20 @@ export  const generatePDFWithHtml2Canvas = async (printContent) => {
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgData = canvas.toDataURL('image/png');
+    const imgData = canvas.toDataURL('image/jpeg');
     
     let heightLeft = imgHeight;
     let position = 0;
     
     // First page
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    pdf.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight);
     heightLeft -= pageHeight;
     
     // Additional pages if content is longer than one page
     while (heightLeft >= 0) {
       position = heightLeft - imgHeight;
       pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
     }
     
