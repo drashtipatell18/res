@@ -632,7 +632,7 @@ const DeliveryPago = () => {
             if(!(orderType.order == "old")){
              // =======nodeprint===========
               try {
-                await  printOrder(cartItems, '', paymentData);
+                await  printOrder(cartItems, '', orderId);
               console.log(printStatus);
               } catch (error) {
                 console.error("Order printing failed", error);
@@ -647,7 +647,6 @@ const DeliveryPago = () => {
             localStorage.removeItem("currentOrder");
             localStorage.removeItem("payment");
             handleShow11();
-
           }
         } catch (error) {
           setIsProcessing(false)
@@ -669,6 +668,13 @@ const DeliveryPago = () => {
     // localStorage.removeItem("payment");
     // handleShow11();
   };
+
+  useEffect(() => {
+    if (show11) {
+        handlePrint();
+    }
+  }, [show11]);
+
 
   
   const { printViaPrintNode, isPrinting, print_Status } = usePrintNode();

@@ -63,7 +63,7 @@ const Counter_finalP = () => {
     //   navigate('/counter')
     // }, 2000);
   };
-  const handleShow11 = () => setShow11(true);
+  const handleShow11 = () => {setShow11(true)};
 
   const [price, setPrice] = useState("");
 
@@ -476,7 +476,7 @@ const Counter_finalP = () => {
     localStorage.setItem("currentOrder", JSON.stringify(updatedOrder));
   };
 
-  const paymentData = {
+  let paymentData = {
     ...payment,
     amount: customerData.amount,
     type: selectedCheckboxes,
@@ -660,15 +660,7 @@ const Counter_finalP = () => {
             }
           );
 
-          // =======nodeprint===========
-          try {
-            await printOrder(cartItems, "", paymentData);
-            console.log(printStatus);
-          } catch (error) {
-            console.error("Order printing failed", error);
-          }
-
-          // =======nodeprint===========
+       
 
           // console.log("payemnt suc", responsePayment.data);
 
@@ -710,8 +702,19 @@ const Counter_finalP = () => {
           setOrderId("");
           setIsSubmitted(true);
           handleShow11();
-          // handleClose11();
 
+          // =======nodeprint===========  
+          try {
+            await printOrder(cartItems, "", order_master_id);
+            console.log(printStatus);
+          } catch (error) {
+            console.error("Order printing failed", error);
+          }
+        
+          // =======nodeprint===========
+
+            
+          // handleClose11();
           setIsProcessing(false);
         } catch (error) {
           console.log(error, "payment Not Done");
@@ -728,6 +731,12 @@ const Counter_finalP = () => {
     }
   };
 
+  useEffect(() => {
+    if (show11) {
+        handlePrint();
+    }
+  }, [show11]);
+
   const { printViaPrintNode, isPrinting, print_Status } = usePrintNode();
   const [showPrintSuc, setShowPrintSuc] = useState(false);
   const handleShowPrintSuc = () => {
@@ -740,8 +749,10 @@ const Counter_finalP = () => {
 
   // print recipt
   const handlePrint = async () => {
+    // alert("print");
     setIsProcessing(true);
     const printContent = document.getElementById("receipt-content");
+    console.log("printContent", printContent);
     if (printContent) {
 
       await printViaPrintNode(printContent);

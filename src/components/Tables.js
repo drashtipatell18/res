@@ -860,6 +860,7 @@ const Tables = () => {
     updatedAddNotes[index] = false;
     setAddNotes(updatedAddNotes);
   };
+
   const handleNoteChange = (index, note) => {
     const updatedTableData = [...tableData];
     const flatIndex = tableData
@@ -880,6 +881,7 @@ const Tables = () => {
     updatedAddNotes[index] = true;
     setAddNotes(updatedAddNotes);
   };
+  
   const [showAll, setShowAll] = useState(false);
 
   const handleShowMoreClick = (e) => {
@@ -1213,7 +1215,9 @@ const Tables = () => {
   // redirect to new page
   const handleLinkClick = (e) => {
     e.preventDefault(); // Prevent default link behavior
-    localStorage.removeItem("cartItems"); // Clear only cart items from local storage
+    localStorage.removeItem("cartItems");
+    localStorage.removeItem("cartItemsExists");
+     // Clear only cart items from local storage
     // to={`/table1?id=${selectedTable}&status=${tableStatus}`}
     navigate(`/table1?id=${selectedTable}&status=${tableStatus}`); // Navigate to the new page
   };

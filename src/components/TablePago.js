@@ -650,6 +650,13 @@ const TablePago = () => {
   };
   const handleShow11 = () => setShow11(true);
 
+  useEffect(() => {
+    if (show11) {
+        handlePrint();
+    }
+  }, [show11]);
+
+
   const { printViaPrintNode, isPrinting, print_Status } = usePrintNode();
   const [showPrintSuc, setShowPrintSuc] = useState(false);
   const handleShowPrintSuc = () => {

@@ -316,7 +316,7 @@ const downloadPDF = (pdfBase64, filename = 'order-receipt.pdf') => {
 //    return base64String// Remove the data URI prefix
 // };
 
-const generateOrderReceipt = (cartItems, tableId = '', payment = {}, role,name ) => {
+const generateOrderReceipt = (cartItems, tableId = '', role,name,orderId,productionName ) => {
 
   const doc = new jsPDF({
       orientation: "portrait",
@@ -338,35 +338,65 @@ const generateOrderReceipt = (cartItems, tableId = '', payment = {}, role,name )
   doc.setFont("courier", "normal");  // Use a monospaced font for better alignment
 
   // Header
+
+  yPos += 4
+  doc.setFont("courier", "bold");
   doc.text("**** CAFE CHOCO CHIP ****", pageWidth / 2, yPos, { align: "center" });
+  doc.setFont("courier", "normal");
   yPos += 4;
 
+  doc.setFontSize(7)
   // Table and Order Details
-  doc.text(`Mesa: ${tableId || "N/A"}`, leftMargin, yPos);
+  doc.text(`Mesa: ${tableId || "-"} ${"         "} Numbro: ${orderId || '-'}`, leftMargin, yPos);
   yPos += 3;
-  doc.text(`Fecha:${new Date().toLocaleDateString()} ${" "} Hora: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`, leftMargin, yPos);
+  doc.text(`Fecha:${new Date().toLocaleDateString()} ${"    "} Hora: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`, leftMargin, yPos);
     yPos += 3;
-  doc.text(`${roleData[role]} ${name}`, leftMargin, yPos);
+  doc.text(`${roleData[role]} ${':'} ${name}`, leftMargin, yPos);
+  yPos += 3;
+  doc.text(`Centro de producción:${productionName}`, leftMargin, yPos);
   yPos += 4;
 
   // Items Header
-  // doc.line(leftMargin, yPos, pageWidth - leftMargin, yPos);  // Draw a line
-  yPos += 3;
-  doc.setFontSize(7);  // Even smaller font for item details
-
   doc.setFont("courier", "bold");
-  doc.text("CANT PRODUCTO", leftMargin, yPos);
+  const colWidths = {
+    qty: 8,    // Width for quantity column
+    name: 45   // Width for product name column
+  };
+  
+  doc.text("CANT", leftMargin, yPos);
+  doc.text("PRODUCTO", leftMargin + colWidths.qty, yPos);
   doc.setFont("courier", "normal");
-  yPos += 3;
+  yPos += 1;
   doc.line(leftMargin, yPos, pageWidth - leftMargin, yPos, "D");  // Draw a dashed line
   yPos += 3;
 
   // Items
   cartItems.forEach(item => {
-      doc.text(`${item.count || item.quantity} ${" "} ${item.name}`, leftMargin, yPos);
-      yPos += 2;
+    // Quantity column (right-aligned within its column)
+    const qty = (item.count || item.quantity).toString().padStart(2);
+    doc.text(qty, leftMargin + colWidths.qty - 4, yPos, { align: "right" });
+    
+    // Product name column (left-aligned)
+    doc.text(item.name, leftMargin + colWidths.qty, yPos);
+    yPos += 3;  // Space between name and note
+    
+    // Note below the product name (if exists)
+    let note = item.note || item.notes;
+    if (note && note.startsWith('Nota:')) {
+      note = note.replace('Nota:', '');
+    }
+    if (note && note !== 'N/A') {
+      doc.setFontSize(6);  // Smaller font for the note
+      let lines = doc.splitTextToSize(`Nota: ${note}`, colWidths.name);
+      for (let i = 0; i < lines.length; i++) {
+        doc.text(lines[i], leftMargin + colWidths.qty, yPos);
+        yPos += 2;  // Additional space after each line of the note
+      }
+      doc.setFontSize(7);  // Reset font size
+    }
+    
+    yPos += 2;  // Space between items
   });
-
   // Footer
   doc.line(leftMargin, yPos, pageWidth - leftMargin, yPos, "D");
   yPos += 3;
@@ -447,6 +477,7 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
   const [printStatus, setPrintStatus] = useState({});
 
   const getPrinter = useCallback(() => {
+    console.log(cartItems)
     const updatedItems = cartItems.map((item) => {
       const matchingCenter = productionCenters.find(
         (center) => center.id === item.production_center_id
@@ -463,7 +494,7 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
     // console.log(updatedItems);
   
     const printers = updatedItems
-      .map((item) => item.printerId)
+      .map((item) => item.production_center_id)
       .filter((id) => id !== undefined);
   
     return {
@@ -472,13 +503,13 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
     };
   }, [cartItems, productionCenters]);
 
-  const printOrder = async (cartItems, tableId ='', payment = {}) => {
+  const printOrder = async (cartItems, tableId ='',order_id) => {
     try {
       
 
       const {printers, updatedItems} = getPrinter();
 
-      // console.log(printers,updatedItems);
+      console.log(printers,updatedItems);
       
     
       const printJobs = printers.map(async (printers) => {
@@ -487,18 +518,19 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
         // console.log(printers);
         // console.log(updatedItems.filter((item) => item.printerId === printers));
         
-        const cartdata = updatedItems.filter((item) => item.printerId === printers);
-        // console.log(cartdata,tableId,payment);
-        const pdfBase64 = generateOrderReceipt(cartdata, tableId, payment, role,name);
+        const cartdata = updatedItems.filter((item) => item.production_center_id === printers);
+        // console.log(cartdata,tableId);
+        const production = productionCenters.find(v => v.id === printers);
+        const pdfBase64 = generateOrderReceipt(cartdata, tableId, role,name,order_id,production.name);
         // console.log(pdfBase64);
         // 
-        // downloadPDF(pdfBase64, `order-receipt-${printers}.pdf`);
+        // downloadPDF(pdfBase64, `order-receipt-${production.printer_code}.pdf`);
 
         try {
-          const result = await printViaPrintNode(pdfBase64,  printers );
+          const result = await printViaPrintNode(pdfBase64,  production.printer_code );
           setPrintStatus((prev) => ({
             ...prev,
-            [printers.printerId]: {
+            [production.name]: {
               status: "success",
               message: "Print job submitted successfully",
               details: result,
@@ -507,7 +539,7 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
         } catch (err) {
           setPrintStatus((prev) => ({
             ...prev,
-            [printers.printerId]: {
+            [production.name]: {
               status: "error",
               message: `Failed: ${err.response?.data?.message || err.message}`,
             },

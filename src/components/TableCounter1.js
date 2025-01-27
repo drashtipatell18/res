@@ -250,7 +250,7 @@ const TableCounter1 = () => {
       );
       addToCartItemsExists(item);
       if (existingItem) {
-        alert("ds")
+        // alert("ds")
         // If the item exists, increment its quantity
         await increment(
           existingItem.id,
@@ -285,7 +285,8 @@ const TableCounter1 = () => {
         production_center_id: parseInt(item.production_center_id),
         code: item.code,
         count: item.count,
-        price: item.amount
+        price: item.amount,
+        note: item.notes
       };
       addToCartItemsExists(it);
     } else {
@@ -457,6 +458,7 @@ const TableCounter1 = () => {
     const updatedCountsoup = updatedCartItems.map((item) => item.count);
     setCountsoup(updatedCountsoup);
   };
+
   const removeItemFromCart = (itemId) => {
     const updatedCartItems = cartItems
       .map((item) => {
@@ -480,11 +482,18 @@ const TableCounter1 = () => {
     const updatedCartItems = cartItems.filter((item) => item.id !== itemId);
     setCartItems(updatedCartItems);
     localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+    if(cartItemsExist.length > 0) {
+      console.log("object", itemId, cartItemsExist);
+    const updatecartExist =  cartItemsExist.filter((item) => item.id !== itemId);
+    console.log("object", updatecartExist);
+    setCartItemsExist(updatecartExist);
+    localStorage.setItem("cartItemsExists", JSON.stringify(updatecartExist));
+    }
   };
 
   const getTotalCost = () => {
-    return cartItems.reduce(
-      (total, item) => total + parseInt(item.price) * item.count,
+    return cartItems?.reduce(
+      (total, item) => total + parseInt(item?.price) * item?.count,
       0
     );
   };
@@ -815,7 +824,7 @@ const TableCounter1 = () => {
           );
           // =======nodeprint===========
           try {
-            await printOrder(cartItems, tId)
+            await printOrder(cartItems, tabNo, response.data.kdsOrder.order_id);
             console.log(printStatus);
           } catch (error) {
             console.error("Order printing failed", error);
@@ -947,6 +956,7 @@ const TableCounter1 = () => {
 
   // Modified render section for the note input
   const renderNoteInput = (item, index) => {
+    console.log("item", item, index);
     if (item.isEditing) {
       return (
         <div>
@@ -985,6 +995,58 @@ const TableCounter1 = () => {
         )}
       </div>
     );
+  };
+
+  const handleAddNoteClickexisted = (index) => {
+    const updatedAddNotes = [...addNotes];
+    updatedAddNotes[index] = true;
+    setAddNotes(updatedAddNotes);
+  };
+
+  const handleSubmitNote = async (e, index, oId, item_id) => {
+    e.preventDefault();
+
+    // Get the note value, handling both form submit and blur events
+    let finalNote;
+    if (e.target.elements) {
+      // Form submit event
+      finalNote = e.target.elements[0]?.value.trim();
+    } else if (e.target.value) {
+      // Direct input blur event
+      finalNote = e.target.value.trim();
+    } else {
+      // Fallback
+      return;
+    }
+
+    if (finalNote) {
+      const success = await addNoteToDatabase(oId, finalNote);
+
+      if (success) {
+        handleNoteChange(index, finalNote);
+         // Update note in cartItemsExists
+         if (cartItemsExist.length > 0) {
+          const updatedCartItemsExist = cartItemsExist.map(item => {
+            if (item.id === item_id || item.item_id === item_id) {
+              return {
+                ...item,
+                note: finalNote
+              };
+            }
+            return item;
+          });
+          
+          setCartItemsExist(updatedCartItemsExist);
+          localStorage.setItem("cartItemsExists", JSON.stringify(updatedCartItemsExist));
+        }
+      } else {
+        console.error("Failed to add note to database");
+      }
+    }
+
+    const updatedAddNotes = [...addNotes];
+    updatedAddNotes[index] = false;
+    setAddNotes(updatedAddNotes);
   };
 
   //   other logic
@@ -1031,12 +1093,15 @@ const TableCounter1 = () => {
       );
 
       if (response.data.success) {
+        setIsProcessing(false);
+        getTableData(tId);
         return true;
       } else {
         console.error("Failed to add note:", response.data.message);
         return false;
       }
     } catch (error) {
+      setIsProcessing(false);
       console.error(
         "Error adding note:",
         error.response ? error.response.data : error.message
@@ -1045,6 +1110,7 @@ const TableCounter1 = () => {
     } finally {
       setIsProcessing(false);
     }
+    
   };
 
   // const handleSubmitNote = async (e, index, oId) => {
@@ -1195,8 +1261,22 @@ const TableCounter1 = () => {
 
   // };
 
+  const [existtoDelete,setExisttoDelete] = useState();
+
+  const handleDeleteClickExist = () => {
+    if(cartItemsExist.length > 0) {
+      console.log("objectcfcfff", cartItemsExist);
+      const updatecartExist =  cartItemsExist.filter((item) => item.id !== existtoDelete);
+      console.log("objectffff", updatecartExist);
+      setCartItemsExist(updatecartExist);
+      localStorage.setItem("cartItemsExists", JSON.stringify(updatecartExist));
+      setExisttoDelete(null);
+    }
+  }
+
   const handleDeleteClick = async (itemToDelete) => {
     if (itemToDelete) {
+      console.log("------------",itemToDelete);
       removeAllItemFromCart(itemToDelete);
       handleCloseEditFam();
       if (tableData.length > 0) {
@@ -1245,14 +1325,15 @@ const TableCounter1 = () => {
   };
 
 
-  const handleupdateOrder = async () => {
-    dispatch(getAllOrders({ admin_id }));
+  const handleupdateOrder = async (order_id) => {
+    // dispatch(getAllOrders({ admin_id }));
     const item = JSON.parse(localStorage.getItem("cartItemsExists"))
     try {
       // console.log(cartItemsExist)
-      await printOrder(item, tId)
+      await printOrder(item, tabNo ,order_id )
       // console.log(printStatus);
       localStorage.removeItem("cartItemsExists");
+      localStorage.removeItem("cartItems");
     } catch (error) {
       console.error("Order printing failed", error);
     }
@@ -1470,7 +1551,7 @@ const TableCounter1 = () => {
                             className={
                               "j-counter-order-data j_counter_order_width"
                             }
-                          >
+                          >   
                             {(tableData && tableData.length > 0
                               ? tableData[0].items
                               : cartItems
@@ -1515,7 +1596,7 @@ const TableCounter1 = () => {
                                                     item.quantity,
                                                     tId
                                                   );
-                                                  removeItemFromCartExists(item.id)
+                                                  removeItemFromCartExists(item.item_id)
                                                 })()
                                                 : removeItemFromCart(item.id)
                                             }
@@ -1557,6 +1638,7 @@ const TableCounter1 = () => {
                                           className="j-delete-btn me-2"
                                           onClick={() => {
                                             setItemToDelete(item.id);
+                                            setExisttoDelete(item.item_id);
                                             handleShowEditFam();
                                           }}
                                         >
@@ -1564,54 +1646,78 @@ const TableCounter1 = () => {
                                         </button>
                                       </div>
                                     </div>
-                                    <div className="text-white j-order-count-why">
-                                      {item.isEditing ? (
-                                        <div>
+                                    <div className="text-white j-order-count-why ">
+                                  {item.notes ? (
+                                    addNotes[index] ? (
+                                      <form
+                                        onSubmit={(e) =>
+                                          handleSubmitNote(e, index, item.id, item.item_id)
+                                        }
+                                      >
+                                        <span className="j-nota-blue">
+                                          Nota:{" "}
+                                        </span>
+                                        <input
+                                          className="j-note-input"
+                                          type="text"
+                                          defaultValue={item.notes || ""}
+                                          autoFocus
+                                          onBlur={(e) =>
+                                            handleSubmitNote(e, index, item.id, item.item_id)
+                                          }
+                                        />
+                                      </form>
+                                    ) : (
+                                      <span
+                                        className="j-nota-blue"
+                                        onClick={() =>
+                                          handleAddNoteClickexisted(index)
+                                        }
+                                        style={{ cursor: "pointer" }}
+                                      >
+                                        Nota: {item.notes}
+                                      </span>
+                                    )
+                                  ) : (
+                                    <div>
+                                      {addNotes[index] ? (
+                                        <form
+                                          onSubmit={(e) =>
+                                            handleSubmitNote(e, index, item.id, item.item_id)
+                                          }
+                                        >
+                                          <span className="j-nota-blue">
+                                            Nota:{" "}
+                                          </span>
                                           <input
                                             className="j-note-input"
                                             type="text"
-                                            value={item.note}
-                                            onChange={(e) =>
-                                              handleNoteChange(
+                                            defaultValue={item.notes || ""}
+                                            autoFocus
+                                            onBlur={(e) =>
+                                              handleSubmitNote(
+                                                e,
                                                 index,
-                                                e.target.value
+                                                item.id,
+                                                item.item_id
                                               )
                                             }
-                                            onBlur={() =>
-                                              handleFinishEditing(index)
-                                            }
-                                            onKeyDown={(e) => {
-                                              if (e.key === "Enter")
-                                                handleFinishEditing(index);
-                                            }}
-                                            autoFocus
                                           />
-                                        </div>
+                                        </form>
                                       ) : (
-                                        <div>
-                                          {item.notes ? (
-                                            <p
-                                              className="j-nota-blue"
-                                              style={{ cursor: "pointer" }}
-                                              onClick={() =>
-                                                handleAddNoteClick(index)
-                                              }
-                                            >
-                                              Nota : {item.notes}
-                                            </p>
-                                          ) : (
-                                            <button
-                                              className="j-note-final-button"
-                                              onClick={() =>
-                                                handleAddNoteClick(index)
-                                              }
-                                            >
-                                              + Agregar nota
-                                            </button>
-                                          )}
-                                        </div>
+                                        <button
+                                          type="button"
+                                          className="j-note-final-button"
+                                          onClick={() =>
+                                            handleAddNoteClickexisted(index)
+                                          }
+                                        >
+                                          + Agregar nota
+                                        </button>
                                       )}
                                     </div>
+                                  )}
+                                </div>
                                   </div>
                                 );
                               })}
@@ -1670,7 +1776,7 @@ const TableCounter1 = () => {
                               // to={"/table"}
                               onClick={(e) => {
                                 e.preventDefault();
-                                handleupdateOrder();
+                                handleupdateOrder(tableData[0].id);
                               }}
                             >
                               Enviar a Cocina
@@ -1903,8 +2009,11 @@ const TableCounter1 = () => {
                                         <h4 className="text-white fw-semibold d-flex">
                                           ${parseInt(item.price) * item.count}
                                         </h4>
+                                        { console.log("item.id", item.id)}
                                         <button
                                           className="j-delete-btn me-2"
+                                         
+                                          
                                           onClick={() => {
                                             setItemToDelete(item.id);
                                             handleShowEditFam();
@@ -2000,7 +2109,9 @@ const TableCounter1 = () => {
                     <Button
                       className="j-tbl-btn-font-1 b_btn_close"
                       variant="danger"
-                      onClick={() => handleDeleteClick(itemToDelete)}
+                      onClick={() => 
+                        {handleDeleteClick(itemToDelete);
+                         handleDeleteClickExist()}}
                     >
                       Si, seguro
                     </Button>
