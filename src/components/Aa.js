@@ -3,25 +3,25 @@ import ApexCharts from "apexcharts"; // Make sure to install ApexCharts
 // import "bootstrap/dist/css/bootstrap.min.css"; // Ensure you have bootstrap installed
 
 export default function Aa({ data }) {
-  console.log( data?.cash?.count);
-  
+  // console.log(data?.cash?.count);
+
   const getChartOptions = () => {
     return {
       series: [
         data?.cash?.count || 0,
         data?.debit?.count || 0,
         data?.credit?.count || 0,
-        data?.transfer?.count || 0
+        data?.transfer?.count || 0,
       ],
       colors: ["#147BDE", "#16BDCA", "#9061F9", "#FDBA8C"],
       chart: {
         height: 320,
         width: "100%",
-        type: "donut"
+        type: "donut",
       },
       stroke: {
         colors: ["transparent"],
-        lineCap: ""
+        lineCap: "",
       },
       plotOptions: {
         pie: {
@@ -31,19 +31,25 @@ export default function Aa({ data }) {
               name: {
                 show: true,
                 fontFamily: "Inter, sans-serif",
-                offsetY: 12
+                offsetY: 12,
               },
               total: {
                 showAlways: true,
                 show: true,
-                label: (data?.cash?.count == 0 &&  data?.debit?.count == 0 && data?.credit?.count == 0 && data?.transfer?.count == 0) ? "Sin Datos" : "Datos",
+                label:
+                  data?.cash?.count == 0 &&
+                  data?.debit?.count == 0 &&
+                  data?.credit?.count == 0 &&
+                  data?.transfer?.count == 0
+                    ? "Sin Datos"
+                    : "Datos",
                 fontSize: 22,
                 color: "white",
                 fontFamily: "Inter, sans-serif",
                 formatter: function (w) {
                   const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
                   return sum.toFixed(1);
-                }
+                },
               },
               value: {
                 show: false,
@@ -51,12 +57,12 @@ export default function Aa({ data }) {
                 offsetY: -20,
                 formatter: function (value) {
                   return Number(value).toFixed(1);
-                }
-              }
+                },
+              },
             },
-            size: "80%"
-          }
-        }
+            size: "80%",
+          },
+        },
       },
       // grid: {
       //   padding: {
@@ -74,38 +80,37 @@ export default function Aa({ data }) {
       grid: {
         show: false, // Hide grid lines
         padding: {
-          top: -2
-        }
+          top: -2,
+        },
       },
-      labels: [], // Remove labels from the chart itself
+      labels: ["Efectivo", "Tarjeta debito", "Tarjeta crédito", "Transferencias"], // Add meaningful labels
       dataLabels: {
-        enabled: false // Disable data labels
+        enabled: false, // Keep data labels disabled
       },
       legend: {
-        show: false, // Hide legend
-        position: "bottom",
-        fontFamily: "Inter, sans-serif"
+        show: false, // Show the legend
+        
       },
       yaxis: {
         labels: {
           formatter: function (value) {
             return Number(value).toFixed(1);
-          }
-        }
+          },
+        },
       },
       xaxis: {
         labels: {
           formatter: function (value) {
             return Number(value).toFixed(1);
-          }
+          },
         },
         axisTicks: {
-          show: false
+          show: false,
         },
         axisBorder: {
-          show: false
-        }
-      }
+          show: false,
+        },
+      },
     };
   };
 

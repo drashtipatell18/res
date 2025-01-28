@@ -843,7 +843,7 @@ export default function Home_Pedidos_paymet() {
                       </>
                     )}
 
-                  {showCancelOrderButton && !creditNote && (
+                  {showCancelOrderButton && !creditNote && (role == "admin" || role == "cashier") && (
                     <div
                       onClick={handleCredit}
                       className="btn bj-btn-outline-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center"

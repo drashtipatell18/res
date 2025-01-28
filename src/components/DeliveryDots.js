@@ -516,20 +516,22 @@ const DeliveryDots = () => {
                                 </div>
                             <h2 className="text-white j-table-font-1 mb-0"></h2>
                             <div className="j-menu-bg-color">
-                                <div className="j-table-cart-2 d-flex justify-content-between ">
-                                    <div className="line1  flex-grow-1">
+                                <div className="j-table-cart-2 d-flex justify-content-between py-4 px-3">
+                                    <div className="">
                                         <Link to={"#"} className="text-decoration-none px-2 sj_text_medium">
                                             <FaCircleCheck className="mx-1" />
                                             <span>Productos</span>
                                         </Link>
                                     </div>
-                                    <div className="flex-grow-1 text-center">
+                                    <div className="line1  flex-grow-1"></div>
+                                    <div className="text-center">
                                         <Link className="text-decoration-none px-2 sj_text_blue">
                                             <FaCircleCheck className="mx-1" />
                                             <span>Datos</span>
                                         </Link>
                                     </div>
-                                    <div className="line2  flex-grow-1 text-end">
+                                    <div className="line1  flex-grow-1"></div>
+                                    <div className="text-end">
                                         <Link
                                             // to={`/home/usa/bhomedelivery/pago`}
                                             className="text-decoration-none px-2 sj_text_medium"

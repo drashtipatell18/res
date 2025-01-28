@@ -267,11 +267,14 @@ const Counter_finalP = () => {
   const discount = 0.0;
   const finalTotal = totalCost - discount;
   const taxAmount = finalTotal * 0.19;
-  const lastTotal =
-    parseFloat(finalTotal.toFixed(2)) +
-    parseFloat(taxAmount.toFixed(2)) +
-    parseFloat(tipAmount.toFixed(2)) -
-    (creditId ? creditData?.creditTotal : 0);
+  const lastTotal = (() => {
+    const total = parseFloat(finalTotal.toFixed(2)) +
+      parseFloat(taxAmount.toFixed(2)) +
+      parseFloat(tipAmount.toFixed(2)) -
+      parseFloat(creditId ? creditData?.creditTotal : 0);
+    
+    return Math.abs(total) < 0.01 ? 0 : total;
+  })();
 
   // console.log(lastTotal,tipAmount);
 
@@ -825,13 +828,14 @@ const Counter_finalP = () => {
               <h2 className="text-white mb-3 sjfs-18">Mostrador</h2>
               <div className="j-menu-bg-color ">
                 <div className="j-tracker-mar d-flex justify-content-between ">
-                  <div className="line1  flex-grow-1">
+                  <div className="">
                     <Link className="text-decoration-none px-2 sj_text_dark">
                       <FaCircleCheck className="mx-1" />
                       <span>Artículos</span>
                     </Link>
                   </div>
-                  <div className="  flex-grow-1 text-center">
+                  <div className="line1  flex-grow-1"></div>
+                  <div className=" text-center">
                     <Link
                       to={"/counter/mostrador"}
                       className="text-decoration-none px-2 sj_text_dark"
@@ -840,7 +844,8 @@ const Counter_finalP = () => {
                       <span>Datos</span>
                     </Link>
                   </div>
-                  <div className="line2  flex-grow-1 text-end">
+                  <div className="line1  flex-grow-1"></div>
+                  <div className="text-end">
                     <Link className="text-decoration-none px-2 j-counter-path-color">
                       <FaCircleCheck className="mx-1" />
                       <span>Pago</span>

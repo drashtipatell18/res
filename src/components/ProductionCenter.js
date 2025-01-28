@@ -15,7 +15,13 @@ import { IoMdInformationCircle } from "react-icons/io";
 import img2 from "../Image/addmenu.jpg";
 import axios from "axios";
 import Loader from "./Loader";
-import { getAllitems, getFamily, getProduction, getProductionData, getSubFamily } from "../redux/slice/Items.slice";
+import {
+  getAllitems,
+  getFamily,
+  getProduction,
+  getProductionData,
+  getSubFamily,
+} from "../redux/slice/Items.slice";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ProductionCenter() {
@@ -49,19 +55,20 @@ export default function ProductionCenter() {
   );
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const dispatch = useDispatch()
-  const {items,subFamily,family,production,productionData,loadingItem} = useSelector((state) => state.items);
+  const dispatch = useDispatch();
+  const { items, subFamily, family, production, productionData, loadingItem } =
+    useSelector((state) => state.items);
 
   const location = useLocation();
 
   const [menu, setMenu] = useState([]);
-  const [itemstoUpdate, setItemstoUpdate] = useState([])
+  const [itemstoUpdate, setItemstoUpdate] = useState([]);
   const [familyFilter, setFamilyFilter] = useState([]);
 
   const [currentProdCenter, setCurrentProdCenter] = useState({
     id: null,
     name: "",
-    printer_code: ""
+    printer_code: "",
   });
 
   const [prodNameError, setProdNameError] = useState("");
@@ -86,7 +93,7 @@ export default function ProductionCenter() {
   const handleEditNameChange = (e) => {
     setCurrentProdCenter({
       ...currentProdCenter,
-      name: e.target.value
+      name: e.target.value,
     });
     if (e.target.value.trim()) {
       setEditNameError("");
@@ -96,7 +103,7 @@ export default function ProductionCenter() {
   const handleEditPrinterCodeChange = (e) => {
     setCurrentProdCenter({
       ...currentProdCenter,
-      printer_code: e.target.value
+      printer_code: e.target.value,
     });
     if (e.target.value.trim()) {
       setEditPrinterCodeError("");
@@ -129,12 +136,12 @@ export default function ProductionCenter() {
   );
 
   // Add product
-  const [show1, setShow1] = useState(false);
-  const handleClose1 = () => setShow1(false);
-  const handleShow1 = () => {
-    setShow1(true);
-    setCount(0);
-  };
+  // const [show1, setShow1] = useState(false);
+  // const handleClose1 = () => setShow1(false);
+  // const handleShow1 = () => {
+  //   setShow1(true);
+  //   setCount(0);
+  // };
 
   // add product success
   const [show1AddMenuSuc, setShow1AddMenuSuc] = useState(false);
@@ -154,7 +161,6 @@ export default function ProductionCenter() {
     setPrinterCode("");
     setProdNameError("");
     setPrinterCodeError("");
-
   };
   const handleShowCreate = () => setShowCreate(true);
 
@@ -171,13 +177,26 @@ export default function ProductionCenter() {
   // Add producttion
   const [show1Prod, setShow1Prod] = useState(false);
   const handleClose1Prod = () => {
+    console.log("close");
+    setSelectedProductionCenters([]);
+    setSelectedMenus([]);
+    setItemstoUpdate([]);
     setShow1Prod(false);
     setCheckedParents([]);
     setFilteredItemsMenu(obj1);
     setSelectedParentNames([]);
-    setCount(0);
     setSelectedItemsCount(0);
-  };
+    setMenuId(null);
+    setItemId([]);
+    setFamilyFilter([]);
+    localStorage.removeItem("productionCenterState"); // Clear saved state
+  
+    // Reset all production center checkboxes
+    const checkboxes = document.querySelectorAll('.custom-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.checked = false;
+    });
+  }
   const handleShow1Prod = () => setShow1Prod(true);
 
   // Add product success
@@ -242,7 +261,6 @@ export default function ProductionCenter() {
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [isFilterActive, setIsFilterActive] = useState(false);
 
-
   // ... existing code ...
   // const handleCheckboxChange = (event) => {
   //   const { name, checked, id } = event.target;
@@ -266,11 +284,11 @@ export default function ProductionCenter() {
 
   const handleCheckboxChange = (event) => {
     const { id, checked, name } = event.target; // Get id, checked state, and name from the event
-    setFamilyFilter(prev => {
+    setFamilyFilter((prev) => {
       if (checked) {
         return [...prev, { id, name }]; // Add object with id and name if checked
       } else {
-        return prev.filter(family => family.id !== id); // Remove object by id if unchecked
+        return prev.filter((family) => family.id !== id); // Remove object by id if unchecked
       }
     });
   };
@@ -316,14 +334,14 @@ export default function ProductionCenter() {
   //   }
   // };
 
-  const [count, setCount] = useState(0);
+  // const [count, setCount] = useState(0);
 
-  const handleAddClick = () => {
-    setCount(count + 1);
-  };
+  // const handleAddClick = () => {
+  //   setCount(count + 1);
+  // };
 
   // ****************************************API***************************************
-  const [productionAllData, setProductionAllData] = useState([])
+  const [productionAllData, setProductionAllData] = useState([]);
 
   // useEffect(
   //   () => {
@@ -339,48 +357,44 @@ export default function ProductionCenter() {
   //   [token]
   // );
 
-  useEffect(()=>{
-        
+  useEffect(() => {
     // if(items.length == 0){
-      dispatch(getAllitems());
+    dispatch(getAllitems());
     // }
     // if(subFamily.length == 0){
-      dispatch(getSubFamily());
+    dispatch(getSubFamily());
     // }
     // if(family.length == 0){
-      dispatch(getFamily());
+    dispatch(getFamily());
     // }
     // if(production.length == 0){
-      dispatch(getProduction({admin_id}));
+    dispatch(getProduction({ admin_id }));
     // }
     // if(productionData.length == 0){
-      dispatch(getProductionData({admin_id}));
+    dispatch(getProductionData({ admin_id }));
     // }
   }, []);
 
-  useEffect(()=>{
-    if(family){
+  useEffect(() => {
+    if (family) {
       setParentCheck(family);
     }
-    if(items){
+    if (items) {
       setObj1(items);
       setFilteredItemsMenu(items);
       // setItems(items)
     }
-    if(subFamily){
-      setChildCheck(subFamily)
+    if (subFamily) {
+      setChildCheck(subFamily);
     }
-    if(production){
-      setProductionCenters(production)
+    if (production) {
+      setProductionCenters(production);
     }
-    if(productionData){
-      setMenu(productionData)
-      setProductionAllData(productionData)
+    if (productionData) {
+      setMenu(productionData);
+      setProductionAllData(productionData);
     }
-   
-  },[family,items,subFamily,production,productionData])
-
-
+  }, [family, items, subFamily, production, productionData,show1Prod]);
 
   // // get menu
   // const fetchMenuData = async () => {
@@ -512,15 +526,15 @@ export default function ProductionCenter() {
           },
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
         console.log("Production center created:", response.data);
         handleShowCreSucProduction();
         setIsProcessing(false);
-        dispatch(getProductionData({admin_id}))
-        dispatch(getProduction({admin_id}))
+        dispatch(getProductionData({ admin_id }));
+        dispatch(getProduction({ admin_id }));
         setProdName("");
         setPrinterCode("");
       } catch (error) {
@@ -541,12 +555,12 @@ export default function ProductionCenter() {
   // };
 
   const handleEditClick = (prodCenter) => {
-    console.log(prodCenter);
+    // console.log(prodCenter);
 
     setCurrentProdCenter({
       id: prodCenter.id,
       name: prodCenter.name,
-      printer_code: prodCenter.printer_code
+      printer_code: prodCenter.printer_code,
     });
     handleShowEditProduction();
   };
@@ -617,8 +631,8 @@ export default function ProductionCenter() {
         name: currentProdCenter.name,
         // Only include printer_code if it has changed
         ...(currentProdCenter.printer_code && {
-          printer_code: currentProdCenter.printer_code
-        })
+          printer_code: currentProdCenter.printer_code,
+        }),
       };
 
       const response = await axios.post(
@@ -626,14 +640,14 @@ export default function ProductionCenter() {
         { ...updatedData, admin_id },
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       console.log("Production center updated:", response.data);
       setIsProcessing(false);
-      dispatch(getProductionData({admin_id}))
-      dispatch(getProduction({admin_id}))
+      dispatch(getProductionData({ admin_id }));
+      dispatch(getProduction({ admin_id }));
       handleShowEditProductionSuc();
     } catch (error) {
       console.error("Error updating production center:", error);
@@ -641,7 +655,6 @@ export default function ProductionCenter() {
       setIsProcessing(false);
     }
   };
-
 
   // Function to handle adding an item
   // const handleAddItem = (item) => {
@@ -662,16 +675,20 @@ export default function ProductionCenter() {
       const itemExists = prevArray[0].item_ids.some((id) => id == item);
       if (itemExists) {
         // Remove the item if it already exists
-        return [{
-          item_ids: prevArray[0].item_ids.filter((id) => id != item),
-          production_id: prevArray[0].production_id // Keep the production_id unchanged
-        }];
+        return [
+          {
+            item_ids: prevArray[0].item_ids.filter((id) => id != item),
+            production_id: prevArray[0].production_id, // Keep the production_id unchanged
+          },
+        ];
       } else {
         // Add the item if it doesn't exist
-        return [{
-          item_ids: [...prevArray[0].item_ids, item],
-          production_id: prevArray[0].production_id // Keep the production_id unchanged
-        }];
+        return [
+          {
+            item_ids: [...prevArray[0].item_ids, item],
+            production_id: prevArray[0].production_id, // Keep the production_id unchanged
+          },
+        ];
       }
     });
   };
@@ -684,20 +701,22 @@ export default function ProductionCenter() {
     try {
       await axios.get(`${apiUrl}/delete/production-centers/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       console.log("Production center deleted");
       setIsProcessing(false); // Then show the loader
       // Remove the deleted center from selectedProductionCenters
-      setSelectedProductionCenters(prev => prev.filter(center => center.id !== id));
+      setSelectedProductionCenters((prev) =>
+        prev.filter((center) => center.id !== id)
+      );
 
       // Remove the deleted center's id from selectedMenus
-      setSelectedMenus(prev => prev.filter(menuId => menuId !== id));
+      setSelectedMenus((prev) => prev.filter((menuId) => menuId !== id));
 
       // Update the items list to remove items from the deleted production center
-      dispatch(getProductionData({admin_id}))
-      dispatch(getProduction({admin_id}))
+      dispatch(getProductionData({ admin_id }));
+      dispatch(getProduction({ admin_id }));
       handleShowEditProductionDel();
     } catch (error) {
       console.error("Error deleting production center:", error);
@@ -705,6 +724,33 @@ export default function ProductionCenter() {
       setIsProcessing(false);
     }
   };
+  useEffect(() => {
+    // Load saved state when component mounts
+    const savedState = localStorage.getItem('productionCenterState');
+    if (savedState) {
+      const state = JSON.parse(savedState);
+      setSelectedMenus(state.selectedMenus || []);
+      setSelectedProductionCenters(state.selectedProductionCenters || []);
+      if (state.show1Prod) {
+        setShow1Prod(true);
+      }
+      if (state.itemstoUpdate) {
+        setItemstoUpdate(state.itemstoUpdate);
+      }
+    }
+  }, []);
+
+  // Save state when selections change
+// useEffect(() => {
+//   const stateToSave = {
+//     selectedMenus,
+//     selectedProductionCenters,
+//     show1Prod,
+//     itemstoUpdate
+//   };
+//   localStorage.setItem('productionCenterState', JSON.stringify(stateToSave));
+// }, [selectedMenus, selectedProductionCenters, itemstoUpdate]);
+
 
 
   // useEffect(() => {
@@ -714,22 +760,22 @@ export default function ProductionCenter() {
   //   setItems(filteredItems);
   // }, [selectedProductionCenters, obj1]);
 
-
-
   // filter based on production centers
   const handleProductionCenterChange = (productionCenterId) => {
-    setSelectedMenus(prev => {
+    setSelectedMenus((prev) => {
       if (prev.includes(productionCenterId)) {
-        return prev.filter(id => id !== productionCenterId);
+        return prev.filter((id) => id !== productionCenterId);
       } else {
         return [...prev, productionCenterId];
       }
     });
 
-    setSelectedProductionCenters(prev => {
-      const selectedCenter = productionCenters.find(center => center.id === productionCenterId);
-      if (prev.some(center => center.id === productionCenterId)) {
-        return prev.filter(center => center.id !== productionCenterId);
+    setSelectedProductionCenters((prev) => {
+      const selectedCenter = productionCenters.find(
+        (center) => center.id === productionCenterId
+      );
+      if (prev.some((center) => center.id === productionCenterId)) {
+        return prev.filter((center) => center.id !== productionCenterId);
       } else {
         return [...prev, selectedCenter];
       }
@@ -746,26 +792,30 @@ export default function ProductionCenter() {
     //     : obj1;
     // });
 
-
-    setItemstoUpdate(prev => {
-      const isInUpdate = itemstoUpdate.some((v) => v.production_id == productionCenterId); // Check if productionCenterId is in selectedItemsIds
+    setItemstoUpdate((prev) => {
+      const isInUpdate = itemstoUpdate.some(
+        (v) => v.production_id == productionCenterId
+      ); // Check if productionCenterId is in selectedItemsIds
       if (isInUpdate) {
         // Remove productionCenterId if it exists
-        return prev.filter(v => v.production_id != productionCenterId);
+        return prev.filter((v) => v.production_id != productionCenterId);
       } else {
-        console.log(obj1);
+        // console.log(obj1);
 
         const add = {
-          item_ids: menu.find(v => v.id === productionCenterId)?.items
-            .map(item => (obj1.some(obj => obj.id === item.id) ? item.id : null))
-            .filter(id => id !== null) || [],
-          production_id: productionCenterId
+          item_ids:
+            menu
+              .find((v) => v.id === productionCenterId)
+              ?.items.map((item) =>
+                obj1.some((obj) => obj.id === item.id) ? item.id : null
+              )
+              .filter((id) => id !== null) || [],
+          production_id: productionCenterId,
         };
 
         return [...prev, add];
       }
     });
-
   };
 
   // console.log(itemstoUpdate[0]);
@@ -777,17 +827,18 @@ export default function ProductionCenter() {
     setIsProcessing(true);
     try {
       const response = await axios.post(
-        `${apiUrl}/item/updateProduction`, itemstoUpdate[0],
+        `${apiUrl}/item/updateProduction`,
+        itemstoUpdate[0],
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          maxBodyLength: Infinity
+          maxBodyLength: Infinity,
         }
       );
 
-      console.log("API Response:", response.data);
+      // console.log("API Response:", response.data);
 
       if (response.data.success) {
         // Handle UI updates
@@ -795,9 +846,9 @@ export default function ProductionCenter() {
         handleClose1Prod();
 
         handleShow1AddSuc();
-        dispatch(getProductionData({admin_id}))
-        dispatch(getProduction({admin_id}))
-        setFamilyFilter([])
+        dispatch(getProductionData({ admin_id }));
+        dispatch(getProduction({ admin_id }));
+        setFamilyFilter([]);
 
         // Handle UI updates
 
@@ -827,7 +878,7 @@ export default function ProductionCenter() {
   const handleParentChangeMenu = (parentId) => {
     const newCheckedParents = {
       ...checkedParents,
-      [parentId]: !checkedParents[parentId]
+      [parentId]: !checkedParents[parentId],
     };
     setCheckedParents(newCheckedParents);
 
@@ -924,29 +975,70 @@ export default function ProductionCenter() {
     handleCloseEditProduction();
   };
 
-  const handleClick = async (id, image, name, price, code,production_center_id) => {
-    console.log("asasd");
+  const handleClick = async (
+    id,
+    image,
+    name,
+    price,
+    code,
+    production_center_id
+  ) => {
+    // console.log("asasd");
 
-    localStorage.setItem("cartItems", JSON.stringify([{ image, price, name, code, id, count: 1, isEditing: false, note: "" , production_center_id}]));
+    localStorage.setItem(
+      "cartItems",
+      JSON.stringify([
+        {
+          image,
+          price,
+          name,
+          code,
+          id,
+          count: 1,
+          isEditing: false,
+          note: "",
+          production_center_id,
+        },
+      ])
+    );
     try {
-
-      const response = await axios.post(`${apiUrl}/orders/last`, { admin_id }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.post(
+        `${apiUrl}/orders/last`,
+        { admin_id },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       // console.log(response.data);
       if (response.status == 200) {
-        localStorage.setItem("lastOrder", JSON.stringify(response.data.order.id + 1));
+        localStorage.setItem(
+          "lastOrder",
+          JSON.stringify(response.data.order.id + 1)
+        );
         navigate("/counter");
       }
-
     } catch (error) {
       console.error(
         "Error fetching subfamilies:",
         error.response ? error.response.data : error.message
       );
     }
-  }
+  };
+
+  const handleNavigateToProduct = (productId) => {
+    const stateToSave = {
+      selectedMenus,
+      selectedProductionCenters,
+      show1Prod,
+      itemstoUpdate
+    };
+    localStorage.setItem('productionCenterState', JSON.stringify(stateToSave));
+
+    navigate(`/articles/singleatricleproduct/${productId}`, {
+      state: { from: location.pathname },
+    });
+  };
 
   return (
     <div className="m_bg_black">
@@ -956,7 +1048,6 @@ export default function ProductionCenter() {
           <Sidenav />
         </div>
         <div className=" flex-grow-1 sidebar">
-
           <div>
             <div className="p-3 m_bgblack text-white m_borbot jay-table-fixed-kya">
               <h5 className="mb-0" style={{ fontSize: "18px" }}>
@@ -979,7 +1070,7 @@ export default function ProductionCenter() {
                         Centros de Producción
                       </p>
                       <div>
-                        {(role == "admin") &&
+                        {role == "admin" && (
                           <div>
                             <Button
                               variant="primary"
@@ -989,7 +1080,7 @@ export default function ProductionCenter() {
                               + Crear Centro
                             </Button>
                           </div>
-                        }
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1101,7 +1192,6 @@ export default function ProductionCenter() {
                   </Modal>
 
                   <div className="py-3 m_borbot mx-3 j-table-position-sticky-sector">
-
                     {productionCenters.map((item, index) => (
                       <div key={item.id}>
                         <div className="d-flex justify-content-between m14 align-items-center flex-wrap mb-2">
@@ -1118,7 +1208,7 @@ export default function ProductionCenter() {
                               <p className="text-white mb-0 ">{item.name}</p>
                             </label>
                           </div>
-                          {(role == "admin") &&
+                          {role == "admin" && (
                             <div
                               className="text-white  "
                               style={{ cursor: "pointer" }}
@@ -1126,7 +1216,7 @@ export default function ProductionCenter() {
                             >
                               <BsThreeDots className="j-tbl-dot-color" />
                             </div>
-                          }
+                          )}
                         </div>
                       </div>
                     ))}
@@ -1190,7 +1280,8 @@ export default function ProductionCenter() {
                           variant="danger"
                           className="b_btn_close"
                           onClick={() =>
-                            handleDeleteClick(currentProdCenter.id)}
+                            handleDeleteClick(currentProdCenter.id)
+                          }
                         >
                           Eliminar
                         </Button>
@@ -1220,8 +1311,8 @@ export default function ProductionCenter() {
                             alt=" "
                           />
                           <p className="mb-0 mt-2 h6">
-                            ¿Estás seguro de que deseas eliminar este centro
-                            de producción?
+                            ¿Estás seguro de que deseas eliminar este centro de
+                            producción?
                           </p>
                         </div>
                       </Modal.Body>
@@ -1257,9 +1348,7 @@ export default function ProductionCenter() {
                             src={require("../Image/check-circle.png")}
                             alt=""
                           />
-                          <p className="mb-0 mt-2 h6">
-                             Centro de producción
-                          </p>
+                          <p className="mb-0 mt-2 h6">Centro de producción</p>
                           <p className="opacity-75 mb-3">
                             Sus cambios han sido modificados exitosamente
                           </p>
@@ -1281,9 +1370,7 @@ export default function ProductionCenter() {
                             src={require("../Image/trash-check 1.png")}
                             alt=""
                           />
-                          <p className="mb-0 mt-2 h6">
-                            Centro de producción
-                          </p>
+                          <p className="mb-0 mt-2 h6">Centro de producción</p>
                           <p className="opacity-75 mb-3">
                             Centro de producción eliminado exitosamente
                           </p>
@@ -1361,7 +1448,7 @@ export default function ProductionCenter() {
                                   (menu) => String(menu.id) === String(ele.id) // Ensure both IDs are compared as strings
                                 )
                                   ? 1
-                                  : 0.7
+                                  : 0.7,
                               }}
                             >
                               {/* {console.log(familyFilter.some((menu) => String(menu.id) === String(ele.id)))}
@@ -1370,7 +1457,9 @@ export default function ProductionCenter() {
                                 type="checkbox"
                                 className="j-change-checkbox j_check_white"
                                 name={ele.name}
-                                checked={familyFilter.some((menu) => String(menu.id) === String(ele.id))}
+                                checked={familyFilter.some(
+                                  (menu) => String(menu.id) === String(ele.id)
+                                )}
                                 onChange={handleCheckboxChange}
                                 id={ele.id}
                               />
@@ -1381,7 +1470,7 @@ export default function ProductionCenter() {
                       </Dropdown>
                     </div>
                     {/* add product */}
-                    {(selectedMenus.length == 1 && role == "admin") &&
+                    {selectedMenus.length == 1 && role == "admin" && (
                       <div>
                         <Button
                           variant="primary text-nowrap"
@@ -1392,7 +1481,7 @@ export default function ProductionCenter() {
                           + &nbsp; Agregar
                         </Button>
                       </div>
-                    }
+                    )}
 
                     <Modal
                       show={show1Prod}
@@ -1438,14 +1527,13 @@ export default function ProductionCenter() {
                                             <input
                                               type="checkbox"
                                               checked={
-                                                !!checkedParents[
-                                                parentItem.id
-                                                ]
+                                                !!checkedParents[parentItem.id]
                                               }
                                               onChange={() =>
                                                 handleParentChangeMenu(
                                                   parentItem.id
-                                                )}
+                                                )
+                                              }
                                               className="me-2 custom-checkbox"
                                             />
                                             <span className="text-white">
@@ -1538,7 +1626,8 @@ export default function ProductionCenter() {
                                         bg="light"
                                         className="ms-2 text-success rounded-circle m12"
                                       >
-                                        {itemstoUpdate.length > 0 && itemstoUpdate[0].item_ids?.length}
+                                        {itemstoUpdate.length > 0 &&
+                                          itemstoUpdate[0].item_ids?.length}
                                       </Badge>
                                       <span className="visually-hidden">
                                         unread messages
@@ -1551,78 +1640,106 @@ export default function ProductionCenter() {
                             <div className="row p-2">
                               {filteredItemsMenu.length > 0 ? (
                                 filteredItemsMenu.map((ele, index) => {
-                                  const isAdded = itemstoUpdate.length > 0 ? itemstoUpdate[0].item_ids.some((item) => item == ele.id) : "false";
-                                  return (<div
-                                    className="col-md-4 col-xl-3 col-sm-6 col-12 g-3"
-                                    key={ele.id} // Corrected from 'keys' to 'key'
-                                  >
-                                    <div>
-                                      <div className="card m_bgblack text-white position-relative">
-                                        {ele.image ? (
-                                          <img
-                                            src={`${API}/images/${ele.image}`}
-                                            className="card-img-top object-fit-cover rounded"
-                                            alt={ele.name}
-                                            style={{ height: "162px", objectFit: "cover" }}
-                                          />
-                                        ) : (
-                                          <div className="d-flex justify-content-center align-items-center rounded" style={{ height: "162px", backgroundColor: '#374151', color: 'white' }}>
-                                            <p>{ele.name}</p>
-                                          </div>
-                                        )}
-                                        <div className="card-body">
-                                          <h6 className="card-title">
-                                            {ele.name}
-                                          </h6>
-                                          <h6 className="card-title">
-                                            ${ele.sale_price}
-                                          </h6>
-                                          <p className="card-text opacity-50">
-                                            Codigo: {ele.code}
-                                          </p>
-                                          <div
-                                            onClick={() =>
-                                              handleAddItem(ele.id)}
-                                            className="btn w-100  text-white"
-                                            style={{ backgroundColor: isAdded ? "#063f93" : "#0d6efd" }}
-                                          >
-                                            <Link
-                                              className="text-white text-decoration-none"
-                                              style={{ fontSize: "14px" }}
-                                            >
-                                              <span className="ms-1">
-                                                {isAdded ? 'Agregado' : 'Agregar al menú'}
-                                              </span>
-                                            </Link>
-                                          </div>
-                                        </div>
-                                        <div
-                                          className="position-absolute"
-                                          style={{ cursor: "pointer" }}
-                                        >
-                                          <Link
-                                            to={`/articles/singleatricleproduct/${ele.id}`}
-                                            state={{ from: location.pathname }}
-                                            className="text-white text-decoration-none"
-                                          >
-                                            <p
-                                              className="px-1 rounded m-2"
+                                  const isAdded =
+                                    itemstoUpdate.length > 0
+                                      ? itemstoUpdate[0].item_ids.some(
+                                          (item) => item == ele.id
+                                        )
+                                      : "false";
+                                  return (
+                                    <div
+                                      className="col-md-4 col-xl-3 col-sm-6 col-12 g-3"
+                                      key={ele.id} // Corrected from 'keys' to 'key'
+                                    >
+                                      <div>
+                                        <div className="card m_bgblack text-white position-relative">
+                                          {ele.image ? (
+                                            <img
+                                              src={`${API}/images/${ele.image}`}
+                                              className="card-img-top object-fit-cover rounded"
+                                              alt={ele.name}
                                               style={{
-                                                backgroundColor: "#374151"
+                                                height: "162px",
+                                                objectFit: "cover",
+                                              }}
+                                            />
+                                          ) : (
+                                            <div
+                                              className="d-flex justify-content-center align-items-center rounded"
+                                              style={{
+                                                height: "162px",
+                                                backgroundColor: "#374151",
+                                                color: "white",
                                               }}
                                             >
-                                              <IoMdInformationCircle />{" "}
-                                              <span
-                                                style={{ fontSize: "12px" }}
-                                              >
-                                                Ver información
-                                              </span>
+                                              <p>{ele.name}</p>
+                                            </div>
+                                          )}
+                                          <div className="card-body">
+                                            <h6 className="card-title">
+                                              {ele.name}
+                                            </h6>
+                                            <h6 className="card-title">
+                                              ${ele.sale_price}
+                                            </h6>
+                                            <p className="card-text opacity-50">
+                                              Codigo: {ele.code}
                                             </p>
-                                          </Link>
+                                            <div
+                                              onClick={() =>
+                                                handleAddItem(ele.id)
+                                              }
+                                              className="btn w-100  text-white"
+                                              style={{
+                                                backgroundColor: isAdded
+                                                  ? "#063f93"
+                                                  : "#0d6efd",
+                                              }}
+                                            >
+                                              <Link
+                                                className="text-white text-decoration-none"
+                                                style={{ fontSize: "14px" }}
+                                              >
+                                                <span className="ms-1">
+                                                  {isAdded
+                                                    ? "Agregado"
+                                                    : "Agregar al menú"}
+                                                </span>
+                                              </Link>
+                                            </div>
+                                          </div>
+                                          <div
+                                            className="position-absolute"
+                                            style={{ cursor: "pointer" }}
+                                          >
+                                            <div
+                                              // to={`/articles/singleatricleproduct/${ele.id}`}
+                                              // state={{
+                                              //   from: location.pathname,
+                                              // }}
+                                              onClick={() => {
+                                                handleNavigateToProduct(ele.id)
+                                              }}
+                                              className="text-white text-decoration-none"
+                                            >
+                                              <p
+                                                className="px-1 rounded m-2"
+                                                style={{
+                                                  backgroundColor: "#374151",
+                                                }}
+                                              >
+                                                <IoMdInformationCircle />{" "}
+                                                <span
+                                                  style={{ fontSize: "12px" }}
+                                                >
+                                                  Ver información
+                                                </span>
+                                              </p>
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
                                   );
                                 })
                               ) : (
@@ -1670,7 +1787,15 @@ export default function ProductionCenter() {
                     >
                       <Modal.Body className="text-center">
                         <p></p>
-                        <Spinner animation="border" role="status" style={{ height: '85px', width: '85px', borderWidth: '6px' }} />
+                        <Spinner
+                          animation="border"
+                          role="status"
+                          style={{
+                            height: "85px",
+                            width: "85px",
+                            borderWidth: "6px",
+                          }}
+                        />
                         <p className="mt-2">Procesando solicitud...</p>
                       </Modal.Body>
                     </Modal>
@@ -1678,14 +1803,14 @@ export default function ProductionCenter() {
                 </div>
 
                 <div className="p-3 pt-0 m_bgblack d-flex align-items-center">
-                  {familyFilter.length > 0 &&
+                  {familyFilter.length > 0 && (
                     // selectedProductionCenters.length === 0 && (
                     <div className="d-flex align-items-center">
-                      {console.log(
+                      {/* {console.log(
                         "menus",
                         selectedMenus,
                         selectedProductionCenters
-                      )}
+                      )} */}
                       <span className="text-white m14">Filtros:</span>
                       {familyFilter.map((menu) => (
                         // Find the corresponding menu name from parentCheck
@@ -1696,7 +1821,7 @@ export default function ProductionCenter() {
                           key={menu.id}
                           className="d-inline-block ms-2 d-flex align-items-center m12"
                         >
-                          {console.log(menu.name)}
+                          {/* {console.log(menu.name)} */}
                           <Button
                             variant="light"
                             size="sm"
@@ -1712,59 +1837,110 @@ export default function ProductionCenter() {
                         </div>
                       ))}
                     </div>
-                  }
+                  )}
                 </div>
 
                 <div className="row p-2">
                   {productionAllData.length > 0 ? (
                     productionAllData
-                      .filter(menu => selectedMenus.length === 0 || selectedMenus.includes(menu.id)) // Filter based on selectedMenus
+                      .filter(
+                        (menu) =>
+                          selectedMenus.length === 0 ||
+                          selectedMenus.includes(menu.id)
+                      ) // Filter based on selectedMenus
                       .map((menu) => (
                         <div key={menu.id}>
-                          <h6 className="mb-0 mt-3 ps-2" style={{ color: "white" }}>{menu.name}</h6>
+                          <h6
+                            className="mb-0 mt-3 ps-2"
+                            style={{ color: "white" }}
+                          >
+                            {menu.name}
+                          </h6>
                           {menu.items.length > 0 ? (
                             <div className="row">
                               {menu.items
-                                .filter(item =>
-                                  familyFilter.length === 0 || familyFilter.some(family => family.id == item.family_id) // Filter based on familyFilter
+                                .filter(
+                                  (item) =>
+                                    familyFilter.length === 0 ||
+                                    familyFilter.some(
+                                      (family) => family.id == item.family_id
+                                    ) // Filter based on familyFilter
                                 )
                                 .reduce((uniqueItems, currentItem) => {
                                   // Check if the item is already in the uniqueItems array
-                                  if (!uniqueItems.some(item => item.id === currentItem.id)) {
+                                  if (
+                                    !uniqueItems.some(
+                                      (item) => item.id === currentItem.id
+                                    )
+                                  ) {
                                     uniqueItems.push(currentItem);
                                   }
                                   return uniqueItems;
                                 }, [])
                                 .map((ele) => (
-
-                                  <div className="col-md-4 col-xl-3 col-sm-6 col-12 g-3" key={ele.id}>
+                                  <div
+                                    className="col-md-4 col-xl-3 col-sm-6 col-12 g-3"
+                                    key={ele.id}
+                                  >
                                     <div className="card m_bgblack text-white position-relative">
                                       {ele.image ? (
                                         <img
                                           src={`${API}/images/${ele.image}`}
                                           className="card-img-top object-fit-cover rounded"
                                           alt={ele.name}
-                                          style={{ height: "162px", objectFit: "cover" }}
+                                          style={{
+                                            height: "162px",
+                                            objectFit: "cover",
+                                          }}
                                         />
                                       ) : (
-                                        <div className="d-flex justify-content-center align-items-center rounded" style={{ height: "162px",backgroundColor: 'rgb(55 65 81 / 34%)', color: 'white' }}>
+                                        <div
+                                          className="d-flex justify-content-center align-items-center rounded"
+                                          style={{
+                                            height: "162px",
+                                            backgroundColor:
+                                              "rgb(55 65 81 / 34%)",
+                                            color: "white",
+                                          }}
+                                        >
                                           <p>{ele.name}</p>
                                         </div>
                                       )}
                                       <div className="card-body">
-                                        <h6 className="card-title">{ele.name}</h6>
-                                        <h6 className="card-title">$ {ele.sale_price}</h6>
-                                        <p className="card-text" style={{ fontSize: "14px" }}>
+                                        <h6 className="card-title">
+                                          {ele.name}
+                                        </h6>
+                                        <h6 className="card-title">
+                                          $ {ele.sale_price}
+                                        </h6>
+                                        <p
+                                          className="card-text"
+                                          style={{ fontSize: "14px" }}
+                                        >
                                           Codigo: {ele.code}
                                         </p>
-                                        <div className="btn w-100 btn-primary text-white b_ttt" style={{ backgroundColor: "#147BDE" }}>
+                                        <div
+                                          className="btn w-100 btn-primary text-white b_ttt"
+                                          style={{ backgroundColor: "#147BDE" }}
+                                        >
                                           <a
                                             className="text-white text-decoration-none"
                                             style={{ fontSize: "14px" }}
-                                            onClick={() => handleClick(ele.id, ele.image, ele.name, ele.sale_price, ele.code,ele.production_center_id)}
+                                            onClick={() =>
+                                              handleClick(
+                                                ele.id,
+                                                ele.image,
+                                                ele.name,
+                                                ele.sale_price,
+                                                ele.code,
+                                                ele.production_center_id
+                                              )
+                                            }
                                           >
                                             <FaCartPlus />{" "}
-                                            <span className="ms-1">Agregar al mostrador</span>
+                                            <span className="ms-1">
+                                              Agregar al mostrador
+                                            </span>
                                           </a>
                                         </div>
                                       </div>
@@ -1774,21 +1950,25 @@ export default function ProductionCenter() {
                             </div>
                           ) : (
                             <div className="col-12 text-center text-white mt-3">
-                              <p className="opacity-75">No hay artículo asignado a este centro de producción</p>
+                              <p className="opacity-75">
+                                No hay artículo asignado a este centro de
+                                producción
+                              </p>
                             </div>
                           )}
                         </div>
                       ))
                   ) : (
                     <div className="col-12 text-center mt-4">
-                      <p className="text-white">No hay productos disponibles.</p>
+                      <p className="text-white">
+                        No hay productos disponibles.
+                      </p>
                     </div>
                   )}
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

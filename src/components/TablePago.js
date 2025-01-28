@@ -763,22 +763,24 @@ const TablePago = () => {
             <h2 className="text-white j-table-font-1 mb-0">Mesa {tabNo}</h2>
             <div className="j-menu-bg-color">
               <div className="j-table-cart-2 d-flex justify-content-between ">
-                <div className="line1  flex-grow-1">
+                <div className="">
                   <Link className="text-decoration-none px-2 sj_text_medium">
                     <FaCircleCheck className="mx-1" />
                     <span>Productos</span>
                   </Link>
                 </div>
-                <div className="  flex-grow-1 text-center">
+                <div className="line1  flex-grow-1"></div>
+                <div className="text-center">
                   <Link
                     to={`/table/datos?id=${tId}`}
-                    className="text-decoration-none px-2  sj_text_medium"
+                    className="text-decoration-none px-2 sj_text_medium"
                   >
                     <FaCircleCheck className="mx-1" />
                     <span>Datos</span>
                   </Link>
                 </div>
-                <div className="line2  flex-grow-1 text-end">
+                <div className="line1  flex-grow-1"></div>
+                <div className="text-end">
                   <Link className="text-decoration-none px-2 sj_text_blue">
                     <FaCircleCheck className="mx-1" />
                     <span>Pago</span>

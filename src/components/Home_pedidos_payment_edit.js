@@ -28,6 +28,7 @@ const Home_pedidos_payment_edit = ({ item }) => {
     const apiUrl = process.env.REACT_APP_API_URL; // Laravel API URL
     const API = process.env.REACT_APP_IMAGE_URL;
     const [token] = useState(localStorage.getItem("token"));
+    const [role] = useState(localStorage.getItem("role"));
     const [isProcessing, setIsProcessing] = useState(false);
     const { id } = useParams();
     const { state, replace } = useLocation();
@@ -732,7 +733,7 @@ const Home_pedidos_payment_edit = ({ item }) => {
 
                                 <div className='d-flex flex-wrap me-4'>
                                     {showCancelOrderButton ? (
-                                        creditNote &&
+                                        creditNote && (role == "admin" || role == "cashier") &&
                                         (<div onClick={handleCredit} className='btn bj-btn-outline-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center' style={{ borderRadius: '10px' }}> <BsCalculatorFill className='me-2' />Generar nota de crédito</div>)
                                     ) : (
                                         <div onClick={handleShow1Prod} className='btn bj-btn-outline-primary me-2  text-nowrap  me-2 py-2 d-flex align-items-center justify-content-center' style={{ borderRadius: '10px' }}> <FaPlus className='me-2' />Agregar artículo</div>

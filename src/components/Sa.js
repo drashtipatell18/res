@@ -64,7 +64,7 @@ export default function Sa({ data }) {
           top: -2,
         },
       },
-      labels: [], // Remove labels from the chart itself
+      labels: ["Recibido", "Preparado", "Finalizado", "Entregado"], // Remove labels from the chart itself
       dataLabels: {
         enabled: false, // Disable data labels
       },

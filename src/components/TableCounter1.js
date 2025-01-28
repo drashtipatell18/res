@@ -1356,13 +1356,14 @@ const TableCounter1 = () => {
               <h2 className="text-white mb-3 j-counter-text-1">Mostrador</h2>
               <div className="j-menu-bg-color ">
                 <div className="j-tracker-mar d-flex justify-content-between ">
-                  <div className="line1  flex-grow-1">
+                  <div className="">
                     <Link className="text-decoration-none px-2 j-counter-path-color">
                       <FaCircleCheck className="j-counter-icon-size" />
                       <span className="j-counter-text-2">Productos</span>
                     </Link>
                   </div>
-                  <div className="  flex-grow-1 text-center">
+                  <div className="line1  flex-grow-1"></div>
+                  <div className="text-center">
                     <Link
                       to={`/table/datos?id=${tId}`}
                       className="text-decoration-none px-2 sj_text_dark"
@@ -1371,7 +1372,8 @@ const TableCounter1 = () => {
                       <span className="j-counter-text-2">Datos</span>
                     </Link>
                   </div>
-                  <div className="line2  flex-grow-1 text-end">
+                  <div className="line1  flex-grow-1"></div>
+                  <div className="text-end">
                     <Link className="text-decoration-none px-2 sj_text_dark">
                       <FaCircleCheck className="j-counter-icon-size" />
                       <span className="j-counter-text-2">Pago</span>

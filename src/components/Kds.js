@@ -31,7 +31,7 @@ const Kds = () => {
     const { items, production, loadingItem } = useSelector(state => state.items);
     const { tablewithSector, loadingTable } = useSelector(state => state.tables);
 
-    console.log(kds,tablewithSector);
+    // console.log(kds,tablewithSector);
     
 
     useEffect(() => {
@@ -236,7 +236,7 @@ const Kds = () => {
         }));
     };
 
-    console.log(filterOrdersByCategory(allOrder, selectedCategory));
+    // console.log(filterOrdersByCategory(allOrder, selectedCategory));
     
 
     return (

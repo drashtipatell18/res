@@ -760,13 +760,14 @@ const DeliveryPago = () => {
               <h2 className="text-white mb-3 sjfs-18">Mostrador</h2>
               <div className="j-menu-bg-color ">
                 <div className="j-tracker-mar d-flex justify-content-between ">
-                  <div className="line1  flex-grow-1">
+                  <div className="">
                     <Link className="text-decoration-none px-2 sj_text_dark">
                       <FaCircleCheck className="mx-1" />
                       <span>Artículos</span>
                     </Link>
                   </div>
-                  <div className="  flex-grow-1 text-center">
+                  <div className="line1  flex-grow-1"></div>
+                  <div className="text-center">
                     <Link
                       to={"/home/usa/bhomedelivery/datos"}
                       className="text-decoration-none px-2 sj_text_dark"
@@ -775,7 +776,8 @@ const DeliveryPago = () => {
                       <span>Datos</span>
                     </Link>
                   </div>
-                  <div className="line2  flex-grow-1 text-end">
+                  <div className="line1  flex-grow-1"></div>
+                  <div className="text-end">
                     <Link className="text-decoration-none px-2 j-counter-path-color">
                       <FaCircleCheck className="mx-1" />
                       <span>Pago</span>

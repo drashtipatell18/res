@@ -1640,7 +1640,7 @@ td {
   background-color: #9ca3af;
   position: absolute;
   top: 50%;
-  right: -120px;
+  right: 0px;
   transform: translateY(-50%);
   height: 0.5px;
   width: 100%;
@@ -2675,8 +2675,8 @@ td {
   /* ...........JAY START............ */
   .line1::before {
     top: 50%;
-    right: -83px;
-    width: 90%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {
@@ -2980,8 +2980,8 @@ td {
 
   .line1::before {
     top: 50%;
-    right: -40px;
-    width: 65%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {
@@ -3198,8 +3198,8 @@ td {
 
   .line1::before {
     top: 50%;
-    right: -65px;
-    width: 80%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {
@@ -3540,8 +3540,8 @@ td {
 
   .line1::before {
     top: 54%;
-    right: -28px;
-    width: 52%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {
@@ -3725,8 +3725,8 @@ td {
   /* ...........JAY START............... */
   .line1::before {
     top: 54%;
-    right: -20px;
-    width: 40%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {
@@ -3854,8 +3854,8 @@ td {
   /* ...........JAY START............. */
   .line1::before {
     top: 54%;
-    right: -15px;
-    width: 27%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {
@@ -3927,7 +3927,7 @@ body {
   background-color: #9ca3af;
   position: absolute;
   top: 50%;
-  right: -120px;
+  right: 0px;
   transform: translateY(-50%);
   height: 0.5px;
   width: 100%;
@@ -4108,8 +4108,8 @@ body {
 @media (max-width: 1440px) {
   .line1::before {
     top: 50%;
-    right: -83px;
-    width: 90%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {
@@ -4126,8 +4126,8 @@ body {
 
   .line1::before {
     top: 50%;
-    right: -40px;
-    width: 60%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {
@@ -4153,8 +4153,8 @@ body {
 
   .line1::before {
     top: 50%;
-    right: -40px;
-    width: 62%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {
@@ -4187,8 +4187,8 @@ body {
 
   .line1::before {
     top: 54%;
-    right: -28px;
-    width: 52%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {
@@ -4205,8 +4205,8 @@ body {
 @media (max-width: 375px) {
   .line1::before {
     top: 54%;
-    right: -20px;
-    width: 40%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {
@@ -4219,8 +4219,8 @@ body {
 @media (max-width: 320px) {
   .line1::before {
     top: 54%;
-    right: -15px;
-    width: 27%;
+    right: 0px;
+    width: 100%;
   }
 
   .line2::before {

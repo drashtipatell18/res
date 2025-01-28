@@ -773,10 +773,10 @@ useEffect(() => {
       }, {});
 
       return [
-        { hour: "00:00", Order: 0 },
+        { hour: "00:00", Padido: 0 },
         ...Array.from({ length: 24 }, (_, i) => ({
           hour: `${i.toString().padStart(2, "0")}:00`,
-          Order: ordersByHour[i] || 0,
+          Padido: ordersByHour[i] || 0,
         })),
       ];
     } else {
@@ -792,11 +792,11 @@ useEffect(() => {
       const firstDate = sortedDates[0] || new Date().toLocaleDateString();
 
       return [
-        { date: firstDate, Order: 0 },
+        { date: firstDate, Padido: 0 },
 
         ...sortedDates.map((date) => ({
           date,
-          Order: ordersByDate[date],
+          Padido: ordersByDate[date],
         })),
       ];
     }
@@ -807,10 +807,10 @@ useEffect(() => {
     payments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
     return [
-      { date: new Date().toLocaleDateString(), Amount: 0 }, // Add this line
+      { date: new Date().toLocaleDateString(), Monto: 0 }, // Add this line
       ...payments.map((payment) => ({
         date: new Date(payment.created_at).toLocaleDateString(),
-        Amount: parseFloat(payment.amount),
+        Monto: parseFloat(payment.amount),
       })),
     ];
   };
@@ -820,10 +820,10 @@ useEffect(() => {
     payments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
     return [
-      { date: new Date().toLocaleDateString(), Amount: 0 }, // Add this line
+      { date: new Date().toLocaleDateString(), Monto: 0 }, // Add this line
       ...payments.map((payment) => ({
         date: new Date(payment.created_at).toLocaleDateString(),
-        Amount: parseFloat(payment.amount / stateData.total_days).toFixed(3),
+        Monto: parseFloat(payment.amount / stateData.total_days).toFixed(3),
       })),
     ];
   };
@@ -840,10 +840,10 @@ useEffect(() => {
     }, {});
 
     return [
-      { date: new Date().toLocaleDateString(), Order: 0 }, // Ensure starting with 0
+      { date: new Date().toLocaleDateString(), Padido: 0 }, // Ensure starting with 0
       ...Object.keys(ordersByDate).map((date) => ({
         date,
-        Order: ordersByDate[date],
+        Padido: ordersByDate[date],
       })),
     ];
   };
@@ -1601,7 +1601,7 @@ useEffect(() => {
                       <Tooltip cursor={false} />
                       <Area
                         type="monotone"
-                        dataKey="Order"
+                        dataKey="Padido"
                         strokeWidth={2}
                         stroke="#1c64f2"
                         fill="url(#colorGradient)"
@@ -1655,7 +1655,7 @@ useEffect(() => {
                       <Tooltip cursor={false} />
                       <Area
                         type="monotone"
-                        dataKey="Amount"
+                        dataKey="Monto"
                         strokeWidth={2}
                         stroke="#1c64f2" // Border color
                         fill="url(#colorGradient)" // Gradient fill
@@ -1711,7 +1711,7 @@ useEffect(() => {
 
                       <Area
                         type="monotone"
-                        dataKey="Amount"
+                        dataKey="Monto"
                         strokeWidth={2}
                         stroke="#1c64f2" // Border color Different color for average
                         fill="url(#colorGradient)" // Gradient fill for average
@@ -1760,7 +1760,7 @@ useEffect(() => {
                       <Tooltip cursor={false} />
                       <Area
                         type="monotone"
-                        dataKey="Order"
+                        dataKey="Padido"
                         strokeWidth={2}
                         stroke="#1c64f2" // Border color
                         fill="url(#colorGradient)" // Gradient fill
@@ -1955,7 +1955,7 @@ useEffect(() => {
                       <p className="ss_fontsize mb-0 sjfs-14">
                         Efectivo:{" "}
                         <span className="text-white me-4 sjfs-14">
-                          {payMethodData?.cash?.total_amount}$ CLP
+                          {payMethodData?.cash?.total_amount} $ CLP
                         </span>
                       </p>
                     </div>
@@ -1964,7 +1964,7 @@ useEffect(() => {
                       <p className="ss_fontsize mb-0 sjfs-14">
                         Tarjeta debito:{" "}
                         <span className="text-white sjfs-14">
-                          {payMethodData?.debit?.total_amount}$ CLP
+                          {payMethodData?.debit?.total_amount} $ CLP
                         </span>
                       </p>
                     </div>
@@ -1975,7 +1975,7 @@ useEffect(() => {
                       <p className="ss_fontsize mb-0 sjfs-14">
                         Tarjeta crédito:{" "}
                         <span className="text-white me-4 sjfs-14">
-                          {payMethodData?.credit?.total_amount}$ CLP
+                          {payMethodData?.credit?.total_amount} $ CLP
                         </span>
                       </p>
                     </div>
@@ -1984,7 +1984,7 @@ useEffect(() => {
                       <p className="ss_fontsize mb-0 sjfs-14">
                         Transferencias:{" "}
                         <span className="text-white sjfs-14">
-                          {payMethodData?.transfer?.total_amount}$ CLP
+                          {payMethodData?.transfer?.total_amount} $ CLP
                         </span>
                       </p>
                     </div>
@@ -2006,7 +2006,6 @@ useEffect(() => {
                       <h2 className="text-white  sjfs-2">
                         {Number(totalRevenue.total_revenue).toFixed(0)}$
                       </h2>
-
                       <p
                         style={{
                           fontSize: "16px",
@@ -2020,8 +2019,6 @@ useEffect(() => {
                     </div>
                     <div className="s_dashboard-right-head">
                       <div className="mb-2 d-flex">
-
-
                         <select
                           id="year-select"
                           className="form-select sjfs-14"
@@ -2208,7 +2205,7 @@ useEffect(() => {
                         cursor={false}
                         formatter={(value, name) => [
                           value,
-                          name === "total" ? "Total" : "Quantity",
+                          name === "total" ? "Total" : "Cantidad",
                         ]}
                       />
                       <Area
@@ -2242,7 +2239,7 @@ useEffect(() => {
             </div>
           </div>
 
-          {(role == "admin") &&
+          {(role == "admin" || role == "cashier") &&
             <>
               <div className="j-dashboard-summary">
                 <div className="row">
@@ -2850,10 +2847,10 @@ useEffect(() => {
 
                         // Prepare data for the chart
                         const chartData = [
-                          { name: "", Order: 0 }, // Start with 0 value
+                          { name: "", Padido: 0 }, // Start with 0 value
                           ...ele.logs.map((log) => ({
                             name: log.open_time, // Use open_time as the x-axis label
-                            Order: log.close_amount
+                            Padido: log.close_amount
                               ? parseFloat(log.close_amount) -
                               parseFloat(log.open_amount)
                               : 0, // Calculate the order value
@@ -2876,7 +2873,7 @@ useEffect(() => {
                                   <Tooltip cursor={false} />
                                   <Line
                                     type="monotoneX"
-                                    dataKey="Order"
+                                    dataKey="Padido"
                                     stroke="#0e9f6e"
                                     dot={false}
                                     strokeWidth={2}

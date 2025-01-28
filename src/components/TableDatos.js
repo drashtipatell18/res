@@ -681,19 +681,21 @@ const TableDatos = () => {
               <h2 className="text-white j-table-font-1 mb-0">Mesa {tabNo}</h2>
               <div className="j-menu-bg-color">
                 <div className="j-table-cart-2 d-flex justify-content-between ">
-                  <div className="line1  flex-grow-1">
+                  <div className="">
                     <div className="text-decoration-none px-2 sj_text_medium" style={{ cursor: 'pointer' }}>
                       <FaCircleCheck className="mx-1" />
                       <span>Productos</span>
                     </div>
                   </div>
-                  <div className="flex-grow-1 text-center">
+                  <div className="line1  flex-grow-1"></div>
+                  <div className="text-center">
                     <Link className="text-decoration-none px-2 sj_text_blue">
                       <FaCircleCheck className="mx-1" />
                       <span>Datos</span>
                     </Link>
                   </div>
-                  <div className="line2  flex-grow-1 text-end">
+                  <div className="line1  flex-grow-1"></div>
+                  <div className="text-end">
                     <div onClick={handleSubmit} style={{ cursor: 'pointer' }}
                       className="text-decoration-none px-2 sj_text_medium"
                     >

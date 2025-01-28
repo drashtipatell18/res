@@ -1480,6 +1480,7 @@ const Tables = () => {
                                 <p className="mb-0 j-tbl-font-4">{item.name}</p>
                               </label>
                             </div>
+                            {(role == "admin" || role == "cashier") && (
                             <div
                               className="text-white"
                               style={{ cursor: "pointer" }}
@@ -1487,6 +1488,7 @@ const Tables = () => {
                             >
                               <BsThreeDots className="j-tbl-dot-color" />
                             </div>
+                            )}
                           </div>
                         </div>
                       ))
@@ -1503,6 +1505,7 @@ const Tables = () => {
                 <div className="m_bgblack j-tbl-font-5 j-block text-white">
                   <h6 className="mb-0">Mesas</h6>
                   <div>
+                    {(role == "admin" || role == "cashier") && (
                     <Button
                       className="j-blue-button b_btn_pop   j-tbl-font-3"
                       variant="primary"
@@ -1511,6 +1514,7 @@ const Tables = () => {
                       <FaPlus className="j-icon-font-1" />
                       Agregar mesa
                     </Button>
+                    )}
                     <Modal
                       show={show1}
                       onHide={handleClose1}

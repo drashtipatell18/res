@@ -66,20 +66,36 @@ export default function Articles() {
   // Add product
   const [show1, setShow1] = useState(false);
   const handleClose1 = () => {
-    // console.log("close");
+    localStorage.removeItem("selectedMenuId");
+    localStorage.removeItem("selectedItemIds");
     setSelectedItemsCount(0);
     setItemId([]);
     setCheckedParents([]);
     setFilteredItemsMenu(obj1);
     setSelectedParentNames([]);
     setSelectedMenus([]);
-    setItemId([]);
     setMenuId(null);
     setShow1(false);
   };
+
+
+
   const handleShow1 = () => {
+    // Save current menu ID
+    localStorage.setItem("selectedMenuId", menuId);
+    localStorage.setItem("selectedItemIds", JSON.stringify(itemId));
     setShow1(true);
     setCount(0);
+
+    // Restore any previously selected items if returning from product info
+    const savedItemIds = JSON.parse(
+      localStorage.getItem("selectedItemIds") || "[]"
+    );
+    if (savedItemIds.length > 0) {
+      setItemId(savedItemIds);
+      setSelectedItemsCount(savedItemIds.length);
+      setSelectedItemsMenu(new Set(savedItemIds));
+    }
   };
 
   // create family
@@ -218,21 +234,28 @@ export default function Articles() {
     if (!selectedItemsMenu.has(item)) {
       // Add item if it's not already selected
       setSelectedItemsMenu(new Set(selectedItemsMenu).add(item));
+      const newItemIds = [...itemId, item];
+      setItemId(newItemIds);
       setSelectedItemsCount(selectedItemsCount + 1);
-      setItemId((prevArray) => [...prevArray, item]);
 
-      // Perform any other action here when adding an item
-      console.log(`Added item ${item}`);
+      // Save updated selections to localStorage
+      localStorage.setItem("selectedItemIds", JSON.stringify(newItemIds));
+
+      // console.log(`Added item ${item}`);
     } else {
       // Remove item if it's already selected
       const updatedSelectedItemsMenu = new Set(selectedItemsMenu);
       updatedSelectedItemsMenu.delete(item);
       setSelectedItemsMenu(updatedSelectedItemsMenu);
-      setSelectedItemsCount(selectedItemsCount - 1);
-      setItemId((prevArray) => prevArray.filter((i) => i !== item));
 
-      // Perform any other action here when removing an item
-      console.log(`Removed item ${item}`);
+      const newItemIds = itemId.filter((i) => i !== item);
+      setItemId(newItemIds);
+      setSelectedItemsCount(selectedItemsCount - 1);
+
+      // Save updated selections to localStorage
+      localStorage.setItem("selectedItemIds", JSON.stringify(newItemIds));
+
+      // console.log(`Removed item ${item}`);
     }
   };
 
@@ -407,16 +430,16 @@ export default function Articles() {
     setItemId([]);
     setMenuId(null);
     // if (items.length == 0) {
-      dispatch(getAllitems());
+    dispatch(getAllitems());
     // }
     // if (subFamily.length == 0) {
-      dispatch(getSubFamily());
+    dispatch(getSubFamily());
     // }
     // if (family.length == 0) {
-      dispatch(getFamily());
+    dispatch(getFamily());
     // }
     // if (menu.length == 0) {
-      dispatch(getMenu({ admin_id }));
+    dispatch(getMenu({ admin_id }));
     // }
   }, []);
 
@@ -469,7 +492,7 @@ export default function Articles() {
           maxBodyLength: Infinity,
         }
       );
-      console.log(response.data, "create menu");
+      // console.log(response.data, "create menu");
       handleShowCreSuc();
       dispatch(getMenu({ admin_id }));
       // fetchMenuData();
@@ -519,7 +542,7 @@ export default function Articles() {
           maxBodyLength: Infinity,
         }
       );
-      console.log(response.data, "update menu");
+      // console.log(response.data, "update menu");
 
       // Update the menu state
       setSelectedMenus([]);
@@ -663,7 +686,7 @@ export default function Articles() {
         }
       );
 
-      console.log("API Response:", response.data);
+      // console.log("API Response:", response.data);
 
       if (response.data.success) {
         // Handle UI updates
@@ -683,7 +706,7 @@ export default function Articles() {
             }
             return menu;
           });
-          console.log("Updated menu:", updatedMenu);
+          // console.log("Updated menu:", updatedMenu);
           return updatedMenu;
         });
 
@@ -701,7 +724,7 @@ export default function Articles() {
             }
             return menu;
           });
-          console.log("Updated filteredItems:", updatedFilteredItems);
+          // console.log("Updated filteredItems:", updatedFilteredItems);
           return updatedFilteredItems;
         });
 
@@ -870,7 +893,7 @@ export default function Articles() {
           maxBodyLength: Infinity,
         }
       );
-      console.log(response.data, "delete menu");
+      // console.log(response.data, "delete menu");
 
       // Update state to remove the deleted menu
       setMenu((prevMenu) => prevMenu.filter((m) => m.id !== selectedMenu.id));
@@ -911,6 +934,7 @@ export default function Articles() {
       // dispatch(getMenu({admin_id}));
       // dispatch(getAllitems())
     }
+
   }, [showRetirar]);
 
   const handlesaveEdit = () => {
@@ -924,6 +948,50 @@ export default function Articles() {
     }
     setShowRetirar(!showRetirar);
   };
+
+  // Update useEffect to handle state restoration and modal opening
+  useEffect(() => {
+    // Check if we're returning from item info page
+    const savedMenuId = localStorage.getItem("selectedMenuId");
+    const savedItemIds = JSON.parse(
+      localStorage.getItem("selectedItemIds") || "[]"
+    );
+    const shouldOpenModal = localStorage.getItem("shouldOpenModal");
+
+    if (savedMenuId && menu && menu.length > 0) {
+      const menuToSelect = menu.find((m) => m.id === parseInt(savedMenuId));
+      if (menuToSelect) {
+        setSelectedMenus([menuToSelect]);
+        setMenuId(parseInt(savedMenuId));
+
+        // If shouldOpenModal is set, open the modal
+        if (shouldOpenModal === "true") {
+          setShow1(true);
+          localStorage.removeItem("shouldOpenModal"); // Clear the flag
+        }
+      }
+    }
+
+    if (savedItemIds.length > 0) {
+      setItemId(savedItemIds);
+      setSelectedItemsCount(savedItemIds.length);
+      setSelectedItemsMenu(new Set(savedItemIds));
+    }
+  }, [menu]);
+
+  // Update handleNavigateToProduct to set modal flag
+  const handleNavigateToProduct = (productId) => {
+    // Save current selections to localStorage
+    localStorage.setItem("selectedMenuId", menuId);
+    localStorage.setItem("selectedItemIds", JSON.stringify(itemId));
+    localStorage.setItem("shouldOpenModal", "true"); // Add flag to reopen modal
+
+    // Navigate to product page
+    navigate(`/articles/singleatricleproduct/${productId}`, {
+      state: { from: location.pathname },
+    });
+  };
+
   return (
     <div className="m_bg_black">
       <Header />
@@ -1306,12 +1374,14 @@ export default function Articles() {
                                               className="position-absolute"
                                               style={{ cursor: "pointer" }}
                                             >
-                                              <Link
-                                                to={`/articles/singleatricleproduct/${ele.id}`}
-                                                state={{
-                                                  from: location.pathname,
-                                                }}
+                                              <div
+                                                onClick={() =>
+                                                  handleNavigateToProduct(
+                                                    ele.id
+                                                  )
+                                                }
                                                 className="text-white text-decoration-none"
+                                                style={{ cursor: "pointer" }}
                                               >
                                                 <p
                                                   className="px-1 rounded m-2"
@@ -1326,7 +1396,7 @@ export default function Articles() {
                                                     Ver información
                                                   </span>
                                                 </p>
-                                              </Link>
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
@@ -1374,7 +1444,7 @@ export default function Articles() {
                 </div>
 
                 <div className="p-2 row">
-                  {console.log("sss", filteredItems)}
+                  {/* {console.log("sss", filteredItems)} */}
 
                   {filteredItems.length > 0 ? (
                     (selectedMenus.length === 0 ? filteredItems : selectedMenus)
@@ -1399,7 +1469,7 @@ export default function Articles() {
                               )}
                               {hasItems ? (
                                 <div className="row">
-                                  {console.log("aa", removedItems)}
+                                  {/* {console.log("aa", removedItems)} */}
 
                                   {menu.items
                                     .filter(

@@ -723,13 +723,14 @@ const BHomeDelivery = () => {
             <h2 className="text-white mb-3 sjfs-18">Mostrador</h2>
             <div className="j-menu-bg-color ">
               <div className="j-tracker-mar d-flex justify-content-between ">
-                <div className="line1  flex-grow-1">
-                  <Link className="text-decoration-none px-2 ">
+                <div className="">
+                  <Link className="text-decoration-none px-2">
                     <FaCircleCheck className="mx-1" />
                     <span>Productos</span>
                   </Link>
                 </div>
-                <div className="  flex-grow-1 text-center" onClick={placeNewOrder}>
+                <div className="line1  flex-grow-1"></div>
+                <div className="text-center" onClick={placeNewOrder}>
                   <Link
                     // to={"/home/usa/bhomedelivery/datos"}
                     className="text-decoration-none px-2 sj_text_dark"
@@ -739,7 +740,8 @@ const BHomeDelivery = () => {
                     <span>Datos</span>
                   </Link>
                 </div>
-                <div className="line2  flex-grow-1 text-end">
+                <div className="line1  flex-grow-1"></div>
+                <div className="text-end">
                   <Link className="text-decoration-none px-2 sj_text_dark">
                     <FaCircleCheck className="mx-1" />
                     <span>Pago</span>

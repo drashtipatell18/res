@@ -506,7 +506,7 @@ export default function Home_crear({ item }) {
 
     const total = selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0);
     const final = parseInt(total) - parseFloat(orderAlldata.discount).toFixed(2) || 0.00
-    const tax = parseFloat(final*0.19.toFixed(2))
+    const tax = parseFloat((final*0.19).toFixed(2))
     const finaltotal = final + tax
 
 
@@ -611,9 +611,16 @@ export default function Home_crear({ item }) {
 
 
     // ===========  Generate  credit ========
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleCreditNote = async () => {
         // Check if selectedCheckbox is null
+
+        if (isSubmitting) {
+            return;
+        }
+
+    
         if (!selectedCheckbox) {
             setPayError('Seleccione el tipo de pago'); // Set error message
             return; // Exit the function
@@ -630,8 +637,14 @@ export default function Home_crear({ item }) {
             setPayError(''); // Clear error if checkbox 1 is selected
         }
 
+        setIsProcessing(true);
+
         // Show the staticBackdrop modal if there is no pay error
         if (payError === '') {
+
+            try {
+                setIsSubmitting(true);
+
             const creditNote = {
                 admin_id: admin_id,
                 credit_note: {
@@ -655,12 +668,14 @@ export default function Home_crear({ item }) {
 
             };
 
-            // console.log(creditNote);
+                // console.log(creditNote);
 
-            try {
+            
                 const response = await axios.post(`${apiUrl}/order/creditNote`, creditNote, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
+
+                setIsProcessing(false);
 
                 console.log(response);
 
@@ -675,13 +690,21 @@ export default function Home_crear({ item }) {
                         });
                     }, 2000);
                 } else {
+                    setIsProcessing(false);
                     console.error("Error: The request was successful, but the response indicates a failure.");
                 }
             } catch (error) {
+                setIsProcessing(false);
                 console.error("Error creating order:", error);
+            } finally {
+                setIsProcessing(false);
+                setTimeout(() => {
+                    setIsSubmitting(false);
+                }, 2000);
             }
         }
     };
+
     const fetchPaymentUser = async () => {
         setIsProcessing(true);
         try {
@@ -1011,14 +1034,13 @@ export default function Home_crear({ item }) {
                                                                     <div className="w-100 a_bg_order mt-2 border-0" style={{ borderRadius: "10px" }}><span className="">{userPayment?.firstname ? userPayment.firstname : userPayment?.business_name} {userPayment?.lastname ? userPayment?.lastname : '-'}</span></div>
                                                                 </div>
                                                                 <div className="d-flex justify-content-end align-items-center mt-4">
-
                                                                     <div className="w-50">
                                                                         <div>DNI</div>
-                                                                        <div className="w-75 a_bg_order border-0 mt-2" style={{ borderRadius: "10px" }}><span className="">{userPayment?.rut || '-'}</span></div>
+                                                                        <div className="a_bg_order border-0 mt-2" style={{ borderRadius: "10px",width:"95%",wordBreak: "break-word",overflowWrap: "break-word" }}><span className="">{userPayment?.rut || '-'}</span></div>
                                                                     </div>
                                                                     <div className="w-50">
                                                                         <div>Correo electrónico</div>
-                                                                        <div className="w-75 a_bg_order border-0 mt-2" style={{ borderRadius: "10px" }}><span className="">{userPayment?.email ? userPayment.email : "-"}</span></div>
+                                                                        <div className="a_bg_order border-0 mt-2" style={{ borderRadius: "10px",width:"100%",wordBreak: "break-word",overflowWrap: "break-word" }}><span className="">{userPayment?.email ? userPayment.email : "-"}</span></div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="mt-4">
@@ -1097,11 +1119,11 @@ export default function Home_crear({ item }) {
                                                                 <div className="d-flex justify-content-end align-items-center mt-4">
                                                                     <div className="w-50">
                                                                         <div className='mb-2'>DNI</div>
-                                                                        <div className="w-75 a_bg_order  border-0 " style={{ borderRadius: "10px" }}><span className="">{userPayment?.rut || '-'}</span></div>
+                                                                        <div className="a_bg_order  border-0" style={{ borderRadius: "10px",width:"95%",wordBreak: "break-word",overflowWrap: "break-word" }}><span className="">{userPayment?.rut || '-'}</span></div>
                                                                     </div>
                                                                     <div className="w-50">
                                                                         <div className='mb-2'>Correo electrónico</div>
-                                                                        <div className="w-75 a_bg_order  border-0 overflow-auto" style={{ borderRadius: "10px" }}><span className="">{userPayment?.email ? userPayment.email : "-"}</span></div>
+                                                                        <div className="a_bg_order  border-0" style={{ borderRadius: "10px",width:"100%",wordBreak: "break-word",overflowWrap: "break-word" }}><span className="">{userPayment?.email ? userPayment.email : "-"}</span></div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="mt-4">

@@ -504,6 +504,7 @@ export default function Articles() {
       .then(function (response) {
         handleShowEditFamSuc();
         dispatch(getFamily());
+        dispatch(getSubFamily());
         setFamilyError("");
         // fetchProductionCenters();
       })

@@ -512,7 +512,7 @@ const Mostrador = () => {
               <h2 className="text-white mb-3 sjfs-18">Mostrador</h2>
               <div className="j-menu-bg-color">
                 <div className="j-tracker-mar d-flex justify-content-between ">
-                  <div className="line1 flex-grow-1">
+                  <div className="">
                     <Link
                       to={"#"}
                       className="text-decoration-none px-2 sj_text_dark"
@@ -521,13 +521,15 @@ const Mostrador = () => {
                       <span>Artículos</span>
                     </Link>
                   </div>
-                  <div className="flex-grow-1 text-center">
+                  <div className="line1 flex-grow-1"></div>
+                  <div className="text-center">
                     <Link className="text-decoration-none px-2 j-counter-path-color">
                       <FaCircleCheck className="mx-1" />
                       <span>Datos</span>
                     </Link>
                   </div>
-                  <div className="line2 flex-grow-1 text-end">
+                  <div className="line1 flex-grow-1"></div>
+                  <div className="text-end">
                     <Link
                       to={"/counter/payment"}
                       className="text-decoration-none px-2 sj_text_dark"
