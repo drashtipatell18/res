@@ -138,9 +138,9 @@ export const usePrintNode = () => {
           "Error al enviar el trabajo de impresión: " +
           (error.response?.data?.message || error.message),
       });
+      const msg = error.response?.data?.message == "No such printer"  ? "No existe tal impresora" :  error.response?.data?.message || error.message;
       alert(
-        "Error al enviar el trabajo de impresión: " +
-          (error.response?.data?.message || error.message)
+        "Error al enviar el trabajo de impresión: " + (msg)
       );
     } finally {
       setIsPrinting(false);
