@@ -530,7 +530,6 @@ export default function ProductionCenter() {
             },
           }
         );
-        console.log("Production center created:", response.data);
         handleShowCreSucProduction();
         setIsProcessing(false);
         dispatch(getProductionData({ admin_id }));
@@ -644,7 +643,6 @@ export default function ProductionCenter() {
           },
         }
       );
-      console.log("Production center updated:", response.data);
       setIsProcessing(false);
       dispatch(getProductionData({ admin_id }));
       dispatch(getProduction({ admin_id }));
@@ -704,7 +702,6 @@ export default function ProductionCenter() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Production center deleted");
       setIsProcessing(false); // Then show the loader
       // Remove the deleted center from selectedProductionCenters
       setSelectedProductionCenters((prev) =>
@@ -983,7 +980,6 @@ export default function ProductionCenter() {
     code,
     production_center_id
   ) => {
-    // console.log("asasd");
 
     localStorage.setItem(
       "cartItems",
@@ -1010,7 +1006,6 @@ export default function ProductionCenter() {
         }
       );
 
-      // console.log(response.data);
       if (response.status == 200) {
         localStorage.setItem(
           "lastOrder",

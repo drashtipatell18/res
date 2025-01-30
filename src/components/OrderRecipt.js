@@ -72,13 +72,12 @@ const OrderRecipt = ({ paymentData, orderData, onReceiptGenerated }) => {
     (sum, item) => sum + item.total,
     0
   );
-  console.log(itemsTotal, receiptData.items);
+
 
   const price =
     parseFloat(itemsTotal) -
     parseFloat(orderData.discount ? orderData.discount : 1.0);
 
-  // console.log(price);
 
   const iva = itemsTotal * 0.19; // 12% tax
   const total = price + iva;

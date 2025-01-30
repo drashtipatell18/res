@@ -16,7 +16,6 @@ export default function SingProd({ image, price, name, code, id,production_cente
 
 
   const handleClick = async () => {
-    // console.log("asasd");
 
     localStorage.setItem("cartItems", JSON.stringify([{ image, price, name, code, id, count: 1, isEditing: false, note: "", production_center_id }]));
     try {

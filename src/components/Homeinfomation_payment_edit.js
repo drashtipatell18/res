@@ -49,7 +49,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
             navigate(`/home/usa/information/${id}`, { replace: true });
         }, 2000);
     };
-    // console.log(state);
 
 
     // =============new==========
@@ -125,7 +124,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
 
         }
         if (orderData?.user_id) {
-            console.log(orderData?.user_id);
             getUser();
         }
     }, [orderData, items, show1Prod, deleteProductId]);
@@ -217,7 +215,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response.data[0]);
             setUser(response.data[0]);
         } catch (error) {
             console.error(
@@ -235,7 +232,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response.data);
             setRoles(response.data);
         } catch (error) {
             console.error(
@@ -376,7 +372,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
                 const newArray = [...prevArray];
                 newArray.splice(itemIndex, 1);
                 setSelectedItemsCount(prevCount => prevCount - 1);
-                console.log(`Removed item ${item.id}`);
                 return newArray;
             } else {
                 // Item doesn't exist, so add it
@@ -385,7 +380,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
                     quantity: 1,
                 };
                 setSelectedItemsCount(prevCount => prevCount + 1);
-                console.log(`Added item ${item.id}`);
                 return [...prevArray, newItem];
             }
         });
@@ -395,7 +389,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
 
     // /*========= Add menu to Order =======*/
     const handleAddMenu = async () => {
-        console.log("dsassf");
         try {
             const response = await axios.post(
                 `${API_URL}/order/addItem`,
@@ -413,7 +406,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
                 }
             );
 
-            console.log("API Response:", response);
 
             if (!(response.success == "false")) {
                 handleClose1Prod();
@@ -462,7 +454,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
                     },
                 }
             );
-            // console.log("Note added successfully:", response.data);
 
             // setSavedNote(noteValues);
             setNoteValues('');
@@ -488,7 +479,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
 
     useEffect(() => {
 
-        console.log(orderDetails);
         if (orderDetails) {
             const initialCounts = {};
             orderDetails.forEach(item => {
@@ -518,7 +508,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
                     },
                 }
             );
-            console.log("Note added successfully:", response.data);
         } catch (error) {
             console.error(
                 "Error adding note:",
@@ -561,7 +550,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
                     },
                 }
             );
-            console.log("Note added successfully:", response.data);
         } catch (error) {
             console.error(
                 "Error adding note:",
@@ -570,7 +558,7 @@ const Homeinfomation_payment_edit = ({ item }) => {
         }
 
         const index = orderDetails.findIndex((item) => item.id === proid);
-        console.log(index);
+
 
         if (index !== -1) {
             if (orderDetails[index].quantity > 1) {
@@ -645,8 +633,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
         }
     };
 
-
-    console.log(orderData);
     useEffect(() => {
         if (id)
             fetchCredit();
@@ -663,13 +649,12 @@ const Homeinfomation_payment_edit = ({ item }) => {
                 },
             });
 
-            console.log(response.data.data);
 
 
             const credit = response.data.data?.some((v) => v.order_id == id);
 
             setCreditNote(credit);
-            // console.log(credit);
+
 
         } catch (error) {
             console.error(
@@ -681,9 +666,7 @@ const Homeinfomation_payment_edit = ({ item }) => {
 
     }
   
-    const handleBack = () => {
-        console.log("dfbfb");
-        
+    const handleBack = () => {        
         dispatch(getAllOrders({ admin_id }));
         navigate(`/home/usa`, { replace: true });
     }
@@ -799,7 +782,6 @@ const Homeinfomation_payment_edit = ({ item }) => {
                                             <div className='a_deli_infolist p-4'>
                                                 {
                                                     orderDetails.map((item, index) => {
-                                                        console.log(item)
                                                         return (
                                                             <div key={item.id}>
                                                                 <div className="py-3 ">

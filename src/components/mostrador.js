@@ -430,8 +430,6 @@ const Mostrador = () => {
     const validationErrors = validateForm(collectedData);
 
     setErrors(validationErrors);
-    console.log(collectedData);
-    console.log(errors);
     if (Object.keys(validationErrors).length === 0) {
       // No errors, proceed with form submission
       localStorage.setItem("payment", JSON.stringify(collectedData));

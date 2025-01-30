@@ -486,7 +486,7 @@ const BHomeDelivery = () => {
   // place new order
 
   const placeNewOrder = async () => {
-    console.log(orderType, cname);
+    // console.log(orderType, cname);
 
     if (!orderType || orderType == 0 || !userName) {
       // console.log("Dgd");

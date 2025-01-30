@@ -75,12 +75,12 @@ const Tables = () => {
     useEffect(()=>{
         if(boxLogs.length>0){
           const matchingBoxes = boxLogs?.filter(box => box.box_id == boxId?.id);
-          // console.log(matchingBoxes,boxId);
+         
           
           if(matchingBoxes.length > 0){
 
           const data =  matchingBoxes?.[matchingBoxes.length - 1];
-          // console.log(data);
+        
           setBoxclosed(data.close_amount != null)
           }
         }
@@ -707,12 +707,11 @@ const Tables = () => {
   //     card_id: updatedCards // Pass the updatedCards instead of selectedTable
   //   });
 
-  //   // console.log("card1", response1.data.card_id);
-  //   // console.log("dvsdcv", selectedCards);
+
 
   //   setSelectedCards(response1.data.card_id);
 
-  //   // console.log("response", response.data.card_id);
+
   //   // setSelectedTable(null); // for socket
   // };
 
@@ -945,7 +944,7 @@ const Tables = () => {
           },
         }
       );
-      console.log("Note added successfully:", response.data);
+     
       getTableData(tableId);
     } catch (error) {
       console.error(
@@ -974,7 +973,7 @@ const Tables = () => {
           },
         }
       );
-      console.log("Note added successfully:", response.data);
+    
       getTableData(tableId);
     } catch (error) {
       console.error(
@@ -1009,7 +1008,7 @@ const Tables = () => {
   };
   // delete sector
   const handleDeleteConfirmation = async () => {
-    console.log(itemToDelete);
+  
 
     if (itemToDelete) {
       try {
@@ -1051,8 +1050,6 @@ const Tables = () => {
     }
   };
   const handleDeleteOrderConfirmation = async () => {
-    console.log(itemToDelete);
-
     if (itemToDelete) {
       try {
         const response = await axios.delete(
@@ -1103,14 +1100,8 @@ const Tables = () => {
   };
   // socket
 
-
-  // console.log(selectedCards);
-  // console.log(selectedTable);
-  // console.log(tabledelay);
-
   useEffect(() => {
     const postCardClick = async (selectedTable) => {
-      // console.log(selectedCards);
       try {
         const response = await axios.post(
           `${sUrl}/brodcastCardClicked`,
@@ -1125,7 +1116,6 @@ const Tables = () => {
             },
           }
         );
-        // console.log(response);
         setCardSelect(response.data);
 
         // if (response.data.card_id === selectedCards) {
@@ -1172,7 +1162,6 @@ const Tables = () => {
     // });
 
       if (print_Status && print_Status?.status === "success") {
-        console.log("Print job submitted successfully");
         // handleShowPrintSuc();
       }
       // // Create a new iframe
@@ -1252,7 +1241,6 @@ const Tables = () => {
     //   }
     // });
     echo.channel("box-channel").listen(".CardClick", (event) => {
-      // console.log("BoxClicked event received:", event);
       if (event.selected) {
         setSelectedCards((prev) => {
           const prevArray = prev || [];
@@ -1466,10 +1454,9 @@ const Tables = () => {
                   <div className="py-3 m_borbot ms-3 pe-3 me-3 ">
                     {Array.isArray(checkboxes) ? (
                       checkboxes.map((item, index) => (
-                        // console.log(item),
                         <div key={item.id}>
                           <div className="d-flex justify-content-between align-items-center">
-                            <div className="text-nowrap">
+                            <div className="text-nowrap py-1">
                               <label className="d-flex align-items-center">
                                 <input
                                   type="checkbox"

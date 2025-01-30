@@ -79,14 +79,13 @@ function Home_delivery() {
 
     const handleEditClick = (id) => {
         // Implement edit functionality here
-        console.log('Edit button clicked for order:', id);
+
     };
 
     const handleDeleteClick = (id) => {
         // Implement delete functionality here
         const newData = data.filter((order) => order.id !== id);
         setData(newData);
-        console.log('Delete button clicked for order:', id);
     };
 
     const handleStatusChange = (id, newStatus) => {

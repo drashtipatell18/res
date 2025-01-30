@@ -28,7 +28,7 @@ const CajaOrderRecipe = ({ data, payment }) => {
     };
     fetchData();
   }, [data, payment]);
-  console.log("user", user);
+  // console.log("user", user);
 
   const role = localStorage.getItem("name");
 

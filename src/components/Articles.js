@@ -32,7 +32,7 @@ export default function Articles() {
   // Add product
   const [show1, setShow1] = useState(false);
   const handleClose1 = () => {
-    console.log("vsvzsv");
+ 
     setShow1(false);
     // resetForm();
   };
@@ -169,7 +169,7 @@ export default function Articles() {
     () => {
       if (!(role == "admin" || role == "cashier")) {
         navigate('/dashboard')
-        console.log("Role type:", role)
+        // console.log("Role type:", role)
       } 
       // else {
 
@@ -758,15 +758,14 @@ export default function Articles() {
 
     // Create FormData object
     const formData = new FormData();
-    console.log(formRef.current);
-
+ 
     // Append all form fields to FormData
     Object.keys(formRef.current).forEach(key => {
       if (formRef.current[key]) { // Only append if value exists
         formData.append(key, formRef.current[key]);
       }
     });
-    console.log(formData);
+
     // Append image file if selected
     if (selectedFile) {
       formData.append("image", selectedFile);
@@ -774,7 +773,7 @@ export default function Articles() {
 
     // Log FormData entries for debugging
     for (let pair of formData.entries()) {
-      console.log(pair[0] + ': ' + pair[1]);
+      // console.log(pair[0] + ': ' + pair[1]);
     }
 
     try {
@@ -784,7 +783,7 @@ export default function Articles() {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log("Article Response", response);
+     
       if (response.data.success) {
         setUploadedFile(response.data.file);
         handleShow1AddSuc();
@@ -1926,7 +1925,7 @@ export default function Articles() {
                               className="col-md-4 col-xl-3 col-sm-6 col-12 g-3"
                               key={ele.id}
                             >
-                              {console.log(ele.production_center_id)}
+                              {/* {console.log(ele.production_center_id)} */}
                               
                               <SingProd
                                 id={ele.id}

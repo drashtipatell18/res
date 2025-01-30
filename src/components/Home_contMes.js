@@ -25,7 +25,6 @@ const [userId] = useState(localStorage.getItem('userId'));
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(response.data)
       setAllUser(response.data);
     setIsProcessing(false);
 

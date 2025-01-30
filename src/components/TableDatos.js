@@ -30,7 +30,7 @@ const TableDatos = () => {
   const [users, setUsers] = useState([]);
   const { state } = useLocation();
 
-  // console.log(id,orderId,state);
+ 
   const [rut1, setRut1] = useState("");
   const [rut2, setRut2] = useState("");
   const [rut3, setRut3] = useState("");
@@ -119,7 +119,7 @@ const TableDatos = () => {
           }
         }
       );
-      console.log("Note added successfully:", response.data);
+    
       getTableData(tableId);
     } catch (error) {
       console.error(
@@ -178,7 +178,7 @@ const TableDatos = () => {
           }
         }
       );
-      console.log("Note added successfully:", response.data);
+     
       getTableData(tableId);
     } catch (error) {
       console.error(
@@ -200,7 +200,7 @@ const TableDatos = () => {
       if (Array.isArray(response.data) && response.data.length > 0) {
         const lastRecordArray = [response.data[response.data.length - 1]];
         setTableData(lastRecordArray);
-        // console.log("Last Record Array:", lastRecordArray);
+      
       } else {
         console.error("Response data is not a non-empty array:", response.data);
       }
@@ -549,7 +549,7 @@ const TableDatos = () => {
             }
           }
         );
-        console.log("Product deleted successfully:", response.data);
+      
         getTableData(tId);
       } catch (error) {
         console.error(

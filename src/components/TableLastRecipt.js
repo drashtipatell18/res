@@ -1,10 +1,9 @@
 import React from "react";
 
 const TableLastRecipt = ({ data ,itemInfo , payment}) => {
-  // console.log("recipe",data,itemInfo,payment);
+
   const role = localStorage.getItem("name");
-  
-console.log(data,itemInfo,payment);
+
   const currentDate = new Date();
   const currentHour = currentDate.getHours();
   const currentMinute = currentDate.getMinutes();

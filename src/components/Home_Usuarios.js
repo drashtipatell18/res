@@ -275,7 +275,7 @@ function Home_Usuarios() {
     // }
 
     const handleType = (type) => {
-        // console.log(type);
+       
         if (type.toLowerCase() === "todo") {
             setFilterData(orderAlldata);
         } else {
@@ -286,13 +286,13 @@ function Home_Usuarios() {
     };
 
     const handleNextPage = () => {
-        // console.log("asfas");
+        
 
         setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(filterData.length / itemsPerPage)));
     };
 
     const handlePrevPage = () => {
-        // console.log("qewq");
+     
         setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
     };
 
@@ -555,9 +555,7 @@ function Home_Usuarios() {
                                                         const IVA = amount * 0.19
                                                         const total = parseFloat(amount + IVA).toFixed(2)
                                                         return (
-                                                            // console.log(order),
-
-                                                            <tr key={order.id} className='b_row'>
+                                                          <tr key={order.id} className='b_row'>
                                                                 <Link to={`/home/usa/information/${order.id}`}>
                                                                     <td className='b_idbtn bj-delivery-text-2 ms-3' style={{ borderRadius: "10px" }}>{order.id}</td>
                                                                 </Link>

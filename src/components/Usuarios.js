@@ -52,9 +52,6 @@ const Usuarios = () => {
   const { user, roles, loadingUser } = useSelector((state) => state.user);
 
 
-
-  // console.log(user, roles);
-
   const roleNamesInSpanish = {
     1: "Admin",
     2: "Cajero",

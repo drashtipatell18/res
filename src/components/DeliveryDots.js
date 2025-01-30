@@ -28,7 +28,7 @@ const DeliveryDots = () => {
 
     const navigate = useNavigate();
     // const { state} = useLocation();
-    // console.log(state);
+   
 
     const [showAllItems, setShowAllItems] = useState(false);
     const toggleShowAllItems = () => {
@@ -332,7 +332,7 @@ const DeliveryDots = () => {
         }
     };
 
-    console.log("sasdasd");
+  
 
 
     // ***************************************************API**************************************************
@@ -389,7 +389,7 @@ const DeliveryDots = () => {
                     newErrors.fname = "Se requiere el primer nombre";
                 }
             }
-            // console.log(data)
+          
             // Business name validation for receipt type 4
             if (data.receiptType === "3") {
                 if (!data.business_name || data.business_name.trim() === "") {
@@ -423,7 +423,7 @@ const DeliveryDots = () => {
     };
     const handleSubmit = () => {
         if (!orderType || orderType?.orderType == 0) {
-            // console.log("Dgd");
+           
             // setOrderTypeError("Por favor seleccione tipo de pedido");
             setOrderTypeError("Por favor seleccione un tipo de pedido");
             return;
@@ -432,8 +432,7 @@ const DeliveryDots = () => {
         const validationErrors = validateForm(collectedData);
 
         setErrors(validationErrors);
-        console.log(collectedData);
-        console.log(errors);
+       
         if (Object.keys(validationErrors).length === 0) {
             // No errors, proceed with form submission
             localStorage.setItem("payment", JSON.stringify(collectedData));
@@ -1138,7 +1137,7 @@ const DeliveryDots = () => {
                                             )}
                                         </div>
                                         <div className="align-content-end mt-2 ak-w-50">
-                                            {/* {console.log(orderType)} */}
+                                           
 
                                             {(orderType && orderType.orderType != 0) && <div
                                                 className={`bj-delivery-text-2  b_btn1 m-1 p-2 ${orderType.orderType?.toLowerCase() === 'local'

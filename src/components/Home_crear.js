@@ -29,9 +29,9 @@ export default function Home_crear({ item }) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { state } = useLocation();
-    // console.log(state);
+    
     const [orderUser, setOrderUser] = useState([]);
-    // console.log(id);
+
     // const [counts, setCounts] = useState(item ? { [item.id]: 0 } : {});
     // const [counts, setCounts] = useState(item ? { [item.id]: 0 } : {});
     const [customerData, setCustomerData] = useState();
@@ -70,8 +70,6 @@ export default function Home_crear({ item }) {
             setActiveKey(value === "2" ? "1" : null);  
         }
     };
-
-    console.log(selectedCheckbox,selectedPaytype);
     
 
     const handleradiobox = (data) => {
@@ -231,9 +229,6 @@ export default function Home_crear({ item }) {
 
     const [payError, setPayError] = useState('');
 
-
-    console.log(userPayment);
-
     useEffect(() => {
         // setIsProcessing(true);
         const initialCounts = orderDetails?.reduce((acc, item) => {
@@ -266,8 +261,6 @@ export default function Home_crear({ item }) {
     const [counts, setCounts] = useState(item ? { [item.id]: 0 } : initialCounts)
 
     useEffect(() => {
-
-        console.log(orderDetails);
         if (orderDetails) {
             const initialCounts = {};
             orderDetails.forEach(item => {
@@ -287,7 +280,6 @@ export default function Home_crear({ item }) {
                 },
             });
             setOrderAlldata(response.data.find((v) => v.id == id));
-            console.log(response.data.find((v) => v.id == id));
 
         } catch (error) {
             console.error(
@@ -305,7 +297,7 @@ export default function Home_crear({ item }) {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUserPayment(response.data.data);
-            //   console.log(response.data.data);  
+          
         } catch (error) {
             console.error("Error fetching users:", error);
         }
@@ -319,7 +311,7 @@ export default function Home_crear({ item }) {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUser(response.data[0]);
-            console.log(response.data);
+    
         } catch (error) {
             console.error("Error fetching users:", error);
         }
@@ -348,7 +340,7 @@ export default function Home_crear({ item }) {
 
 
 
-    // console.log(user,orderAlldata);
+
 
     const handleOrderDetails = () => {
         const details = orderAlldata?.order_details?.map((orderItem) => {
@@ -387,7 +379,6 @@ export default function Home_crear({ item }) {
                     },
                 }
             );
-            console.log("Note added successfully:", response.data);
         } catch (error) {
             console.error(
                 "Error adding note:",
@@ -431,7 +422,7 @@ export default function Home_crear({ item }) {
                     },
                 }
             );
-            console.log("Note added successfully:", response.data);
+   ;
         } catch (error) {
             console.error(
                 "Error adding note:",
@@ -440,7 +431,7 @@ export default function Home_crear({ item }) {
         }
 
         const index = orderDetails.findIndex((item) => item.id === proid);
-        console.log(index);
+  
 
         if (index !== -1) {
             if (orderDetails[index].quantity > 1) {
@@ -492,7 +483,7 @@ export default function Home_crear({ item }) {
 
 
     const handleReturnItems = (item) => {
-        console.log(item);
+
         if (selectedItems.some(cartItem => cartItem.id === item.id)) {
 
             setSelectedItems(prevCart => prevCart.filter(cartItem => cartItem.id !== item.id));
@@ -502,7 +493,6 @@ export default function Home_crear({ item }) {
         }
     };
 
-    console.log(selectedItems);
 
     const total = selectedItems?.reduce((total, v) => total + v.amount * v.quantity, 0);
     const final = parseInt(total) - parseFloat(orderAlldata.discount).toFixed(2) || 0.00
@@ -512,8 +502,6 @@ export default function Home_crear({ item }) {
 
     // ===============note ========
 
-
-    // console.log(noteValues);
 
 
     const toggleInput = (id) => {
@@ -543,8 +531,6 @@ export default function Home_crear({ item }) {
                     },
                 }
             );
-            console.log("Note added successfully:", response.data);
-
             // Reset the input value in the ref
             noteInputRefs.current[id] = '';
             setVisibleInputId(null);
@@ -596,7 +582,7 @@ export default function Home_crear({ item }) {
 
     // Example usage
     // const creditNoteNumber = generateUniqueCreditNoteNumber();
-    // console.log(creditNoteNumber);
+  
 
     // useEffect(() => {
     //     const interval = setInterval(() => {
@@ -629,7 +615,6 @@ export default function Home_crear({ item }) {
 
         // Check if selectedCheckbox is 2 and selectedPaytype is null
         if (selectedCheckbox == 2 && selectedPaytype == null) {
-            // console.log("vascas");
 
             setPayError('Seleccione el tipo de pago'); // Set error message
             return; // Exit the function
@@ -668,16 +653,12 @@ export default function Home_crear({ item }) {
 
             };
 
-                // console.log(creditNote);
-
             
                 const response = await axios.post(`${apiUrl}/order/creditNote`, creditNote, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
                 setIsProcessing(false);
-
-                console.log(response);
 
                 if (response.data.success) {
                     setShowcreditfinal(true);
@@ -712,22 +693,18 @@ export default function Home_crear({ item }) {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            console.log(response.data.result);
-
             // Group users and collect their order_master_ids
             const groupedUsers = groupUsersByDetails(response.data.result);
-            console.log(groupedUsers);
 
-            //   console.log(id);
+  ;
             setOrderUser(groupedUsers.find(v => v.orderIds.some(a => a == id)));
-            //   console.log(groupedUsers.find(v => v.orderIds.some(a=>a == id)));
+
 
         } catch (error) {
             console.error("Error fetching users:", error);
         }
         setIsProcessing(false);
     }
-    //   console.log(orderUser);
 
 
     const groupUsersByDetails = (users) => {
@@ -748,11 +725,11 @@ export default function Home_crear({ item }) {
           } else {
             groupedUsers[key].orderIds.push(user.order_master_id);
           }
-        //   console.log(groupedUsers);
+      
           
         });
         setIsProcessing(false);
-        // console.log(Object.values(groupedUsers));
+
     
         return Object.values(groupedUsers);
       }

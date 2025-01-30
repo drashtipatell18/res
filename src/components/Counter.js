@@ -398,12 +398,10 @@ const Counter = () => {
     const savedCart = localStorage.getItem("cartItems");
     if (savedCart) {
       const parsedCart = JSON.parse(savedCart);
-      console.log("Loaded cart items from localStorage:", parsedCart); // Debugging log
+     
       setCartItems(parsedCart);
       setCountsoup(parsedCart.map((item) => item.count));
-    } else {
-      console.log("No cart items found in localStorage."); // Debugging log
-    }
+    } 
   }, []);
 
   useEffect(
@@ -416,7 +414,6 @@ const Counter = () => {
   );
 
   const addItemToCart = (item) => {
-    console.log("sds",item);
     const existingItemIndex = cartItems.findIndex(
       (cartItem) => cartItem.id === item.id
     );

@@ -28,7 +28,7 @@ export const getAllSector = createAsyncThunk(
   async (admin_id, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(`/sector/getAll`, admin_id);
-      console.log(response.data);
+
       return response.data.sectors; // Assuming the API returns an array of users
     } catch (error) {
       return handleErrors(error, null, rejectWithValue);

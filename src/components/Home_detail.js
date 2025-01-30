@@ -22,11 +22,10 @@ function Home_detail() {
     const token = localStorage.getItem("token");
     const [isProcessing, setIsProcessing] = useState(false);
     const admin_id = localStorage.getItem("admin_id");
-    // const {id} = useParams();
-    // console.log(id);
+
 
     const { state } = useLocation();
-    // console.log(state);
+
     const navigate = useNavigate()
 
 
@@ -86,10 +85,6 @@ function Home_detail() {
     const [reasonError, setResonError] = useState(null);
     const [credits, setCredits] = useState('');
 
-    // console.log(user);
-
-
-
     useEffect(() => {
         getAllOrder();
 
@@ -113,12 +108,11 @@ function Home_detail() {
                 },
             });
 
-            const filteredOrders = response.data.filter((order) =>
-                state.user?.orderIds.includes(order.id)
-            );
+            const filteredOrders = response.data
+            .filter((order) => state.user?.orderIds.includes(order.id))
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
             setOrderAlldata(filteredOrders);
-            // console.log(filteredOrders);
 
         } catch (error) {
             console.error(
@@ -137,16 +131,11 @@ function Home_detail() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-
-            // console.log(response.data.data);
-
-
-            const filterecredit = response.data.data.filter((v) =>
-                state.user?.orderIds.includes(v.order_id)
-            );
+            const filterecredit = response.data.data
+            .filter((v) =>state.user?.orderIds.includes(v.order_id))
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
             setCredits(filterecredit);
-            // console.log(filterecredit);
 
         } catch (error) {
             console.error(
@@ -155,10 +144,6 @@ function Home_detail() {
             );
         }
     }
-
-
-
-
 
     // ----resons section -----
 
@@ -192,7 +177,7 @@ function Home_detail() {
                     },
                 }
             );
-            // console.log("Note added successfully:", response.data);
+
             setIsProcessing(false);
 
         } catch (error) {
@@ -216,7 +201,6 @@ function Home_detail() {
                 }
             );
             //   getOrderStatus();
-            // console.log("Order Cancle successfully:", response.data);
             setIsProcessing(false);
 
         } catch (error) {
@@ -243,7 +227,6 @@ function Home_detail() {
 
     const handleCredit = (id, status) => {
         if (status === "delivered") {
-        //    console.log("Navigating to credit creation page");
            navigate(`/home/client/crear/${id}`, { replace: true, state: { user } });
        } else {
            alert(`No se puede generar una nota de crédito si el pedido actual no ha sido entregado`)
@@ -264,7 +247,7 @@ function Home_detail() {
     const [printOrderData, setPrintOrderData] = useState();
 
     const handleRecipe = async (order) => {
-        // console.log(order);
+
 
         setIsProcessing(true);
         try {
@@ -293,7 +276,7 @@ function Home_detail() {
     };
 
     const handleCreditRecipe = async (credit) => {
-        // console.log(order);
+       
         setIsProcessing(true);
         try {
             const response = await axios.get(`${apiUrl}/getsinglepayments/${credit.order_id}`, {
@@ -364,7 +347,6 @@ function Home_detail() {
             //   });
     
                 if (print_Status && print_Status?.status === "success") {
-                    console.log("Print job submitted successfully");
                     handleShowPrintSuc();
                 } 
                 // const canvas = await html2canvas(printContent, { backgroundColor: null }); // Set backgroundColor to null for transparency
@@ -438,7 +420,7 @@ function Home_detail() {
             //   });
     
                 if (print_Status && print_Status?.status === "success") {
-                    console.log("Print job submitted successfully");
+                  
                     handleShowPrintSuc();
                 } 
 
@@ -490,18 +472,18 @@ function Home_detail() {
                 },
             });
 
-            // console.log(response);
+           
             if (!(response.success == "false")) {
                 setDeleteProductId(null);
                 setIsProcessing(false);
                 setShowDeleteConfirmation(false);
                 handleShowEditFamfinal();
             }
-            // console.log("Credit deleted successfully:", response.data);
+          
 
         }
         catch (error) {
-            // console.log("Credit not deleted:", error);
+          
         }
         setIsProcessing(false);
     }
@@ -614,7 +596,7 @@ function Home_detail() {
                                         <div className=' b_search text-white a_input_size'>
                                             <label htmlFor="inputPassword2" className="">Nombre</label>
                                             <input type="text" className="form-control bg-gray border-0 bj-slimilar-class-why mt-2" id="inputPassword2" placeholder="4" style={{ backgroundColor: '#374151', borderRadius: "10px" }}
-                                                value={(user?.firstname ? user?.firstname : user?.business_name) + " " + (user?.lastname)}  disabled/>
+                                                value={(user?.firstname ? user?.firstname : user?.business_name || '-') + " " + (user?.lastname || '')}  disabled/>
                                         </div>
                                         <div className=' b_search text-white a_input_size'>
                                             <label htmlFor="inputPassword2" className="">DNI</label>
@@ -687,8 +669,7 @@ function Home_detail() {
                                     <tbody className='text-white b_btnn '>
                                         {credits.length > 0 ?
                                             credits?.map((order) => (
-                                                // console.log(order),
-
+                                               
                                                 <tr key={order.id} className='b_row'>
                                                     {/* <td ><div className='b_idbtn bj-delivery-text-2' style={{ borderRadius: "10px" }}>{order.order_id}</div></td> */}
                                                     <td><Link to={`/home_Pedidos/paymet/${order.order_id}`}><div className='b_idbtn bj-delivery-text-2' style={{ borderRadius: "10px" }}>{order.order_id}</div></Link></td>

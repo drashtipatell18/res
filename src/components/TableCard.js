@@ -41,7 +41,6 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
     cursor: "pointer",
   };
 
-  // console.log(tabledelay);
   
 
   // const cardCss = {
@@ -57,7 +56,6 @@ const TableCard = ({ name, id, oId, selectedTabNo, no, tableId, userId, tableCol
     marginTop: status === "available" ? "40px" : "20px",
   };
  
-// console.log(boxclosed,role);
 
   const handleClick = () => {
 

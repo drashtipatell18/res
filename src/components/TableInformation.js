@@ -662,7 +662,7 @@ const TableInformation = () => {
   };
 
   const handleDeleteClick = () => {
-    console.log(tId);
+   
     setShowDeleteConfirm(true); // Show confirmation modal
     handleCloseEdittable();
   };
@@ -702,14 +702,14 @@ const TableInformation = () => {
     }
   };
 
-  // console.log(tableData);
+ 
 
   return (
     <div>
       <Header />
       <div className="d-flex">
         <Sidenav />
-        {/* {console.log(tableData)} */}
+      
         <div className=" flex-grow-1 sidebar" style={{ width: "50%" }}>
           {tableData ? (
             <div>
@@ -826,7 +826,7 @@ const TableInformation = () => {
                             value={userData[0]?.name}
                             readOnly
                           />
-                          {/* {console.log(userData)} */}
+                          
                         </div>
                         <div className="col-6 mb-3">
                           <label
@@ -1044,11 +1044,11 @@ const TableInformation = () => {
                         </thead>
 
                         <tbody className="text-white b_btnn ">
-                          {console.log("sdsds",datatab)}
+                         
                           {datatab.length > 0 ? (
                             datatab.map(
                               (order) => (
-                                // console.log(order.status),
+                               
                                 (
                                   <tr key={order.id} className="b_row">
                                     <Link

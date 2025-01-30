@@ -240,7 +240,6 @@ export default function SingleArticleProduct() {
     data.forEach((order) => {
         const orderDate = new Date(order.created_at);
         const monthKey = `${orderDate.getFullYear()}-${orderDate.getMonth() + 1}`; // Create a key like "2024-11"
-        // console.log(monthKey);
     
         if (monthlySales[monthKey] !== undefined) {
             monthlySales[monthKey] += order.order_total;
@@ -249,7 +248,6 @@ export default function SingleArticleProduct() {
 
    
     const orderTotals = monthKeys.map(key => monthlySales[key]); 
-    // console.log(orderTotals, data, monthlySales);
     setMapVal(orderTotals);
   };
 
@@ -294,7 +292,6 @@ export default function SingleArticleProduct() {
   //     ]);
 
   //     const singleItem = singleItemResponse.data.item[0];
-  //     console.log(singleItem)
   //     setFormDetails({
   //       ...singleItem,
   //       existingImage: singleItem.image
@@ -432,21 +429,16 @@ export default function SingleArticleProduct() {
       return;
     }
 
-    // console.log("Form Details", formDetails);
-
     const formData = new FormData();
     for (const key in formDetails) {
       if (key === "image") {
         if (formDetails[key] instanceof File) {
           formData.append("image", formDetails[key]);
-          console.log("1");
         } else if (!formDetails[key] && !formDetails.existingImage) {
-          console.log("3");
           formData.append("image", ""); // Send empty string if image is deleted
         }
         // If existingImage is present and image is not changed, don't append anything
       } else if (key == "existingImage") {
-        console.log("2");
         formData.append("image", formDetails.existingImage || "");
       } else {
         // formData.append(key, formDetails[key]);
@@ -458,7 +450,6 @@ export default function SingleArticleProduct() {
         );
       }
     }
-    // console.log("Form Data", formData);
     handleClose();
 
     setIsProcessing(true);
@@ -474,7 +465,6 @@ export default function SingleArticleProduct() {
           maxBodyLength: Infinity
         }
       );
-      console.log("Product updated successfully");
       handleClose();
       //enqueueSnackbar (response.data?.notification, { variant: 'success' })
       // playNotificationSound();;
@@ -504,7 +494,6 @@ export default function SingleArticleProduct() {
         },
         maxBodyLength: Infinity
       });
-      console.log(response.data.message);
       handleShowEditFamDel();
       //enqueueSnackbar (response.data?.notification, { variant: 'success' })
       // playNotificationSound();; 
@@ -541,7 +530,7 @@ export default function SingleArticleProduct() {
         setFamilies(response.data);
       })
       .catch((error) => {
-        console.log(error);
+       
       });
   }, []);
 
@@ -570,7 +559,6 @@ export default function SingleArticleProduct() {
         setSubFamilies(response.data.data[0].sub_family);
       })
       .catch((error) => {
-        console.log(error);
       });
   };
 
@@ -631,8 +619,6 @@ export default function SingleArticleProduct() {
         count++
       }
     }
-
-    console.log(monthLabels);
     return monthLabels;
   };
 
@@ -647,10 +633,7 @@ export default function SingleArticleProduct() {
       }
     ]
   };
-
-  // console.log(chartData);
   
-
   // delete message Confirmation
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const handleShowDeleteConfirmation = () => {
@@ -880,7 +863,6 @@ export default function SingleArticleProduct() {
   //       }
   //     });
 
-  //     console.log(response.data.result);
       
   //     setPayments(response.data.result);
   //   } catch (error) {
@@ -888,8 +870,6 @@ export default function SingleArticleProduct() {
   //   }
   // };
 
-  // console.log(datatab);
-  // console.log(payments);
   
   return (
     <div>

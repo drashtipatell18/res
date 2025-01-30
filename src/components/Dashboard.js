@@ -502,7 +502,7 @@ useEffect(() => {
           },
         }
       );
-      console.log("response", response.data.payment_methods);
+     
       setIsProcessing(false);
       setPayMethodData(response.data.payment_methods);
       setLoading(false);
@@ -690,7 +690,6 @@ useEffect(() => {
         }
       );
       setDeliveryData(response.data.delivery_methods || {}); // Ensure deliveryData is an object
-      // console.log("delivery", response.data.delivery_methods)
       setIsProcessing(false);
     } catch (error) {
       setIsProcessing(false);
@@ -2832,7 +2831,7 @@ useEffect(() => {
                       className="j-chart-entry"
                       style={{ height: "300px", overflowY: "auto" }}
                     >
-                      {console.log(boxDetails)}
+               
 
                       {boxDetails.map((ele, index) => {
                         const totalAmount = ele.logs.reduce((sum, log) => {
@@ -2842,9 +2841,6 @@ useEffect(() => {
                             ? sum + (closeAmount - openAmount)
                             : sum;
                         }, 0);
-
-                        console.log(ele.logs);
-
                         // Prepare data for the chart
                         const chartData = [
                           { name: "", Padido: 0 }, // Start with 0 value
@@ -2857,8 +2853,7 @@ useEffect(() => {
                           })),
                         ];
 
-                        // console.log(chartData,ele.box_name,totalAmount,ele);
-                        // console.log(chartData);
+                       
 
                         return (
                           <div
@@ -2866,7 +2861,7 @@ useEffect(() => {
                             key={ele.id}
                           >
                             <ResponsiveContainer width={100} height={100}>
-                              {/* {console.log(chartData)} */}
+                             
 
                               {chartData && chartData?.[1].Order != 0 ? (
                                 <LineChart data={chartData}>

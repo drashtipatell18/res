@@ -83,10 +83,9 @@ const Login = () => {
         email,
         password
       });
-      // console.log(response.data);
+
       if (response.data.access_token) {
         const { email, name, access_token, role, id, admin_id, printer_code } = response.data;
-        // console.log(printer_code);
         localStorage.setItem("email", email);
         localStorage.setItem("name", name);
         localStorage.setItem("token", access_token);
@@ -151,12 +150,12 @@ const Login = () => {
           },
         }
       )
-      // console.log(responce);
+
       socket();
       fetchAllUsers(access_token);
       // setupEchoListeners(userId);
     } catch (error) {
-      console.log("not updating user", + error.message);
+      // console.log("not updating user", + error.message);
     }
   }
   
@@ -175,7 +174,7 @@ const Login = () => {
       // echo.channel(`chat.${selectedContact?.id}.${userId}`)
       echo.channel(`chat.${id}`)
         .listen('Chat', (data) => {
-          console.log("chat message received", data);
+          // console.log("chat message received", data);
           // fetchAllUsers();
           // fetchMessages();
         });

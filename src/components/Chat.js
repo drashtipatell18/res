@@ -182,7 +182,7 @@ const Chat = () => {
             // console.log(userId)
             echo.channel(`chat.${userId}`)
                 .listen('Chat', (data) => {
-                    console.log("chat message received", data);
+                    // console.log("chat message received", data);
                     fetchAllUsers();
                     fetchMessages();
                     fetchOnlineUsers();
@@ -192,11 +192,11 @@ const Chat = () => {
     };
     const groupListeners = () => {
         if (echo && selectedContact?.hasOwnProperty('pivot')) {
-            console.log(selectedContact.pivot.group_id);
+            // console.log(selectedContact.pivot.group_id);
             // echo.channel(`chat.${selectedContact?.id}.${userId}`)
             echo.channel(`group.${selectedContact.pivot.group_id}`)
                 .listen('Chat', (data) => {
-                    console.log("Groupchat message received", data);
+                    // console.log("Groupchat message received", data);
                     fetchAllUsers();
                     fetchMessages();
                     fetchOnlineUsers();
@@ -295,7 +295,7 @@ const Chat = () => {
                 console.error('Error marking as read:', error);
             }
         } else {
-            console.log("not select ")
+            // console.log("not select ")
         }
     };
 

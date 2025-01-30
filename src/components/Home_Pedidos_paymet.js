@@ -200,7 +200,6 @@ export default function Home_Pedidos_paymet() {
 
   useEffect(() => {
     if (payments) {
-      console.log(payments);
       const payment = payments?.find((v) => v.order_master_id == id);
       if (payment) {
         setPaymentDone(true);
@@ -210,8 +209,6 @@ export default function Home_Pedidos_paymet() {
       setParentCheck(family);
     }
     if (deletedAllItems) {
-      // console.log(deletedAllItems);
-
       setItems(deletedAllItems);
       setObj1(deletedAllItems?.filter((v) => v.deleted_at == null));
       setFilteredItemsMenu(deletedAllItems.filter((v) => v.deleted_at == null));
@@ -231,7 +228,6 @@ export default function Home_Pedidos_paymet() {
     }
   }, [credit, orders, payments, deletedAllItems, subFamily, family]);
 
-  // console.log(orderData,items);
   useEffect(() => {
 
     if (orderData && items.length > 0) {
@@ -444,7 +440,7 @@ export default function Home_Pedidos_paymet() {
   const handleOrderDetails = () => {
     // Check if orderData is not null before accessing its properties
     // if (orderData) {
-    // console.log("Orderdata ", orderData);
+  
     const details = orderData.order_details.map((orderItem) => {
       const matchingItem = items.find(
         (item) => item.id === orderItem.item_id
@@ -566,7 +562,7 @@ export default function Home_Pedidos_paymet() {
         const newArray = [...prevArray];
         newArray.splice(itemIndex, 1);
         setSelectedItemsCount((prevCount) => prevCount - 1);
-        // console.log(`Removed item ${item.id}`);
+    
         return newArray;
       } else {
         // Item doesn't exist, so add it
@@ -575,7 +571,7 @@ export default function Home_Pedidos_paymet() {
           quantity: 1,
         };
         setSelectedItemsCount((prevCount) => prevCount + 1);
-        // console.log(`Added item ${item.id}`);
+   
         return [...prevArray, newItem];
       }
     });
@@ -651,8 +647,7 @@ export default function Home_Pedidos_paymet() {
           },
         }
       );
-      // console.log("Note added successfully:", response.data);
-
+   
       // setSavedNote(noteValues);
       setNoteValues("");
       setVisibleInputId(null);
@@ -666,7 +661,7 @@ export default function Home_Pedidos_paymet() {
     // getOrder();
     handleOrderDetails();
     // Here you can handle saving the note to your state or backend
-    // console.log("Final Note:", finalNote);
+  
     // Optionally reset the input visibility
     setVisibleInputId(null);
   };
@@ -733,8 +728,6 @@ export default function Home_Pedidos_paymet() {
     if (pamentDone) {
       return;
     }
-
-    // console.log(orderDetails, orderData);
 
     const currentOrder = {
       orderType: orderData?.order_type,
@@ -968,7 +961,6 @@ export default function Home_Pedidos_paymet() {
                         {
                           // product.map((item, index) => {
                           orderDetails?.map((v, index) => {
-                            console.log("asasAS", v)
                             return (
                               <div>
                                 <div className=" py-3 ">

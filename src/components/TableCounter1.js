@@ -134,7 +134,6 @@ const TableCounter1 = () => {
       if (Array.isArray(response.data) && response.data.length > 0) {
         const lastRecordArray = [response.data[response.data.length - 1]];
         setTableData(lastRecordArray);
-        console.log("Last Record Array:", lastRecordArray);
       } else {
         console.error("Response data is not a non-empty array:", response.data);
       }
@@ -276,7 +275,6 @@ const TableCounter1 = () => {
   const addItemToCartExist = async (item) => {
 
     // If tableData doesn't exist, add to cartItems
-    // console.log(item)
     if (item.item_id) {
 
       let it = {
@@ -320,7 +318,6 @@ const TableCounter1 = () => {
           },
         }
       );
-      console.log("Item added to existing order:", response.data);
       getTableData(tId);
     } catch (error) {
       console.error(
@@ -347,7 +344,6 @@ const TableCounter1 = () => {
     } else {
       updatedCartItems = [...cartItemsExist, { ...item, count: 1 }];
     }
-    console.log(updatedCartItems)
     setCartItemsExist(updatedCartItems);
     localStorage.setItem("cartItemsExists", JSON.stringify(updatedCartItems));
   };
@@ -483,9 +479,9 @@ const TableCounter1 = () => {
     setCartItems(updatedCartItems);
     localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
     if(cartItemsExist.length > 0) {
-      console.log("object", itemId, cartItemsExist);
+
     const updatecartExist =  cartItemsExist.filter((item) => item.id !== itemId);
-    console.log("object", updatecartExist);
+
     setCartItemsExist(updatecartExist);
     localStorage.setItem("cartItemsExists", JSON.stringify(updatecartExist));
     }
@@ -582,7 +578,7 @@ const TableCounter1 = () => {
   //         },
   //       }
   //     );
-  //     console.log(response.data.data);
+
 
   //     setProductionCenters(response.data.data);
   //   } catch (error) {
@@ -692,7 +688,7 @@ const TableCounter1 = () => {
 
   // const [boxId, setBoxId] = useState("");
   // const [selectedBoxId] = useState(sessionStorage.getItem('boxId'));
-  // console.log(selectedBoxId);
+
   // useEffect(() => {
   //   fetchBoxData();
   // }, []);
@@ -716,11 +712,11 @@ const TableCounter1 = () => {
   // }
 
   //   place order
-  // console.log("cat", cartItemsExist, );
+
 
   let cartData;
   if (cartItemsExist.length !== 0) {
-    console.log("object")
+
     cartData = cartItemsExist;
   } else if(cartItems) {
     cartData = cartItems;
@@ -728,7 +724,7 @@ const TableCounter1 = () => {
 
 
   // const cartData = cartItemsExist ||  ; 
-  // console.log("cartData", cartData)
+
 
   const { printOrder, printStatus } = useOrderPrinting(productionCenters, cartData)
 
@@ -791,7 +787,7 @@ const TableCounter1 = () => {
         // box_id: 8,
       },
     };
-    // console.log(orderData);
+
 
     setIsProcessing(true);
     try {
@@ -804,8 +800,6 @@ const TableCounter1 = () => {
           },
         }
       );
-      console.log("Order created successfully:", response.data);
-      // console.log(tId);
       // Call the table/updateStatus API
       if (response.data.success) {
         try {
@@ -825,7 +819,6 @@ const TableCounter1 = () => {
           // =======nodeprint===========
           try {
             await printOrder(cartItems, tabNo, response.data.kdsOrder.order_id);
-            console.log(printStatus);
           } catch (error) {
             console.error("Order printing failed", error);
           }
@@ -835,7 +828,6 @@ const TableCounter1 = () => {
           dispatch(getAllOrders({ admin_id }));
           dispatch(getAllTableswithSector({ admin_id }));
           dispatch(getAllKds({ admin_id }))
-          console.log("Table status updated successfully", resTable.data);
           localStorage.removeItem("cartItems");
           setCartItems([]);
           setCountsoup([]);
@@ -843,7 +835,6 @@ const TableCounter1 = () => {
         } catch (error) {
           setIsProcessing(false);
           alert(error?.response?.data?.message || error.message);
-          console.log("Table status  Not updated" + error.message);
         }
       } else {
         alert(response.data.message);
@@ -956,7 +947,6 @@ const TableCounter1 = () => {
 
   // Modified render section for the note input
   const renderNoteInput = (item, index) => {
-    console.log("item", item, index);
     if (item.isEditing) {
       return (
         <div>
@@ -1211,7 +1201,7 @@ const TableCounter1 = () => {
           },
         }
       );
-      console.log("Item quantity updated successfully:", response.data);
+
       getTableData(tableId);
     } catch (error) {
       console.error(
@@ -1243,7 +1233,7 @@ const TableCounter1 = () => {
           },
         }
       );
-      console.log("Note added successfully:", response.data);
+
       getTableData(tableId);
     } catch (error) {
       console.error(
@@ -1265,9 +1255,9 @@ const TableCounter1 = () => {
 
   const handleDeleteClickExist = () => {
     if(cartItemsExist.length > 0) {
-      console.log("objectcfcfff", cartItemsExist);
+   
       const updatecartExist =  cartItemsExist.filter((item) => item.id !== existtoDelete);
-      console.log("objectffff", updatecartExist);
+  
       setCartItemsExist(updatecartExist);
       localStorage.setItem("cartItemsExists", JSON.stringify(updatecartExist));
       setExisttoDelete(null);
@@ -1276,11 +1266,11 @@ const TableCounter1 = () => {
 
   const handleDeleteClick = async (itemToDelete) => {
     if (itemToDelete) {
-      console.log("------------",itemToDelete);
+    
       removeAllItemFromCart(itemToDelete);
       handleCloseEditFam();
       if (tableData.length > 0) {
-        // console.log("zdvdv");
+     
 
         setIsProcessing(true);
         try {
@@ -1300,7 +1290,7 @@ const TableCounter1 = () => {
             }, 2000);
             getTableData(tId);
           }
-          console.log("Product deleted successfully:", response.data);
+       
         } catch (error) {
           console.error(
             "Error Delete OrderData:",
@@ -1329,9 +1319,9 @@ const TableCounter1 = () => {
     // dispatch(getAllOrders({ admin_id }));
     const item = JSON.parse(localStorage.getItem("cartItemsExists"))
     try {
-      // console.log(cartItemsExist)
+   
       await printOrder(item, tabNo ,order_id )
-      // console.log(printStatus);
+     
       localStorage.removeItem("cartItemsExists");
       localStorage.removeItem("cartItems");
     } catch (error) {
@@ -1528,10 +1518,7 @@ const TableCounter1 = () => {
                               value={getUserName(tableData[0].user_id)}
                               readOnly
                             />
-                            {console.log(
-                              "name",
-                              getUserName(tableData[0].user_id)
-                            )}
+                            
                           </div>
                           <div className="j-orders-code ak-w-50">
                             <label className="j-label-name j-tbl-btn-font-1 text-white mb-2">
@@ -2011,7 +1998,6 @@ const TableCounter1 = () => {
                                         <h4 className="text-white fw-semibold d-flex">
                                           ${parseInt(item.price) * item.count}
                                         </h4>
-                                        { console.log("item.id", item.id)}
                                         <button
                                           className="j-delete-btn me-2"
                                          

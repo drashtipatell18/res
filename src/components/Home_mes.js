@@ -19,10 +19,10 @@ const Home_mes = () => {
     useEffect(() => {
         if (echo) {
             echo.connector.pusher.connection.bind('connected', () => {
-                console.log("chat ss "); // Update state when connected
+                
             });
             echo.connector.pusher.connection.bind('error', (error) => {
-                console.error("Connection error:", error);
+               
             });
         }
     }, [echo]);

@@ -1919,8 +1919,6 @@ const Informacira = () => {
                           </div>
                         </Modal.Body>
                       </Modal>
-
-                      {/* {data.length > 0 && data[data.length - 1]?.close_amount == null && ( */}
                       {data.length > 0 && data[0]?.close_amount == null && (
                         <button
                           className="sjredbtn px-2 j-tbl-font-3"
@@ -1960,7 +1958,6 @@ const Informacira = () => {
                             >
                               Monto final
                             </label>
-                            {console.log(amount, parseFloat(data[0]?.open_amount),credits)}
                             <input
                               type="text"
                               id="final"
@@ -2251,7 +2248,6 @@ const Informacira = () => {
                       <tbody>
                         {prData.length > 0 ? (
                           prData.map((box, index) => (
-                            // console.log(box.close_time),
                             <tr
                               key={box.id}
                               className="sjbordergray j-caja-text-2"

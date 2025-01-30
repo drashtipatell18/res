@@ -28,13 +28,13 @@ const apiUrl = 'http://127.0.0.1:8000/api' ;
 
   const handleInputChange = (event) => {
     setInputText(event.target.value);
-    console.log(inputText)
+    
   };
   // alert(contact)
   useEffect(() => {
     if (echo) {
       echo.connector.pusher.connection.bind('connected', () => {
-        console.log("chat message "); // Update state when connected
+       
       });
       echo.connector.pusher.connection.bind('error', (error) => {
         console.error("Connection error:", error);

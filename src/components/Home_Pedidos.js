@@ -157,7 +157,7 @@ const Home_Pedidos = () => {
   //                 },
   //             }
   //         );
-  //         // console.log(response.data);
+  //        
   //         setUsers(response.data);
   //     } catch (error) {
   //         console.error(
@@ -262,7 +262,7 @@ const Home_Pedidos = () => {
   };
 
   const handlerout = (id) => {
-    // console.log("iiddd");
+   
     localStorage.setItem("proId", JSON.stringify(id));
   };
 
@@ -270,8 +270,6 @@ const Home_Pedidos = () => {
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
-
-  // console.log(searchTerm);
 
   // =========end=========
 
@@ -327,9 +325,6 @@ const Home_Pedidos = () => {
     }
   });
 
-  // console.log(filteredItems);
-
-  // console.log(selectedFilters);
 
   // =======new
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -346,8 +341,6 @@ const Home_Pedidos = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
   };
 
-  // console.log(isProcessing);
-
   // =======new
   const [show11, setShow11] = useState(false);
   const handleClose11 = () => {
@@ -363,8 +356,6 @@ const Home_Pedidos = () => {
       return;
     }
 
-    // console.log(order);
-
     setIsProcessing(true);
     try {
       // const response = await axios.get(`${apiUrl}/getsinglepayments/${order.id}`, {
@@ -375,7 +366,6 @@ const Home_Pedidos = () => {
       const data = allpayments.find(
         (payment) => payment.order_master_id === order.id
       );
-      // console.log(response);
       setIsProcessing(false);
       if (data) {
         setPaymentData(data);
@@ -408,7 +398,7 @@ const Home_Pedidos = () => {
 
   const handlePrint = async () => {
     // const base64Content = handleReceiptGenerated();
-    // console.log(base64Content);
+ 
     const printContent = document.getElementById("receipt-content");
     if (printContent) {
     
@@ -426,7 +416,6 @@ const Home_Pedidos = () => {
       // });
 
       if (print_Status && print_Status?.status === "success") {
-        console.log("Print job submitted successfully");
         handleShowPrintSuc();
       }
       // const iframe = document.createElement("iframe");
@@ -655,7 +644,7 @@ const Home_Pedidos = () => {
                 </thead>
                 <tbody className="text-white b_btnn ">
                   {/* new========== */}
-                  {/* {console.log(currentItems)} */}
+                
                   {currentItems.length > 0 ? (
                     currentItems.map((order) => (
                       <tr key={order.id} className="b_row">
@@ -669,7 +658,6 @@ const Home_Pedidos = () => {
                           </td>
                         </Link>
                         <td>{order.sector}</td>
-                        {/* {console.log(order.sector)} */}
 
                         <td className="b_text_w  bj-delivery-text-2">
                           {order.table}

@@ -50,8 +50,7 @@ function Home_client() {
   const { payments, loadingOrder } = useSelector(state => state.orders);
   const { user, loadingUser } = useSelector(state => state.user);
 
-  // console.log(payments);
-  // console.log(user);
+
   useEffect(() => {
     if (!(role == "admin" || role == "cashier")) {
       navigate('/dashboard')
@@ -213,7 +212,7 @@ function Home_client() {
 
   useEffect(() => {
     if (payments?.length > 0) {
-      // console.log(payments);
+    
       const data = [...payments].reverse();
       const groupedUsers = groupUsersByDetails(data);
       setOrderUser(groupedUsers);
@@ -264,7 +263,7 @@ function Home_client() {
     return Object.values(groupedUsers);
   }
 
-  // console.log(orderUser);
+
 
   // useEffect(
   //   () => {
@@ -498,11 +497,10 @@ function Home_client() {
                   </tr>
                 </thead>
                 <tbody className="text-white b_btnn ">
-                  {/* {console.log(currentFilteredItems)} */}
+  
 
                   {currentFilteredItems.length > 0 ?
                     currentFilteredItems.map((user) => (
-                      // console.log(user),  
 
                       <tr key={user.id} className="b_row">
                         <td className="bj-table-client-text">{user.rut}</td>

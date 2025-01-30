@@ -1,7 +1,7 @@
 import React from "react";
 
 const Recipt = ({ payment, item, discount, paymentAmt, paymentType, creditTotal,tipAmount = 0 }) => {
-  console.log(payment.firstname ? payment.firstname : payment.business_name)
+
   const role = localStorage.getItem("name");
   const currentDate = new Date();
   const currentHour = currentDate.getHours();
@@ -96,10 +96,6 @@ const Recipt = ({ payment, item, discount, paymentAmt, paymentType, creditTotal,
 
 
 let translatedPayments;
-
-console.log(paymentType);
-
-
 if(paymentType){
   // const paymentList = (paymentType && typeof paymentType === 'string') ? paymentType.split(",") : [];
   translatedPayments = paymentType.length > 0 ? paymentType

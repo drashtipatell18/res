@@ -264,10 +264,10 @@ const DeliveryPago = () => {
 
   const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
   const [customerData, setCustomerData] = useState(initialCustomerData);
-  console.log(selectedCheckboxes);
+
 
   const handleCheckboxChange = (value) => {
-    // console.log(value);
+  
     if (selectedCheckboxes.includes(value)) {
 
       if (customerData?.[value + "Amount"]) {
@@ -303,29 +303,29 @@ const DeliveryPago = () => {
   const handleChange = (event) => {
     let { name, value } = event.target;
     value = value.replace(/[^0-9.]/g, ""); // Allow only numbers and decimal points
-    console.log(name);
+ 
     const otherbox = selectedCheckboxes.filter(item => !name.includes(item))
-    console.log(otherbox);
+ 
     setCustomerData((prevState) => {
       const currentValue = parseFloat(value) || 0;
       const totalDue = finalTotal + taxAmount + tipAmount;
       const otherAmount = Math.max(totalDue - currentValue, 0);
 
-      // console.log(otherAmount);
+    
 
       const updatedState = {
         ...prevState,
         [name]: value,
       };
 
-      // console.log(updatedState);
+ 
 
 
       if (otherbox.length > 0) {
         const otherPaymentType = otherbox[0] + 'Amount';
         updatedState[otherPaymentType] = otherAmount.toFixed(2);
       }
-      // console.log(updatedState);
+   
 
       // New calculation for turn
       const totalAmount = parseFloat(updatedState.cashAmount || 0) + parseFloat(updatedState.debitAmount || 0) + parseFloat(updatedState.creditAmount || 0) + parseFloat(updatedState.transferAmount || 0);
@@ -333,7 +333,7 @@ const DeliveryPago = () => {
       return updatedState;
 
     });
-    // console.log("Payment", customerData);
+
     setFormErrors((prevState) => ({
       ...prevState,
       amount: undefined
@@ -450,7 +450,7 @@ const DeliveryPago = () => {
     const totalWithTax = finalTotal + taxAmount + tipAmount;
 
     const totalPaymentAmount = parseFloat(customerData.cashAmount || 0) + parseFloat(customerData.debitAmount || 0) + parseFloat(customerData.creditAmount || 0) + parseFloat(customerData.transferAmount || 0);
-    console.log(totalPaymentAmount < totalWithTax, totalPaymentAmount <= 0)
+ 
     // Validate payment amount
     if (!totalPaymentAmount || totalPaymentAmount <= 0) {
       errors.amount = "Por favor, introduzca un importe de pago válido";
@@ -486,7 +486,7 @@ const DeliveryPago = () => {
   const handleSubmit = async () => {
 
     if (!orderType || orderType?.orderType == 0) {
-      // console.log("Dgd");
+   
       // setOrderTypeError("Por favor seleccione tipo de pedido");
       setOrderTypeError("Por favor seleccione un tipo de pedido");
       return;
@@ -504,8 +504,6 @@ const DeliveryPago = () => {
     let orderData;
 
     if (orderType.order == "old") {
-
-      console.log("oldold");
 
       url = `/order/orderUpdateItem/${orderType.orderId}`
 
@@ -562,7 +560,7 @@ const DeliveryPago = () => {
 
     
    
-    // console.log(paymentData);
+  
 
     setIsProcessing(true)
    
@@ -572,8 +570,6 @@ const DeliveryPago = () => {
         alert("Por favor, seleccione un caja para el pedido.");
         return;
       }
-  
-      // console.log(orderData);
 
       const response = await axios.post(`${apiUrl}${url}`, orderData, {
         headers: { Authorization: `Bearer ${token}` }
@@ -591,7 +587,7 @@ const DeliveryPago = () => {
       };
   
   
-      // console.log(response.data)
+
 
       if (response.data.success || response.data[1] == 200) {
         try {
@@ -604,11 +600,7 @@ const DeliveryPago = () => {
               }
             }
           )
-          setIsProcessing(false)
-          console.log(responsePayment);
-
-          
-
+          setIsProcessing(false)          
           if (responsePayment.data.success) {
 
             if (tableId) {
@@ -624,7 +616,6 @@ const DeliveryPago = () => {
                 })
               } catch (error) {
                 alert(error?.response?.data?.message || error.message);
-                console.log("Table Status not Upadte ," + error.message);
               }
               dispatch(getAllTableswithSector({ admin_id }));
             }
@@ -633,7 +624,6 @@ const DeliveryPago = () => {
              // =======nodeprint===========
               try {
                 await  printOrder(cartItems, '', orderId);
-              console.log(printStatus);
               } catch (error) {
                 console.error("Order printing failed", error);
               }
@@ -651,10 +641,8 @@ const DeliveryPago = () => {
         } catch (error) {
           setIsProcessing(false)
           alert(error?.response?.data?.message || error.message);
-          console.log("Payment not done." + error.message);
         }
       } else {
-        console.log(response);
         alert(response.data.message)
       }
     } catch (error) {
@@ -707,7 +695,6 @@ const DeliveryPago = () => {
     // });
 
       if (print_Status && print_Status?.status === "success") {
-        console.log("Print job submitted successfully");
         handleShowPrintSuc();
       }
       // // Create a new iframe
@@ -1119,7 +1106,7 @@ const DeliveryPago = () => {
                     )}
                   </div>
                   <div className="align-content-end mt-2 ak-w-50">
-                    {/* {console.log(orderType)} */}
+                
 
                     {(orderType && orderType.orderType != 0) && <div
                       className={`bj-delivery-text-2  b_btn1 m-1 p-2 ${orderType.orderType?.toLowerCase() === 'local'
@@ -1393,7 +1380,7 @@ const DeliveryPago = () => {
                               paymentAmt={customerData}
                               paymentType={selectedCheckboxes}
                             />
-                            {console.log("sas", customerData)}
+                           
                           </Modal.Body>
                           <Modal.Footer className="sjmodenone">
                             <Button

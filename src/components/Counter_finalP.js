@@ -32,7 +32,6 @@ const Counter_finalP = () => {
   const navigate = useNavigate();
   const [orderId, setOrderId] = useState(sessionStorage.getItem("orderId"));
 
-  console.log("orderId: ", orderId);
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems")) || []
   );
@@ -276,18 +275,18 @@ const Counter_finalP = () => {
     return Math.abs(total) < 0.01 ? 0 : total;
   })();
 
-  // console.log(lastTotal,tipAmount);
+
 
   const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
   const [customerData, setCustomerData] = useState(initialCustomerData);
-  // console.log(selectedCheckboxes);
+
 
   const handleCheckboxChange = (value) => {
     if (lastTotal < 0) {
       alert("Por favor, añada más productos para continuar con el pago");
       return;
     }
-    // console.log(value);
+
     if (selectedCheckboxes.includes(value)) {
       if (customerData?.[value + "Amount"]) {
         setCustomerData((prevData) => ({
@@ -330,27 +329,26 @@ const Counter_finalP = () => {
 
     let { name, value } = event.target;
     value = value.replace(/[^0-9.]/g, ""); // Allow only numbers and decimal points
-    // console.log(name);
+
     const otherbox = selectedCheckboxes.filter((item) => !name.includes(item));
-    // console.log(otherbox);
+
     setCustomerData((prevState) => {
       const currentValue = parseFloat(value) || 0;
       const totalDue = lastTotal;
       const otherAmount = Math.max(totalDue - currentValue, 0);
 
-      // console.log(otherAmount);
 
       const updatedState = {
         ...prevState,
         [name]: value,
       };
 
-      // console.log(updatedState);
+
       if (otherbox.length > 0) {
         const otherPaymentType = otherbox[0] + "Amount";
         updatedState[otherPaymentType] = otherAmount.toFixed(2);
       }
-      // console.log(updatedState);
+
 
       // New calculation for turn
       const totalAmount =
@@ -361,7 +359,7 @@ const Counter_finalP = () => {
       updatedState.turn = totalAmount - lastTotal; // Update turn based on total amounts
       return updatedState;
     });
-    // console.log("Payment", customerData);
+
     setFormErrors((prevState) => ({
       ...prevState,
       amount: undefined,
@@ -568,7 +566,7 @@ const Counter_finalP = () => {
   // submit
   const handleSubmit = async () => {
     const errors = validateForm();
-    console.log(errors);
+
 
     if (Object.keys(errors).length > 0) {
       // Display errors to user
@@ -720,7 +718,6 @@ const Counter_finalP = () => {
           // handleClose11();
           setIsProcessing(false);
         } catch (error) {
-          console.log(error, "payment Not Done");
           alert(error?.response?.data?.message || error.message);
         }
         // handlePrint();
@@ -755,7 +752,6 @@ const Counter_finalP = () => {
     // alert("print");
     setIsProcessing(true);
     const printContent = document.getElementById("receipt-content");
-    console.log("printContent", printContent);
     if (printContent) {
 
       await printViaPrintNode(printContent);
@@ -772,7 +768,6 @@ const Counter_finalP = () => {
     // });
 
       if (print_Status && print_Status?.status === "success") {
-        console.log("Print job submitted successfully");
         handleShowPrintSuc();
       }
 

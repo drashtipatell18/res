@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 
 const TableRecipt = ({payment,tableData,productData}) => {
     const [currentTime, setCurrentTime] = useState(new Date());
-
-  
   const role = localStorage.getItem("role");
+  const roleNamesInSpanish = {
+    admin: "Admin",
+    cashier: "Cajero",
+    waitress: "Garzón",
+    kitchen: "Cocina",
+  };
   const wName = localStorage.getItem("name");
   const currentDate = new Date();
   const currentHour = currentDate.getHours();
@@ -25,7 +29,7 @@ const TableRecipt = ({payment,tableData,productData}) => {
         invoice: {
             type: "PRECUENTA"
         },
-        cashier: role,
+        cashier: roleNamesInSpanish[role],
         date: formattedDate,
         time: formattedTime,
         // items: [
@@ -65,7 +69,7 @@ const discount = 0.00; // Ensure discount is a number
   };
     return (
         <div className='j-counter-recipt' id='printeble'>
-            <div style={{ fontFamily: 'monospace', width: '380px', margin: '0 auto', backgroundColor: "white", color: "black", fontWeight: "bold" }}>
+            <div style={{ fontFamily: 'monospace', width: '380px', margin: '0 auto', backgroundColor: "white", color: "black", fontWeight: "bold", padding: "10px" }}>
                 <h2 style={{ fontSize: "16px", textAlign: 'center', marginTop: "10px" }}>{receiptData.storeName}</h2>
                 <p style={{ fontSize: "12px", textAlign: 'center' }}>
                     {receiptData.storeInfo.phone}<br />
@@ -160,7 +164,6 @@ const discount = 0.00; // Ensure discount is a number
                         <div className='me-3'>
                             Cedula/RUC:{payment.rut || ""}
                         </div>
-                        {console.log(tableData)}
                         <div className='mt-2'>
                             Cliente: {payment.firstname || payment.businessname || tableData[0].customer_name ||  ""}
                         </div>

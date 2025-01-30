@@ -241,7 +241,7 @@ export default function Articles() {
       // Save updated selections to localStorage
       localStorage.setItem("selectedItemIds", JSON.stringify(newItemIds));
 
-      // console.log(`Added item ${item}`);
+   
     } else {
       // Remove item if it's already selected
       const updatedSelectedItemsMenu = new Set(selectedItemsMenu);
@@ -255,7 +255,6 @@ export default function Articles() {
       // Save updated selections to localStorage
       localStorage.setItem("selectedItemIds", JSON.stringify(newItemIds));
 
-      // console.log(`Removed item ${item}`);
     }
   };
 
@@ -274,7 +273,7 @@ export default function Articles() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setMenu(response.data.menus);
-      /* console.log(response.data.menus); */
+
     } catch (error) {
       console.error(
         "Error fetching roles:",
@@ -294,7 +293,7 @@ export default function Articles() {
       );
       setItem(response.data.menus);
       setFilteredItems(response.data.menus);
-      /* console.log(response.data.menus); */
+     
     } catch (error) {
       console.error(
         "Error fetching roles:",
@@ -492,7 +491,7 @@ export default function Articles() {
           maxBodyLength: Infinity,
         }
       );
-      // console.log(response.data, "create menu");
+     
       handleShowCreSuc();
       dispatch(getMenu({ admin_id }));
       // fetchMenuData();
@@ -542,7 +541,6 @@ export default function Articles() {
           maxBodyLength: Infinity,
         }
       );
-      // console.log(response.data, "update menu");
 
       // Update the menu state
       setSelectedMenus([]);
@@ -686,7 +684,7 @@ export default function Articles() {
         }
       );
 
-      // console.log("API Response:", response.data);
+  
 
       if (response.data.success) {
         // Handle UI updates
@@ -706,7 +704,7 @@ export default function Articles() {
             }
             return menu;
           });
-          // console.log("Updated menu:", updatedMenu);
+     
           return updatedMenu;
         });
 
@@ -724,7 +722,6 @@ export default function Articles() {
             }
             return menu;
           });
-          // console.log("Updated filteredItems:", updatedFilteredItems);
           return updatedFilteredItems;
         });
 
@@ -893,7 +890,7 @@ export default function Articles() {
           maxBodyLength: Infinity,
         }
       );
-      // console.log(response.data, "delete menu");
+  
 
       // Update state to remove the deleted menu
       setMenu((prevMenu) => prevMenu.filter((m) => m.id !== selectedMenu.id));
@@ -923,7 +920,7 @@ export default function Articles() {
   };
   useEffect(() => {
     if (!showRetirar) {
-      //  console.log("update");
+
       setSelectedMenus([]);
       setItemId([]);
       setMenuId(null);
@@ -1444,7 +1441,7 @@ export default function Articles() {
                 </div>
 
                 <div className="p-2 row">
-                  {/* {console.log("sss", filteredItems)} */}
+           
 
                   {filteredItems.length > 0 ? (
                     (selectedMenus.length === 0 ? filteredItems : selectedMenus)
@@ -1469,8 +1466,7 @@ export default function Articles() {
                               )}
                               {hasItems ? (
                                 <div className="row">
-                                  {/* {console.log("aa", removedItems)} */}
-
+                          
                                   {menu.items
                                     .filter(
                                       (item) =>

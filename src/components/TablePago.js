@@ -32,7 +32,7 @@ const TablePago = () => {
   const [role] = useState(localStorage.getItem("role"));
   const [userId] = useState(localStorage.getItem("userId"));
   const admin_id = localStorage.getItem("admin_id");
-  // console.log(userId);
+ 
 
 
   const location = useLocation();
@@ -126,7 +126,7 @@ const TablePago = () => {
       if (Array.isArray(response.data) && response.data.length > 0) {
         const lastRecordArray = [response.data[response.data.length - 1]];
         setTableData(lastRecordArray);
-        // console.log("Last Record Array:", lastRecordArray);
+        
       } else {
         console.error("Response data is not a non-empty array:", response.data);
       }
@@ -217,8 +217,7 @@ const TablePago = () => {
   };
 
   const getTotalCost = () => {
-    // console.log(cartItems);
-
+  
     return cartItems.reduce(
       (total, item, index) => total + parseInt(item.price) * parseInt(item.quantity),
       0
@@ -257,7 +256,7 @@ const TablePago = () => {
   };
 
   // const totalCost = getTotalCost();
-  // console.log(totalCost);
+ 
 
   // const discount = 0.0;
   // const propina = 5.0;
@@ -290,7 +289,7 @@ const TablePago = () => {
   const [customerData, setCustomerData] = useState(initialCustomerData);
 
   const handleCheckboxChange = (value) => {
-    // console.log(value);
+
 
     if (selectedCheckboxes.includes(value)) {
 
@@ -329,7 +328,7 @@ const TablePago = () => {
     let { name, value } = event.target;
     value = value.replace(/[^0-9.]/g, ""); // Allow only numbers and decimal points
 
-    // console.log(name);
+ 
     const otherbox = selectedCheckboxes.filter(item => !name.includes(item))
 
     setCustomerData((prevState) => {
@@ -349,17 +348,12 @@ const TablePago = () => {
         const otherPaymentType = otherbox[0] + 'Amount';
         updatedState[otherPaymentType] = otherAmount.toFixed(2);
       }
-      // console.log(updatedState);
-
-      // New calculation for turn
-      // console.log(tableData);
-      
+    
       const totalAmount = parseFloat(updatedState.cashAmount || 0) + parseFloat(updatedState.debitAmount || 0) + parseFloat(updatedState.creditAmount || 0) + parseFloat(updatedState.transferAmount || 0);
 
       updatedState.turn = totalAmount - (tableData[0].order_total + taxAmount + tipAmount); // Update turn based on total amounts
       return updatedState;
     });
-    console.log("Payment", customerData);
     setFormErrors((prevState) => ({
       ...prevState,
       amount: undefined
@@ -491,7 +485,7 @@ const TablePago = () => {
 
     const totalWithTax = tableData[0].order_total + (tableData[0].order_total * 0.19) + tipAmount;
     const totalPaymentAmount = parseFloat(customerData.cashAmount || 0) + parseFloat(customerData.debitAmount || 0) + parseFloat(customerData.creditAmount || 0) + parseFloat(customerData.transferAmount || 0);
-    // console.log(totalPaymentAmount < totalWithTax, totalPaymentAmount <= 0)
+ 
     // Validate payment amount
     if (!totalPaymentAmount || totalPaymentAmount <= 0) {
       errors.amount = "Por favor, introduzca un importe de pago válido";
@@ -516,7 +510,7 @@ const TablePago = () => {
 
   const [paymentInfo, setPaymentInfo] = useState({});
 
-// console.log("ygt",tableData);
+
 
   const { printOrder, printStatus } = useOrderPrinting( productionCenters,tableData.length>0 ? tableData?.[0].items : [])
 
@@ -541,11 +535,10 @@ const TablePago = () => {
       tax: taxAmount,
     };
 
-    // console.log(paymentData)
+
     setPaymentInfo(paymentData);
     setIsProcessing(true);
-    // console.log(boxId?.id);
-    // console.log(tableData[0].id);
+ 
 
     const data = {
       tip: tipAmount ? tipAmount : 0,
@@ -567,8 +560,7 @@ const TablePago = () => {
             Authorization: `Bearer ${token}`
           }
         })
-      console.log("Order Update", response);
-      // console.log(response.data[1] == 200);
+   
       if (response.data[1] == 200) {
         dispatch(getAllOrders({ admin_id }));
         try {
@@ -581,17 +573,15 @@ const TablePago = () => {
               }
             }
           )
-          
-          // console.log(responsePayment.status == 200);
+
        
           if (responsePayment.data.success) {
-            console.log("Payment", responsePayment);
             dispatch(getAllPayments({ admin_id }));
 
              // =======nodeprint===========
               // try {
               //   await  printOrder(tableData?.[0].items,tId,paymentData)
-              // console.log(printStatus);
+    
               // } catch (error) {
               //   console.error("Order printing failed", error);
               // }
@@ -611,7 +601,6 @@ const TablePago = () => {
 
               dispatch(getAllTableswithSector({ admin_id }));
               setIsProcessing(false);
-              console.log("Table Status", resStatus);
               setTipAmount('');
               setFormErrors({});
               setPrice('');
@@ -626,20 +615,20 @@ const TablePago = () => {
             } catch (error) {
               setIsProcessing(false);
               alert(error.message);
-              console.log("Table Status not Upadte ," + error.message);
+ 
             }
           }
         } catch (error) {
           setIsProcessing(false);
           alert(error.message);
-          console.log("Payment not Done" + error.message);
+  
 
         }
       }
     } catch (error) {
       setIsProcessing(false);
       alert(error.message);
-      console.log("Error to update the Order", error.message);
+
     }
   };
   // print recipt
@@ -687,7 +676,6 @@ const TablePago = () => {
     // });
 
       if (print_Status && print_Status?.status === "success") {
-        console.log("Print job submitted successfully");
         handleShowPrintSuc();
       }
 
@@ -1440,7 +1428,7 @@ const TablePago = () => {
                               paymentType={selectedCheckboxes}
                             /> */}
                     <TableLastRecipt  data={tableData} itemInfo={itemInfo} payment={paymentInfo} paymentAmt={customerData} />
-                    {/* {console.log("cust", customerData)} */}
+        
                   </Modal.Body>
                   <Modal.Footer className="sjmodenone">
                     <Button

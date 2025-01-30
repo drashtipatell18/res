@@ -347,7 +347,7 @@ const generateOrderReceipt = (cartItems, tableId = '', role,name,orderId,product
 
   doc.setFontSize(7)
   // Table and Order Details
-  doc.text(`Mesa: ${tableId || "-"} ${"         "} Numbro: ${orderId || '-'}`, leftMargin, yPos);
+  doc.text(`Mesa: ${tableId || "-"} ${"         "} Número: ${orderId || '-'}`, leftMargin, yPos);
   yPos += 3;
   doc.text(`Fecha:${new Date().toLocaleDateString()} ${"    "} Hora: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`, leftMargin, yPos);
     yPos += 3;
@@ -477,7 +477,7 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
   const [printStatus, setPrintStatus] = useState({});
 
   const getPrinter = useCallback(() => {
-    console.log(cartItems)
+  
     const updatedItems = cartItems.map((item) => {
       const matchingCenter = productionCenters.find(
         (center) => center.id === item.production_center_id
@@ -508,10 +508,6 @@ export const useOrderPrinting = (productionCenters, cartItems) => {
       
 
       const {printers, updatedItems} = getPrinter();
-
-      console.log(printers,updatedItems);
-      
-    
       const printJobs = printers.map(async (printers) => {
 
 

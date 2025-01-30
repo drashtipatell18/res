@@ -24,9 +24,6 @@ function Home_detail_no() {
     const navigate = useNavigate()
     const { state } = useLocation();
     const [paymentData, setPaymentData] = useState();
-    console.log(state);
-    console.log(id);
-
 
     document.addEventListener('DOMContentLoaded', function () {
         const tabs = document.querySelectorAll('#pills-tab button');
@@ -88,13 +85,10 @@ function Home_detail_no() {
                 },
             });
 
-            console.log(response.data.data);
-
 
             const credit = response.data.data?.find((v) => v.order_id == id);
 
             setCreditNote(credit);
-            // console.log(credit);
 
         } catch (error) {
             console.error(
@@ -132,10 +126,10 @@ function Home_detail_no() {
 
     const handleReturnDetails = () => {
         const details = creditNote?.return_items?.map((v) => {
-            console.log(v);
+
 
             const matchingItem = items?.find((item) => item.id === v.item_id);
-            console.log(matchingItem, v);
+
 
             return {
                 ...v,
@@ -148,17 +142,17 @@ function Home_detail_no() {
         setReturnDetail(details);
     };
 
-    // console.log(returnDetails);
+
 
     const handleDestination = (event) => {
         let notes = event.target.value
-        console.log(notes);
+
 
         setDestination(notes)
         setError(null)
     }
 
-    console.log(destination);
+
 
 
 
@@ -347,9 +341,6 @@ function Home_detail_no() {
                             </div>
                             {returnDetails &&
                                 returnDetails?.map((item, index) => (
-                                    console.log(item),
-
-
                                     <div className='ms-4 d-flex text-white b_borderrr py-3 '>
                                         <div>
                                             <img src={`${API}/images/${item.image}`} alt="" height={50} width={75} className='rounded-3' />

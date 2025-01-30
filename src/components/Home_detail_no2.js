@@ -19,9 +19,6 @@ function Home_detail_no2() {
     const navigate = useNavigate()
     const { state } = useLocation();
 
-    console.log(state);
-
-    console.log(id);
 
     const [creditNote, setCreditNote] = useState();
     const [items, setItems] = useState([]);
@@ -29,7 +26,7 @@ function Home_detail_no2() {
     const [orderAlldata, setOrderAlldata] = useState([]);
     const [paymentData, setPaymentData] = useState();
 
-    console.log(orderAlldata);
+
     
 
     useEffect(() => {
@@ -95,13 +92,12 @@ function Home_detail_no2() {
                 },
             });
 
-            console.log(response.data.data);
 
 
             const credit = response.data.data?.find((v) => v.order_id == id);
 
             setCreditNote(credit);
-            // console.log(credit);
+
 
         } catch (error) {
             console.error(
@@ -138,10 +134,10 @@ function Home_detail_no2() {
 
     const handleReturnDetails = () => {
         const details = creditNote?.return_items?.map((v) => {
-            // console.log(v);
+
 
             const matchingItem = items?.find((item) => item.id === v.item_id);
-            // console.log(matchingItem, v);
+   
 
             return {
                 ...v,
@@ -241,9 +237,7 @@ function Home_detail_no2() {
                         </div>
                         {returnDetails &&
                             returnDetails?.map((item, index) => (
-                                console.log(item),
-
-
+                          
                                 <div className='ms-4 d-flex text-white b_borderrr py-3 '>
                                     <div>
                                         <img src={`${API}/images/${item.image}`} alt="" height={50} width={75} className='rounded-3' />

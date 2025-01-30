@@ -228,7 +228,7 @@ export default function Homeinformation() {
 
   useEffect(() => {
     if (payments) {
-      // console.log(payments);
+    
       const payment = payments?.find((v) => v.order_master_id == id);
       if (payment) {
         setPaymentDone(true);
@@ -238,7 +238,7 @@ export default function Homeinformation() {
       setParentCheck(family);
     }
     if (deletedAllItems) {
-      // console.log(deletedAllItems);
+     
 
       setItems(deletedAllItems);
       setObj1(deletedAllItems?.filter((v) => v.deleted_at == null));
@@ -590,7 +590,7 @@ export default function Homeinformation() {
           quantity: 1,
         };
         setSelectedItemsCount((prevCount) => prevCount + 1);
-        // console.log(`Added item ${item.id}`);
+      
         return [...prevArray, newItem];
       }
     });
@@ -600,7 +600,7 @@ export default function Homeinformation() {
 
   /*========= Add menu to Order =======*/
   const handleAddMenu = async () => {
-    // console.log("dsassf");
+    
     setIsProcessing(true);
     try {
       const response = await axios.post(
@@ -620,7 +620,7 @@ export default function Homeinformation() {
       );
       setIsProcessing(false);
 
-      // console.log("API Response:", response);
+      
 
       if (!(response.success == "false")) {
         handleClose1Prod();
@@ -665,7 +665,6 @@ export default function Homeinformation() {
   }, [noteValues]);
 
   const handleNoteKeyDown = async (id) => {
-    // console.log(id)
     const noteValues = noteInputRef.current ? noteInputRef.current.value : "";
     try {
       const response = await axios.post(
@@ -677,8 +676,6 @@ export default function Homeinformation() {
           },
         }
       );
-      // console.log("Note added successfully:", response.data);
-
       // setSavedNote(noteValues);
       setNoteValues("");
       setVisibleInputId(null);
@@ -694,7 +691,6 @@ export default function Homeinformation() {
   };
 
   const handleCredit = () => {
-    // { console.log(orderData) }
     if (orderData?.status == "delivered" || orderData?.status == "cancelled") {
       navigate(`/home/client/crear/${id}`, { replace: true });
     } else {
@@ -735,7 +731,6 @@ export default function Homeinformation() {
       setShowCancelOrderButton(false);
     }
   };
-  // console.log(orderData);
 
   const translateOrderType = (orderType) => {
     const translations = {
@@ -749,7 +744,6 @@ export default function Homeinformation() {
   };
 
   const handlePayment = () => {
-    // console.log(orderDetails, orderData?);
 
     const currentOrder = {
       orderType: orderData?.order_type,
@@ -1059,10 +1053,8 @@ export default function Homeinformation() {
                         Listado
                       </p>
                       <div className="a_deli_infolist p-4">
-                        {/* {console.log(orderDetails)} */}
+                 
                         {
-                          // product.map((item) => {
-                          // console.log(item)
                           orderDetails?.map((v, index) => {
                             return (
                               <div>
@@ -1316,7 +1308,7 @@ export default function Homeinformation() {
                             <div className="bj-delivery-text-150">
                               Productos
                             </div>
-                            {/* {console.log("orderDetails", orderDetails)} */}
+
                             <div className="bj-delivery-text-151">
                               $
                               {orderDetails?.reduce(
@@ -1350,7 +1342,6 @@ export default function Homeinformation() {
                         <div className="mx-auto text-center mt-3">
                           {!(orderData?.status == "cancelled") && (
                             <div className="d-flex text-decoration-none">
-                              {/* {console.log("payment", pamentDone)} */}
                               {!pamentDone ||
                               (orderData?.status.toLowerCase() !==
                                 "finalized" &&

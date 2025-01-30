@@ -183,9 +183,9 @@ export default function A() {
       setItemId((prevArray) => [ ...prevArray, item ]);
 
       // Perform any other action here when adding an item
-      console.log(`Added item ${item.id}`);
+      // console.log(`Added item ${item.id}`);
     } else {
-      console.log(`Item ${item.id} already added`);
+      // console.log(`Item ${item.id} already added`);
     }
   };
 
@@ -355,7 +355,7 @@ export default function A() {
           maxBodyLength: Infinity
         }
       );
-      console.log(response.data, "create menu");
+      // console.log(response.data, "create menu");
       handleShowCreSuc();
       handleClose();
       fetchMenuData();
@@ -391,7 +391,7 @@ export default function A() {
           maxBodyLength: Infinity
         }
       );
-      console.log(response.data, "update menu");
+      // console.log(response.data, "update menu");
 
       // Update the menu state
       setMenu((prevMenu) =>
@@ -442,7 +442,7 @@ export default function A() {
         maxBodyLength: Infinity
       })
       .then(function(response) {
-        console.log(response.data, "delete menu");
+        // console.log(response.data, "delete menu");
         handleShowEditFamDel();
         handleCloseEditFam();
         fetchMenuData();
@@ -473,7 +473,7 @@ export default function A() {
         }
       );
 
-      console.log("API Response:", response.data);
+      // console.log("API Response:", response.data);
 
       if (response.data.success) {
         // Handle UI updates

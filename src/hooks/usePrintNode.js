@@ -54,14 +54,11 @@ export const usePrintNode = () => {
     () => +localStorage.getItem("printer_code") || null
   );
 
-  // console.log(printerId);
-
   const printViaPrintNode = useCallback(async (content) => {
     setIsPrinting(true);
     setPrint_Status(null);
 
     const base64 = await generatePDFWithHtml2Canvas(content);
-    console.log(base64);
 
     // Ensure content is a string
     if (typeof base64 !== "string") {

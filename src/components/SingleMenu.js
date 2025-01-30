@@ -35,7 +35,6 @@ export default function SingleMenu({
         maxBodyLength: Infinity
       })
       .then((response) => {
-        console.log(response);
         // Update the menu state directly
         setMenu(prevMenu => {
           const updatedMenu = prevMenu.map(menu => {
@@ -48,7 +47,6 @@ export default function SingleMenu({
             }
             return menu;
           });
-          console.log('Updated menu:', updatedMenu);
           return updatedMenu;
         });
         setFilteredItems(prevFilteredItems => {
@@ -62,12 +60,12 @@ export default function SingleMenu({
             }
             return menu;
           });
-          console.log('Updated filteredItems:', updatedFilteredItems);
+     
           return updatedFilteredItems;
         });
       })
       .catch((error) => {
-        console.log(error);
+   
       });
   };
 
