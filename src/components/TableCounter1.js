@@ -16,7 +16,13 @@ import useAudioManager from "./audioManager";
 import ElapsedTimeDisplay from "./ElapsedTimeDisplay";
 import { useOrderPrinting } from "../hooks/useOrderPrinting";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllitems, getFamily, getProduction, getProductionData, getSubFamily } from "../redux/slice/Items.slice";
+import {
+  getAllitems,
+  getFamily,
+  getProduction,
+  getProductionData,
+  getSubFamily,
+} from "../redux/slice/Items.slice";
 import { getRols, getUser } from "../redux/slice/user.slice";
 import { getAllOrders } from "../redux/slice/order.slice";
 import { getAllTableswithSector } from "../redux/slice/table.slice";
@@ -74,11 +80,11 @@ const TableCounter1 = () => {
   const [tableData, setTableData] = useState([]);
   const [productionCenters, setProductionCenters] = useState();
 
-
-  const dispatch = useDispatch()
-  const { items, subFamily, family, production, loadingItem } = useSelector((state) => state.items);
+  const dispatch = useDispatch();
+  const { items, subFamily, family, production, loadingItem } = useSelector(
+    (state) => state.items
+  );
   const { user, roles } = useSelector((state) => state.user);
-
 
   // Add ref for note inputs
   const noteInputRefs = useRef({});
@@ -93,6 +99,44 @@ const TableCounter1 = () => {
     // Store URL parameters in state when component mounts
     setUrlParams(new URLSearchParams(location.search));
   }, []);
+
+  const [tableCartData, setTableCartData] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
+  const [cartItemsExist, setCartItemsExist] = useState([]);
+  const [countsoup, setCountsoup] = useState([]);
+
+  console.log(cartItemsExist);
+
+  console.log(tableCartData);
+
+  useEffect(() => {
+    if (!tableData?.length) return;
+
+    const cartItemsExist =
+      JSON.parse(localStorage.getItem("cartItemsExists")) || [];
+
+    let updatedItems = tableData[0].items.map((newItem) => {
+      const existingItem = cartItemsExist.find(
+        (item) => newItem.id === item.order_details_id
+      );
+
+      return existingItem
+        ? { ...newItem, quantity: +newItem.quantity + +existingItem.count }
+        : newItem;
+    });
+
+    cartItemsExist.forEach((cartItem) => {
+      if (!cartItem.hasOwnProperty("order_details_id")) {
+        updatedItems.push({
+          ...cartItem,
+          quantity: cartItem.count,
+          total: parseFloat(cartItem.price) * parseFloat(cartItem.count),
+        });
+      }
+    });
+
+    setTableCartData(updatedItems);
+  }, [tableData, cartItemsExist]);
 
   // get single table
 
@@ -196,7 +240,6 @@ const TableCounter1 = () => {
           price={e.sale_price}
           code={e.code}
           addItemToCart={addItemToCart}
-
           production_center_id={e.production_center_id}
         />
       </div>
@@ -215,9 +258,6 @@ const TableCounter1 = () => {
       setCurrentSubfamilies(relatedSubfamilies);
     }
   };
-  const [cartItems, setCartItems] = useState([]);
-  const [cartItemsExist, setCartItemsExist] = useState([]);
-  const [countsoup, setCountsoup] = useState([]);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("cartItems");
@@ -231,8 +271,6 @@ const TableCounter1 = () => {
     }
   }, []);
 
-
-
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
     // localStorage.removeItem("cartItems")
@@ -241,42 +279,43 @@ const TableCounter1 = () => {
   const toggleShowAllItems = () => {
     setShowAllItems(!showAllItems);
   };
+
   const addItemToCart = async (item) => {
+    console.log("item", item);
+
     if (tableData && tableData.length > 0) {
       // If tableData exists, check if the item already exists
       const existingItem = tableData[0].items.find(
         (i) => i.item_id === item.id
       );
-      addToCartItemsExists(item);
       if (existingItem) {
         // alert("ds")
         // If the item exists, increment its quantity
-        await increment(
-          existingItem.id,
-          existingItem.item_id,
-          existingItem.quantity,
-          tId
-        );
+        // await increment(
+        //   existingItem.id,
+        //   existingItem.item_id,
+        //   existingItem.quantity,
+        //   tId
+        // );
+        addItemToCartExist(existingItem);
       } else {
         // If the item doesn't exist, add it as a new item
         addToCartItems(item);
-        await updateExistingOrder(item);
+        addItemToCartExist(item);
+        // await updateExistingOrder(item);
       }
-      addItemToCartExist(item)
+      // addItemToCartExist(item);
     } else {
       // If tableData doesn't exist, add to cartItems
       addToCartItems(item);
-
     }
 
     // Update URL params and navigate
     navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
   };
+
   const addItemToCartExist = async (item) => {
-
-    // If tableData doesn't exist, add to cartItems
     if (item.item_id) {
-
       let it = {
         id: parseInt(item.item_id),
         name: item.name,
@@ -284,16 +323,14 @@ const TableCounter1 = () => {
         code: item.code,
         count: item.count,
         price: item.amount,
-        note: item.notes
+        note: item.notes,
+        order_details_id: item.id,
+        image: item.image || null,
       };
       addToCartItemsExists(it);
     } else {
       addToCartItemsExists(item);
-
     }
-
-
-    // Update URL params and navigate
     navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
   };
 
@@ -318,7 +355,7 @@ const TableCounter1 = () => {
           },
         }
       );
-      getTableData(tId);
+      // getTableData(tId);
     } catch (error) {
       console.error(
         "Error adding item to existing order:",
@@ -333,7 +370,6 @@ const TableCounter1 = () => {
     const existingItemIndex = cartItemsExist.findIndex(
       (cartItem) => cartItem.id === item.id
     );
-
     let updatedCartItems;
     if (existingItemIndex !== -1) {
       updatedCartItems = cartItemsExist.map((cartItem, index) =>
@@ -386,7 +422,7 @@ const TableCounter1 = () => {
               (total, item) => total + item.price * item.count,
               0
             ),
-            discount: 0.00,
+            discount: 0.0,
             customer_name: customerName,
             person: person,
           },
@@ -429,7 +465,7 @@ const TableCounter1 = () => {
             (total, item) => total + item.amount,
             0
           ),
-          discount: 0.00,
+          discount: 0.0,
           customer_name: customerName,
           person: person,
         },
@@ -473,17 +509,17 @@ const TableCounter1 = () => {
     setCountsoup(updatedCountsoup);
   };
 
-
   const removeAllItemFromCart = (itemId) => {
     const updatedCartItems = cartItems.filter((item) => item.id !== itemId);
     setCartItems(updatedCartItems);
     localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-    if(cartItemsExist.length > 0) {
+    if (cartItemsExist.length > 0) {
+      const updatecartExist = cartItemsExist.filter(
+        (item) => item.id !== itemId
+      );
 
-    const updatecartExist =  cartItemsExist.filter((item) => item.id !== itemId);
-
-    setCartItemsExist(updatecartExist);
-    localStorage.setItem("cartItemsExists", JSON.stringify(updatecartExist));
+      setCartItemsExist(updatecartExist);
+      localStorage.setItem("cartItemsExists", JSON.stringify(updatecartExist));
     }
   };
 
@@ -516,7 +552,6 @@ const TableCounter1 = () => {
   // }, [apiUrl]);
 
   useEffect(() => {
-
     if (items.length == 0) {
       dispatch(getAllitems());
     }
@@ -555,14 +590,12 @@ const TableCounter1 = () => {
       // setItems(items)
     }
     if (subFamily) {
-      setChildCheck(subFamily)
+      setChildCheck(subFamily);
     }
     if (production) {
-      setProductionCenters(production)
+      setProductionCenters(production);
     }
-
-  }, [family, items, subFamily, production])
-
+  }, [family, items, subFamily, production]);
 
   // get family
 
@@ -578,7 +611,6 @@ const TableCounter1 = () => {
   //         },
   //       }
   //     );
-
 
   //     setProductionCenters(response.data.data);
   //   } catch (error) {
@@ -713,20 +745,19 @@ const TableCounter1 = () => {
 
   //   place order
 
-
   let cartData;
   if (cartItemsExist.length !== 0) {
-
     cartData = cartItemsExist;
-  } else if(cartItems) {
+  } else if (cartItems) {
     cartData = cartItems;
   }
 
+  // const cartData = cartItemsExist ||  ;
 
-  // const cartData = cartItemsExist ||  ; 
-
-
-  const { printOrder, printStatus } = useOrderPrinting(productionCenters, cartData)
+  const { printOrder, printStatus } = useOrderPrinting(
+    productionCenters,
+    cartData
+  );
 
   const handleCreateOrder = async () => {
     // Reset error states
@@ -775,7 +806,7 @@ const TableCounter1 = () => {
         order_type: "local",
         payment_type: "debit",
         status: "received",
-        discount: discount || 0.00, // Use the discount value from your state
+        discount: discount || 0.0, // Use the discount value from your state
         table_id: parseInt(tId),
         user_id: userId, // You might want to dynamically set this
         delivery_cost: 0, // You might want to dynamically set this
@@ -787,7 +818,6 @@ const TableCounter1 = () => {
         // box_id: 8,
       },
     };
-
 
     setIsProcessing(true);
     try {
@@ -827,7 +857,7 @@ const TableCounter1 = () => {
 
           dispatch(getAllOrders({ admin_id }));
           dispatch(getAllTableswithSector({ admin_id }));
-          dispatch(getAllKds({ admin_id }))
+          dispatch(getAllKds({ admin_id }));
           localStorage.removeItem("cartItems");
           setCartItems([]);
           setCountsoup([]);
@@ -891,7 +921,7 @@ const TableCounter1 = () => {
         }
       };
     }
-    return () => { }; // Return an empty cleanup function if scrollContainer is null
+    return () => {}; // Return an empty cleanup function if scrollContainer is null
   }, []);
 
   // Modified note handling functions
@@ -1014,20 +1044,23 @@ const TableCounter1 = () => {
 
       if (success) {
         handleNoteChange(index, finalNote);
-         // Update note in cartItemsExists
-         if (cartItemsExist.length > 0) {
-          const updatedCartItemsExist = cartItemsExist.map(item => {
+        // Update note in cartItemsExists
+        if (cartItemsExist.length > 0) {
+          const updatedCartItemsExist = cartItemsExist.map((item) => {
             if (item.id === item_id || item.item_id === item_id) {
               return {
                 ...item,
-                note: finalNote
+                note: finalNote,
               };
             }
             return item;
           });
-          
+
           setCartItemsExist(updatedCartItemsExist);
-          localStorage.setItem("cartItemsExists", JSON.stringify(updatedCartItemsExist));
+          localStorage.setItem(
+            "cartItemsExists",
+            JSON.stringify(updatedCartItemsExist)
+          );
         }
       } else {
         console.error("Failed to add note to database");
@@ -1100,7 +1133,6 @@ const TableCounter1 = () => {
     } finally {
       setIsProcessing(false);
     }
-    
   };
 
   // const handleSubmitNote = async (e, index, oId) => {
@@ -1180,7 +1212,6 @@ const TableCounter1 = () => {
   //   [tableData]
   // );
 
-
   const increment = async (proid, item_id, quantity, tableId) => {
     // setIsProcessing(true);
     try {
@@ -1191,7 +1222,7 @@ const TableCounter1 = () => {
           order_details: [
             {
               item_id: item_id,
-              quantity: quantity + 1,
+              quantity: quantity,
             },
           ],
         },
@@ -1202,7 +1233,7 @@ const TableCounter1 = () => {
         }
       );
 
-      getTableData(tableId);
+      // getTableData(tableId);
     } catch (error) {
       console.error(
         "Error updating item quantity:",
@@ -1251,27 +1282,25 @@ const TableCounter1 = () => {
 
   // };
 
-  const [existtoDelete,setExisttoDelete] = useState();
+  const [existtoDelete, setExisttoDelete] = useState();
 
   const handleDeleteClickExist = () => {
-    if(cartItemsExist.length > 0) {
-   
-      const updatecartExist =  cartItemsExist.filter((item) => item.id !== existtoDelete);
-  
+    if (cartItemsExist.length > 0) {
+      const updatecartExist = cartItemsExist.filter(
+        (item) => item.id !== existtoDelete
+      );
+
       setCartItemsExist(updatecartExist);
       localStorage.setItem("cartItemsExists", JSON.stringify(updatecartExist));
       setExisttoDelete(null);
     }
-  }
+  };
 
   const handleDeleteClick = async (itemToDelete) => {
     if (itemToDelete) {
-    
       removeAllItemFromCart(itemToDelete);
       handleCloseEditFam();
       if (tableData.length > 0) {
-     
-
         setIsProcessing(true);
         try {
           const response = await axios.delete(
@@ -1290,7 +1319,6 @@ const TableCounter1 = () => {
             }, 2000);
             getTableData(tId);
           }
-       
         } catch (error) {
           console.error(
             "Error Delete OrderData:",
@@ -1314,21 +1342,67 @@ const TableCounter1 = () => {
     }
   };
 
-
   const handleupdateOrder = async (order_id) => {
     // dispatch(getAllOrders({ admin_id }));
-    const item = JSON.parse(localStorage.getItem("cartItemsExists"))
+
+
+
+    const item = JSON.parse(localStorage.getItem("cartItemsExists"));
+
+    tableCartData.map(async (v) => {
+        const data =  item.find((i) => i.order_details_id == v.id)
+        if(data){
+          try {
+           await increment(v.id, v.item_id, v.quantity);
+          } catch (error) {
+            console.log("error", error); 
+          }
+        }
+    })
+
+    const add = tableCartData.map(a => ({ ...a, item_id: a.id })).filter(v => v?.count);
+    console.log("add", add);
+
+    setIsProcessing(true);
+    if(add.length > 0){
     try {
-   
-      await printOrder(item, tabNo ,order_id )
-     
+      const response = await axios.post(
+        `${apiUrl}/order/addItem`,
+        {
+          admin_id,
+          order_id: tableData[0].id,
+          order_details: add,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setIsProcessing(false);
+      // getTableData(tId);
+    } catch (error) {
+      console.error(
+        "Error adding item to existing order:",
+        error.response ? error.response.data : error.message
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  }
+
+    
+
+    try {
+      await printOrder(item, tabNo, order_id);
+
       localStorage.removeItem("cartItemsExists");
       localStorage.removeItem("cartItems");
     } catch (error) {
       console.error("Order printing failed", error);
     }
     navigate("/table");
-  }
+  };
 
   return (
     <section>
@@ -1403,8 +1477,9 @@ const TableCounter1 = () => {
                 >
                   {parentCheck.map((category, index) => (
                     <li
-                      className={`nav-item ${selectedCategory === category ? "active" : ""
-                        }`}
+                      className={`nav-item ${
+                        selectedCategory === category ? "active" : ""
+                      }`}
                       key={category.id}
                       onClick={() => handleFamilyClick(category)}
                     >
@@ -1420,8 +1495,9 @@ const TableCounter1 = () => {
                 <ul className="nav j-nav-scroll">
                   {currentSubfamilies.map((subcategory, index) => (
                     <li
-                      className={`nav-item ${selectedSubCategory === subcategory ? "active" : ""
-                        }`}
+                      className={`nav-item ${
+                        selectedSubCategory === subcategory ? "active" : ""
+                      }`}
                       key={subcategory.id}
                       onClick={() => handleSubFamilyClick(subcategory)}
                     >
@@ -1518,7 +1594,6 @@ const TableCounter1 = () => {
                               value={getUserName(tableData[0].user_id)}
                               readOnly
                             />
-                            
                           </div>
                           <div className="j-orders-code ak-w-50">
                             <label className="j-label-name j-tbl-btn-font-1 text-white mb-2">
@@ -1540,16 +1615,16 @@ const TableCounter1 = () => {
                             className={
                               "j-counter-order-data j_counter_order_width"
                             }
-                          >   
+                          >
                             {(tableData && tableData.length > 0
-                              ? tableData[0].items
+                              ? tableCartData
                               : cartItems
                             )
                               .slice(
                                 0,
                                 showAllItems
                                   ? tableData && tableData.length > 0
-                                    ? tableData[0].items.length
+                                    ? tableCartData.length
                                     : cartItems.length
                                   : 3
                               )
@@ -1557,6 +1632,10 @@ const TableCounter1 = () => {
                                 const itemInfo = getItemInfo(
                                   item.item_id || item.id
                                 );
+
+                                const data = cartItemsExist.find((v) => v.id === item.item_id)
+                                // console.log("data", data,cartItemsExist);
+
                                 return (
                                   <div
                                     className="j-counter-order-border-fast j_border_width"
@@ -1574,21 +1653,32 @@ const TableCounter1 = () => {
                                       </div>
                                       <div className="d-flex align-items-center">
                                         <div className="j-counter-mix">
+                                          {console.log("object",((role === "admin" || role === "cashier") ||  (!!cartItemsExist.find((v) => v.id === item.item_id || v.id === item.id ))))}
                                           <button
                                             className="j-minus-count"
-                                            onClick={() =>
-                                              tableData && tableData.length > 0
-                                                ? (async () => {
+                                            disabled={!((role === "admin" || role === "cashier") ||  (!!cartItemsExist.find((v) => v.id === item.item_id || v.id === item.id )))}
+                                            onClick={async () => {
+                                              if (tableData && tableData.length > 0 ) {
+                                                // console.log("cartItemsExist",cartItemsExist);
+
+                                                const data = cartItemsExist.find((v) => v.id === item.item_id || v.id === item.id );
+                                                
+                                                if (data) {
+                                                  console.log("item", item);
+                                                  removeItemFromCartExists( item.item_id || item.id);
+                                                } else {
+                                                  console.log("item222", item);
                                                   await decrement(
                                                     item.id,
                                                     item.item_id,
                                                     item.quantity,
                                                     tId
                                                   );
-                                                  removeItemFromCartExists(item.item_id)
-                                                })()
-                                                : removeItemFromCart(item.id)
-                                            }
+                                                }
+                                              } else {
+                                                removeItemFromCart(item.id);
+                                              }
+                                            }}
                                           >
                                             <FaMinus />
                                           </button>
@@ -1600,17 +1690,15 @@ const TableCounter1 = () => {
                                             className="j-plus-count"
                                             onClick={() =>
                                               tableData && tableData.length > 0
-                                                ?
-                                                (async () => {
-                                                  await increment(
-                                                    item.id,
-                                                    item.item_id,
-                                                    item.quantity,
-                                                    tId
-                                                  );
-                                                  addItemToCartExist(item);
-
-                                                })()
+                                                ? (async () => {
+                                                    // await increment(
+                                                    //   item.id,
+                                                    //   item.item_id,
+                                                    //   item.quantity,
+                                                    //   tId
+                                                    // );
+                                                    addItemToCartExist(item);
+                                                  })()
                                                 : addItemToCart(item)
                                             }
                                           >
@@ -1623,67 +1711,27 @@ const TableCounter1 = () => {
                                           {parseInt(item.amount) ||
                                             parseInt(item.price) * item.count}
                                         </h4>
-                                        <button
-                                          className="j-delete-btn me-2"
-                                          onClick={() => {
-                                            setItemToDelete(item.id);
-                                            setExisttoDelete(item.item_id);
-                                            handleShowEditFam();
-                                          }}
-                                        >
-                                          <RiDeleteBin6Fill />
-                                        </button>
+
+                                    
+                                        {((role === "admin" || role === "cashier") || ( !data?.order_details_id&&!item?.item_id) ) && (
+                                          <button
+                                            className="j-delete-btn me-2"
+                                            onClick={() => {
+                                              setItemToDelete(item.id);
+                                              setExisttoDelete(item.item_id);
+                                              handleShowEditFam();
+                                            }}
+                                          >
+                                            <RiDeleteBin6Fill />
+                                          </button>
+                                        )}
                                       </div>
                                     </div>
                                     <div className="text-white j-order-count-why ">
-                                  {item.notes ? (
-                                    addNotes[index] ? (
-                                      <form
-                                        onSubmit={(e) =>
-                                          handleSubmitNote(e, index, item.id, item.item_id)
-                                        }
-                                      >
-                                        <span className="j-nota-blue">
-                                          Nota:{" "}
-                                        </span>
-                                        <input
-                                          className="j-note-input"
-                                          type="text"
-                                          defaultValue={item.notes || ""}
-                                          autoFocus
-                                          onBlur={(e) =>
-                                            handleSubmitNote(e, index, item.id, item.item_id)
-                                          }
-                                        />
-                                      </form>
-                                    ) : (
-                                      <span
-                                        className="j-nota-blue"
-                                        onClick={() =>
-                                          handleAddNoteClickexisted(index)
-                                        }
-                                        style={{ cursor: "pointer" }}
-                                      >
-                                        Nota: {item.notes}
-                                      </span>
-                                    )
-                                  ) : (
-                                    <div>
-                                      {addNotes[index] ? (
-                                        <form
-                                          onSubmit={(e) =>
-                                            handleSubmitNote(e, index, item.id, item.item_id)
-                                          }
-                                        >
-                                          <span className="j-nota-blue">
-                                            Nota:{" "}
-                                          </span>
-                                          <input
-                                            className="j-note-input"
-                                            type="text"
-                                            defaultValue={item.notes || ""}
-                                            autoFocus
-                                            onBlur={(e) =>
+                                      {item.notes ? (
+                                        addNotes[index] ? (
+                                          <form
+                                            onSubmit={(e) =>
                                               handleSubmitNote(
                                                 e,
                                                 index,
@@ -1691,26 +1739,88 @@ const TableCounter1 = () => {
                                                 item.item_id
                                               )
                                             }
-                                          />
-                                        </form>
+                                          >
+                                            <span className="j-nota-blue">
+                                              Nota:{" "}
+                                            </span>
+                                            <input
+                                              className="j-note-input"
+                                              type="text"
+                                              defaultValue={item.notes || ""}
+                                              autoFocus
+                                              onBlur={(e) =>
+                                                handleSubmitNote(
+                                                  e,
+                                                  index,
+                                                  item.id,
+                                                  item.item_id
+                                                )
+                                              }
+                                            />
+                                          </form>
+                                        ) : (
+                                          <span
+                                            className="j-nota-blue"
+                                            onClick={() =>
+                                              handleAddNoteClickexisted(index)
+                                            }
+                                            style={{ cursor: "pointer" }}
+                                          >
+                                            Nota: {item.notes}
+                                          </span>
+                                        )
                                       ) : (
-                                        <button
-                                          type="button"
-                                          className="j-note-final-button"
-                                          onClick={() =>
-                                            handleAddNoteClickexisted(index)
-                                          }
-                                        >
-                                          + Agregar nota
-                                        </button>
+                                        <div>
+                                          {addNotes[index] ? (
+                                            <form
+                                              onSubmit={(e) =>
+                                                handleSubmitNote(
+                                                  e,
+                                                  index,
+                                                  item.id,
+                                                  item.item_id
+                                                )
+                                              }
+                                            >
+                                              <span className="j-nota-blue">
+                                                Nota:{" "}
+                                              </span>
+                                              <input
+                                                className="j-note-input"
+                                                type="text"
+                                                defaultValue={item.notes || ""}
+                                                autoFocus
+                                                onBlur={(e) =>
+                                                  handleSubmitNote(
+                                                    e,
+                                                    index,
+                                                    item.id,
+                                                    item.item_id
+                                                  )
+                                                }
+                                              />
+                                            </form>
+                                          ) : (
+                                            <button
+                                              type="button"
+                                              className="j-note-final-button"
+                                              onClick={() =>
+                                                handleAddNoteClickexisted(index)
+                                              }
+                                            >
+                                              + Agregar nota
+                                            </button>
+                                          )}
+                                        </div>
                                       )}
                                     </div>
-                                  )}
-                                </div>
                                   </div>
                                 );
                               })}
-                            {tableData[0].items.length > 3 && (
+
+                            {parseInt(tableData[0].items.length) +
+                              parseInt(cartItemsExist.length) >
+                              3 && (
                               <Link
                                 onClick={toggleShowAllItems}
                                 className="sjfs-14"
@@ -1752,10 +1862,7 @@ const TableCounter1 = () => {
                               <span className="text-white fw-semibold j-tbl-text-14">
                                 {tableData.map((item) => (
                                   <span key={item.id}>
-                                    ${" "}
-                                    {parseFloat(
-                                      item.order_total
-                                    ).toFixed(2)}
+                                    $ {parseFloat(item.order_total).toFixed(2)}
                                   </span>
                                 ))}
                               </span>
@@ -1776,302 +1883,300 @@ const TableCounter1 = () => {
                     </div>
                   </div>
                 ) : // If tableData is empty, check cartItems
-                  cartItems.length === 0 ? (
-                    <div>
-                      <h4 className="j-table-co4 j-tbl-text-13">Mesa {tabNo}</h4>
-                      <div className="d-flex align-items-center justify-content-between my-3 ak-w-100">
-                        <div className="j-busy-table d-flex align-items-center ak-w-50">
-                          <div className="j-a-table" />
-                          <p className="j-table-color j-tbl-btn-font-1 ak-input">
-                            Disponible
-                          </p>
-                        </div>
-                        <div className="b-date-time d-flex align-items-center ak-w-50">
-                          <svg
-                            className="j-canvas-svg-i"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          <p className="mb-0 ms-2 me-3 text-white j-tbl-btn-font-1 ak-input">
-                            00 min 00 sg
-                          </p>
-                        </div>
+                cartItems.length === 0 ? (
+                  <div>
+                    <h4 className="j-table-co4 j-tbl-text-13">Mesa {tabNo}</h4>
+                    <div className="d-flex align-items-center justify-content-between my-3 ak-w-100">
+                      <div className="j-busy-table d-flex align-items-center ak-w-50">
+                        <div className="j-a-table" />
+                        <p className="j-table-color j-tbl-btn-font-1 ak-input">
+                          Disponible
+                        </p>
                       </div>
-                      <div className="j-orders-inputs ak-w-100">
-                        <div className="j-orders-code ak-w-50">
-                          <label className="j-label-name text-white j-tbl-btn-font-1 mb-2">
-                            Quién registra
-                          </label>
-                          <input
-                            className="j-input-name ak-input"
-                            type="text"
-                            placeholder="Lucia Lopez"
-                            value={userName}
-                            // onChange={(e) => {
-                            //   setCustomerName(e.target.value);
-                            //   setCustomerNameError("");
-                            // }}
-                            disabled
-                          />
-                          {customerNameError && (
-                            <div className="text-danger errormessage">
-                              {customerNameError}
-                            </div>
-                          )}
-                        </div>
-                        <div className="j-orders-code ak-w-50">
-                          <label className="j-label-name j-tbl-btn-font-1 text-white mb-2">
-                            Personas
-                          </label>
-                          <div>
-                            <input
-                              className="j-input-name630 ak-input"
-                              type="text"
-                              placeholder="-"
-                              value={person}
-                              onChange={(e) => {
-                                setPerson(e.target.value);
-                                setPersonError("");
-                              }}
-                            />
-                            {personError && (
-                              <div className="text-danger errormessage">
-                                {personError}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="b-product-order text-center">
+                      <div className="b-date-time d-flex align-items-center ak-w-50">
                         <svg
-                          className="w-6 h-6 text-gray-800 dark:text-white mb-2"
-                          style={{ color: "white" }}
+                          className="j-canvas-svg-i"
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"
-                          width="28"
-                          height="28"
+                          width="24"
+                          height="24"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
                           <path
                             fillRule="evenodd"
-                            d="M4.857 3A1.857 1.857 0 0 0 3 4.857v4.286C3 10.169 3.831 11 4.857 11h4.286A1.857 1.857 0 0 0 11 9.143V4.857A1.857 1.857 0 0 0 9.143 3H4.857Zm10 0A1.857 1.857 0 0 0 13 4.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 9.143V4.857A1.857 1.857 0 0 0 19.143 3h-4.286Zm-10 10A1.857 1.857 0 0 0 3 14.857v4.286C3 20.169 3.831 21 4.857 21h4.286A1.857 1.857 0 0 0 11 19.143v-4.286A1.857 1.857 0 0 0 9.143 13H4.857Zm10 0A1.857 1.857 0 0 0 13 14.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 19.143v-4.286A1.857 1.857 0 0 0 19.143 13h-4.286Z"
+                            d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
                             clipRule="evenodd"
                           />
                         </svg>
-                        <h6 className="h6-product-order text-white j-tbl-pop-1">
-                          Empezar Pedido
-                        </h6>
-                        <p className="p-product-order j-tbl-btn-font-1 ">
-                          Agregar producto para comenzar el pedido
+                        <p className="mb-0 ms-2 me-3 text-white j-tbl-btn-font-1 ak-input">
+                          00 min 00 sg
                         </p>
                       </div>
                     </div>
-                  ) : (
-                    // If cartItems is not empty, display cart items
-                    <div>
-                      {/* Existing cart items display code */}
-                      <h4 className="j-table-co4 j-tbl-text-13">Mesa {tabNo}</h4>
-                      <div className="d-flex align-items-center justify-content-between my-3 ak-w-100">
-                        <div className="j-busy-table d-flex align-items-center ak-w-50">
-                          <div className="j-a-table" />
-                          <p className="j-table-color j-tbl-btn-font-1 ak-input">
-                            Disponible
-                          </p>
-                        </div>
-                        <div className="b-date-time d-flex align-items-center ak-w-50">
-                          <svg
-                            className="j-canvas-svg-i"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          <p className="mb-0 ms-2 me-3 text-white j-tbl-btn-font-1 ak-input">
-                            {date}
-                          </p>
+                    <div className="j-orders-inputs ak-w-100">
+                      <div className="j-orders-code ak-w-50">
+                        <label className="j-label-name text-white j-tbl-btn-font-1 mb-2">
+                          Quién registra
+                        </label>
+                        <input
+                          className="j-input-name ak-input"
+                          type="text"
+                          placeholder="Lucia Lopez"
+                          value={userName}
+                          // onChange={(e) => {
+                          //   setCustomerName(e.target.value);
+                          //   setCustomerNameError("");
+                          // }}
+                          disabled
+                        />
+                        {customerNameError && (
+                          <div className="text-danger errormessage">
+                            {customerNameError}
+                          </div>
+                        )}
+                      </div>
+                      <div className="j-orders-code ak-w-50">
+                        <label className="j-label-name j-tbl-btn-font-1 text-white mb-2">
+                          Personas
+                        </label>
+                        <div>
+                          <input
+                            className="j-input-name630 ak-input"
+                            type="text"
+                            placeholder="-"
+                            value={person}
+                            onChange={(e) => {
+                              setPerson(e.target.value);
+                              setPersonError("");
+                            }}
+                          />
+                          {personError && (
+                            <div className="text-danger errormessage">
+                              {personError}
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <div className="j-orders-inputs ak-w-100">
-                        <div className="w-100">
-                          <div className="j-orders-inputs ak-w-100">
-                            <div className="j-orders-code ak-w-50">
-                              <label className="j-label-name text-white mb-2 j-tbl-btn-font-1">
-                                Quién registra
-                              </label>
-                              <input
-                                className="j-input-name ak-input"
-                                type="text"
-                                placeholder="Lucia Lopez"
-                                value={userName}
-                                // onChange={(e) => {
-                                //   setCustomerName(e.target.value);
-                                //   setCustomerNameError("");
-                                // }}
-                                disabled
-                              />
-                              {customerNameError && (
-                                <div className="text-danger errormessage">
-                                  {customerNameError}
-                                </div>
-                              )}
-                            </div>
-                            <div className="j-orders-code ak-w-50">
-                              <label className="j-label-name j-tbl-btn-font-1 text-white mb-2">
-                                Personas
-                              </label>
-                              <div>
-                                <input
-                                  className="j-input-name630 ak-input"
-                                  type="text"
-                                  placeholder="-"
-                                  value={person}
-                                  onChange={(e) => {
-                                    setPerson(e.target.value);
-                                    setPersonError("");
-                                  }}
-                                />
-                                {personError && (
-                                  <div className="text-danger errormessage">
-                                    {personError}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="j-counter-order">
-                            <h3 className="text-white j-tbl-pop-1">Pedido </h3>
-                            <div className="j-counter-order-data j_counter_order_width">
-                              {cartItems
-                                .slice(0, showAllItems ? cartItems.length : 3)
-                                .map((item, index) => (
-                                  <div
-                                    className="j-counter-order-border-fast j_border_width"
-                                    key={item.id}
-                                  >
-                                    <div className="j-counter-order-img j_counter_order_final">
-                                      <div className="j_d_flex_aic">
-                                        <img
-                                          src={`${API}/images/${item.image}`}
-                                          alt=""
-                                        />
-                                        <h5 className="text-white j-tbl-font-5">
-                                          {item.name}
-                                        </h5>
-                                      </div>
-                                      <div className="d-flex align-items-center">
-                                        <div className="j-counter-mix">
-                                          <button
-                                            className="j-minus-count"
-                                            onClick={() =>
-                                              removeItemFromCart(item.id)
-                                            }
-                                          >
-                                            <FaMinus />
-                                          </button>
-                                          <h3> {item.count}</h3>
-                                          <button
-                                            className="j-plus-count"
-                                            onClick={() => addItemToCart(item)}
-                                          >
-                                            <FaPlus />
-                                          </button>
-                                        </div>
-                                        <h4 className="text-white fw-semibold d-flex">
-                                          ${parseInt(item.price) * item.count}
-                                        </h4>
-                                        <button
-                                          className="j-delete-btn me-2"
-                                         
-                                          
-                                          onClick={() => {
-                                            setItemToDelete(item.id);
-                                            handleShowEditFam();
-                                          }}
-                                        >
-                                          <RiDeleteBin6Fill />
-                                        </button>
-                                      </div>
-                                    </div>
-                                    <div className="text-white j-order-count-why">
-                                      {renderNoteInput(item, index)}
-                                    </div>
-                                  </div>
-                                ))}
-                              {cartItems.length > 3 && (
-                                <Link
-                                  onClick={toggleShowAllItems}
-                                  className="sjfs-14"
-                                >
-                                  {showAllItems ? "Ver menos" : "Ver más"}
-                                </Link>
-                              )}
-                            </div>
-                            {cartError && (
+                    </div>
+                    <div className="b-product-order text-center">
+                      <svg
+                        className="w-6 h-6 text-gray-800 dark:text-white mb-2"
+                        style={{ color: "white" }}
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="28"
+                        height="28"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M4.857 3A1.857 1.857 0 0 0 3 4.857v4.286C3 10.169 3.831 11 4.857 11h4.286A1.857 1.857 0 0 0 11 9.143V4.857A1.857 1.857 0 0 0 9.143 3H4.857Zm10 0A1.857 1.857 0 0 0 13 4.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 9.143V4.857A1.857 1.857 0 0 0 19.143 3h-4.286Zm-10 10A1.857 1.857 0 0 0 3 14.857v4.286C3 20.169 3.831 21 4.857 21h4.286A1.857 1.857 0 0 0 11 19.143v-4.286A1.857 1.857 0 0 0 9.143 13H4.857Zm10 0A1.857 1.857 0 0 0 13 14.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 21 19.143v-4.286A1.857 1.857 0 0 0 19.143 13h-4.286Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <h6 className="h6-product-order text-white j-tbl-pop-1">
+                        Empezar Pedido
+                      </h6>
+                      <p className="p-product-order j-tbl-btn-font-1 ">
+                        Agregar producto para comenzar el pedido
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  // If cartItems is not empty, display cart items
+                  <div>
+                    {/* Existing cart items display code */}
+                    <h4 className="j-table-co4 j-tbl-text-13">Mesa {tabNo}</h4>
+                    <div className="d-flex align-items-center justify-content-between my-3 ak-w-100">
+                      <div className="j-busy-table d-flex align-items-center ak-w-50">
+                        <div className="j-a-table" />
+                        <p className="j-table-color j-tbl-btn-font-1 ak-input">
+                          Disponible
+                        </p>
+                      </div>
+                      <div className="b-date-time d-flex align-items-center ak-w-50">
+                        <svg
+                          className="j-canvas-svg-i"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <p className="mb-0 ms-2 me-3 text-white j-tbl-btn-font-1 ak-input">
+                          {date}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="j-orders-inputs ak-w-100">
+                      <div className="w-100">
+                        <div className="j-orders-inputs ak-w-100">
+                          <div className="j-orders-code ak-w-50">
+                            <label className="j-label-name text-white mb-2 j-tbl-btn-font-1">
+                              Quién registra
+                            </label>
+                            <input
+                              className="j-input-name ak-input"
+                              type="text"
+                              placeholder="Lucia Lopez"
+                              value={userName}
+                              // onChange={(e) => {
+                              //   setCustomerName(e.target.value);
+                              //   setCustomerNameError("");
+                              // }}
+                              disabled
+                            />
+                            {customerNameError && (
                               <div className="text-danger errormessage">
-                                {cartError}
+                                {customerNameError}
                               </div>
                             )}
-                            <div className="j-counter-total ak-counter-total">
-                              <h5 className="text-white j-tbl-text-15">
-                                Costo total
-                              </h5>
-                              <div className="j-total-discount d-flex justify-content-between">
-                                <p className="j-counter-text-2">Artículos</p>
-                                <span className="text-white">
-                                  ${totalCost.toFixed(2)}
-                                </span>
-                              </div>
-                              <div className="j-border-bottom-counter">
-                                <div className="j-total-discount d-flex justify-content-between">
-                                  <p className="j-counter-text-2">Descuentos</p>
-                                  <span className="text-white">
-                                    ${discount.toFixed(2)}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="j-total-discount my-2 d-flex justify-content-between">
-                                <p className="text-white bj-delivery-text-153 ">
-                                  Total
-                                </p>
-                                <span className="text-white bj-delivery-text-153 ">
-                                  ${finalTotal.toFixed(2)}
-                                </span>
-                              </div>
-                              <Link
-                                to={""}
-                                className="btn w-100 j-btn-primary text-white m-articles-text-2"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleCreateOrder();
+                          </div>
+                          <div className="j-orders-code ak-w-50">
+                            <label className="j-label-name j-tbl-btn-font-1 text-white mb-2">
+                              Personas
+                            </label>
+                            <div>
+                              <input
+                                className="j-input-name630 ak-input"
+                                type="text"
+                                placeholder="-"
+                                value={person}
+                                onChange={(e) => {
+                                  setPerson(e.target.value);
+                                  setPersonError("");
                                 }}
-                              >
-                                Enviar a Cocina
-                              </Link>
+                              />
+                              {personError && (
+                                <div className="text-danger errormessage">
+                                  {personError}
+                                </div>
+                              )}
                             </div>
+                          </div>
+                        </div>
+                        <div className="j-counter-order">
+                          <h3 className="text-white j-tbl-pop-1">Pedido </h3>
+                          <div className="j-counter-order-data j_counter_order_width">
+                            {cartItems
+                              .slice(0, showAllItems ? cartItems.length : 3)
+                              .map((item, index) => (
+                                <div
+                                  className="j-counter-order-border-fast j_border_width"
+                                  key={item.id}
+                                >
+                                  <div className="j-counter-order-img j_counter_order_final">
+                                    <div className="j_d_flex_aic">
+                                      <img
+                                        src={`${API}/images/${item.image}`}
+                                        alt=""
+                                      />
+                                      <h5 className="text-white j-tbl-font-5">
+                                        {item.name}
+                                      </h5>
+                                    </div>
+                                    <div className="d-flex align-items-center">
+                                      <div className="j-counter-mix">
+                                        <button
+                                          className="j-minus-count"
+                                          onClick={() =>
+                                            removeItemFromCart(item.id)
+                                          }
+                                        >
+                                          <FaMinus />
+                                        </button>
+                                        <h3> {item.count}</h3>
+                                        <button
+                                          className="j-plus-count"
+                                          onClick={() => addItemToCart(item)}
+                                        >
+                                          <FaPlus />
+                                        </button>
+                                      </div>
+                                      <h4 className="text-white fw-semibold d-flex">
+                                        ${parseInt(item.price) * item.count}
+                                      </h4>
+                                      <button
+                                        className="j-delete-btn me-2"
+                                        onClick={() => {
+                                          setItemToDelete(item.id);
+                                          handleShowEditFam();
+                                        }}
+                                      >
+                                        <RiDeleteBin6Fill />
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div className="text-white j-order-count-why">
+                                    {renderNoteInput(item, index)}
+                                  </div>
+                                </div>
+                              ))}
+                            {cartItems.length > 3 && (
+                              <Link
+                                onClick={toggleShowAllItems}
+                                className="sjfs-14"
+                              >
+                                {showAllItems ? "Ver menos" : "Ver más"}
+                              </Link>
+                            )}
+                          </div>
+                          {cartError && (
+                            <div className="text-danger errormessage">
+                              {cartError}
+                            </div>
+                          )}
+                          <div className="j-counter-total ak-counter-total">
+                            <h5 className="text-white j-tbl-text-15">
+                              Costo total
+                            </h5>
+                            <div className="j-total-discount d-flex justify-content-between">
+                              <p className="j-counter-text-2">Artículos</p>
+                              <span className="text-white">
+                                ${totalCost.toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="j-border-bottom-counter">
+                              <div className="j-total-discount d-flex justify-content-between">
+                                <p className="j-counter-text-2">Descuentos</p>
+                                <span className="text-white">
+                                  ${discount.toFixed(2)}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="j-total-discount my-2 d-flex justify-content-between">
+                              <p className="text-white bj-delivery-text-153 ">
+                                Total
+                              </p>
+                              <span className="text-white bj-delivery-text-153 ">
+                                ${finalTotal.toFixed(2)}
+                              </span>
+                            </div>
+                            <Link
+                              to={""}
+                              className="btn w-100 j-btn-primary text-white m-articles-text-2"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleCreateOrder();
+                              }}
+                            >
+                              Enviar a Cocina
+                            </Link>
                           </div>
                         </div>
                       </div>
                     </div>
-                  )}
+                  </div>
+                )}
 
                 <Modal
                   show={showEditFam}
@@ -2097,9 +2202,10 @@ const TableCounter1 = () => {
                     <Button
                       className="j-tbl-btn-font-1 b_btn_close"
                       variant="danger"
-                      onClick={() => 
-                        {handleDeleteClick(itemToDelete);
-                         handleDeleteClickExist()}}
+                      onClick={() => {
+                        handleDeleteClick(itemToDelete);
+                        handleDeleteClickExist();
+                      }}
                     >
                       Si, seguro
                     </Button>

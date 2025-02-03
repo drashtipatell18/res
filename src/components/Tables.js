@@ -1989,6 +1989,8 @@ const Tables = () => {
                   Agregar producto
                 </Link>
               </div>
+              {(role == "admin" || role == "cashier") && (
+                <>
               <button
                 data-bs-theme="dark"
                 className="j-canvas-btn2 j-tbl-font-3 btn bj-btn-outline-primary"
@@ -2020,7 +2022,6 @@ const Tables = () => {
                   {isEditing ? "Guardar" : "Editar"}
                 </div>
               </button>
-
               <Button
                 className="j-canvas-btn2 j-tbl-font-3 j_secondary_delete"
                 onClick={handleInfoMesaClick}
@@ -2044,6 +2045,8 @@ const Tables = () => {
                   Información mesa
                 </div>
               </Button>
+              </>
+                )}
             </div>
 
             {isEditing ? (

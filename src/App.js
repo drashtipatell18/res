@@ -52,6 +52,7 @@ import { ChatProvider } from "./contexts/ChatContext";
 
 import { Provider } from "react-redux";
 import { configureStore } from "./redux/store";
+import Btn from "./components/Btn";
 
 function App() {
 
@@ -64,7 +65,7 @@ function App() {
           <ChatProvider>
             <Routes>
               <Route path="/" element={<Login />} />
-              {/* {/ <Route path="/dd" element={<ChatComponent />} /> /} */}
+              <Route path="/btn" element={<Btn />} /> 
               {/* {/ dashboard /} */}
               <Route path="/dashboard" element={<Dashboard />} />
               {/* {/ counter /} */}
