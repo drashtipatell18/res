@@ -1879,6 +1879,8 @@ const Tables = () => {
                   Empezar pedido
                 </Link>
               </div>
+              {(role == "admin" || role == "cashier") && (
+                <>
               <button
                 data-bs-theme="dark"
                 className="j-canvas-btn2 j-tbl-font-3  btn bj-btn-outline-primary"
@@ -1932,6 +1934,7 @@ const Tables = () => {
                   Información mesa
                 </div>
               </button>
+              </>)}
             </div>
             <div className="j-available-table d-flex align-items-center mt-3">
               <div className="j-a-table" />
